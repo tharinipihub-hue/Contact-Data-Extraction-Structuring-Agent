@@ -1349,9 +1349,8 @@ agents.snsihub.ai`;
                     </label>
                     <input
                       type="text"
-                      className="zoho-search-input"
-                      style={{ width: '100%', borderRadius: 4, height: 34, fontSize: 12 }}
-                      placeholder="e.g. Sundar Pichai"
+                      className="zoho-form-input"
+                      placeholder="Enter full name"
                       value={createLeadForm.full_name}
                       onChange={(e) => setCreateLeadForm({ ...createLeadForm, full_name: e.target.value })}
                       required
@@ -1364,9 +1363,8 @@ agents.snsihub.ai`;
                     </label>
                     <input
                       type="text"
-                      className="zoho-search-input"
-                      style={{ width: '100%', borderRadius: 4, height: 34, fontSize: 12 }}
-                      placeholder="e.g. Chief Executive Officer"
+                      className="zoho-form-input"
+                      placeholder="Enter job title"
                       value={createLeadForm.designation}
                       onChange={(e) => setCreateLeadForm({ ...createLeadForm, designation: e.target.value })}
                     />
@@ -1378,9 +1376,8 @@ agents.snsihub.ai`;
                     </label>
                     <input
                       type="text"
-                      className="zoho-search-input"
-                      style={{ width: '100%', borderRadius: 4, height: 34, fontSize: 12 }}
-                      placeholder="e.g. Google / Alphabet"
+                      className="zoho-form-input"
+                      placeholder="Enter company name"
                       value={createLeadForm.company}
                       onChange={(e) => setCreateLeadForm({ ...createLeadForm, company: e.target.value })}
                     />
@@ -1392,9 +1389,8 @@ agents.snsihub.ai`;
                     </label>
                     <input
                       type="text"
-                      className="zoho-search-input"
-                      style={{ width: '100%', borderRadius: 4, height: 34, fontSize: 12 }}
-                      placeholder="e.g. Enterprise Technology"
+                      className="zoho-form-input"
+                      placeholder="Enter industry or sector"
                       value={createLeadForm.sector_industry}
                       onChange={(e) => setCreateLeadForm({ ...createLeadForm, sector_industry: e.target.value })}
                     />
@@ -1412,9 +1408,8 @@ agents.snsihub.ai`;
                     </label>
                     <input
                       type="email"
-                      className="zoho-search-input"
-                      style={{ width: '100%', borderRadius: 4, height: 34, fontSize: 12 }}
-                      placeholder="e.g. executive@company.com"
+                      className="zoho-form-input"
+                      placeholder="name@company.com"
                       value={createLeadForm.email}
                       onChange={(e) => setCreateLeadForm({ ...createLeadForm, email: e.target.value })}
                     />
@@ -1426,9 +1421,8 @@ agents.snsihub.ai`;
                     </label>
                     <input
                       type="text"
-                      className="zoho-search-input"
-                      style={{ width: '100%', borderRadius: 4, height: 34, fontSize: 12 }}
-                      placeholder="e.g. +91 98765 43210"
+                      className="zoho-form-input"
+                      placeholder="+91 98765 43210"
                       value={createLeadForm.phone}
                       onChange={(e) => setCreateLeadForm({ ...createLeadForm, phone: e.target.value })}
                     />
@@ -1446,9 +1440,8 @@ agents.snsihub.ai`;
                     </label>
                     <input
                       type="text"
-                      className="zoho-search-input"
-                      style={{ width: '100%', borderRadius: 4, height: 34, fontSize: 12 }}
-                      placeholder="e.g. Mountain View"
+                      className="zoho-form-input"
+                      placeholder="City"
                       value={createLeadForm.city}
                       onChange={(e) => setCreateLeadForm({ ...createLeadForm, city: e.target.value })}
                     />
@@ -1459,9 +1452,8 @@ agents.snsihub.ai`;
                     </label>
                     <input
                       type="text"
-                      className="zoho-search-input"
-                      style={{ width: '100%', borderRadius: 4, height: 34, fontSize: 12 }}
-                      placeholder="e.g. California"
+                      className="zoho-form-input"
+                      placeholder="State / Province"
                       value={createLeadForm.state}
                       onChange={(e) => setCreateLeadForm({ ...createLeadForm, state: e.target.value })}
                     />
@@ -1472,9 +1464,8 @@ agents.snsihub.ai`;
                     </label>
                     <input
                       type="text"
-                      className="zoho-search-input"
-                      style={{ width: '100%', borderRadius: 4, height: 34, fontSize: 12 }}
-                      placeholder="e.g. USA"
+                      className="zoho-form-input"
+                      placeholder="Country"
                       value={createLeadForm.country}
                       onChange={(e) => setCreateLeadForm({ ...createLeadForm, country: e.target.value })}
                     />
@@ -1488,9 +1479,8 @@ agents.snsihub.ai`;
                     </label>
                     <input
                       type="text"
-                      className="zoho-search-input"
-                      style={{ width: '100%', borderRadius: 4, height: 34, fontSize: 12 }}
-                      placeholder="e.g. https://google.com"
+                      className="zoho-form-input"
+                      placeholder="https://company.com"
                       value={createLeadForm.website}
                       onChange={(e) => setCreateLeadForm({ ...createLeadForm, website: e.target.value })}
                     />
@@ -1501,8 +1491,8 @@ agents.snsihub.ai`;
                       Initial Status
                     </label>
                     <select
-                      className="zoho-status-dropdown"
-                      style={{ width: '100%', height: 34, padding: '4px 8px', fontSize: 12 }}
+                      className="zoho-form-input zoho-status-dropdown"
+                      style={{ height: 35, padding: '4px 8px', fontSize: 13 }}
                       value={createLeadForm.status}
                       onChange={(e) => setCreateLeadForm({ ...createLeadForm, status: e.target.value })}
                     >

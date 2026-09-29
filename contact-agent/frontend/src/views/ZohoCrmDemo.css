@@ -812,6 +812,31 @@
   background: #f8fafc;
 }
 
+/* Form input styling inside modals */
+.zoho-form-input {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 5px !important;
+  color: #0f172a !important;
+  font-size: 13px !important;
+  padding: 7px 11px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  outline: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.zoho-form-input:focus {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+}
+
+.zoho-form-input::placeholder {
+  color: #94a3b8 !important;
+  font-weight: 400 !important;
+}
+
+
 /* ---------- User Profile Menu & System Status ---------- */
 .zoho-profile-wrap {
   position: relative;
