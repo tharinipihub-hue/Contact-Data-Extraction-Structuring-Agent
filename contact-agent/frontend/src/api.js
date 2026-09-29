@@ -41,3 +41,10 @@ export const getContacts = (batchId) =>
 export const updateContactStatus = (contactId, status) =>
   axios.patch(`${API_BASE}/contacts/${contactId}/status`, { status });
 
+/**
+ * Create a new lead manually.
+ * @param {object} contactData
+ */
+export const createContact = (contactData) =>
+  axios.post(`${API_BASE}/contacts`, contactData);
+

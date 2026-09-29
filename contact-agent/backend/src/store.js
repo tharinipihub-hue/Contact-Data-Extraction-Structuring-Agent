@@ -218,6 +218,15 @@ function findFile(file_id) {
   return _findFile(file_id);
 }
 
+/**
+ * Return all contacts stored for a specific file/tag.
+ * @param {string} file_id
+ * @returns {Array<object>}
+ */
+function getContactsForFile(file_id) {
+  return contacts.get(file_id) || [];
+}
+
 module.exports = {
   batches,
   contacts,
@@ -229,5 +238,6 @@ module.exports = {
   getAllContacts,
   getContactsByBatch,
   findFile,
+  getContactsForFile,
 };
 

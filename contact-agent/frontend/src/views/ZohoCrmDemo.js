@@ -29,7 +29,7 @@ import {
   MessageSquare,
   Trash2
 } from 'lucide-react';
-import { getContacts, uploadFiles, getBatchStatus, updateContactStatus } from '../api';
+import { getContacts, uploadFiles, getBatchStatus, updateContactStatus, createContact } from '../api';
 import { GOOGLE_SHEETS_URL, POLL_INTERVAL_MS } from '../config';
 import { getLeadTier, fetchDirectFromGoogleSheets } from './LeadWorkspace';
 import { deduplicateContactList } from '../utils/dedup';
@@ -96,6 +96,25 @@ function ZohoCrmDemo() {
   const [uploadState, setUploadState] = useState('idle'); // 'idle' | 'uploading' | 'processing' | 'done' | 'failed'
   const [uploadError, setUploadError] = useState(null);
   const [isDragActive, setIsDragActive] = useState(false);
+
+  // Create Lead Modal State
+  const [isCreateLeadOpen, setIsCreateLeadOpen] = useState(false);
+  const [isCreatingLead, setIsCreatingLead] = useState(false);
+  const [createLeadError, setCreateLeadError] = useState(null);
+  const [createLeadForm, setCreateLeadForm] = useState({
+    full_name: '',
+    designation: '',
+    company: '',
+    sector_industry: '',
+    email: '',
+    phone: '',
+    city: '',
+    state: '',
+    country: '',
+    website: '',
+    linkedin_url: '',
+    status: 'New'
+  });
 
   // Profile Menu State
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
@@ -365,6 +384,44 @@ function ZohoCrmDemo() {
       setSelectedLead(null);
     }
     setSelectedIds(new Set());
+  };
+
+  const handleCreateLeadSubmit = async (e) => {
+    e.preventDefault();
+    if (!createLeadForm.full_name?.trim() && !createLeadForm.company?.trim() && !createLeadForm.email?.trim()) {
+      setCreateLeadError('Please provide at least a Full Name, Company, or Email.');
+      return;
+    }
+    setIsCreatingLead(true);
+    setCreateLeadError(null);
+    try {
+      const res = await createContact(createLeadForm);
+      const created = res.data?.contact;
+      if (created) {
+        setLeads((prev) => [created, ...prev.filter((l) => l.id !== created.id)]);
+        setSelectedLead(created);
+      }
+      setIsCreateLeadOpen(false);
+      setCreateLeadForm({
+        full_name: '',
+        designation: '',
+        company: '',
+        sector_industry: '',
+        email: '',
+        phone: '',
+        city: '',
+        state: '',
+        country: '',
+        website: '',
+        linkedin_url: '',
+        status: 'New'
+      });
+    } catch (err) {
+      console.error('[ZohoCrmDemo] Failed to create lead:', err);
+      setCreateLeadError(err.response?.data?.error || err.message || 'Failed to create lead.');
+    } finally {
+      setIsCreatingLead(false);
+    }
   };
 
   // ── AI Outreach Pitch Generator ──────────────────────────────────────────────
@@ -661,6 +718,16 @@ agents.snsihub.ai`;
           >
             <RefreshCw size={12} className={loading ? 'crm-spin' : ''} />
             Sync Sheets
+          </button>
+
+          <button
+            className="zoho-btn zoho-btn-primary"
+            style={{ background: '#16a34a', borderColor: '#15803d' }}
+            onClick={() => setIsCreateLeadOpen(true)}
+            title="Create a new lead manually"
+          >
+            <Plus size={13} />
+            Create Lead
           </button>
 
           <button
@@ -1209,6 +1276,271 @@ agents.snsihub.ai`;
                 </button>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Create New Lead Modal ── */}
+      {isCreateLeadOpen && (
+        <div className="zoho-modal-backdrop" onClick={() => !isCreatingLead && setIsCreateLeadOpen(false)}>
+          <div
+            className="zoho-modal-card"
+            style={{ maxWidth: 640, width: '92%' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="zoho-modal-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 6,
+                  background: '#dcfce7',
+                  color: '#15803d',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <Plus size={16} />
+                </div>
+                <div>
+                  <span className="zoho-modal-title">Create New Lead</span>
+                  <div style={{ fontSize: 11, color: '#64748b' }}>
+                    Enter lead details. AI Lead Engine will score and prioritize automatically.
+                  </div>
+                </div>
+              </div>
+              <button
+                className="zoho-btn-text"
+                onClick={() => !isCreatingLead && setIsCreateLeadOpen(false)}
+                disabled={isCreatingLead}
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateLeadSubmit}>
+              <div className="zoho-modal-body" style={{ maxHeight: '70vh', overflowY: 'auto', padding: '16px 20px' }}>
+                {createLeadError && (
+                  <div style={{
+                    padding: '8px 12px',
+                    background: '#fef2f2',
+                    border: '1px solid #fecaca',
+                    borderRadius: 6,
+                    color: '#b91c1c',
+                    fontSize: 12,
+                    marginBottom: 14,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6
+                  }}>
+                    <AlertCircle size={14} />
+                    {createLeadError}
+                  </div>
+                )}
+
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#0f172a', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>
+                  Lead Information
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#475569', marginBottom: 4 }}>
+                      Full Name <span style={{ color: '#dc2626' }}>*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="zoho-search-input"
+                      style={{ width: '100%', borderRadius: 4, height: 34, fontSize: 12 }}
+                      placeholder="e.g. Sundar Pichai"
+                      value={createLeadForm.full_name}
+                      onChange={(e) => setCreateLeadForm({ ...createLeadForm, full_name: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#475569', marginBottom: 4 }}>
+                      Designation / Job Title
+                    </label>
+                    <input
+                      type="text"
+                      className="zoho-search-input"
+                      style={{ width: '100%', borderRadius: 4, height: 34, fontSize: 12 }}
+                      placeholder="e.g. Chief Executive Officer"
+                      value={createLeadForm.designation}
+                      onChange={(e) => setCreateLeadForm({ ...createLeadForm, designation: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#475569', marginBottom: 4 }}>
+                      Company
+                    </label>
+                    <input
+                      type="text"
+                      className="zoho-search-input"
+                      style={{ width: '100%', borderRadius: 4, height: 34, fontSize: 12 }}
+                      placeholder="e.g. Google / Alphabet"
+                      value={createLeadForm.company}
+                      onChange={(e) => setCreateLeadForm({ ...createLeadForm, company: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#475569', marginBottom: 4 }}>
+                      Sector / Industry
+                    </label>
+                    <input
+                      type="text"
+                      className="zoho-search-input"
+                      style={{ width: '100%', borderRadius: 4, height: 34, fontSize: 12 }}
+                      placeholder="e.g. Enterprise Technology"
+                      value={createLeadForm.sector_industry}
+                      onChange={(e) => setCreateLeadForm({ ...createLeadForm, sector_industry: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#0f172a', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8, marginTop: 16 }}>
+                  Contact Details
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#475569', marginBottom: 4 }}>
+                      Work Email
+                    </label>
+                    <input
+                      type="email"
+                      className="zoho-search-input"
+                      style={{ width: '100%', borderRadius: 4, height: 34, fontSize: 12 }}
+                      placeholder="e.g. executive@company.com"
+                      value={createLeadForm.email}
+                      onChange={(e) => setCreateLeadForm({ ...createLeadForm, email: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#475569', marginBottom: 4 }}>
+                      Phone / Mobile
+                    </label>
+                    <input
+                      type="text"
+                      className="zoho-search-input"
+                      style={{ width: '100%', borderRadius: 4, height: 34, fontSize: 12 }}
+                      placeholder="e.g. +91 98765 43210"
+                      value={createLeadForm.phone}
+                      onChange={(e) => setCreateLeadForm({ ...createLeadForm, phone: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#0f172a', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8, marginTop: 16 }}>
+                  Location & Online Presence
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 14 }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#475569', marginBottom: 4 }}>
+                      City
+                    </label>
+                    <input
+                      type="text"
+                      className="zoho-search-input"
+                      style={{ width: '100%', borderRadius: 4, height: 34, fontSize: 12 }}
+                      placeholder="e.g. Mountain View"
+                      value={createLeadForm.city}
+                      onChange={(e) => setCreateLeadForm({ ...createLeadForm, city: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#475569', marginBottom: 4 }}>
+                      State
+                    </label>
+                    <input
+                      type="text"
+                      className="zoho-search-input"
+                      style={{ width: '100%', borderRadius: 4, height: 34, fontSize: 12 }}
+                      placeholder="e.g. California"
+                      value={createLeadForm.state}
+                      onChange={(e) => setCreateLeadForm({ ...createLeadForm, state: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#475569', marginBottom: 4 }}>
+                      Country
+                    </label>
+                    <input
+                      type="text"
+                      className="zoho-search-input"
+                      style={{ width: '100%', borderRadius: 4, height: 34, fontSize: 12 }}
+                      placeholder="e.g. USA"
+                      value={createLeadForm.country}
+                      onChange={(e) => setCreateLeadForm({ ...createLeadForm, country: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#475569', marginBottom: 4 }}>
+                      Company Website
+                    </label>
+                    <input
+                      type="text"
+                      className="zoho-search-input"
+                      style={{ width: '100%', borderRadius: 4, height: 34, fontSize: 12 }}
+                      placeholder="e.g. https://google.com"
+                      value={createLeadForm.website}
+                      onChange={(e) => setCreateLeadForm({ ...createLeadForm, website: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#475569', marginBottom: 4 }}>
+                      Initial Status
+                    </label>
+                    <select
+                      className="zoho-status-dropdown"
+                      style={{ width: '100%', height: 34, padding: '4px 8px', fontSize: 12 }}
+                      value={createLeadForm.status}
+                      onChange={(e) => setCreateLeadForm({ ...createLeadForm, status: e.target.value })}
+                    >
+                      <option value="New">New</option>
+                      <option value="Contacted">Contacted</option>
+                      <option value="Follow-up">Follow-up</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="zoho-modal-footer">
+                <button
+                  type="button"
+                  className="zoho-btn zoho-btn-secondary"
+                  onClick={() => setIsCreateLeadOpen(false)}
+                  disabled={isCreatingLead}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="zoho-btn zoho-btn-primary"
+                  style={{ background: '#16a34a', borderColor: '#15803d' }}
+                  disabled={isCreatingLead}
+                >
+                  {isCreatingLead ? (
+                    <>
+                      <Loader2 size={13} className="crm-spin" /> Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Check size={13} /> Save Lead
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

@@ -249,7 +249,10 @@ async function fetchContactsFromSheet() {
   }
 
   console.log(`[googleSheets] Synchronized ${contacts.length} live contacts from Google Sheets.`);
-  const dedupedContacts = deduplicateContactList(contacts, scoreLead);
+  const store = require('../store');
+  const manualLeads = store.getContactsForFile ? store.getContactsForFile('manual_leads') : [];
+  const allContacts = [...manualLeads, ...contacts];
+  const dedupedContacts = deduplicateContactList(allContacts, scoreLead);
   console.log(`[googleSheets] After deduplication: ${dedupedContacts.length} unique contacts.`);
   return dedupedContacts;
 }
