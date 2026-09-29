@@ -595,7 +595,6 @@ async function processFile(
     }
 
   } catch (err) {
-
     const errorMsg =
       err.response
         ? `Workbench HTTP ${err.response.status}: ${JSON.stringify(err.response.data)}`
@@ -604,6 +603,37 @@ async function processFile(
     console.error(
       `[workbenchService] ✗ Error for file_id=${file_id}: ${errorMsg}`
     );
+
+    // Fallback: If Workbench is inactive (404) or unavailable, run local extraction engine
+    try {
+      console.log(`[workbenchService] Attempting local fallback extraction for file_id=${file_id}...`);
+      let localContacts = [];
+      const isCSV = fileType.includes('csv') || (fileObj.name && fileObj.name.toLowerCase().endsWith('.csv'));
+      const isImage = fileType.startsWith('image/') || /\.(jpg|jpeg|png|gif)$/i.test(fileObj.name || '');
+
+      if (isCSV) {
+        const rawCSV = readFileContent(fileObj);
+        const parsed = leadEngine.parseCSVText(rawCSV);
+        localContacts = leadEngine.processAndScoreList(parsed, fileObj.name || 'Contacts.csv');
+      } else if (isImage) {
+        const rawBuffer = fileObj.data || (fileObj.tempFilePath && fs.readFileSync(fileObj.tempFilePath));
+        if (rawBuffer) {
+          const rawExtracted = await leadEngine.extractContactsFromImage(rawBuffer, fileType);
+          if (rawExtracted && rawExtracted.length > 0) {
+            localContacts = leadEngine.processAndScoreList(rawExtracted, fileObj.name || 'BusinessCard.jpg');
+          }
+        }
+      }
+
+      if (localContacts.length > 0) {
+        store.addContacts(file_id, localContacts);
+        store.updateFileStatus(file_id, 'done');
+        console.log(`[workbenchService] ✓ Successfully recovered ${localContacts.length} contact(s) via fallback engine for file_id=${file_id}`);
+        return;
+      }
+    } catch (fallbackErr) {
+      console.warn(`[workbenchService] Fallback extraction also failed:`, fallbackErr.message);
+    }
 
     store.updateFileStatus(
       file_id,
