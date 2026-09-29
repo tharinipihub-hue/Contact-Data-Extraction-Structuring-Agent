@@ -1,0 +1,866 @@
+{
+  "_platform": "agentbuilder",
+  "_version": 1,
+  "_exportedAt": "2026-09-25T04:25:00.000Z",
+  "_fingerprint": "YWN0aW9uOmNoYXRBY3Rpb258YWN0aW9uOmNoYXRBY3Rpb258YWN0aW9uOmNoYXRB",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "chatTrigger-1748000000001",
+        "type": "manual-trigger",
+        "position": {
+          "x": 50,
+          "y": 300
+        },
+        "data": {
+          "label": "Chat Trigger (PDF / CSV / Cards / Text)",
+          "toolId": "chatTrigger",
+          "toolData": {
+            "id": "chatTrigger",
+            "displayName": "Chat Trigger",
+            "category": "Triggers",
+            "provider": "core",
+            "icon": "MessageSquare",
+            "description": "Start workflow from chat"
+          },
+          "isTrigger": true,
+          "isPrimaryTrigger": true,
+          "inputs": {
+            "isPublic": false,
+            "responseMode": "Last Node",
+            "initialMessage": "\ud83d\udc4b **Universal Contact Data Extraction Agent (Groq Edition)**\n\nUpload any format or paste text:\n- \ud83d\udcc4 **PDFs** (Business cards & directory lists)\n- \ud83d\udcca **CSVs** (Contact sheets & tables)\n- \ud83d\udcc7 **Business Cards** (JPG/PNG photos)\n- \ud83d\udcac **Text / Notes** (Direct pasted contacts)\n\nPowered by ultra-fast **Groq (`llama-3.3-70b-versatile`)** and saved to Google Sheets (`Contacts` tab)!",
+            "title": "Universal Contact Extraction Agent",
+            "subtitle": "PDF, CSV, Cards to Google Sheets via Groq",
+            "placeholder": "Upload PDF, CSV, Business Card, or paste contact text..."
+          }
+        }
+      },
+      {
+        "id": "core_switch-1748000000002",
+        "type": "switch",
+        "position": {
+          "x": 380,
+          "y": 300
+        },
+        "data": {
+          "label": "Route by Format (PDF / CSV / OCR / Text)",
+          "toolId": "core_switch",
+          "toolData": {
+            "id": "core_switch",
+            "displayName": "Switch",
+            "category": "Logic & Flow Control",
+            "icon": "switch",
+            "description": "Route workflow using conditions"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "mode": "rules",
+            "rules": [
+              {
+                "value1": "{{ $json.files?.[0]?.name || $json.files?.[0]?.type || '' }}",
+                "operator": "contains",
+                "value2": "pdf",
+                "outputIndex": 0
+              },
+              {
+                "value1": "{{ $json.files?.[0]?.name || $json.files?.[0]?.type || '' }}",
+                "operator": "contains",
+                "value2": "csv",
+                "outputIndex": 1
+              },
+              {
+                "value1": "{{ $json.files?.[0]?.name || $json.files?.[0]?.type || '' }}",
+                "operator": "contains",
+                "value2": "image",
+                "outputIndex": 2
+              }
+            ],
+            "sendToAllMatches": false,
+            "ignoreCase": true,
+            "fallbackOutput": 3
+          }
+        }
+      },
+      {
+        "id": "extract-from-file.extract-from-pdf-1748000000003",
+        "type": "action",
+        "position": {
+          "x": 750,
+          "y": 50
+        },
+        "data": {
+          "label": "Extract From PDF",
+          "toolId": "extract-from-file.extract-from-pdf",
+          "toolData": {
+            "id": "extract-from-file.extract-from-pdf",
+            "displayName": "Extract From PDF",
+            "category": "Knowledge / Context",
+            "provider": "extractFromFile",
+            "operation": "extract-from-pdf",
+            "icon": "https://cdn-icons-png.flaticon.com/512/337/337946.png",
+            "description": "Parse PDF content into JSON text"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "pdfData": "file_0"
+          }
+        }
+      },
+      {
+        "id": "groq-1748000000004",
+        "type": "action",
+        "position": {
+          "x": 1100,
+          "y": 50
+        },
+        "data": {
+          "label": "Groq (PDF Extractor)",
+          "toolId": "groq",
+          "toolData": {
+            "id": "groq",
+            "displayName": "Groq",
+            "type": "chat model",
+            "category": "AI / LLM",
+            "provider": "LLM Models",
+            "operation": "execute",
+            "icon": "tools/groq.png",
+            "description": "Run ultra-fast LLM inference with Groq-hosted open-source models."
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "resource": "Text",
+            "operation": "Chat",
+            "model": "llama-3.3-70b-versatile",
+            "prompt": "Extract ALL contact details from the provided document, CSV data, image text, or message into structured JSON.\n\nInput Content:\n{{ $json.text || $json.data || $json.markdown || $json.message || '' }}\n\nReturn JSON ONLY with this exact root object structure:\n{\n  \"contacts\": [\n    {\n      \"full_name\": \"Full Name\",\n      \"first_name\": \"First Name\",\n      \"last_name\": \"Last Name\",\n      \"email\": \"email@example.com\",\n      \"phone\": \"+1234567890\",\n      \"company\": \"Company Name\",\n      \"job_title\": \"Job Title\",\n      \"address\": \"Street, City, Country\",\n      \"linkedin_url\": \"https://linkedin.com/in/...\",\n      \"website\": \"https://...\",\n      \"notes\": \"Contact notes\"\n    }\n  ]\n}",
+            "simplify": true,
+            "outputContentAsJson": true,
+            "credentialId": "",
+            "options": {
+              "systemMessage": "You are an expert contact extraction and structuring agent. Extract all contacts from the provided document, CSV, image text, or message. Always output valid JSON with a root 'contacts' array containing objects with fields: full_name, first_name, last_name, email, phone, company, job_title, address, linkedin_url, website, notes.",
+              "maxTokens": 4096,
+              "temperature": 0.1
+            }
+          }
+        }
+      },
+      {
+        "id": "core_loop-1748000000005",
+        "type": "loop",
+        "position": {
+          "x": 1450,
+          "y": 50
+        },
+        "data": {
+          "label": "Loop PDF Contacts",
+          "toolId": "core_loop",
+          "toolData": {
+            "id": "core_loop",
+            "displayName": "Loop Items",
+            "category": "Logic & Flow Control",
+            "icon": "repeat",
+            "description": "Process items in loop"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "inputField": "contacts",
+            "batchSize": 1,
+            "options": {
+              "doneBranchOutput": "bundled"
+            }
+          }
+        }
+      },
+      {
+        "id": "google.sheets.append_row-1748000000006",
+        "type": "action",
+        "position": {
+          "x": 1800,
+          "y": 50
+        },
+        "data": {
+          "label": "Save PDF to Google Sheets",
+          "toolId": "google.sheets.append_row",
+          "toolData": {
+            "id": "google.sheets.append_row",
+            "displayName": "Append Row",
+            "category": "Integrations",
+            "provider": "sheets",
+            "operation": "sheetsAppendRow",
+            "icon": "https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg",
+            "description": "Append a row of data to a sheet"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "credentialId": "",
+            "spreadsheetId": "1AZqaSfoyhcjQOLif1xZfeGi9rfMWHwKDRJUaYuArJVE",
+            "sheetName": "Contacts",
+            "values": {
+              "Full Name": "{{ $json.full_name }}",
+              "First Name": "{{ $json.first_name }}",
+              "Last Name": "{{ $json.last_name }}",
+              "Email": "{{ $json.email }}",
+              "Phone": "{{ $json.phone }}",
+              "Company": "{{ $json.company }}",
+              "Job Title": "{{ $json.job_title }}",
+              "Address": "{{ $json.address }}",
+              "LinkedIn URL": "{{ $json.linkedin_url }}",
+              "Website": "{{ $json.website }}",
+              "Notes": "{{ $json.notes }}",
+              "Extracted At": "{{ new Date().toISOString() }}"
+            },
+            "valueInputOption": "USER_ENTERED"
+          }
+        }
+      },
+      {
+        "id": "chatAction-1748000000007",
+        "type": "action",
+        "position": {
+          "x": 2150,
+          "y": 50
+        },
+        "data": {
+          "label": "Complete PDF Extraction",
+          "toolId": "chatAction",
+          "toolData": {
+            "id": "chatAction",
+            "displayName": "Chat Action",
+            "category": "Human Review",
+            "provider": "core",
+            "icon": "MessageSquare",
+            "description": "Chat response node"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "operation": "Send Message",
+            "message": "\u2705 **PDF Contacts Processed!**\n\nThe contact details have been structured via **Groq (`llama-3.3-70b-versatile`)** and appended to Google Sheets (`Contacts` tab)."
+          }
+        }
+      },
+      {
+        "id": "extract-from-file.extract-from-csv-1748000000008",
+        "type": "action",
+        "position": {
+          "x": 750,
+          "y": 220
+        },
+        "data": {
+          "label": "Extract From CSV",
+          "toolId": "extract-from-file.extract-from-csv",
+          "toolData": {
+            "id": "extract-from-file.extract-from-csv",
+            "displayName": "Extract From CSV",
+            "category": "Knowledge / Context",
+            "provider": "extractFromFile",
+            "operation": "extract-from-csv",
+            "icon": "https://cdn-icons-png.flaticon.com/512/28/28842.png",
+            "description": "Parse CSV content into JSON"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "csvData": "data",
+            "delimiter": ","
+          }
+        }
+      },
+      {
+        "id": "groq-1748000000009",
+        "type": "action",
+        "position": {
+          "x": 1100,
+          "y": 220
+        },
+        "data": {
+          "label": "Groq (CSV Extractor)",
+          "toolId": "groq",
+          "toolData": {
+            "id": "groq",
+            "displayName": "Groq",
+            "type": "chat model",
+            "category": "AI / LLM",
+            "provider": "LLM Models",
+            "operation": "execute",
+            "icon": "tools/groq.png",
+            "description": "Run ultra-fast LLM inference with Groq-hosted open-source models."
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "resource": "Text",
+            "operation": "Chat",
+            "model": "llama-3.3-70b-versatile",
+            "prompt": "Extract ALL contact details from the provided document, CSV data, image text, or message into structured JSON.\n\nInput Content:\n{{ $json.text || $json.data || $json.markdown || $json.message || '' }}\n\nReturn JSON ONLY with this exact root object structure:\n{\n  \"contacts\": [\n    {\n      \"full_name\": \"Full Name\",\n      \"first_name\": \"First Name\",\n      \"last_name\": \"Last Name\",\n      \"email\": \"email@example.com\",\n      \"phone\": \"+1234567890\",\n      \"company\": \"Company Name\",\n      \"job_title\": \"Job Title\",\n      \"address\": \"Street, City, Country\",\n      \"linkedin_url\": \"https://linkedin.com/in/...\",\n      \"website\": \"https://...\",\n      \"notes\": \"Contact notes\"\n    }\n  ]\n}",
+            "simplify": true,
+            "outputContentAsJson": true,
+            "credentialId": "",
+            "options": {
+              "systemMessage": "You are an expert contact extraction and structuring agent. Extract all contacts from the provided document, CSV, image text, or message. Always output valid JSON with a root 'contacts' array containing objects with fields: full_name, first_name, last_name, email, phone, company, job_title, address, linkedin_url, website, notes.",
+              "maxTokens": 4096,
+              "temperature": 0.1
+            }
+          }
+        }
+      },
+      {
+        "id": "core_loop-1748000000010",
+        "type": "loop",
+        "position": {
+          "x": 1450,
+          "y": 220
+        },
+        "data": {
+          "label": "Loop CSV Contacts",
+          "toolId": "core_loop",
+          "toolData": {
+            "id": "core_loop",
+            "displayName": "Loop Items",
+            "category": "Logic & Flow Control",
+            "icon": "repeat",
+            "description": "Process items in loop"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "inputField": "contacts",
+            "batchSize": 1,
+            "options": {
+              "doneBranchOutput": "bundled"
+            }
+          }
+        }
+      },
+      {
+        "id": "google.sheets.append_row-1748000000011",
+        "type": "action",
+        "position": {
+          "x": 1800,
+          "y": 220
+        },
+        "data": {
+          "label": "Save CSV to Google Sheets",
+          "toolId": "google.sheets.append_row",
+          "toolData": {
+            "id": "google.sheets.append_row",
+            "displayName": "Append Row",
+            "category": "Integrations",
+            "provider": "sheets",
+            "operation": "sheetsAppendRow",
+            "icon": "https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg",
+            "description": "Append a row of data to a sheet"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "credentialId": "",
+            "spreadsheetId": "1AZqaSfoyhcjQOLif1xZfeGi9rfMWHwKDRJUaYuArJVE",
+            "sheetName": "Contacts",
+            "values": {
+              "Full Name": "{{ $json.full_name }}",
+              "First Name": "{{ $json.first_name }}",
+              "Last Name": "{{ $json.last_name }}",
+              "Email": "{{ $json.email }}",
+              "Phone": "{{ $json.phone }}",
+              "Company": "{{ $json.company }}",
+              "Job Title": "{{ $json.job_title }}",
+              "Address": "{{ $json.address }}",
+              "LinkedIn URL": "{{ $json.linkedin_url }}",
+              "Website": "{{ $json.website }}",
+              "Notes": "{{ $json.notes }}",
+              "Extracted At": "{{ new Date().toISOString() }}"
+            },
+            "valueInputOption": "USER_ENTERED"
+          }
+        }
+      },
+      {
+        "id": "chatAction-1748000000012",
+        "type": "action",
+        "position": {
+          "x": 2150,
+          "y": 220
+        },
+        "data": {
+          "label": "Complete CSV Extraction",
+          "toolId": "chatAction",
+          "toolData": {
+            "id": "chatAction",
+            "displayName": "Chat Action",
+            "category": "Human Review",
+            "provider": "core",
+            "icon": "MessageSquare",
+            "description": "Chat response node"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "operation": "Send Message",
+            "message": "\u2705 **CSV Contacts Processed!**\n\nThe CSV contact rows have been structured via **Groq (`llama-3.3-70b-versatile`)** and appended to Google Sheets (`Contacts` tab)."
+          }
+        }
+      },
+      {
+        "id": "mistral-1748000000013",
+        "type": "action",
+        "position": {
+          "x": 750,
+          "y": 390
+        },
+        "data": {
+          "label": "OCR for Cards / Images",
+          "toolId": "mistral",
+          "toolData": {
+            "id": "mistral",
+            "displayName": "Mistral OCR",
+            "category": "AI / LLM",
+            "provider": "mistral",
+            "icon": "https://mistral.ai/images/logo.svg",
+            "description": "Extract text from images using Mistral OCR"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "resource": "Document",
+            "operation": "Extract Text",
+            "model": "mistral-ocr-latest",
+            "documentType": "Image",
+            "inputType": "Binary Data",
+            "inputDataFieldName": "*",
+            "simplify": true,
+            "credentialId": ""
+          }
+        }
+      },
+      {
+        "id": "groq-1748000000014",
+        "type": "action",
+        "position": {
+          "x": 1100,
+          "y": 390
+        },
+        "data": {
+          "label": "Groq (Card Extractor)",
+          "toolId": "groq",
+          "toolData": {
+            "id": "groq",
+            "displayName": "Groq",
+            "type": "chat model",
+            "category": "AI / LLM",
+            "provider": "LLM Models",
+            "operation": "execute",
+            "icon": "tools/groq.png",
+            "description": "Run ultra-fast LLM inference with Groq-hosted open-source models."
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "resource": "Text",
+            "operation": "Chat",
+            "model": "llama-3.3-70b-versatile",
+            "prompt": "Extract ALL contact details from the provided document, CSV data, image text, or message into structured JSON.\n\nInput Content:\n{{ $json.text || $json.data || $json.markdown || $json.message || '' }}\n\nReturn JSON ONLY with this exact root object structure:\n{\n  \"contacts\": [\n    {\n      \"full_name\": \"Full Name\",\n      \"first_name\": \"First Name\",\n      \"last_name\": \"Last Name\",\n      \"email\": \"email@example.com\",\n      \"phone\": \"+1234567890\",\n      \"company\": \"Company Name\",\n      \"job_title\": \"Job Title\",\n      \"address\": \"Street, City, Country\",\n      \"linkedin_url\": \"https://linkedin.com/in/...\",\n      \"website\": \"https://...\",\n      \"notes\": \"Contact notes\"\n    }\n  ]\n}",
+            "simplify": true,
+            "outputContentAsJson": true,
+            "credentialId": "",
+            "options": {
+              "systemMessage": "You are an expert contact extraction and structuring agent. Extract all contacts from the provided document, CSV, image text, or message. Always output valid JSON with a root 'contacts' array containing objects with fields: full_name, first_name, last_name, email, phone, company, job_title, address, linkedin_url, website, notes.",
+              "maxTokens": 4096,
+              "temperature": 0.1
+            }
+          }
+        }
+      },
+      {
+        "id": "core_loop-1748000000015",
+        "type": "loop",
+        "position": {
+          "x": 1450,
+          "y": 390
+        },
+        "data": {
+          "label": "Loop Card Contacts",
+          "toolId": "core_loop",
+          "toolData": {
+            "id": "core_loop",
+            "displayName": "Loop Items",
+            "category": "Logic & Flow Control",
+            "icon": "repeat",
+            "description": "Process items in loop"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "inputField": "contacts",
+            "batchSize": 1,
+            "options": {
+              "doneBranchOutput": "bundled"
+            }
+          }
+        }
+      },
+      {
+        "id": "google.sheets.append_row-1748000000016",
+        "type": "action",
+        "position": {
+          "x": 1800,
+          "y": 390
+        },
+        "data": {
+          "label": "Save Cards to Google Sheets",
+          "toolId": "google.sheets.append_row",
+          "toolData": {
+            "id": "google.sheets.append_row",
+            "displayName": "Append Row",
+            "category": "Integrations",
+            "provider": "sheets",
+            "operation": "sheetsAppendRow",
+            "icon": "https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg",
+            "description": "Append a row of data to a sheet"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "credentialId": "",
+            "spreadsheetId": "1AZqaSfoyhcjQOLif1xZfeGi9rfMWHwKDRJUaYuArJVE",
+            "sheetName": "Contacts",
+            "values": {
+              "Full Name": "{{ $json.full_name }}",
+              "First Name": "{{ $json.first_name }}",
+              "Last Name": "{{ $json.last_name }}",
+              "Email": "{{ $json.email }}",
+              "Phone": "{{ $json.phone }}",
+              "Company": "{{ $json.company }}",
+              "Job Title": "{{ $json.job_title }}",
+              "Address": "{{ $json.address }}",
+              "LinkedIn URL": "{{ $json.linkedin_url }}",
+              "Website": "{{ $json.website }}",
+              "Notes": "{{ $json.notes }}",
+              "Extracted At": "{{ new Date().toISOString() }}"
+            },
+            "valueInputOption": "USER_ENTERED"
+          }
+        }
+      },
+      {
+        "id": "chatAction-1748000000017",
+        "type": "action",
+        "position": {
+          "x": 2150,
+          "y": 390
+        },
+        "data": {
+          "label": "Complete Card Extraction",
+          "toolId": "chatAction",
+          "toolData": {
+            "id": "chatAction",
+            "displayName": "Chat Action",
+            "category": "Human Review",
+            "provider": "core",
+            "icon": "MessageSquare",
+            "description": "Chat response node"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "operation": "Send Message",
+            "message": "\u2705 **Business Card Processed!**\n\nThe business card details have been recognized via OCR, structured with **Groq (`llama-3.3-70b-versatile`)**, and appended to Google Sheets (`Contacts` tab)."
+          }
+        }
+      },
+      {
+        "id": "groq-1748000000018",
+        "type": "action",
+        "position": {
+          "x": 1100,
+          "y": 560
+        },
+        "data": {
+          "label": "Groq (Text Extractor)",
+          "toolId": "groq",
+          "toolData": {
+            "id": "groq",
+            "displayName": "Groq",
+            "type": "chat model",
+            "category": "AI / LLM",
+            "provider": "LLM Models",
+            "operation": "execute",
+            "icon": "tools/groq.png",
+            "description": "Run ultra-fast LLM inference with Groq-hosted open-source models."
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "resource": "Text",
+            "operation": "Chat",
+            "model": "llama-3.3-70b-versatile",
+            "prompt": "Extract ALL contact details from the provided document, CSV data, image text, or message into structured JSON.\n\nInput Content:\n{{ $json.text || $json.data || $json.markdown || $json.message || '' }}\n\nReturn JSON ONLY with this exact root object structure:\n{\n  \"contacts\": [\n    {\n      \"full_name\": \"Full Name\",\n      \"first_name\": \"First Name\",\n      \"last_name\": \"Last Name\",\n      \"email\": \"email@example.com\",\n      \"phone\": \"+1234567890\",\n      \"company\": \"Company Name\",\n      \"job_title\": \"Job Title\",\n      \"address\": \"Street, City, Country\",\n      \"linkedin_url\": \"https://linkedin.com/in/...\",\n      \"website\": \"https://...\",\n      \"notes\": \"Contact notes\"\n    }\n  ]\n}",
+            "simplify": true,
+            "outputContentAsJson": true,
+            "credentialId": "",
+            "options": {
+              "systemMessage": "You are an expert contact extraction and structuring agent. Extract all contacts from the provided document, CSV, image text, or message. Always output valid JSON with a root 'contacts' array containing objects with fields: full_name, first_name, last_name, email, phone, company, job_title, address, linkedin_url, website, notes.",
+              "maxTokens": 4096,
+              "temperature": 0.1
+            }
+          }
+        }
+      },
+      {
+        "id": "core_loop-1748000000019",
+        "type": "loop",
+        "position": {
+          "x": 1450,
+          "y": 560
+        },
+        "data": {
+          "label": "Loop Text Contacts",
+          "toolId": "core_loop",
+          "toolData": {
+            "id": "core_loop",
+            "displayName": "Loop Items",
+            "category": "Logic & Flow Control",
+            "icon": "repeat",
+            "description": "Process items in loop"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "inputField": "contacts",
+            "batchSize": 1,
+            "options": {
+              "doneBranchOutput": "bundled"
+            }
+          }
+        }
+      },
+      {
+        "id": "google.sheets.append_row-1748000000020",
+        "type": "action",
+        "position": {
+          "x": 1800,
+          "y": 560
+        },
+        "data": {
+          "label": "Save Text to Google Sheets",
+          "toolId": "google.sheets.append_row",
+          "toolData": {
+            "id": "google.sheets.append_row",
+            "displayName": "Append Row",
+            "category": "Integrations",
+            "provider": "sheets",
+            "operation": "sheetsAppendRow",
+            "icon": "https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg",
+            "description": "Append a row of data to a sheet"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "credentialId": "",
+            "spreadsheetId": "1AZqaSfoyhcjQOLif1xZfeGi9rfMWHwKDRJUaYuArJVE",
+            "sheetName": "Contacts",
+            "values": {
+              "Full Name": "{{ $json.full_name }}",
+              "First Name": "{{ $json.first_name }}",
+              "Last Name": "{{ $json.last_name }}",
+              "Email": "{{ $json.email }}",
+              "Phone": "{{ $json.phone }}",
+              "Company": "{{ $json.company }}",
+              "Job Title": "{{ $json.job_title }}",
+              "Address": "{{ $json.address }}",
+              "LinkedIn URL": "{{ $json.linkedin_url }}",
+              "Website": "{{ $json.website }}",
+              "Notes": "{{ $json.notes }}",
+              "Extracted At": "{{ new Date().toISOString() }}"
+            },
+            "valueInputOption": "USER_ENTERED"
+          }
+        }
+      },
+      {
+        "id": "chatAction-1748000000021",
+        "type": "action",
+        "position": {
+          "x": 2150,
+          "y": 560
+        },
+        "data": {
+          "label": "Complete Text Extraction",
+          "toolId": "chatAction",
+          "toolData": {
+            "id": "chatAction",
+            "displayName": "Chat Action",
+            "category": "Human Review",
+            "provider": "core",
+            "icon": "MessageSquare",
+            "description": "Chat response node"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "operation": "Send Message",
+            "message": "\u2705 **Text Contacts Processed!**\n\nThe contact details from your text message have been structured via **Groq (`llama-3.3-70b-versatile`)** and appended to Google Sheets (`Contacts` tab)."
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-trig-to-switch",
+        "source": "chatTrigger-1748000000001",
+        "target": "core_switch-1748000000002",
+        "type": "default",
+        "data": {}
+      },
+      {
+        "id": "e-switch-to-pdf",
+        "source": "core_switch-1748000000002",
+        "sourceHandle": "output-0",
+        "target": "extract-from-file.extract-from-pdf-1748000000003",
+        "type": "default",
+        "data": {}
+      },
+      {
+        "id": "e-switch-to-csv",
+        "source": "core_switch-1748000000002",
+        "sourceHandle": "output-1",
+        "target": "extract-from-file.extract-from-csv-1748000000008",
+        "type": "default",
+        "data": {}
+      },
+      {
+        "id": "e-switch-to-ocr",
+        "source": "core_switch-1748000000002",
+        "sourceHandle": "output-2",
+        "target": "mistral-1748000000013",
+        "type": "default",
+        "data": {}
+      },
+      {
+        "id": "e-switch-to-text",
+        "source": "core_switch-1748000000002",
+        "sourceHandle": "output-3",
+        "target": "groq-1748000000018",
+        "type": "default",
+        "data": {}
+      },
+      {
+        "id": "e-pdf-to-groq",
+        "source": "extract-from-file.extract-from-pdf-1748000000003",
+        "target": "groq-1748000000004",
+        "type": "default",
+        "data": {}
+      },
+      {
+        "id": "e-pdf-groq-to-loop",
+        "source": "groq-1748000000004",
+        "target": "core_loop-1748000000005",
+        "type": "default",
+        "data": {}
+      },
+      {
+        "id": "e-pdf-loop-to-sheets",
+        "source": "core_loop-1748000000005",
+        "sourceHandle": "loop",
+        "target": "google.sheets.append_row-1748000000006",
+        "type": "default",
+        "data": {}
+      },
+      {
+        "id": "e-pdf-loop-done-to-chat",
+        "source": "core_loop-1748000000005",
+        "sourceHandle": "done",
+        "target": "chatAction-1748000000007",
+        "type": "default",
+        "data": {}
+      },
+      {
+        "id": "e-csv-to-groq",
+        "source": "extract-from-file.extract-from-csv-1748000000008",
+        "target": "groq-1748000000009",
+        "type": "default",
+        "data": {}
+      },
+      {
+        "id": "e-csv-groq-to-loop",
+        "source": "groq-1748000000009",
+        "target": "core_loop-1748000000010",
+        "type": "default",
+        "data": {}
+      },
+      {
+        "id": "e-csv-loop-to-sheets",
+        "source": "core_loop-1748000000010",
+        "sourceHandle": "loop",
+        "target": "google.sheets.append_row-1748000000011",
+        "type": "default",
+        "data": {}
+      },
+      {
+        "id": "e-csv-loop-done-to-chat",
+        "source": "core_loop-1748000000010",
+        "sourceHandle": "done",
+        "target": "chatAction-1748000000012",
+        "type": "default",
+        "data": {}
+      },
+      {
+        "id": "e-ocr-to-groq",
+        "source": "mistral-1748000000013",
+        "target": "groq-1748000000014",
+        "type": "default",
+        "data": {}
+      },
+      {
+        "id": "e-card-groq-to-loop",
+        "source": "groq-1748000000014",
+        "target": "core_loop-1748000000015",
+        "type": "default",
+        "data": {}
+      },
+      {
+        "id": "e-card-loop-to-sheets",
+        "source": "core_loop-1748000000015",
+        "sourceHandle": "loop",
+        "target": "google.sheets.append_row-1748000000016",
+        "type": "default",
+        "data": {}
+      },
+      {
+        "id": "e-card-loop-done-to-chat",
+        "source": "core_loop-1748000000015",
+        "sourceHandle": "done",
+        "target": "chatAction-1748000000017",
+        "type": "default",
+        "data": {}
+      },
+      {
+        "id": "e-text-groq-to-loop",
+        "source": "groq-1748000000018",
+        "target": "core_loop-1748000000019",
+        "type": "default",
+        "data": {}
+      },
+      {
+        "id": "e-text-loop-to-sheets",
+        "source": "core_loop-1748000000019",
+        "sourceHandle": "loop",
+        "target": "google.sheets.append_row-1748000000020",
+        "type": "default",
+        "data": {}
+      },
+      {
+        "id": "e-text-loop-done-to-chat",
+        "source": "core_loop-1748000000019",
+        "sourceHandle": "done",
+        "target": "chatAction-1748000000021",
+        "type": "default",
+        "data": {}
+      }
+    ]
+  }
+}

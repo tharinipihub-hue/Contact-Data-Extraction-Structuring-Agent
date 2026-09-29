@@ -1,0 +1,911 @@
+{
+  "nodes": [
+    {
+      "id": "zoho.crm.quote.upsert-1783406930301",
+      "type": "action",
+      "position": {
+        "x": -204.53159315399455,
+        "y": -262.7875657947896
+      },
+      "data": {
+        "label": "Create or Update Quote",
+        "toolId": "zoho.crm.quote.upsert",
+        "toolData": {
+          "id": "zoho.crm.quote.upsert",
+          "displayName": "Create or Update Quote",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoQuoteUpsert",
+          "icon": "zoho",
+          "description": "Create or update a quote (upsert)",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "Subject": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Quote Subject/Title"
+              },
+              "Product_Details": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "product": {
+                      "type": "string",
+                      "description": "Product Name or ID"
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "description": "Quantity"
+                    },
+                    "unit_price": {
+                      "type": "number",
+                      "description": "Unit Price"
+                    },
+                    "list_price": {
+                      "type": "number",
+                      "description": "List Price"
+                    },
+                    "product_description": {
+                      "type": "string",
+                      "description": "Product Description"
+                    },
+                    "Tax": {
+                      "type": "number",
+                      "description": "Tax"
+                    },
+                    "total": {
+                      "type": "number",
+                      "description": "Total"
+                    },
+                    "discount": {
+                      "type": "number",
+                      "description": "Discount"
+                    },
+                    "total_after_discount": {
+                      "type": "number",
+                      "description": "Total After Discount"
+                    },
+                    "net_total": {
+                      "type": "number",
+                      "description": "Total (Net)"
+                    },
+                    "quantity_in_stock": {
+                      "type": "number",
+                      "description": "Quantity in Stock"
+                    }
+                  },
+                  "required": [
+                    "product"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 1,
+                "description": "Products (Line Items)"
+              },
+              "Account_Name": {
+                "type": "string",
+                "description": "Account Name or ID"
+              },
+              "Contact_Name": {
+                "type": "string",
+                "description": "Contact Name or ID"
+              },
+              "Deal_Name": {
+                "type": "string",
+                "description": "Deal Name or ID"
+              },
+              "Quote_Stage": {
+                "type": "string",
+                "description": "Quote Stage Name or ID"
+              },
+              "Valid_Till": {
+                "type": "string",
+                "description": "Valid Till Date (YYYY-MM-DD)"
+              },
+              "Carrier": {
+                "type": "string",
+                "description": "Carrier"
+              },
+              "Tracking_Number": {
+                "type": "string",
+                "description": "Tracking Number"
+              },
+              "Billing_Address": {
+                "type": "object",
+                "properties": {
+                  "Billing_Street": {
+                    "type": "string",
+                    "description": "Billing Street"
+                  },
+                  "Billing_City": {
+                    "type": "string",
+                    "description": "Billing City"
+                  },
+                  "Billing_State": {
+                    "type": "string",
+                    "description": "Billing State"
+                  },
+                  "Billing_Country": {
+                    "type": "string",
+                    "description": "Billing Country"
+                  },
+                  "Billing_Code": {
+                    "type": "string",
+                    "description": "Billing Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Billing Address"
+              },
+              "Shipping_Address": {
+                "type": "object",
+                "properties": {
+                  "Shipping_Street": {
+                    "type": "string",
+                    "description": "Shipping Street"
+                  },
+                  "Shipping_City": {
+                    "type": "string",
+                    "description": "Shipping City"
+                  },
+                  "Shipping_State": {
+                    "type": "string",
+                    "description": "Shipping State"
+                  },
+                  "Shipping_Country": {
+                    "type": "string",
+                    "description": "Shipping Country"
+                  },
+                  "Shipping_Code": {
+                    "type": "string",
+                    "description": "Shipping Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Shipping Address"
+              },
+              "Discount": {
+                "type": "number",
+                "description": "Discount"
+              },
+              "Tax": {
+                "type": "number",
+                "description": "Tax"
+              },
+              "Adjustment": {
+                "type": "number",
+                "description": "Adjustment"
+              },
+              "Sub_Total": {
+                "type": "number",
+                "description": "Sub Total"
+              },
+              "Grand_Total": {
+                "type": "number",
+                "description": "Grand Total"
+              },
+              "Terms_and_Conditions": {
+                "type": "string",
+                "description": "Terms and Conditions"
+              },
+              "Description": {
+                "type": "string",
+                "description": "Description"
+              },
+              "Currency": {
+                "type": "string",
+                "description": "Currency Code"
+              },
+              "Exchange_Rate": {
+                "type": "number",
+                "description": "Exchange Rate"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "Subject",
+              "Product_Details"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.quote.create-1783406931595",
+      "type": "action",
+      "position": {
+        "x": 370.7738559429874,
+        "y": -210.0072493638738
+      },
+      "data": {
+        "label": "Create Quote",
+        "toolId": "zoho.crm.quote.create",
+        "toolData": {
+          "id": "zoho.crm.quote.create",
+          "displayName": "Create Quote",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoQuoteCreate",
+          "icon": "zoho",
+          "description": "Create a new quote in Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "Subject": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Quote Subject/Title"
+              },
+              "Product_Details": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "product": {
+                      "type": "string",
+                      "description": "Product Name or ID"
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "description": "Quantity"
+                    },
+                    "unit_price": {
+                      "type": "number",
+                      "description": "Unit Price"
+                    },
+                    "list_price": {
+                      "type": "number",
+                      "description": "List Price"
+                    },
+                    "product_description": {
+                      "type": "string",
+                      "description": "Product Description"
+                    },
+                    "Tax": {
+                      "type": "number",
+                      "description": "Tax"
+                    },
+                    "total": {
+                      "type": "number",
+                      "description": "Total"
+                    },
+                    "discount": {
+                      "type": "number",
+                      "description": "Discount"
+                    },
+                    "total_after_discount": {
+                      "type": "number",
+                      "description": "Total After Discount"
+                    },
+                    "net_total": {
+                      "type": "number",
+                      "description": "Total (Net)"
+                    },
+                    "quantity_in_stock": {
+                      "type": "number",
+                      "description": "Quantity in Stock"
+                    }
+                  },
+                  "required": [
+                    "product"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 1,
+                "description": "Products (Line Items)"
+              },
+              "Account_Name": {
+                "type": "string",
+                "description": "Account Name or ID"
+              },
+              "Contact_Name": {
+                "type": "string",
+                "description": "Contact Name or ID"
+              },
+              "Deal_Name": {
+                "type": "string",
+                "description": "Deal Name or ID"
+              },
+              "Quote_Stage": {
+                "type": "string",
+                "description": "Quote Stage Name or ID"
+              },
+              "Valid_Till": {
+                "type": "string",
+                "description": "Valid Till Date (YYYY-MM-DD)"
+              },
+              "Carrier": {
+                "type": "string",
+                "description": "Carrier"
+              },
+              "Tracking_Number": {
+                "type": "string",
+                "description": "Tracking Number"
+              },
+              "Billing_Address": {
+                "type": "object",
+                "properties": {
+                  "Billing_Street": {
+                    "type": "string",
+                    "description": "Billing Street"
+                  },
+                  "Billing_City": {
+                    "type": "string",
+                    "description": "Billing City"
+                  },
+                  "Billing_State": {
+                    "type": "string",
+                    "description": "Billing State"
+                  },
+                  "Billing_Country": {
+                    "type": "string",
+                    "description": "Billing Country"
+                  },
+                  "Billing_Code": {
+                    "type": "string",
+                    "description": "Billing Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Billing Address"
+              },
+              "Shipping_Address": {
+                "type": "object",
+                "properties": {
+                  "Shipping_Street": {
+                    "type": "string",
+                    "description": "Shipping Street"
+                  },
+                  "Shipping_City": {
+                    "type": "string",
+                    "description": "Shipping City"
+                  },
+                  "Shipping_State": {
+                    "type": "string",
+                    "description": "Shipping State"
+                  },
+                  "Shipping_Country": {
+                    "type": "string",
+                    "description": "Shipping Country"
+                  },
+                  "Shipping_Code": {
+                    "type": "string",
+                    "description": "Shipping Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Shipping Address"
+              },
+              "Discount": {
+                "type": "number",
+                "description": "Discount"
+              },
+              "Tax": {
+                "type": "number",
+                "description": "Tax"
+              },
+              "Adjustment": {
+                "type": "number",
+                "description": "Adjustment"
+              },
+              "Sub_Total": {
+                "type": "number",
+                "description": "Sub Total"
+              },
+              "Grand_Total": {
+                "type": "number",
+                "description": "Grand Total"
+              },
+              "Terms_and_Conditions": {
+                "type": "string",
+                "description": "Terms and Conditions"
+              },
+              "Description": {
+                "type": "string",
+                "description": "Description"
+              },
+              "Currency": {
+                "type": "string",
+                "description": "Currency Code"
+              },
+              "Exchange_Rate": {
+                "type": "number",
+                "description": "Exchange Rate"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "Subject",
+              "Product_Details"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.quote.delete-1783406933009",
+      "type": "action",
+      "position": {
+        "x": 259.93519143806424,
+        "y": -270.70461325942694
+      },
+      "data": {
+        "label": "Delete Quote",
+        "toolId": "zoho.crm.quote.delete",
+        "toolData": {
+          "id": "zoho.crm.quote.delete",
+          "displayName": "Delete Quote",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoQuoteDelete",
+          "icon": "zoho",
+          "description": "Delete a quote from Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "quoteId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Quote ID"
+              }
+            },
+            "required": [
+              "quoteId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.quote.getMany-1783406936379",
+      "type": "action",
+      "position": {
+        "x": 167.56963768396164,
+        "y": -72.77842664349279
+      },
+      "data": {
+        "label": "Get Many Quotes",
+        "toolId": "zoho.crm.quote.getMany",
+        "toolData": {
+          "id": "zoho.crm.quote.getMany",
+          "displayName": "Get Many Quotes",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoQuoteGetMany",
+          "icon": "zoho",
+          "description": "Retrieve multiple quotes with filtering",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all results or limit"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 50,
+                "description": "Maximum number of records to return"
+              },
+              "approved": {
+                "type": "boolean",
+                "description": "Filter by approved status"
+              },
+              "converted": {
+                "type": "boolean",
+                "description": "Filter by converted status"
+              },
+              "includeChild": {
+                "type": "boolean",
+                "description": "Include child records"
+              },
+              "territoryId": {
+                "type": "string",
+                "description": "Territory ID filter"
+              },
+              "fields": {
+                "type": "string",
+                "description": "Comma-separated list of fields to return"
+              },
+              "sortBy": {
+                "type": "string",
+                "description": "Field to sort by"
+              },
+              "sortOrder": {
+                "type": "string",
+                "enum": [
+                  "asc",
+                  "desc"
+                ],
+                "description": "Sort Order (Ascending / Descending)"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.quote.get-1783406937482",
+      "type": "action",
+      "position": {
+        "x": 362.85680847835005,
+        "y": 43.338269504521904
+      },
+      "data": {
+        "label": "Get Quote",
+        "toolId": "zoho.crm.quote.get",
+        "toolData": {
+          "id": "zoho.crm.quote.get",
+          "displayName": "Get Quote",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoQuoteGet",
+          "icon": "zoho",
+          "description": "Retrieve a specific quote by ID",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "quoteId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Quote ID"
+              }
+            },
+            "required": [
+              "quoteId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.quote.update-1783406938804",
+      "type": "action",
+      "position": {
+        "x": 843.1576879996835,
+        "y": -19.998110212577025
+      },
+      "data": {
+        "label": "Update Quote",
+        "toolId": "zoho.crm.quote.update",
+        "toolData": {
+          "id": "zoho.crm.quote.update",
+          "displayName": "Update Quote",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoQuoteUpdate",
+          "icon": "zoho",
+          "description": "Update an existing quote in Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "quoteId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Quote ID"
+              },
+              "Subject": {
+                "type": "string",
+                "description": "Quote Subject/Title"
+              },
+              "Product_Details": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "product": {
+                      "type": "string",
+                      "description": "Product Name or ID"
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "description": "Quantity"
+                    },
+                    "unit_price": {
+                      "type": "number",
+                      "description": "Unit Price"
+                    },
+                    "list_price": {
+                      "type": "number",
+                      "description": "List Price"
+                    },
+                    "product_description": {
+                      "type": "string",
+                      "description": "Product Description"
+                    },
+                    "Tax": {
+                      "type": "number",
+                      "description": "Tax"
+                    },
+                    "total": {
+                      "type": "number",
+                      "description": "Total"
+                    },
+                    "discount": {
+                      "type": "number",
+                      "description": "Discount"
+                    },
+                    "total_after_discount": {
+                      "type": "number",
+                      "description": "Total After Discount"
+                    },
+                    "net_total": {
+                      "type": "number",
+                      "description": "Total (Net)"
+                    },
+                    "quantity_in_stock": {
+                      "type": "number",
+                      "description": "Quantity in Stock"
+                    }
+                  },
+                  "required": [
+                    "product"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 1,
+                "description": "Products (Line Items)"
+              },
+              "Account_Name": {
+                "type": "string",
+                "description": "Account Name or ID"
+              },
+              "Contact_Name": {
+                "type": "string",
+                "description": "Contact Name or ID"
+              },
+              "Deal_Name": {
+                "type": "string",
+                "description": "Deal Name or ID"
+              },
+              "Quote_Stage": {
+                "type": "string",
+                "description": "Quote Stage Name or ID"
+              },
+              "Valid_Till": {
+                "type": "string",
+                "description": "Valid Till Date (YYYY-MM-DD)"
+              },
+              "Carrier": {
+                "type": "string",
+                "description": "Carrier"
+              },
+              "Tracking_Number": {
+                "type": "string",
+                "description": "Tracking Number"
+              },
+              "Billing_Address": {
+                "type": "object",
+                "properties": {
+                  "Billing_Street": {
+                    "type": "string",
+                    "description": "Billing Street"
+                  },
+                  "Billing_City": {
+                    "type": "string",
+                    "description": "Billing City"
+                  },
+                  "Billing_State": {
+                    "type": "string",
+                    "description": "Billing State"
+                  },
+                  "Billing_Country": {
+                    "type": "string",
+                    "description": "Billing Country"
+                  },
+                  "Billing_Code": {
+                    "type": "string",
+                    "description": "Billing Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Billing Address"
+              },
+              "Shipping_Address": {
+                "type": "object",
+                "properties": {
+                  "Shipping_Street": {
+                    "type": "string",
+                    "description": "Shipping Street"
+                  },
+                  "Shipping_City": {
+                    "type": "string",
+                    "description": "Shipping City"
+                  },
+                  "Shipping_State": {
+                    "type": "string",
+                    "description": "Shipping State"
+                  },
+                  "Shipping_Country": {
+                    "type": "string",
+                    "description": "Shipping Country"
+                  },
+                  "Shipping_Code": {
+                    "type": "string",
+                    "description": "Shipping Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Shipping Address"
+              },
+              "Discount": {
+                "type": "number",
+                "description": "Discount"
+              },
+              "Tax": {
+                "type": "number",
+                "description": "Tax"
+              },
+              "Adjustment": {
+                "type": "number",
+                "description": "Adjustment"
+              },
+              "Sub_Total": {
+                "type": "number",
+                "description": "Sub Total"
+              },
+              "Grand_Total": {
+                "type": "number",
+                "description": "Grand Total"
+              },
+              "Terms_and_Conditions": {
+                "type": "string",
+                "description": "Terms and Conditions"
+              },
+              "Description": {
+                "type": "string",
+                "description": "Description"
+              },
+              "Currency": {
+                "type": "string",
+                "description": "Currency Code"
+              },
+              "Exchange_Rate": {
+                "type": "number",
+                "description": "Exchange Rate"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "quoteId",
+              "Product_Details"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

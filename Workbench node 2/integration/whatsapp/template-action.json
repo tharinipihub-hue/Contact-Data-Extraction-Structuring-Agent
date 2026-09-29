@@ -1,0 +1,959 @@
+{
+  "nodes": [
+    {
+      "id": "whatsapp.template.send-1783407554643",
+      "type": "action",
+      "position": {
+        "x": 671.6216595992074,
+        "y": -302.3728031179764
+      },
+      "data": {
+        "label": "Send Template",
+        "toolId": "whatsapp.template.send",
+        "toolData": {
+          "id": "whatsapp.template.send",
+          "displayName": "Send Template",
+          "category": "Integrations",
+          "provider": "whatsapp",
+          "operation": "send",
+          "icon": "/tools/whatsapp.png",
+          "description": "Send a pre-approved message template",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentialId"
+            ],
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "senderPhoneNumber",
+              "displayName": "Sender Phone Number (or ID)",
+              "type": "options",
+              "description": "The phone number or ID of the sender. Usually your WhatsApp Business phone number ID.",
+              "placeholder": "Select a phone number...",
+              "required": true,
+              "fetchEndpoint": "/api/tools/whatsapp/list-phone-numbers",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "value"
+            },
+            {
+              "name": "recipientPhoneNumber",
+              "displayName": "Recipient's Phone Number",
+              "type": "string",
+              "required": true,
+              "placeholder": "+91 **********",
+              "description": "When entering a phone number, make sure to include the country code"
+            },
+            {
+              "name": "templateName",
+              "displayName": "Template Name",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/whatsapp/list-templates",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "label",
+              "valueKey": "value"
+            },
+            {
+              "name": "components",
+              "displayName": "Components",
+              "type": "array",
+              "placeholder": "Add Component",
+              "fields": [
+                {
+                  "name": "type",
+                  "displayName": "Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Body",
+                      "value": "BODY"
+                    },
+                    {
+                      "name": "Button",
+                      "value": "BUTTON"
+                    },
+                    {
+                      "name": "Header",
+                      "value": "HEADER"
+                    }
+                  ],
+                  "default": "BODY"
+                },
+                {
+                  "name": "sub_type",
+                  "displayName": "Sub Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Quick Reply",
+                      "value": "QUICK_REPLY"
+                    },
+                    {
+                      "name": "URL",
+                      "value": "URL"
+                    }
+                  ],
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "BUTTON"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "index",
+                  "displayName": "Index",
+                  "type": "number",
+                  "default": 0,
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "BUTTON"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "parameters",
+                  "displayName": "Parameters",
+                  "type": "array",
+                  "placeholder": "Add Parameter",
+                  "fields": [
+                    {
+                      "name": "parameterType",
+                      "displayName": "Type",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Text",
+                          "value": "text"
+                        },
+                        {
+                          "name": "Currency",
+                          "value": "currency"
+                        },
+                        {
+                          "name": "Date Time",
+                          "value": "date_time"
+                        }
+                      ],
+                      "default": "text"
+                    },
+                    {
+                      "name": "text",
+                      "displayName": "Text",
+                      "type": "string",
+                      "displayOptions": {
+                        "show": {
+                          "parameterType": [
+                            "text"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "currencyCode",
+                      "displayName": "Currency Code",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "AED - UAE Dirham",
+                          "value": "AED"
+                        },
+                        {
+                          "name": "AFN - Afghani",
+                          "value": "AFN"
+                        },
+                        {
+                          "name": "ALL - Lek",
+                          "value": "ALL"
+                        },
+                        {
+                          "name": "AMD - Armenian Dram",
+                          "value": "AMD"
+                        },
+                        {
+                          "name": "ANG - Netherlands Antillean Guilder",
+                          "value": "ANG"
+                        },
+                        {
+                          "name": "AOA - Kwanza",
+                          "value": "AOA"
+                        },
+                        {
+                          "name": "ARS - Argentine Peso",
+                          "value": "ARS"
+                        },
+                        {
+                          "name": "AUD - Australian Dollar",
+                          "value": "AUD"
+                        },
+                        {
+                          "name": "AWG - Aruban Florin",
+                          "value": "AWG"
+                        },
+                        {
+                          "name": "AZN - Azerbaijan Manat",
+                          "value": "AZN"
+                        },
+                        {
+                          "name": "BAM - Convertible Mark",
+                          "value": "BAM"
+                        },
+                        {
+                          "name": "BBD - Barbados Dollar",
+                          "value": "BBD"
+                        },
+                        {
+                          "name": "BDT - Taka",
+                          "value": "BDT"
+                        },
+                        {
+                          "name": "BGN - Bulgarian Lev",
+                          "value": "BGN"
+                        },
+                        {
+                          "name": "BHD - Bahraini Dinar",
+                          "value": "BHD"
+                        },
+                        {
+                          "name": "BIF - Burundi Franc",
+                          "value": "BIF"
+                        },
+                        {
+                          "name": "BMD - Bermudian Dollar",
+                          "value": "BMD"
+                        },
+                        {
+                          "name": "BND - Brunei Dollar",
+                          "value": "BND"
+                        },
+                        {
+                          "name": "BOB - Boliviano",
+                          "value": "BOB"
+                        },
+                        {
+                          "name": "BOV - Mvdol",
+                          "value": "BOV"
+                        },
+                        {
+                          "name": "BRL - Brazilian Real",
+                          "value": "BRL"
+                        },
+                        {
+                          "name": "BSD - Bahamian Dollar",
+                          "value": "BSD"
+                        },
+                        {
+                          "name": "BTN - Ngultrum",
+                          "value": "BTN"
+                        },
+                        {
+                          "name": "BWP - Pula",
+                          "value": "BWP"
+                        },
+                        {
+                          "name": "BYN - Belarusian Ruble",
+                          "value": "BYN"
+                        },
+                        {
+                          "name": "BZD - Belize Dollar",
+                          "value": "BZD"
+                        },
+                        {
+                          "name": "CAD - Canadian Dollar",
+                          "value": "CAD"
+                        },
+                        {
+                          "name": "CDF - Congolese Franc",
+                          "value": "CDF"
+                        },
+                        {
+                          "name": "CHE - WIR Euro",
+                          "value": "CHE"
+                        },
+                        {
+                          "name": "CHF - Swiss Franc",
+                          "value": "CHF"
+                        },
+                        {
+                          "name": "CHW - WIR Franc",
+                          "value": "CHW"
+                        },
+                        {
+                          "name": "CLF - Unidad de Fomento",
+                          "value": "CLF"
+                        },
+                        {
+                          "name": "CLP - Chilean Peso",
+                          "value": "CLP"
+                        },
+                        {
+                          "name": "CNY - Yuan Renminbi",
+                          "value": "CNY"
+                        },
+                        {
+                          "name": "COP - Colombian Peso",
+                          "value": "COP"
+                        },
+                        {
+                          "name": "COU - Unidad de Valor Real",
+                          "value": "COU"
+                        },
+                        {
+                          "name": "CRC - Costa Rican Colon",
+                          "value": "CRC"
+                        },
+                        {
+                          "name": "CUC - Peso Convertible",
+                          "value": "CUC"
+                        },
+                        {
+                          "name": "CUP - Cuban Peso",
+                          "value": "CUP"
+                        },
+                        {
+                          "name": "CVE - Cabo Verde Escudo",
+                          "value": "CVE"
+                        },
+                        {
+                          "name": "CZK - Czech Koruna",
+                          "value": "CZK"
+                        },
+                        {
+                          "name": "DJF - Djibouti Franc",
+                          "value": "DJF"
+                        },
+                        {
+                          "name": "DKK - Danish Krone",
+                          "value": "DKK"
+                        },
+                        {
+                          "name": "DOP - Dominican Peso",
+                          "value": "DOP"
+                        },
+                        {
+                          "name": "DZD - Algerian Dinar",
+                          "value": "DZD"
+                        },
+                        {
+                          "name": "EGP - Egyptian Pound",
+                          "value": "EGP"
+                        },
+                        {
+                          "name": "ERN - Nakfa",
+                          "value": "ERN"
+                        },
+                        {
+                          "name": "ETB - Ethiopian Birr",
+                          "value": "ETB"
+                        },
+                        {
+                          "name": "EUR - Euro",
+                          "value": "EUR"
+                        },
+                        {
+                          "name": "FJD - Fiji Dollar",
+                          "value": "FJD"
+                        },
+                        {
+                          "name": "FKP - Falkland Islands Pound",
+                          "value": "FKP"
+                        },
+                        {
+                          "name": "GBP - Pound Sterling",
+                          "value": "GBP"
+                        },
+                        {
+                          "name": "GEL - Lari",
+                          "value": "GEL"
+                        },
+                        {
+                          "name": "GHS - Ghana Cedi",
+                          "value": "GHS"
+                        },
+                        {
+                          "name": "GIP - Gibraltar Pound",
+                          "value": "GIP"
+                        },
+                        {
+                          "name": "GMD - Dalasi",
+                          "value": "GMD"
+                        },
+                        {
+                          "name": "GNF - Guinean Franc",
+                          "value": "GNF"
+                        },
+                        {
+                          "name": "GTQ - Quetzal",
+                          "value": "GTQ"
+                        },
+                        {
+                          "name": "GYD - Guyana Dollar",
+                          "value": "GYD"
+                        },
+                        {
+                          "name": "HKD - Hong Kong Dollar",
+                          "value": "HKD"
+                        },
+                        {
+                          "name": "HNL - Lempira",
+                          "value": "HNL"
+                        },
+                        {
+                          "name": "HRK - Kuna",
+                          "value": "HRK"
+                        },
+                        {
+                          "name": "HTG - Gourde",
+                          "value": "HTG"
+                        },
+                        {
+                          "name": "HUF - Forint",
+                          "value": "HUF"
+                        },
+                        {
+                          "name": "IDR - Rupiah",
+                          "value": "IDR"
+                        },
+                        {
+                          "name": "ILS - New Israeli Sheqel",
+                          "value": "ILS"
+                        },
+                        {
+                          "name": "INR - Indian Rupee",
+                          "value": "INR"
+                        },
+                        {
+                          "name": "IQD - Iraqi Dinar",
+                          "value": "IQD"
+                        },
+                        {
+                          "name": "IRR - Iranian Rial",
+                          "value": "IRR"
+                        },
+                        {
+                          "name": "ISK - Iceland Krona",
+                          "value": "ISK"
+                        },
+                        {
+                          "name": "JMD - Jamaican Dollar",
+                          "value": "JMD"
+                        },
+                        {
+                          "name": "JOD - Jordanian Dinar",
+                          "value": "JOD"
+                        },
+                        {
+                          "name": "JPY - Yen",
+                          "value": "JPY"
+                        },
+                        {
+                          "name": "KES - Kenyan Shilling",
+                          "value": "KES"
+                        },
+                        {
+                          "name": "KGS - Som",
+                          "value": "KGS"
+                        },
+                        {
+                          "name": "KHR - Riel",
+                          "value": "KHR"
+                        },
+                        {
+                          "name": "KMF - Comorian Franc",
+                          "value": "KMF"
+                        },
+                        {
+                          "name": "KPW - North Korean Won",
+                          "value": "KPW"
+                        },
+                        {
+                          "name": "KRW - Won",
+                          "value": "KRW"
+                        },
+                        {
+                          "name": "KWD - Kuwaiti Dinar",
+                          "value": "KWD"
+                        },
+                        {
+                          "name": "KYD - Cayman Islands Dollar",
+                          "value": "KYD"
+                        },
+                        {
+                          "name": "KZT - Tenge",
+                          "value": "KZT"
+                        },
+                        {
+                          "name": "LAK - Lao Kip",
+                          "value": "LAK"
+                        },
+                        {
+                          "name": "LBP - Lebanese Pound",
+                          "value": "LBP"
+                        },
+                        {
+                          "name": "LKR - Sri Lanka Rupee",
+                          "value": "LKR"
+                        },
+                        {
+                          "name": "LRD - Liberian Dollar",
+                          "value": "LRD"
+                        },
+                        {
+                          "name": "LSL - Loti",
+                          "value": "LSL"
+                        },
+                        {
+                          "name": "LYD - Libyan Dinar",
+                          "value": "LYD"
+                        },
+                        {
+                          "name": "MAD - Moroccan Dirham",
+                          "value": "MAD"
+                        },
+                        {
+                          "name": "MDL - Moldovan Leu",
+                          "value": "MDL"
+                        },
+                        {
+                          "name": "MGA - Malagasy Ariary",
+                          "value": "MGA"
+                        },
+                        {
+                          "name": "MKD - Denar",
+                          "value": "MKD"
+                        },
+                        {
+                          "name": "MMK - Kyat",
+                          "value": "MMK"
+                        },
+                        {
+                          "name": "MNT - Tugrik",
+                          "value": "MNT"
+                        },
+                        {
+                          "name": "MOP - Pataca",
+                          "value": "MOP"
+                        },
+                        {
+                          "name": "MRU - Ouguiya",
+                          "value": "MRU"
+                        },
+                        {
+                          "name": "MUR - Mauritius Rupee",
+                          "value": "MUR"
+                        },
+                        {
+                          "name": "MVR - Rufiyaa",
+                          "value": "MVR"
+                        },
+                        {
+                          "name": "MWK - Malawi Kwacha",
+                          "value": "MWK"
+                        },
+                        {
+                          "name": "MXN - Mexican Peso",
+                          "value": "MXN"
+                        },
+                        {
+                          "name": "MXV - Mexican Unidad de Inversion (UDI)",
+                          "value": "MXV"
+                        },
+                        {
+                          "name": "MYR - Malaysian Ringgit",
+                          "value": "MYR"
+                        },
+                        {
+                          "name": "MZN - Mozambique Metical",
+                          "value": "MZN"
+                        },
+                        {
+                          "name": "NAD - Namibia Dollar",
+                          "value": "NAD"
+                        },
+                        {
+                          "name": "NGN - Naira",
+                          "value": "NGN"
+                        },
+                        {
+                          "name": "NIO - Cordoba Oro",
+                          "value": "NIO"
+                        },
+                        {
+                          "name": "NOK - Norwegian Krone",
+                          "value": "NOK"
+                        },
+                        {
+                          "name": "NPR - Nepalese Rupee",
+                          "value": "NPR"
+                        },
+                        {
+                          "name": "NZD - New Zealand Dollar",
+                          "value": "NZD"
+                        },
+                        {
+                          "name": "OMR - Rial Omani",
+                          "value": "OMR"
+                        },
+                        {
+                          "name": "PAB - Balboa",
+                          "value": "PAB"
+                        },
+                        {
+                          "name": "PEN - Sol",
+                          "value": "PEN"
+                        },
+                        {
+                          "name": "PGK - Kina",
+                          "value": "PGK"
+                        },
+                        {
+                          "name": "PHP - Philippine Peso",
+                          "value": "PHP"
+                        },
+                        {
+                          "name": "PKR - Pakistan Rupee",
+                          "value": "PKR"
+                        },
+                        {
+                          "name": "PLN - Zloty",
+                          "value": "PLN"
+                        },
+                        {
+                          "name": "PYG - Guarani",
+                          "value": "PYG"
+                        },
+                        {
+                          "name": "QAR - Qatari Rial",
+                          "value": "QAR"
+                        },
+                        {
+                          "name": "RON - Romanian Leu",
+                          "value": "RON"
+                        },
+                        {
+                          "name": "RSD - Serbian Dinar",
+                          "value": "RSD"
+                        },
+                        {
+                          "name": "RUB - Russian Ruble",
+                          "value": "RUB"
+                        },
+                        {
+                          "name": "RWF - Rwanda Franc",
+                          "value": "RWF"
+                        },
+                        {
+                          "name": "SAR - Saudi Riyal",
+                          "value": "SAR"
+                        },
+                        {
+                          "name": "SBD - Solomon Islands Dollar",
+                          "value": "SBD"
+                        },
+                        {
+                          "name": "SCR - Seychelles Rupee",
+                          "value": "SCR"
+                        },
+                        {
+                          "name": "SDG - Sudanese Pound",
+                          "value": "SDG"
+                        },
+                        {
+                          "name": "SEK - Swedish Krona",
+                          "value": "SEK"
+                        },
+                        {
+                          "name": "SGD - Singapore Dollar",
+                          "value": "SGD"
+                        },
+                        {
+                          "name": "SHP - Saint Helena Pound",
+                          "value": "SHP"
+                        },
+                        {
+                          "name": "SLL - Leone",
+                          "value": "SLL"
+                        },
+                        {
+                          "name": "SOS - Somali Shilling",
+                          "value": "SOS"
+                        },
+                        {
+                          "name": "SRD - Surinam Dollar",
+                          "value": "SRD"
+                        },
+                        {
+                          "name": "SSP - South Sudanese Pound",
+                          "value": "SSP"
+                        },
+                        {
+                          "name": "STN - Dobra",
+                          "value": "STN"
+                        },
+                        {
+                          "name": "SVC - El Salvador Colon",
+                          "value": "SVC"
+                        },
+                        {
+                          "name": "SYP - Syrian Pound",
+                          "value": "SYP"
+                        },
+                        {
+                          "name": "SZL - Lilangeni",
+                          "value": "SZL"
+                        },
+                        {
+                          "name": "THB - Baht",
+                          "value": "THB"
+                        },
+                        {
+                          "name": "TJS - Somoni",
+                          "value": "TJS"
+                        },
+                        {
+                          "name": "TMT - Turkmenistan New Manat",
+                          "value": "TMT"
+                        },
+                        {
+                          "name": "TND - Tunisian Dinar",
+                          "value": "TND"
+                        },
+                        {
+                          "name": "TOP - Pa’anga",
+                          "value": "TOP"
+                        },
+                        {
+                          "name": "TRY - Turkish Lira",
+                          "value": "TRY"
+                        },
+                        {
+                          "name": "TTD - Trinidad and Tobago Dollar",
+                          "value": "TTD"
+                        },
+                        {
+                          "name": "TWD - New Taiwan Dollar",
+                          "value": "TWD"
+                        },
+                        {
+                          "name": "TZS - Tanzanian Shilling",
+                          "value": "TZS"
+                        },
+                        {
+                          "name": "UAH - Hryvnia",
+                          "value": "UAH"
+                        },
+                        {
+                          "name": "UGX - Uganda Shilling",
+                          "value": "UGX"
+                        },
+                        {
+                          "name": "USD - US Dollar",
+                          "value": "USD"
+                        },
+                        {
+                          "name": "USN - US Dollar (Next day)",
+                          "value": "USN"
+                        },
+                        {
+                          "name": "UYI - Uruguay Peso en Unidades Indexadas (UI)",
+                          "value": "UYI"
+                        },
+                        {
+                          "name": "UYU - Peso Uruguayo",
+                          "value": "UYU"
+                        },
+                        {
+                          "name": "UYW - Unidad Previsional",
+                          "value": "UYW"
+                        },
+                        {
+                          "name": "UZS - Uzbekistan Sum",
+                          "value": "UZS"
+                        },
+                        {
+                          "name": "VES - Bolívar Soberano",
+                          "value": "VES"
+                        },
+                        {
+                          "name": "VND - Dong",
+                          "value": "VND"
+                        },
+                        {
+                          "name": "VUV - Vatu",
+                          "value": "VUV"
+                        },
+                        {
+                          "name": "WST - Tala",
+                          "value": "WST"
+                        },
+                        {
+                          "name": "XAF - CFA Franc BEAC",
+                          "value": "XAF"
+                        },
+                        {
+                          "name": "XAG - Silver",
+                          "value": "XAG"
+                        },
+                        {
+                          "name": "XAU - Gold",
+                          "value": "XAU"
+                        },
+                        {
+                          "name": "XBA - Bond Markets Unit European Composite Unit (EURCO)",
+                          "value": "XBA"
+                        },
+                        {
+                          "name": "XBB - Bond Markets Unit European Monetary Unit (E.M.U.-6)",
+                          "value": "XBB"
+                        },
+                        {
+                          "name": "XBC - Bond Markets Unit European Unit of Account 9 (E.U.A.-9)",
+                          "value": "XBC"
+                        },
+                        {
+                          "name": "XBD - Bond Markets Unit European Unit of Account 17 (E.U.A.-17)",
+                          "value": "XBD"
+                        },
+                        {
+                          "name": "XCD - East Caribbean Dollar",
+                          "value": "XCD"
+                        },
+                        {
+                          "name": "XDR - SDR (Special Drawing Right)",
+                          "value": "XDR"
+                        },
+                        {
+                          "name": "XOF - CFA Franc BCEAO",
+                          "value": "XOF"
+                        },
+                        {
+                          "name": "XPD - Palladium",
+                          "value": "XPD"
+                        },
+                        {
+                          "name": "XPF - CFP Franc",
+                          "value": "XPF"
+                        },
+                        {
+                          "name": "XPT - Platinum",
+                          "value": "XPT"
+                        },
+                        {
+                          "name": "XSU - Sucre",
+                          "value": "XSU"
+                        },
+                        {
+                          "name": "XTS - Codes specifically reserved for testing purposes",
+                          "value": "XTS"
+                        },
+                        {
+                          "name": "XUA - ADB Unit of Account",
+                          "value": "XUA"
+                        },
+                        {
+                          "name": "XXX - No currency involved",
+                          "value": "XXX"
+                        },
+                        {
+                          "name": "YER - Yemeni Rial",
+                          "value": "YER"
+                        },
+                        {
+                          "name": "ZAR - Rand",
+                          "value": "ZAR"
+                        },
+                        {
+                          "name": "ZMW - Zambian Kwacha",
+                          "value": "ZMW"
+                        },
+                        {
+                          "name": "ZWL - Zimbabwe Dollar",
+                          "value": "ZWL"
+                        }
+                      ],
+                      "displayOptions": {
+                        "show": {
+                          "parameterType": [
+                            "currency"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "amount",
+                      "displayName": "Amount",
+                      "type": "number",
+                      "default": 0,
+                      "displayOptions": {
+                        "show": {
+                          "parameterType": [
+                            "currency"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "dateTime",
+                      "displayName": "Date and Time",
+                      "type": "dateTime",
+                      "displayOptions": {
+                        "show": {
+                          "parameterType": [
+                            "date_time"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "imageLink",
+                      "displayName": "Image Link",
+                      "type": "string",
+                      "placeholder": "https://example.com/image.jpg",
+                      "displayOptions": {
+                        "show": {
+                          "parameterType": [
+                            "image"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "template",
+            "operation": "send"
+          },
+          "subCategory": "TEMPLATE ACTIONS"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "template",
+          "operation": "send"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

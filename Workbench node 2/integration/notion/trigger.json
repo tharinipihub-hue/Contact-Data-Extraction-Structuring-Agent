@@ -1,0 +1,137 @@
+{
+  "nodes": [
+    {
+      "id": "notion.trigger-1783407365384",
+      "type": "manual-trigger",
+      "position": {
+        "x": 1207.3792730317643,
+        "y": 555.3912055068544
+      },
+      "data": {
+        "label": "Notion Trigger",
+        "toolId": "notion.trigger",
+        "toolData": {
+          "id": "notion.trigger",
+          "displayName": "Notion Trigger",
+          "category": "Integrations",
+          "provider": "notion",
+          "operation": "trigger",
+          "icon": "notion",
+          "description": "Triggers on changes in a Notion database",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string"
+              },
+              "pollTimes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "everyMinute",
+                        "everyHour",
+                        "everyDay",
+                        "everyWeek",
+                        "everyMonth",
+                        "everyX",
+                        "custom"
+                      ],
+                      "default": "everyMinute"
+                    },
+                    "value": {
+                      "type": "number"
+                    },
+                    "unit": {
+                      "type": "string",
+                      "enum": [
+                        "seconds",
+                        "minutes",
+                        "hours"
+                      ]
+                    },
+                    "hour": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 23
+                    },
+                    "minute": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 59
+                    },
+                    "weekday": {
+                      "type": "string",
+                      "enum": [
+                        "Monday",
+                        "Tuesday",
+                        "Wednesday",
+                        "Thursday",
+                        "Friday",
+                        "Saturday",
+                        "Sunday"
+                      ]
+                    },
+                    "dayOfMonth": {
+                      "type": "number",
+                      "minimum": 1,
+                      "maximum": 31
+                    },
+                    "cronExpression": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "default": [
+                  {
+                    "mode": "everyMinute"
+                  }
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "p_added",
+                  "p_updated"
+                ],
+                "default": "p_added"
+              },
+              "databaseIdMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "id"
+                ],
+                "default": "list"
+              },
+              "databaseId": {
+                "type": "string"
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true
+              }
+            },
+            "required": [
+              "databaseId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "TRIGGERS"
+        },
+        "isTrigger": true,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 100
+    }
+  ],
+  "edges": []
+}

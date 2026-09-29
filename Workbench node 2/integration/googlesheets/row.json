@@ -1,0 +1,419 @@
+{
+  "nodes": [
+    {
+      "id": "google.sheets.append_row-1783408188216",
+      "type": "action",
+      "position": {
+        "x": 570.9467932434798,
+        "y": -247.5804217647594
+      },
+      "data": {
+        "label": "Append Row",
+        "toolId": "google.sheets.append_row",
+        "toolData": {
+          "id": "google.sheets.append_row",
+          "displayName": "Append Row",
+          "category": "Integrations",
+          "provider": "sheets",
+          "operation": "sheetsAppendRow",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg",
+          "description": "Append a row of data to a sheet",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "description": "Google Sheets credentials"
+              },
+              "spreadsheetId": {
+                "type": "string",
+                "description": "Document"
+              },
+              "sheetName": {
+                "type": "string",
+                "description": "Sheet Name"
+              },
+              "values": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": {}
+                  },
+                  {
+                    "type": "array"
+                  }
+                ],
+                "description": "Values to Send"
+              },
+              "valueInputOption": {
+                "type": "string",
+                "enum": [
+                  "RAW",
+                  "USER_ENTERED"
+                ],
+                "default": "USER_ENTERED",
+                "description": "How input data should be interpreted"
+              }
+            },
+            "required": [
+              "spreadsheetId",
+              "sheetName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Row",
+          "dynamicFields": [
+            {
+              "fieldName": "spreadsheetId",
+              "label": "Document (Spreadsheet)",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/list-spreadsheets",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "sheetName",
+              "label": "Sheet (Tab)",
+              "dependsOn": [
+                "credentials",
+                "spreadsheetId"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/list-sheets",
+              "labelKey": "title",
+              "valueKey": "title"
+            }
+          ],
+          "executionMode": "batch",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "google.sheets.delete_rows_columns-1783408189713",
+      "type": "action",
+      "position": {
+        "x": 987.9806460560341,
+        "y": -203.48318657309957
+      },
+      "data": {
+        "label": "Delete Rows or Columns",
+        "toolId": "google.sheets.delete_rows_columns",
+        "toolData": {
+          "id": "google.sheets.delete_rows_columns",
+          "displayName": "Delete Rows or Columns",
+          "category": "Integrations",
+          "provider": "sheets",
+          "operation": "sheetsDeleteRowsColumns",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg",
+          "description": "Delete specific rows or columns from a sheet",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "description": "Google Sheets credentials"
+              },
+              "spreadsheetId": {
+                "type": "string",
+                "description": "Document"
+              },
+              "sheetName": {
+                "type": "string",
+                "description": "Sheet Name"
+              },
+              "dimension": {
+                "type": "string",
+                "enum": [
+                  "ROWS",
+                  "COLUMNS"
+                ],
+                "default": "ROWS",
+                "description": "Delete Rows or Columns"
+              },
+              "startIndex": {
+                "type": [
+                  "number",
+                  "string"
+                ],
+                "description": "Start Row Number (e.g. 2 = second row) or Start Column (e.g. \"A\" or 1)"
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 1,
+                "description": "Number of Rows / Columns to Delete"
+              }
+            },
+            "required": [
+              "spreadsheetId",
+              "sheetName",
+              "startIndex"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Row",
+          "dynamicFields": [
+            {
+              "fieldName": "spreadsheetId",
+              "label": "Document (Spreadsheet)",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/list-spreadsheets",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "sheetName",
+              "label": "Sheet (Tab)",
+              "dependsOn": [
+                "credentials",
+                "spreadsheetId"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/list-sheets",
+              "labelKey": "title",
+              "valueKey": "title"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "google.sheets.get_rows-1783408191064",
+      "type": "action",
+      "position": {
+        "x": 754.895260042975,
+        "y": 1.8839373194875475
+      },
+      "data": {
+        "label": "Get Row(s) in Sheet",
+        "toolId": "google.sheets.get_rows",
+        "toolData": {
+          "id": "google.sheets.get_rows",
+          "displayName": "Get Row(s) in Sheet",
+          "category": "Integrations",
+          "provider": "sheets",
+          "operation": "sheetsGetRows",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg",
+          "description": "Read values from a specific sheet or range",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "spreadsheetId": {
+                "type": "string",
+                "description": "Document"
+              },
+              "sheetName": {
+                "type": "string",
+                "description": "Sheet Name"
+              },
+              "range": {
+                "type": "string",
+                "description": "Range (e.g. A1:D10) - Leave empty for all data"
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "getAll",
+                  "lookup"
+                ],
+                "default": "getAll",
+                "description": "Operation Mode"
+              },
+              "lookupColumn": {
+                "type": "string",
+                "description": "Lookup Column Header"
+              },
+              "lookupValue": {
+                "type": "string",
+                "description": "Lookup Value"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 0,
+                "description": "Maximum rows to return (0 for unlimited)"
+              },
+              "valueRenderOption": {
+                "type": "string",
+                "enum": [
+                  "FORMATTED_VALUE",
+                  "UNFORMATTED_VALUE",
+                  "FORMULA"
+                ],
+                "default": "UNFORMATTED_VALUE",
+                "description": "How values should be rendered"
+              },
+              "dateTimeRenderOption": {
+                "type": "string",
+                "enum": [
+                  "SERIAL_NUMBER",
+                  "FORMATTED_STRING"
+                ],
+                "default": "FORMATTED_STRING",
+                "description": "How dates should be rendered"
+              },
+              "credentials": {
+                "description": "Google Sheets credentials"
+              }
+            },
+            "required": [
+              "spreadsheetId",
+              "sheetName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Row",
+          "dynamicFields": [
+            {
+              "fieldName": "spreadsheetId",
+              "label": "Document (Spreadsheet)",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/list-spreadsheets",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "sheetName",
+              "label": "Sheet (Tab)",
+              "dependsOn": [
+                "credentials",
+                "spreadsheetId"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/list-sheets",
+              "labelKey": "title",
+              "valueKey": "title"
+            }
+          ],
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "google.sheets.update_row-1783408192616",
+      "type": "action",
+      "position": {
+        "x": 1063.5759063845937,
+        "y": 23.302594412579456
+      },
+      "data": {
+        "label": "Update Row",
+        "toolId": "google.sheets.update_row",
+        "toolData": {
+          "id": "google.sheets.update_row",
+          "displayName": "Update Row",
+          "category": "Integrations",
+          "provider": "sheets",
+          "operation": "sheetsUpdateRow",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg",
+          "description": "Update a row in a Google Sheet",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "spreadsheetId": {
+                "type": "string",
+                "description": "Document"
+              },
+              "sheetName": {
+                "type": "string",
+                "description": "Sheet"
+              },
+              "matchColumn": {
+                "type": "string",
+                "description": "Column to match on"
+              },
+              "values": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Values to Update"
+              },
+              "credentials": {
+                "description": "Google Sheets credentials"
+              },
+              "valueInputOption": {
+                "type": "string",
+                "enum": [
+                  "RAW",
+                  "USER_ENTERED"
+                ],
+                "default": "USER_ENTERED",
+                "description": "How input data should be interpreted"
+              }
+            },
+            "required": [
+              "spreadsheetId",
+              "sheetName",
+              "matchColumn"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Row",
+          "dynamicFields": [
+            {
+              "fieldName": "spreadsheetId",
+              "label": "Document (Spreadsheet)",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/list-spreadsheets",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "sheetName",
+              "label": "Sheet (Tab)",
+              "dependsOn": [
+                "credentials",
+                "spreadsheetId"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/list-sheets",
+              "labelKey": "title",
+              "valueKey": "title"
+            },
+            {
+              "fieldName": "matchColumn",
+              "label": "Match Column",
+              "dependsOn": [
+                "credentials",
+                "spreadsheetId",
+                "sheetName"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/get-headers",
+              "labelKey": "name",
+              "valueKey": "name"
+            }
+          ],
+          "executionMode": "batch",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

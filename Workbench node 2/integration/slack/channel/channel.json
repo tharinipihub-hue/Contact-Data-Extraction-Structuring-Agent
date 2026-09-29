@@ -1,0 +1,569 @@
+{
+  "nodes": [
+    {
+      "id": "slack.channel.archive-1783408135260",
+      "type": "action",
+      "position": {
+        "x": 2750.3904641676872,
+        "y": -162.0249227160442
+      },
+      "data": {
+        "label": "Slack Archive Channel",
+        "toolId": "slack.channel.archive",
+        "toolData": {
+          "id": "slack.channel.archive",
+          "displayName": "Slack Archive Channel",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Archive",
+          "icon": "slack",
+          "description": "Archive a specific channel.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Channel"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "slack.channel.history-1783408136645",
+      "type": "action",
+      "position": {
+        "x": 3107.8904641676863,
+        "y": -113.27492271604427
+      },
+      "data": {
+        "label": "Slack Channel History",
+        "toolId": "slack.channel.history",
+        "toolData": {
+          "id": "slack.channel.history",
+          "displayName": "Slack Channel History",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "History",
+          "icon": "slack",
+          "description": "Retrieve channel message history.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Channel"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "slack.channel.member-1783408138085",
+      "type": "action",
+      "position": {
+        "x": 2944.140464167687,
+        "y": 17.975077283955482
+      },
+      "data": {
+        "label": "Slack Channel Members",
+        "toolId": "slack.channel.member",
+        "toolData": {
+          "id": "slack.channel.member",
+          "displayName": "Slack Channel Members",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Member",
+          "icon": "slack",
+          "description": "List channel members.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Channel"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "slack.channel.close-1783408140141",
+      "type": "action",
+      "position": {
+        "x": 3519.1404641676854,
+        "y": 104.22507728395533
+      },
+      "data": {
+        "label": "Slack Close Channel",
+        "toolId": "slack.channel.close",
+        "toolData": {
+          "id": "slack.channel.close",
+          "displayName": "Slack Close Channel",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Close",
+          "icon": "slack",
+          "description": "Close a direct message.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Channel"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 3519.1404641676854,
+        "y": 104.22507728395533
+      },
+      "dragging": false
+    },
+    {
+      "id": "slack.channel.create-1783408141197",
+      "type": "action",
+      "position": {
+        "x": 3564.1404641676854,
+        "y": -48.274922716044394
+      },
+      "data": {
+        "label": "Slack Create Channel",
+        "toolId": "slack.channel.create",
+        "toolData": {
+          "id": "slack.channel.create",
+          "displayName": "Slack Create Channel",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Create",
+          "icon": "slack",
+          "description": "Create a new Slack channel",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Channel"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "slack.channel.get-1783408142261",
+      "type": "action",
+      "position": {
+        "x": 3214.1404641676863,
+        "y": 326.72507728395493
+      },
+      "data": {
+        "label": "Slack Get Channel",
+        "toolId": "slack.channel.get",
+        "toolData": {
+          "id": "slack.channel.get",
+          "displayName": "Slack Get Channel",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Get",
+          "icon": "slack",
+          "description": "Get information about a Slack channel",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Channel"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "slack.channel.replies-1783408143349",
+      "type": "action",
+      "position": {
+        "x": 2942.890464167687,
+        "y": 322.97507728395493
+      },
+      "data": {
+        "label": "Slack Get Replies",
+        "toolId": "slack.channel.replies",
+        "toolData": {
+          "id": "slack.channel.replies",
+          "displayName": "Slack Get Replies",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Replies",
+          "icon": "slack",
+          "description": "Get replies to a message thread",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Channel"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "slack.channel.invite-1783408144732",
+      "type": "action",
+      "position": {
+        "x": 2675.3904641676872,
+        "y": 277.975077283955
+      },
+      "data": {
+        "label": "Slack Invite to Channel",
+        "toolId": "slack.channel.invite",
+        "toolData": {
+          "id": "slack.channel.invite",
+          "displayName": "Slack Invite to Channel",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Invite",
+          "icon": "slack",
+          "description": "Invite user to channel.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Channel"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "slack.channel.join-1783408146429",
+      "type": "action",
+      "position": {
+        "x": 2744.1404641676872,
+        "y": 157.97507728395522
+      },
+      "data": {
+        "label": "Slack Join Channel",
+        "toolId": "slack.channel.join",
+        "toolData": {
+          "id": "slack.channel.join",
+          "displayName": "Slack Join Channel",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Join",
+          "icon": "slack",
+          "description": "Join a Slack channel",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Channel"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "slack.channel.kick-1783408148788",
+      "type": "action",
+      "position": {
+        "x": 3374.140464167686,
+        "y": -154.5249227160442
+      },
+      "data": {
+        "label": "Slack Kick from Channel",
+        "toolId": "slack.channel.kick",
+        "toolData": {
+          "id": "slack.channel.kick",
+          "displayName": "Slack Kick from Channel",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Kick",
+          "icon": "slack",
+          "description": "Remove a user from a channel",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Channel"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "slack.channel.leave-1783408150364",
+      "type": "action",
+      "position": {
+        "x": 3057.890464167687,
+        "y": 172.97507728395522
+      },
+      "data": {
+        "label": "Slack Leave Channel",
+        "toolId": "slack.channel.leave",
+        "toolData": {
+          "id": "slack.channel.leave",
+          "displayName": "Slack Leave Channel",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Leave",
+          "icon": "slack",
+          "description": "Leave a Slack channel",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Channel"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 3057.890464167687,
+        "y": 172.97507728395522
+      },
+      "dragging": false
+    },
+    {
+      "id": "slack.channel.getMany-1783408151861",
+      "type": "action",
+      "position": {
+        "x": 3609.1404641676854,
+        "y": 335.4750772839549
+      },
+      "data": {
+        "label": "Slack List Channels",
+        "toolId": "slack.channel.getMany",
+        "toolData": {
+          "id": "slack.channel.getMany",
+          "displayName": "Slack List Channels",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Get Many",
+          "icon": "slack",
+          "description": "List all Slack channels",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Channel"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "slack.channel.open-1783408155212",
+      "type": "action",
+      "position": {
+        "x": 3270.3904641676863,
+        "y": 55.475077283955386
+      },
+      "data": {
+        "label": "Slack Open Channel",
+        "toolId": "slack.channel.open",
+        "toolData": {
+          "id": "slack.channel.open",
+          "displayName": "Slack Open Channel",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Open",
+          "icon": "slack",
+          "description": "Open a direct message.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Channel"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 3270.3904641676863,
+        "y": 55.475077283955386
+      },
+      "dragging": false
+    },
+    {
+      "id": "slack.channel.rename-1783408156788",
+      "type": "action",
+      "position": {
+        "x": 3302.890464167686,
+        "y": -330.7749227160439
+      },
+      "data": {
+        "label": "Slack Rename Channel",
+        "toolId": "slack.channel.rename",
+        "toolData": {
+          "id": "slack.channel.rename",
+          "displayName": "Slack Rename Channel",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Rename",
+          "icon": "slack",
+          "description": "Rename a Slack channel",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Channel"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 3302.890464167686,
+        "y": -330.7749227160439
+      },
+      "dragging": false
+    },
+    {
+      "id": "slack.channel.setPurpose-1783408158861",
+      "type": "action",
+      "position": {
+        "x": 2687.890464167687,
+        "y": -339.5249227160439
+      },
+      "data": {
+        "label": "Slack Set Purpose",
+        "toolId": "slack.channel.setPurpose",
+        "toolData": {
+          "id": "slack.channel.setPurpose",
+          "displayName": "Slack Set Purpose",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Set Purpose",
+          "icon": "slack",
+          "description": "Set channel purpose.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Channel"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2687.890464167687,
+        "y": -339.5249227160439
+      },
+      "dragging": false
+    },
+    {
+      "id": "slack.channel.setTopic-1783408160501",
+      "type": "action",
+      "position": {
+        "x": 3001.6404641676863,
+        "y": -352.0249227160439
+      },
+      "data": {
+        "label": "Slack Set Topic",
+        "toolId": "slack.channel.setTopic",
+        "toolData": {
+          "id": "slack.channel.setTopic",
+          "displayName": "Slack Set Topic",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Set Topic",
+          "icon": "slack",
+          "description": "Set channel topic.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Channel"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 3001.6404641676863,
+        "y": -352.0249227160439
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

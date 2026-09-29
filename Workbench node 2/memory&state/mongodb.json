@@ -1,0 +1,840 @@
+{
+  "nodes": [
+    {
+      "id": "mongodb.aggregate_document-1783398643509",
+      "type": "action",
+      "position": {
+        "x": 856.6545984097177,
+        "y": 21.58858742166401
+      },
+      "data": {
+        "label": "Aggregate Document",
+        "toolId": "mongodb.aggregate_document",
+        "toolData": {
+          "id": "mongodb.aggregate_document",
+          "displayName": "Aggregate Document",
+          "category": "Memory & State",
+          "provider": "mongodb",
+          "operation": "aggregate_document",
+          "icon": "https://www.mongodb.com/assets/images/global/favicon.ico",
+          "description": "Run aggregation pipeline on documents",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "connectionUri": {
+                "type": "string",
+                "description": "MongoDB connection URI (overrides credentials)"
+              },
+              "credentials": {
+                "description": "Optional credentials object for project auth flows"
+              },
+              "database": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Database name"
+              },
+              "collection": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Collection name"
+              },
+              "query": {
+                "anyOf": [
+                  {
+                    "type": "array"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "description": "Aggregation pipeline as a JSON array"
+              }
+            },
+            "required": [
+              "database",
+              "collection"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "mongodb.create_search_index-1783398644941",
+      "type": "action",
+      "position": {
+        "x": 1137.6169826308646,
+        "y": 54.34653356403987
+      },
+      "data": {
+        "label": "Create Search Index",
+        "toolId": "mongodb.create_search_index",
+        "toolData": {
+          "id": "mongodb.create_search_index",
+          "displayName": "Create Search Index",
+          "category": "Memory & State",
+          "provider": "mongodb",
+          "operation": "create_search_index",
+          "icon": "https://www.mongodb.com/assets/images/global/favicon.ico",
+          "description": "Create search index for collection",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "connectionUri": {
+                "type": "string",
+                "description": "MongoDB connection URI (overrides credentials)"
+              },
+              "credentials": {
+                "description": "Optional credentials object for project auth flows"
+              },
+              "database": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Database name"
+              },
+              "collection": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Collection name"
+              },
+              "indexName": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Name for the new search index"
+              },
+              "indexType": {
+                "type": "string",
+                "enum": [
+                  "search",
+                  "vectorSearch"
+                ],
+                "default": "search",
+                "description": "Type of search index to create"
+              },
+              "definition": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": {}
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "description": "Search Index definition with mappings (required). Example: {\"mappings\": {\"dynamic\": true}}"
+              }
+            },
+            "required": [
+              "database",
+              "collection",
+              "indexName",
+              "definition"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "mongodb.delete_document-1783398647189",
+      "type": "action",
+      "position": {
+        "x": 1548.3512304160388,
+        "y": 85.84455870093974
+      },
+      "data": {
+        "label": "Delete Document",
+        "toolId": "mongodb.delete_document",
+        "toolData": {
+          "id": "mongodb.delete_document",
+          "displayName": "Delete Document",
+          "category": "Memory & State",
+          "provider": "mongodb",
+          "operation": "delete_document",
+          "icon": "https://www.mongodb.com/assets/images/global/favicon.ico",
+          "description": "Remove documents from MongoDB collection",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "connectionUri": {
+                "type": "string",
+                "description": "MongoDB connection URI (overrides credentials)"
+              },
+              "credentials": {
+                "description": "Optional credentials object for project auth flows"
+              },
+              "database": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Database name"
+              },
+              "collection": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Collection name"
+              },
+              "query": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": {}
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "description": "Query filter to delete documents."
+              }
+            },
+            "required": [
+              "database",
+              "collection",
+              "query"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "mongodb.drop_search_index-1783398649101",
+      "type": "action",
+      "position": {
+        "x": 923.4304116999455,
+        "y": 259.713657456627
+      },
+      "data": {
+        "label": "Drop Search Index",
+        "toolId": "mongodb.drop_search_index",
+        "toolData": {
+          "id": "mongodb.drop_search_index",
+          "displayName": "Drop Search Index",
+          "category": "Memory & State",
+          "provider": "mongodb",
+          "operation": "drop_search_index",
+          "icon": "https://www.mongodb.com/assets/images/global/favicon.ico",
+          "description": "Delete search index from collection",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "connectionUri": {
+                "type": "string",
+                "description": "MongoDB connection URI (overrides credentials)"
+              },
+              "credentials": {
+                "description": "Optional credentials object for project auth flows"
+              },
+              "database": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Database name"
+              },
+              "collection": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Collection name"
+              },
+              "indexName": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Name of the search index to drop"
+              }
+            },
+            "required": [
+              "database",
+              "collection",
+              "indexName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "mongodb.find_replace_document-1783398651140",
+      "type": "action",
+      "position": {
+        "x": 1269.9086882058439,
+        "y": 313.8902606920948
+      },
+      "data": {
+        "label": "Find & Replace Document",
+        "toolId": "mongodb.find_replace_document",
+        "toolData": {
+          "id": "mongodb.find_replace_document",
+          "displayName": "Find & Replace Document",
+          "category": "Memory & State",
+          "provider": "mongodb",
+          "operation": "find_replace_document",
+          "icon": "https://www.mongodb.com/assets/images/global/favicon.ico",
+          "description": "Find a document and replace it with new data",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "connectionUri": {
+                "type": "string",
+                "description": "MongoDB connection URI (overrides credentials)"
+              },
+              "credentials": {
+                "description": "Optional credentials object for project auth flows"
+              },
+              "database": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Database name"
+              },
+              "collection": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Collection name"
+              },
+              "updateKey": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Update Key"
+              },
+              "updateKeyIsLiteral": {
+                "type": "boolean",
+                "description": "When true, treat `updateKey` as a literal value to match rather than a field path on each input item"
+              },
+              "updateField": {
+                "type": "string",
+                "description": "Field name to match when `updateKeyIsLiteral` is true. Defaults to \"_id\" when omitted"
+              },
+              "fields": {
+                "type": "string",
+                "description": "Fields"
+              },
+              "upsert": {
+                "type": "boolean",
+                "default": false,
+                "description": "Insert the document if it does not exist"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "dateFields": {
+                    "type": "string",
+                    "description": "Comma-separated list of fields to convert to Date objects. Example: \"createdAt,updatedAt\""
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Additional options for find & replace operation"
+              },
+              "$inputItems": {
+                "type": "array",
+                "description": "Internal: Incoming items from previous node (automatically provided by execution engine)"
+              }
+            },
+            "required": [
+              "database",
+              "collection",
+              "updateKey"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "mongodb.find_document-1783398655998",
+      "type": "action",
+      "position": {
+        "x": 1675.6032519691144,
+        "y": 298.7712086263828
+      },
+      "data": {
+        "label": "Find Document",
+        "toolId": "mongodb.find_document",
+        "toolData": {
+          "id": "mongodb.find_document",
+          "displayName": "Find Document",
+          "category": "Memory & State",
+          "provider": "mongodb",
+          "operation": "find_document",
+          "icon": "https://www.mongodb.com/assets/images/global/favicon.ico",
+          "description": "Retrieve documents from MongoDB collection",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "connectionUri": {
+                "type": "string",
+                "description": "MongoDB connection URI (overrides credentials)"
+              },
+              "credentials": {
+                "description": "Optional credentials object for project auth flows"
+              },
+              "database": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Database name"
+              },
+              "collection": {
+                "type": "string",
+                "description": "Collection name (optional). Leave empty to search across ALL collections in the database."
+              },
+              "query": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": {}
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "description": "Query filter — must be a valid JSON object. Three modes:\n1. {} — return all documents in the collection.\n2. {\"field\": \"value\"} — standard MongoDB filter.\n3. {\"$search\": \"keyword\"} — search keyword across ALL string fields in every document.\nExample: {\"status\": \"pending\"}"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Maximum number of documents to return (default 1000, max 5000)"
+              },
+              "sort": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": {}
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "description": "Sort order (JSON). Example: {\"createdAt\": -1}"
+              },
+              "skip": {
+                "type": "number",
+                "description": "Number of documents to skip for pagination"
+              },
+              "projection": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": {}
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "description": "Fields to include/exclude (JSON). Example: {\"name\": 1, \"email\": 1}"
+              }
+            },
+            "required": [
+              "database",
+              "query"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "mongodb.insert_document-1783398657173",
+      "type": "action",
+      "position": {
+        "x": 993.9859880066011,
+        "y": 472.6403073820701
+      },
+      "data": {
+        "label": "Insert Document",
+        "toolId": "mongodb.insert_document",
+        "toolData": {
+          "id": "mongodb.insert_document",
+          "displayName": "Insert Document",
+          "category": "Memory & State",
+          "provider": "mongodb",
+          "operation": "insert_document",
+          "icon": "https://www.mongodb.com/assets/images/global/favicon.ico",
+          "description": "Add new document into collection",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "connectionUri": {
+                "type": "string",
+                "description": "MongoDB connection URI (overrides credentials)"
+              },
+              "credentials": {
+                "description": "Optional credentials object for project auth flows"
+              },
+              "database": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Database name"
+              },
+              "collection": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Collection name"
+              },
+              "fields": {
+                "type": "string",
+                "description": "Fields"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "dateFields": {
+                    "type": "string",
+                    "description": "Comma-separated list of fields to convert to Date objects. Example: \"createdAt,updatedAt\""
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Additional options for insert operation"
+              },
+              "$inputItems": {
+                "type": "array",
+                "description": "Internal: Incoming items from previous node (automatically provided by execution engine)"
+              }
+            },
+            "required": [
+              "database",
+              "collection"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "mongodb.list_search_index-1783398659029",
+      "type": "action",
+      "position": {
+        "x": 1363.1428426110676,
+        "y": 504.13833251896995
+      },
+      "data": {
+        "label": "List Search Indexes",
+        "toolId": "mongodb.list_search_index",
+        "toolData": {
+          "id": "mongodb.list_search_index",
+          "displayName": "List Search Indexes",
+          "category": "Memory & State",
+          "provider": "mongodb",
+          "operation": "list_search_index",
+          "icon": "https://www.mongodb.com/assets/images/global/favicon.ico",
+          "description": "Show all search indexes available",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "connectionUri": {
+                "type": "string",
+                "description": "MongoDB connection URI (overrides credentials)"
+              },
+              "credentials": {
+                "description": "Optional credentials object for project auth flows"
+              },
+              "database": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Database name"
+              },
+              "collection": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Collection name"
+              }
+            },
+            "required": [
+              "database",
+              "collection"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "mongodb.update_document-1783398661845",
+      "type": "action",
+      "position": {
+        "x": 1712.1409611279182,
+        "y": 490.279201458734
+      },
+      "data": {
+        "label": "Update Document",
+        "toolId": "mongodb.update_document",
+        "toolData": {
+          "id": "mongodb.update_document",
+          "displayName": "Update Document",
+          "category": "Memory & State",
+          "provider": "mongodb",
+          "operation": "update_document",
+          "icon": "https://www.mongodb.com/assets/images/global/favicon.ico",
+          "description": "Update one or more documents in MongoDB collection",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "connectionUri": {
+                "type": "string",
+                "description": "MongoDB connection URI (overrides credentials)"
+              },
+              "credentials": {
+                "description": "Optional credentials object for project auth flows"
+              },
+              "database": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Database name"
+              },
+              "collection": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Collection name"
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "updateOne",
+                  "updateMany"
+                ],
+                "default": "updateOne",
+                "description": "Update mode"
+              },
+              "query": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Query (JSON Format). Example: {\"status\": \"pending\"}"
+              },
+              "update": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Update (JSON Format). Example: {\"$set\": {\"status\": \"active\"}}"
+              },
+              "upsert": {
+                "type": "boolean",
+                "default": false,
+                "description": "Upsert (insert if no match)"
+              }
+            },
+            "required": [
+              "database",
+              "collection",
+              "query",
+              "update"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "mongodb.update_item-1783398665532",
+      "type": "action",
+      "position": {
+        "x": 1078.4006953734927,
+        "y": 662.4684023363085
+      },
+      "data": {
+        "label": "Update Item",
+        "toolId": "mongodb.update_item",
+        "toolData": {
+          "id": "mongodb.update_item",
+          "displayName": "Update Item",
+          "category": "Memory & State",
+          "provider": "mongodb",
+          "operation": "update_item",
+          "icon": "https://www.mongodb.com/assets/images/global/favicon.ico",
+          "description": "Update existing documents in MongoDB collection",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "connectionUri": {
+                "type": "string",
+                "description": "MongoDB connection URI (overrides credentials)"
+              },
+              "credentials": {
+                "description": "Optional credentials object for project auth flows"
+              },
+              "database": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Database"
+              },
+              "collection": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Collection"
+              },
+              "updateKey": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Update Key"
+              },
+              "updateKeyIsLiteral": {
+                "type": "boolean",
+                "description": "When true, treat `updateKey` as a literal value to match rather than a field path on each input item"
+              },
+              "updateField": {
+                "type": "string",
+                "description": "Field name to match when `updateKeyIsLiteral` is true. Defaults to \"_id\" when omitted"
+              },
+              "fields": {
+                "type": "string",
+                "description": "Fields"
+              },
+              "upsert": {
+                "type": "boolean",
+                "default": false,
+                "description": "Create document if not found"
+              },
+              "$inputItems": {
+                "type": "array",
+                "description": "Internal: Incoming items from previous node (automatically provided by execution engine)"
+              }
+            },
+            "required": [
+              "database",
+              "collection",
+              "updateKey"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "mongodb.update_search_index-1783398667773",
+      "type": "action",
+      "position": {
+        "x": 1479.055575114859,
+        "y": 678.8473754074964
+      },
+      "data": {
+        "label": "Update Search Index",
+        "toolId": "mongodb.update_search_index",
+        "toolData": {
+          "id": "mongodb.update_search_index",
+          "displayName": "Update Search Index",
+          "category": "Memory & State",
+          "provider": "mongodb",
+          "operation": "update_search_index",
+          "icon": "https://www.mongodb.com/assets/images/global/favicon.ico",
+          "description": "Modify existing search index configuration",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "connectionUri": {
+                "type": "string",
+                "description": "MongoDB connection URI (overrides credentials)"
+              },
+              "credentials": {
+                "description": "Optional credentials object for project auth flows"
+              },
+              "database": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Database name"
+              },
+              "collection": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Collection name"
+              },
+              "indexName": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Name of the search index to update"
+              },
+              "definition": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": {}
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "description": "New search index definition with mappings. Example: {\"mappings\": {\"dynamic\": true}}"
+              }
+            },
+            "required": [
+              "database",
+              "collection",
+              "indexName",
+              "definition"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

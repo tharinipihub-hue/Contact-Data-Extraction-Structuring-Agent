@@ -1,0 +1,803 @@
+{
+  "nodes": [
+    {
+      "id": "jira.user.create-1783407975453",
+      "type": "action",
+      "position": {
+        "x": 2838.765321161857,
+        "y": 29.579456452409126
+      },
+      "data": {
+        "label": "Create",
+        "toolId": "jira.user.create",
+        "toolData": {
+          "id": "jira.user.create",
+          "displayName": "Create",
+          "category": "Integrations",
+          "provider": "jira",
+          "operation": "Create",
+          "icon": "/tools/jira.png",
+          "actionGroup": "User",
+          "description": "Create in User",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "get",
+                  "delete"
+                ],
+                "description": "Operation"
+              },
+              "accountId": {
+                "type": "string",
+                "description": "Account ID"
+              },
+              "username": {
+                "type": "string",
+                "description": "Username"
+              },
+              "emailAddress": {
+                "type": "string",
+                "description": "Email Address"
+              },
+              "displayName": {
+                "type": "string",
+                "description": "Display Name"
+              },
+              "products": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Products"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "description": "Password"
+                  },
+                  "notification": {
+                    "type": "boolean",
+                    "description": "Notification"
+                  },
+                  "expand": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Expand"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "Jira credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "User",
+                  "value": "user"
+                }
+              ],
+              "default": "user",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                }
+              ],
+              "default": "create",
+              "required": true
+            },
+            {
+              "name": "accountId",
+              "displayName": "Account ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "delete"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "username",
+              "displayName": "Username",
+              "type": "string",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "emailAddress",
+              "displayName": "Email Address",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "displayName",
+              "displayName": "Display Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "products",
+              "displayName": "Products",
+              "type": "options",
+              "multiple": true,
+              "required": true,
+              "default": [
+                "jira-software"
+              ],
+              "description": "Select the products the user can access.",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Jira Software",
+                  "value": "jira-software"
+                },
+                {
+                  "name": "Jira Service Management",
+                  "value": "jira-servicedesk"
+                },
+                {
+                  "name": "Jira Work Management (Core)",
+                  "value": "jira-core"
+                },
+                {
+                  "name": "Jira Product Discovery",
+                  "value": "jira-product-discovery"
+                }
+              ]
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "get"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "password",
+                  "displayName": "Password",
+                  "type": "string"
+                },
+                {
+                  "name": "notification",
+                  "displayName": "Notification",
+                  "type": "boolean"
+                },
+                {
+                  "name": "expand",
+                  "displayName": "Expand",
+                  "type": "options",
+                  "multiple": true,
+                  "options": [
+                    {
+                      "name": "Groups",
+                      "value": "groups",
+                      "description": "Include all groups to which the user belongs"
+                    },
+                    {
+                      "name": "Application Roles",
+                      "value": "applicationRoles",
+                      "description": "Include details of all the applications the user can access"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "create"
+          },
+          "subCategory": "User"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "create"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "jira.user.delete-1783407977097",
+      "type": "action",
+      "position": {
+        "x": 2997.1062704546043,
+        "y": 224.20687329141077
+      },
+      "data": {
+        "label": "Delete",
+        "toolId": "jira.user.delete",
+        "toolData": {
+          "id": "jira.user.delete",
+          "displayName": "Delete",
+          "category": "Integrations",
+          "provider": "jira",
+          "operation": "Delete",
+          "icon": "/tools/jira.png",
+          "actionGroup": "User",
+          "description": "Delete in User",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "get",
+                  "delete"
+                ],
+                "description": "Operation"
+              },
+              "accountId": {
+                "type": "string",
+                "description": "Account ID"
+              },
+              "username": {
+                "type": "string",
+                "description": "Username"
+              },
+              "emailAddress": {
+                "type": "string",
+                "description": "Email Address"
+              },
+              "displayName": {
+                "type": "string",
+                "description": "Display Name"
+              },
+              "products": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Products"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "description": "Password"
+                  },
+                  "notification": {
+                    "type": "boolean",
+                    "description": "Notification"
+                  },
+                  "expand": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Expand"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "Jira credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "User",
+                  "value": "user"
+                }
+              ],
+              "default": "user",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                }
+              ],
+              "default": "delete",
+              "required": true
+            },
+            {
+              "name": "accountId",
+              "displayName": "Account ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "delete"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "username",
+              "displayName": "Username",
+              "type": "string",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "emailAddress",
+              "displayName": "Email Address",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "displayName",
+              "displayName": "Display Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "products",
+              "displayName": "Products",
+              "type": "options",
+              "multiple": true,
+              "required": true,
+              "default": [
+                "jira-software"
+              ],
+              "description": "Select the products the user can access.",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Jira Software",
+                  "value": "jira-software"
+                },
+                {
+                  "name": "Jira Service Management",
+                  "value": "jira-servicedesk"
+                },
+                {
+                  "name": "Jira Work Management (Core)",
+                  "value": "jira-core"
+                },
+                {
+                  "name": "Jira Product Discovery",
+                  "value": "jira-product-discovery"
+                }
+              ]
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "get"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "password",
+                  "displayName": "Password",
+                  "type": "string"
+                },
+                {
+                  "name": "notification",
+                  "displayName": "Notification",
+                  "type": "boolean"
+                },
+                {
+                  "name": "expand",
+                  "displayName": "Expand",
+                  "type": "options",
+                  "multiple": true,
+                  "options": [
+                    {
+                      "name": "Groups",
+                      "value": "groups",
+                      "description": "Include all groups to which the user belongs"
+                    },
+                    {
+                      "name": "Application Roles",
+                      "value": "applicationRoles",
+                      "description": "Include details of all the applications the user can access"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "delete"
+          },
+          "subCategory": "User"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "delete"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "jira.user.get-1783407978743",
+      "type": "action",
+      "position": {
+        "x": 3089.471824208707,
+        "y": 530.9924625461083
+      },
+      "data": {
+        "label": "Get",
+        "toolId": "jira.user.get",
+        "toolData": {
+          "id": "jira.user.get",
+          "displayName": "Get",
+          "category": "Integrations",
+          "provider": "jira",
+          "operation": "Get",
+          "icon": "/tools/jira.png",
+          "actionGroup": "User",
+          "description": "Get in User",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "get",
+                  "delete"
+                ],
+                "description": "Operation"
+              },
+              "accountId": {
+                "type": "string",
+                "description": "Account ID"
+              },
+              "username": {
+                "type": "string",
+                "description": "Username"
+              },
+              "emailAddress": {
+                "type": "string",
+                "description": "Email Address"
+              },
+              "displayName": {
+                "type": "string",
+                "description": "Display Name"
+              },
+              "products": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Products"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "description": "Password"
+                  },
+                  "notification": {
+                    "type": "boolean",
+                    "description": "Notification"
+                  },
+                  "expand": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Expand"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "Jira credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "User",
+                  "value": "user"
+                }
+              ],
+              "default": "user",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                }
+              ],
+              "default": "get",
+              "required": true
+            },
+            {
+              "name": "accountId",
+              "displayName": "Account ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "delete"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "username",
+              "displayName": "Username",
+              "type": "string",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "emailAddress",
+              "displayName": "Email Address",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "displayName",
+              "displayName": "Display Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "products",
+              "displayName": "Products",
+              "type": "options",
+              "multiple": true,
+              "required": true,
+              "default": [
+                "jira-software"
+              ],
+              "description": "Select the products the user can access.",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Jira Software",
+                  "value": "jira-software"
+                },
+                {
+                  "name": "Jira Service Management",
+                  "value": "jira-servicedesk"
+                },
+                {
+                  "name": "Jira Work Management (Core)",
+                  "value": "jira-core"
+                },
+                {
+                  "name": "Jira Product Discovery",
+                  "value": "jira-product-discovery"
+                }
+              ]
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "get"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "password",
+                  "displayName": "Password",
+                  "type": "string"
+                },
+                {
+                  "name": "notification",
+                  "displayName": "Notification",
+                  "type": "boolean"
+                },
+                {
+                  "name": "expand",
+                  "displayName": "Expand",
+                  "type": "options",
+                  "multiple": true,
+                  "options": [
+                    {
+                      "name": "Groups",
+                      "value": "groups",
+                      "description": "Include all groups to which the user belongs"
+                    },
+                    {
+                      "name": "Application Roles",
+                      "value": "applicationRoles",
+                      "description": "Include details of all the applications the user can access"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "get"
+          },
+          "subCategory": "User"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

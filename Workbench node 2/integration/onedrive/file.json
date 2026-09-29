@@ -1,0 +1,539 @@
+{
+  "nodes": [
+    {
+      "id": "microsoft.onedrive.copyFile-1783407633320",
+      "type": "action",
+      "position": {
+        "x": 780.8095150632715,
+        "y": 299.4493507257586
+      },
+      "data": {
+        "label": "Copy File",
+        "toolId": "microsoft.onedrive.copyFile",
+        "toolData": {
+          "id": "microsoft.onedrive.copyFile",
+          "displayName": "Copy File",
+          "category": "Integrations",
+          "provider": "onedrive",
+          "operation": "copyFile",
+          "icon": "Copy",
+          "description": "Copies an existing file to a different folder in OneDrive",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Microsoft OneDrive credential"
+              },
+              "fileId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "ID of the file to copy"
+              },
+              "destinationFolderId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "ID of the destination folder"
+              },
+              "newName": {
+                "type": "string",
+                "description": "New name for the copy (Leave empty to keep current name)"
+              }
+            },
+            "required": [
+              "credentialId",
+              "fileId",
+              "destinationFolderId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "File",
+          "dynamicFields": [
+            {
+              "fieldName": "fileId",
+              "label": "File",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/onedrive/list-files",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "destinationFolderId",
+              "label": "Destination Folder",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/onedrive/list-folders",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "microsoft.onedrive.createFile-1783407635160",
+      "type": "action",
+      "position": {
+        "x": 1184.7449593436402,
+        "y": 356.9056854725352
+      },
+      "data": {
+        "label": "Create File",
+        "toolId": "microsoft.onedrive.createFile",
+        "toolData": {
+          "id": "microsoft.onedrive.createFile",
+          "displayName": "Create File",
+          "category": "Integrations",
+          "provider": "onedrive",
+          "operation": "createFile",
+          "icon": "FilePlus",
+          "description": "Creates a new text or binary file in a specific folder in OneDrive",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Microsoft OneDrive credential"
+              },
+              "fileName": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Name of the file to create (e.g., report.txt)"
+              },
+              "parentId": {
+                "type": "string",
+                "description": "ID of the parent folder (Leave empty to create in Root folder)"
+              },
+              "binaryFile": {
+                "type": "boolean",
+                "description": "Include Binary File?",
+                "default": false
+              },
+              "binaryPropertyName": {
+                "type": "string",
+                "description": "Input Binary Property (when Binary File is enabled)",
+                "default": "data"
+              },
+              "textContent": {
+                "type": "string",
+                "description": "File Content (when Binary File is disabled)"
+              }
+            },
+            "required": [
+              "credentialId",
+              "fileName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "File",
+          "dynamicFields": [
+            {
+              "fieldName": "parentId",
+              "label": "Parent Folder",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/onedrive/list-folders",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ],
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "microsoft.onedrive.deleteFile-1783407636720",
+      "type": "action",
+      "position": {
+        "x": 1738.4150941762148,
+        "y": 416.1031212722444
+      },
+      "data": {
+        "label": "Delete File",
+        "toolId": "microsoft.onedrive.deleteFile",
+        "toolData": {
+          "id": "microsoft.onedrive.deleteFile",
+          "displayName": "Delete File",
+          "category": "Integrations",
+          "provider": "onedrive",
+          "operation": "deleteFile",
+          "icon": "FileMinus",
+          "description": "Deletes a file in Microsoft OneDrive",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Microsoft OneDrive credential"
+              },
+              "fileId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "ID of the file to delete"
+              }
+            },
+            "required": [
+              "credentialId",
+              "fileId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "File",
+          "dynamicFields": [
+            {
+              "fieldName": "fileId",
+              "label": "File",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/onedrive/list-files",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "microsoft.onedrive.downloadFile-1783407638529",
+      "type": "action",
+      "position": {
+        "x": 1224.7902835610905,
+        "y": 668.5627739474749
+      },
+      "data": {
+        "label": "Download File",
+        "toolId": "microsoft.onedrive.downloadFile",
+        "toolData": {
+          "id": "microsoft.onedrive.downloadFile",
+          "displayName": "Download File",
+          "category": "Integrations",
+          "provider": "onedrive",
+          "operation": "downloadFile",
+          "icon": "DownloadCloud",
+          "description": "Downloads an existing file from Microsoft OneDrive and saves it into binary format",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Microsoft OneDrive credential"
+              },
+              "fileId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "ID of the file to download"
+              }
+            },
+            "required": [
+              "credentialId",
+              "fileId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "File",
+          "dynamicFields": [
+            {
+              "fieldName": "fileId",
+              "label": "File",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/onedrive/list-files",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "microsoft.onedrive.renameFile-1783407642280",
+      "type": "action",
+      "position": {
+        "x": 1475.5088351833886,
+        "y": 886.2004055640529
+      },
+      "data": {
+        "label": "Rename File",
+        "toolId": "microsoft.onedrive.renameFile",
+        "toolData": {
+          "id": "microsoft.onedrive.renameFile",
+          "displayName": "Rename File",
+          "category": "Integrations",
+          "provider": "onedrive",
+          "operation": "renameFile",
+          "icon": "FileEdit",
+          "description": "Renames an existing file in Microsoft OneDrive",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Microsoft OneDrive credential"
+              },
+              "fileId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "ID of the file to rename"
+              },
+              "newName": {
+                "type": "string",
+                "minLength": 1,
+                "description": "New name for the file (e.g., updated_report.pdf)"
+              }
+            },
+            "required": [
+              "credentialId",
+              "fileId",
+              "newName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "File",
+          "dynamicFields": [
+            {
+              "fieldName": "fileId",
+              "label": "File",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/onedrive/list-files",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "microsoft.onedrive.searchFile-1783407644128",
+      "type": "action",
+      "position": {
+        "x": 2034.4022731747607,
+        "y": 858.3427887171309
+      },
+      "data": {
+        "label": "Search File",
+        "toolId": "microsoft.onedrive.searchFile",
+        "toolData": {
+          "id": "microsoft.onedrive.searchFile",
+          "displayName": "Search File",
+          "category": "Integrations",
+          "provider": "onedrive",
+          "operation": "searchFile",
+          "icon": "FileSearch",
+          "description": "Searches specifically for files inside OneDrive by keyword",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Microsoft OneDrive credential"
+              },
+              "query": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Keyword or filename to search for"
+              }
+            },
+            "required": [
+              "credentialId",
+              "query"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "File",
+          "dynamicFields": [],
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "microsoft.onedrive.shareFile-1783407646352",
+      "type": "action",
+      "position": {
+        "x": 850.4535571805765,
+        "y": 835.7084750290068
+      },
+      "data": {
+        "label": "Share File",
+        "toolId": "microsoft.onedrive.shareFile",
+        "toolData": {
+          "id": "microsoft.onedrive.shareFile",
+          "displayName": "Share File",
+          "category": "Integrations",
+          "provider": "onedrive",
+          "operation": "shareFile",
+          "icon": "Share2",
+          "description": "Creates a sharing link or embed code for a file in OneDrive",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Microsoft OneDrive credential"
+              },
+              "fileId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "ID of the file to share"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "view",
+                  "edit",
+                  "embed"
+                ],
+                "description": "Type of access to grant",
+                "default": "view"
+              },
+              "scope": {
+                "type": "string",
+                "enum": [
+                  "anonymous",
+                  "organization"
+                ],
+                "description": "Who can access the link",
+                "default": "anonymous"
+              }
+            },
+            "required": [
+              "credentialId",
+              "fileId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "File",
+          "dynamicFields": [
+            {
+              "fieldName": "fileId",
+              "label": "File",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/onedrive/list-files",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "microsoft.onedrive.getFile-1783407669120",
+      "type": "action",
+      "position": {
+        "x": 1747.1205994408779,
+        "y": 689.4559865826664
+      },
+      "data": {
+        "label": "Get File",
+        "toolId": "microsoft.onedrive.getFile",
+        "toolData": {
+          "id": "microsoft.onedrive.getFile",
+          "displayName": "Get File",
+          "category": "Integrations",
+          "provider": "onedrive",
+          "operation": "getFile",
+          "icon": "FileSearch",
+          "description": "Retrieves metadata details of a specific file in OneDrive",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Microsoft OneDrive credential"
+              },
+              "fileId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "ID of the file to retrieve metadata for"
+              }
+            },
+            "required": [
+              "credentialId",
+              "fileId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "File",
+          "dynamicFields": [
+            {
+              "fieldName": "fileId",
+              "label": "File",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/onedrive/list-files",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

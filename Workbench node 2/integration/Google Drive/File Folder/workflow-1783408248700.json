@@ -1,0 +1,159 @@
+{
+  "nodes": [
+    {
+      "id": "google.drive.search-1783408243302",
+      "type": "action",
+      "position": {
+        "x": 924.9226037471772,
+        "y": 325.5690881048568
+      },
+      "data": {
+        "label": "Search files and folders",
+        "toolId": "google.drive.search",
+        "toolData": {
+          "id": "google.drive.search",
+          "displayName": "Search files and folders",
+          "category": "Integrations",
+          "provider": "googleDrive",
+          "operation": "driveSearch",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg",
+          "description": "Search or list files and folders",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "The credential to use for the connection"
+              },
+              "searchMethod": {
+                "type": "string",
+                "enum": [
+                  "name",
+                  "advanced"
+                ],
+                "default": "name",
+                "description": "How to search for files and folders"
+              },
+              "searchQuery": {
+                "type": "string",
+                "description": "Search for files/folders containing this text in their name"
+              },
+              "queryString": {
+                "type": "string",
+                "description": "Google Drive search query string (e.g. name contains \"invoice\" and trashed = false)"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all results or limit them"
+              },
+              "limit": {
+                "type": "number",
+                "default": 50,
+                "description": "Max number of results to return"
+              },
+              "filter": {
+                "type": "object",
+                "properties": {
+                  "parentDriveMode": {
+                    "type": "string",
+                    "enum": [
+                      "list",
+                      "id",
+                      "url"
+                    ]
+                  },
+                  "parentDriveId": {
+                    "type": "string"
+                  },
+                  "parentFolderMode": {
+                    "type": "string",
+                    "enum": [
+                      "list",
+                      "id",
+                      "url"
+                    ]
+                  },
+                  "parentFolderId": {
+                    "type": "string"
+                  },
+                  "whatToSearch": {
+                    "type": "string",
+                    "enum": [
+                      "filesFolders",
+                      "files",
+                      "folders"
+                    ],
+                    "default": "filesFolders"
+                  },
+                  "fileTypes": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "includeTrashed": {
+                    "type": "boolean",
+                    "default": false
+                  }
+                },
+                "additionalProperties": false
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "fields": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "The fields to return for each file"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "credentialId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "File/Folder",
+          "dynamicFields": [
+            {
+              "fieldName": "parentDriveId",
+              "prefix": "filter.",
+              "dependsOn": [
+                "credentialId",
+                "filter.parentDriveMode"
+              ],
+              "fetchEndpoint": "/api/tools/drive/list-drives",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "parentFolderId",
+              "prefix": "filter.",
+              "dependsOn": [
+                "credentialId",
+                "filter.parentFolderMode"
+              ],
+              "fetchEndpoint": "/api/tools/drive/list-folders",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ],
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true
+    }
+  ],
+  "edges": []
+}

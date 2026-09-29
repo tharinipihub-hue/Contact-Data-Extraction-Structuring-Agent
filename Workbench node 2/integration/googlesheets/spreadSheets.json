@@ -1,0 +1,192 @@
+{
+  "nodes": [
+    {
+      "id": "google.sheets.create_spreadsheet-1783408290320",
+      "type": "action",
+      "position": {
+        "x": 654.9294804130901,
+        "y": -280.8326709448293
+      },
+      "data": {
+        "label": "Create Spreadsheet",
+        "toolId": "google.sheets.create_spreadsheet",
+        "toolData": {
+          "id": "google.sheets.create_spreadsheet",
+          "displayName": "Create Spreadsheet",
+          "category": "Integrations",
+          "provider": "sheets",
+          "operation": "sheetsCreateSpreadsheet",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg",
+          "description": "Create a new Google Spreadsheet",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Spreadsheet Title"
+              },
+              "credentials": {
+                "description": "Google Sheets credentials"
+              }
+            },
+            "required": [
+              "title"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Spreadsheet"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "google.sheets.delete_spreadsheet-1783408291199",
+      "type": "action",
+      "position": {
+        "x": 898.6836278236575,
+        "y": -101.49926249276903
+      },
+      "data": {
+        "label": "Delete Spreadsheet",
+        "toolId": "google.sheets.delete_spreadsheet",
+        "toolData": {
+          "id": "google.sheets.delete_spreadsheet",
+          "displayName": "Delete Spreadsheet",
+          "category": "Integrations",
+          "provider": "sheets",
+          "operation": "sheetsDeleteSpreadsheet",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg",
+          "description": "Delete a Google Spreadsheet (moves to trash)",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "spreadsheetId": {
+                "type": "string",
+                "description": "Document"
+              },
+              "credentials": {
+                "description": "Google Sheets credentials"
+              }
+            },
+            "required": [
+              "spreadsheetId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Spreadsheet",
+          "dynamicFields": [
+            {
+              "fieldName": "spreadsheetId",
+              "label": "Document (Spreadsheet)",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/list-spreadsheets",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "google.sheets.list-1783408292743",
+      "type": "action",
+      "position": {
+        "x": 623.5896614603029,
+        "y": 13.413407000784147
+      },
+      "data": {
+        "label": "List Spreadsheets",
+        "toolId": "google.sheets.list",
+        "toolData": {
+          "id": "google.sheets.list",
+          "displayName": "List Spreadsheets",
+          "category": "Integrations",
+          "provider": "sheets",
+          "operation": "sheetsList",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg",
+          "description": "List all Google Spreadsheets accessible with the provided credentials",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "client_email": {
+                        "type": "string"
+                      },
+                      "private_key": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "client_email",
+                      "private_key"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "access_token": {
+                        "type": "string"
+                      },
+                      "refresh_token": {
+                        "type": "string"
+                      },
+                      "expiry_date": {
+                        "type": "number"
+                      },
+                      "scope": {
+                        "type": "string"
+                      },
+                      "token_type": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "access_token"
+                    ],
+                    "additionalProperties": false
+                  }
+                ],
+                "description": "Google Credentials (Service Account or OAuth)"
+              },
+              "maxResults": {
+                "type": "number",
+                "description": "Maximum number of spreadsheets to list"
+              }
+            },
+            "required": [
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Spreadsheet"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

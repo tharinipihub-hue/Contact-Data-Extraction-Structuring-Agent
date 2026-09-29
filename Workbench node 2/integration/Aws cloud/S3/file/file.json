@@ -1,0 +1,2230 @@
+{
+  "nodes": [
+    {
+      "id": "aws.s3.file.copy-1783400303634",
+      "type": "action",
+      "position": {
+        "x": 638.1577680920078,
+        "y": 351.6589998910149
+      },
+      "data": {
+        "label": "Copy",
+        "toolId": "aws.s3.file.copy",
+        "toolData": {
+          "id": "aws.s3.file.copy",
+          "displayName": "Copy",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Copy",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Amazon-S3-Logo.svg",
+          "actionGroup": "S3 File",
+          "description": "Copy in S3 File",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "upload",
+                  "delete",
+                  "getMany",
+                  "download",
+                  "copy"
+                ],
+                "description": "File Operation"
+              },
+              "bucketName": {
+                "type": "string",
+                "description": "Bucket Name"
+              },
+              "fileKey": {
+                "type": "string",
+                "description": "File Key/Path (upload/delete/download/getMany)"
+              },
+              "fileName": {
+                "type": "string",
+                "description": "File Name (upload)"
+              },
+              "parentFolderKey": {
+                "type": "string",
+                "description": "Parent Folder Key (upload)"
+              },
+              "sourcePath": {
+                "type": "string",
+                "description": "Source Path (copy)"
+              },
+              "destinationPath": {
+                "type": "string",
+                "description": "Destination Path (copy)"
+              },
+              "fileContent": {
+                "description": "File Content (upload)"
+              },
+              "binaryFile": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether to upload from a binary field"
+              },
+              "inputBinaryField": {
+                "type": "string",
+                "default": "data",
+                "description": "The name of the input binary field"
+              },
+              "storageClass": {
+                "type": "string",
+                "description": "Storage Class"
+              },
+              "requesterPays": {
+                "type": "boolean",
+                "description": "Requester Pays"
+              },
+              "acl": {
+                "type": "string",
+                "description": "Access Control List (upload)"
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "Key": {
+                      "type": "string"
+                    },
+                    "Value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "Key",
+                    "Value"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Object Tags"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return All (getMany)"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit (getMany)"
+              },
+              "fetchOwner": {
+                "type": "boolean",
+                "description": "Fetch Owner (getMany)"
+              },
+              "folderKey": {
+                "type": "string",
+                "description": "Folder Key (getMany)"
+              },
+              "versionId": {
+                "type": "string",
+                "description": "Version ID (delete)"
+              },
+              "outputFieldName": {
+                "type": "string",
+                "default": "data",
+                "description": "Output Field Name (download)"
+              },
+              "credentials": {
+                "description": "AWS S3 credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Upload",
+                  "value": "upload"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Download",
+                  "value": "download"
+                },
+                {
+                  "name": "Copy",
+                  "value": "copy"
+                }
+              ],
+              "default": "copy",
+              "required": true
+            },
+            {
+              "name": "bucketName",
+              "displayName": "Bucket Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "delete",
+                    "getMany",
+                    "download"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "sourcePath",
+              "displayName": "Source Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "/source-bucket/source-file.png",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "copy"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "destinationPath",
+              "displayName": "Destination Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "/dest-bucket/dest-file.png",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "copy"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "parentFolderKey",
+              "displayName": "Parent Folder Key",
+              "type": "string",
+              "required": false,
+              "advanced": true,
+              "placeholder": "e.g. folder/subfolder/",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fileKey",
+              "displayName": "File Name",
+              "type": "string",
+              "required": true,
+              "description": "The name/path of the file to create",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "delete",
+                    "download"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "binaryFile",
+              "displayName": "Binary File",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputBinaryField",
+              "displayName": "Input Binary Field",
+              "type": "string",
+              "default": "data",
+              "required": true,
+              "description": "The name of the input binary field containing the file to be uploaded",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ],
+                  "binaryFile": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fileContent",
+              "displayName": "File Content",
+              "type": "string",
+              "required": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ],
+                  "binaryFile": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Tags",
+              "name": "tags",
+              "type": "array",
+              "placeholder": "Add Tag",
+              "fields": [
+                {
+                  "displayName": "Key",
+                  "name": "Key",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "displayName": "Value",
+                  "name": "Value",
+                  "type": "string",
+                  "default": ""
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 100,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fetchOwner",
+              "displayName": "Fetch Owner",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "folderKey",
+              "displayName": "Folder Key",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "versionId",
+              "displayName": "Version ID",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "acl",
+              "displayName": "ACL",
+              "type": "options",
+              "advanced": true,
+              "options": [
+                {
+                  "name": "Authenticated Read",
+                  "value": "authenticated-read"
+                },
+                {
+                  "name": "AWS Exec Read",
+                  "value": "aws-exec-read"
+                },
+                {
+                  "name": "Bucket Owner Full Control",
+                  "value": "bucket-owner-full-control"
+                },
+                {
+                  "name": "Bucket Owner Read",
+                  "value": "bucket-owner-read"
+                },
+                {
+                  "name": "Private",
+                  "value": "private"
+                },
+                {
+                  "name": "Public Read",
+                  "value": "public-read"
+                },
+                {
+                  "name": "Public Read Write",
+                  "value": "public-read-write"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "copy"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "copy"
+          },
+          "subCategory": "S3 File",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "copy"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.s3.file.delete-1783400304665",
+      "type": "action",
+      "position": {
+        "x": 986.5078565360518,
+        "y": 499.44388589757904
+      },
+      "data": {
+        "label": "Delete",
+        "toolId": "aws.s3.file.delete",
+        "toolData": {
+          "id": "aws.s3.file.delete",
+          "displayName": "Delete",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Delete",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Amazon-S3-Logo.svg",
+          "actionGroup": "S3 File",
+          "description": "Delete in S3 File",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "upload",
+                  "delete",
+                  "getMany",
+                  "download",
+                  "copy"
+                ],
+                "description": "File Operation"
+              },
+              "bucketName": {
+                "type": "string",
+                "description": "Bucket Name"
+              },
+              "fileKey": {
+                "type": "string",
+                "description": "File Key/Path (upload/delete/download/getMany)"
+              },
+              "fileName": {
+                "type": "string",
+                "description": "File Name (upload)"
+              },
+              "parentFolderKey": {
+                "type": "string",
+                "description": "Parent Folder Key (upload)"
+              },
+              "sourcePath": {
+                "type": "string",
+                "description": "Source Path (copy)"
+              },
+              "destinationPath": {
+                "type": "string",
+                "description": "Destination Path (copy)"
+              },
+              "fileContent": {
+                "description": "File Content (upload)"
+              },
+              "binaryFile": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether to upload from a binary field"
+              },
+              "inputBinaryField": {
+                "type": "string",
+                "default": "data",
+                "description": "The name of the input binary field"
+              },
+              "storageClass": {
+                "type": "string",
+                "description": "Storage Class"
+              },
+              "requesterPays": {
+                "type": "boolean",
+                "description": "Requester Pays"
+              },
+              "acl": {
+                "type": "string",
+                "description": "Access Control List (upload)"
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "Key": {
+                      "type": "string"
+                    },
+                    "Value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "Key",
+                    "Value"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Object Tags"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return All (getMany)"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit (getMany)"
+              },
+              "fetchOwner": {
+                "type": "boolean",
+                "description": "Fetch Owner (getMany)"
+              },
+              "folderKey": {
+                "type": "string",
+                "description": "Folder Key (getMany)"
+              },
+              "versionId": {
+                "type": "string",
+                "description": "Version ID (delete)"
+              },
+              "outputFieldName": {
+                "type": "string",
+                "default": "data",
+                "description": "Output Field Name (download)"
+              },
+              "credentials": {
+                "description": "AWS S3 credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Upload",
+                  "value": "upload"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Download",
+                  "value": "download"
+                },
+                {
+                  "name": "Copy",
+                  "value": "copy"
+                }
+              ],
+              "default": "delete",
+              "required": true
+            },
+            {
+              "name": "bucketName",
+              "displayName": "Bucket Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "delete",
+                    "getMany",
+                    "download"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "sourcePath",
+              "displayName": "Source Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "/source-bucket/source-file.png",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "copy"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "destinationPath",
+              "displayName": "Destination Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "/dest-bucket/dest-file.png",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "copy"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "parentFolderKey",
+              "displayName": "Parent Folder Key",
+              "type": "string",
+              "required": false,
+              "advanced": true,
+              "placeholder": "e.g. folder/subfolder/",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fileKey",
+              "displayName": "File Name",
+              "type": "string",
+              "required": true,
+              "description": "The name/path of the file to create",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "delete",
+                    "download"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "binaryFile",
+              "displayName": "Binary File",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputBinaryField",
+              "displayName": "Input Binary Field",
+              "type": "string",
+              "default": "data",
+              "required": true,
+              "description": "The name of the input binary field containing the file to be uploaded",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ],
+                  "binaryFile": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fileContent",
+              "displayName": "File Content",
+              "type": "string",
+              "required": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ],
+                  "binaryFile": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Tags",
+              "name": "tags",
+              "type": "array",
+              "placeholder": "Add Tag",
+              "fields": [
+                {
+                  "displayName": "Key",
+                  "name": "Key",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "displayName": "Value",
+                  "name": "Value",
+                  "type": "string",
+                  "default": ""
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 100,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fetchOwner",
+              "displayName": "Fetch Owner",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "folderKey",
+              "displayName": "Folder Key",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "versionId",
+              "displayName": "Version ID",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "acl",
+              "displayName": "ACL",
+              "type": "options",
+              "advanced": true,
+              "options": [
+                {
+                  "name": "Authenticated Read",
+                  "value": "authenticated-read"
+                },
+                {
+                  "name": "AWS Exec Read",
+                  "value": "aws-exec-read"
+                },
+                {
+                  "name": "Bucket Owner Full Control",
+                  "value": "bucket-owner-full-control"
+                },
+                {
+                  "name": "Bucket Owner Read",
+                  "value": "bucket-owner-read"
+                },
+                {
+                  "name": "Private",
+                  "value": "private"
+                },
+                {
+                  "name": "Public Read",
+                  "value": "public-read"
+                },
+                {
+                  "name": "Public Read Write",
+                  "value": "public-read-write"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "copy"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "delete"
+          },
+          "subCategory": "S3 File",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "delete"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.s3.file.download-1783400305786",
+      "type": "action",
+      "position": {
+        "x": 758.2329879723411,
+        "y": 648.5482798149161
+      },
+      "data": {
+        "label": "Download",
+        "toolId": "aws.s3.file.download",
+        "toolData": {
+          "id": "aws.s3.file.download",
+          "displayName": "Download",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Download",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Amazon-S3-Logo.svg",
+          "actionGroup": "S3 File",
+          "description": "Download in S3 File",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "upload",
+                  "delete",
+                  "getMany",
+                  "download",
+                  "copy"
+                ],
+                "description": "File Operation"
+              },
+              "bucketName": {
+                "type": "string",
+                "description": "Bucket Name"
+              },
+              "fileKey": {
+                "type": "string",
+                "description": "File Key/Path (upload/delete/download/getMany)"
+              },
+              "fileName": {
+                "type": "string",
+                "description": "File Name (upload)"
+              },
+              "parentFolderKey": {
+                "type": "string",
+                "description": "Parent Folder Key (upload)"
+              },
+              "sourcePath": {
+                "type": "string",
+                "description": "Source Path (copy)"
+              },
+              "destinationPath": {
+                "type": "string",
+                "description": "Destination Path (copy)"
+              },
+              "fileContent": {
+                "description": "File Content (upload)"
+              },
+              "binaryFile": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether to upload from a binary field"
+              },
+              "inputBinaryField": {
+                "type": "string",
+                "default": "data",
+                "description": "The name of the input binary field"
+              },
+              "storageClass": {
+                "type": "string",
+                "description": "Storage Class"
+              },
+              "requesterPays": {
+                "type": "boolean",
+                "description": "Requester Pays"
+              },
+              "acl": {
+                "type": "string",
+                "description": "Access Control List (upload)"
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "Key": {
+                      "type": "string"
+                    },
+                    "Value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "Key",
+                    "Value"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Object Tags"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return All (getMany)"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit (getMany)"
+              },
+              "fetchOwner": {
+                "type": "boolean",
+                "description": "Fetch Owner (getMany)"
+              },
+              "folderKey": {
+                "type": "string",
+                "description": "Folder Key (getMany)"
+              },
+              "versionId": {
+                "type": "string",
+                "description": "Version ID (delete)"
+              },
+              "outputFieldName": {
+                "type": "string",
+                "default": "data",
+                "description": "Output Field Name (download)"
+              },
+              "credentials": {
+                "description": "AWS S3 credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Upload",
+                  "value": "upload"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Download",
+                  "value": "download"
+                },
+                {
+                  "name": "Copy",
+                  "value": "copy"
+                }
+              ],
+              "default": "download",
+              "required": true
+            },
+            {
+              "name": "bucketName",
+              "displayName": "Bucket Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "delete",
+                    "getMany",
+                    "download"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "sourcePath",
+              "displayName": "Source Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "/source-bucket/source-file.png",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "copy"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "destinationPath",
+              "displayName": "Destination Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "/dest-bucket/dest-file.png",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "copy"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "parentFolderKey",
+              "displayName": "Parent Folder Key",
+              "type": "string",
+              "required": false,
+              "advanced": true,
+              "placeholder": "e.g. folder/subfolder/",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fileKey",
+              "displayName": "File Name",
+              "type": "string",
+              "required": true,
+              "description": "The name/path of the file to create",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "delete",
+                    "download"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "binaryFile",
+              "displayName": "Binary File",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputBinaryField",
+              "displayName": "Input Binary Field",
+              "type": "string",
+              "default": "data",
+              "required": true,
+              "description": "The name of the input binary field containing the file to be uploaded",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ],
+                  "binaryFile": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fileContent",
+              "displayName": "File Content",
+              "type": "string",
+              "required": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ],
+                  "binaryFile": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Tags",
+              "name": "tags",
+              "type": "array",
+              "placeholder": "Add Tag",
+              "fields": [
+                {
+                  "displayName": "Key",
+                  "name": "Key",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "displayName": "Value",
+                  "name": "Value",
+                  "type": "string",
+                  "default": ""
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 100,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fetchOwner",
+              "displayName": "Fetch Owner",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "folderKey",
+              "displayName": "Folder Key",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "versionId",
+              "displayName": "Version ID",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "acl",
+              "displayName": "ACL",
+              "type": "options",
+              "advanced": true,
+              "options": [
+                {
+                  "name": "Authenticated Read",
+                  "value": "authenticated-read"
+                },
+                {
+                  "name": "AWS Exec Read",
+                  "value": "aws-exec-read"
+                },
+                {
+                  "name": "Bucket Owner Full Control",
+                  "value": "bucket-owner-full-control"
+                },
+                {
+                  "name": "Bucket Owner Read",
+                  "value": "bucket-owner-read"
+                },
+                {
+                  "name": "Private",
+                  "value": "private"
+                },
+                {
+                  "name": "Public Read",
+                  "value": "public-read"
+                },
+                {
+                  "name": "Public Read Write",
+                  "value": "public-read-write"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "copy"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "download"
+          },
+          "subCategory": "S3 File",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "download"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.s3.file.getmany-1783400307241",
+      "type": "action",
+      "position": {
+        "x": 577.4604041964546,
+        "y": 566.7387893469967
+      },
+      "data": {
+        "label": "Get Many",
+        "toolId": "aws.s3.file.getmany",
+        "toolData": {
+          "id": "aws.s3.file.getmany",
+          "displayName": "Get Many",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Get Many",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Amazon-S3-Logo.svg",
+          "actionGroup": "S3 File",
+          "description": "Get Many in S3 File",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "upload",
+                  "delete",
+                  "getMany",
+                  "download",
+                  "copy"
+                ],
+                "description": "File Operation"
+              },
+              "bucketName": {
+                "type": "string",
+                "description": "Bucket Name"
+              },
+              "fileKey": {
+                "type": "string",
+                "description": "File Key/Path (upload/delete/download/getMany)"
+              },
+              "fileName": {
+                "type": "string",
+                "description": "File Name (upload)"
+              },
+              "parentFolderKey": {
+                "type": "string",
+                "description": "Parent Folder Key (upload)"
+              },
+              "sourcePath": {
+                "type": "string",
+                "description": "Source Path (copy)"
+              },
+              "destinationPath": {
+                "type": "string",
+                "description": "Destination Path (copy)"
+              },
+              "fileContent": {
+                "description": "File Content (upload)"
+              },
+              "binaryFile": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether to upload from a binary field"
+              },
+              "inputBinaryField": {
+                "type": "string",
+                "default": "data",
+                "description": "The name of the input binary field"
+              },
+              "storageClass": {
+                "type": "string",
+                "description": "Storage Class"
+              },
+              "requesterPays": {
+                "type": "boolean",
+                "description": "Requester Pays"
+              },
+              "acl": {
+                "type": "string",
+                "description": "Access Control List (upload)"
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "Key": {
+                      "type": "string"
+                    },
+                    "Value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "Key",
+                    "Value"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Object Tags"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return All (getMany)"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit (getMany)"
+              },
+              "fetchOwner": {
+                "type": "boolean",
+                "description": "Fetch Owner (getMany)"
+              },
+              "folderKey": {
+                "type": "string",
+                "description": "Folder Key (getMany)"
+              },
+              "versionId": {
+                "type": "string",
+                "description": "Version ID (delete)"
+              },
+              "outputFieldName": {
+                "type": "string",
+                "default": "data",
+                "description": "Output Field Name (download)"
+              },
+              "credentials": {
+                "description": "AWS S3 credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Upload",
+                  "value": "upload"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Download",
+                  "value": "download"
+                },
+                {
+                  "name": "Copy",
+                  "value": "copy"
+                }
+              ],
+              "default": "getMany",
+              "required": true
+            },
+            {
+              "name": "bucketName",
+              "displayName": "Bucket Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "delete",
+                    "getMany",
+                    "download"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "sourcePath",
+              "displayName": "Source Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "/source-bucket/source-file.png",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "copy"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "destinationPath",
+              "displayName": "Destination Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "/dest-bucket/dest-file.png",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "copy"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "parentFolderKey",
+              "displayName": "Parent Folder Key",
+              "type": "string",
+              "required": false,
+              "advanced": true,
+              "placeholder": "e.g. folder/subfolder/",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fileKey",
+              "displayName": "File Name",
+              "type": "string",
+              "required": true,
+              "description": "The name/path of the file to create",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "delete",
+                    "download"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "binaryFile",
+              "displayName": "Binary File",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputBinaryField",
+              "displayName": "Input Binary Field",
+              "type": "string",
+              "default": "data",
+              "required": true,
+              "description": "The name of the input binary field containing the file to be uploaded",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ],
+                  "binaryFile": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fileContent",
+              "displayName": "File Content",
+              "type": "string",
+              "required": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ],
+                  "binaryFile": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Tags",
+              "name": "tags",
+              "type": "array",
+              "placeholder": "Add Tag",
+              "fields": [
+                {
+                  "displayName": "Key",
+                  "name": "Key",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "displayName": "Value",
+                  "name": "Value",
+                  "type": "string",
+                  "default": ""
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 100,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fetchOwner",
+              "displayName": "Fetch Owner",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "folderKey",
+              "displayName": "Folder Key",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "versionId",
+              "displayName": "Version ID",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "acl",
+              "displayName": "ACL",
+              "type": "options",
+              "advanced": true,
+              "options": [
+                {
+                  "name": "Authenticated Read",
+                  "value": "authenticated-read"
+                },
+                {
+                  "name": "AWS Exec Read",
+                  "value": "aws-exec-read"
+                },
+                {
+                  "name": "Bucket Owner Full Control",
+                  "value": "bucket-owner-full-control"
+                },
+                {
+                  "name": "Bucket Owner Read",
+                  "value": "bucket-owner-read"
+                },
+                {
+                  "name": "Private",
+                  "value": "private"
+                },
+                {
+                  "name": "Public Read",
+                  "value": "public-read"
+                },
+                {
+                  "name": "Public Read Write",
+                  "value": "public-read-write"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "copy"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "getMany"
+          },
+          "subCategory": "S3 File",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "getMany"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.s3.file.upload-1783400308769",
+      "type": "action",
+      "position": {
+        "x": 1105.2635685056123,
+        "y": 379.3686660172457
+      },
+      "data": {
+        "label": "Upload",
+        "toolId": "aws.s3.file.upload",
+        "toolData": {
+          "id": "aws.s3.file.upload",
+          "displayName": "Upload",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Upload",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Amazon-S3-Logo.svg",
+          "actionGroup": "S3 File",
+          "description": "Upload in S3 File",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "upload",
+                  "delete",
+                  "getMany",
+                  "download",
+                  "copy"
+                ],
+                "description": "File Operation"
+              },
+              "bucketName": {
+                "type": "string",
+                "description": "Bucket Name"
+              },
+              "fileKey": {
+                "type": "string",
+                "description": "File Key/Path (upload/delete/download/getMany)"
+              },
+              "fileName": {
+                "type": "string",
+                "description": "File Name (upload)"
+              },
+              "parentFolderKey": {
+                "type": "string",
+                "description": "Parent Folder Key (upload)"
+              },
+              "sourcePath": {
+                "type": "string",
+                "description": "Source Path (copy)"
+              },
+              "destinationPath": {
+                "type": "string",
+                "description": "Destination Path (copy)"
+              },
+              "fileContent": {
+                "description": "File Content (upload)"
+              },
+              "binaryFile": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether to upload from a binary field"
+              },
+              "inputBinaryField": {
+                "type": "string",
+                "default": "data",
+                "description": "The name of the input binary field"
+              },
+              "storageClass": {
+                "type": "string",
+                "description": "Storage Class"
+              },
+              "requesterPays": {
+                "type": "boolean",
+                "description": "Requester Pays"
+              },
+              "acl": {
+                "type": "string",
+                "description": "Access Control List (upload)"
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "Key": {
+                      "type": "string"
+                    },
+                    "Value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "Key",
+                    "Value"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Object Tags"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return All (getMany)"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit (getMany)"
+              },
+              "fetchOwner": {
+                "type": "boolean",
+                "description": "Fetch Owner (getMany)"
+              },
+              "folderKey": {
+                "type": "string",
+                "description": "Folder Key (getMany)"
+              },
+              "versionId": {
+                "type": "string",
+                "description": "Version ID (delete)"
+              },
+              "outputFieldName": {
+                "type": "string",
+                "default": "data",
+                "description": "Output Field Name (download)"
+              },
+              "credentials": {
+                "description": "AWS S3 credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Upload",
+                  "value": "upload"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Download",
+                  "value": "download"
+                },
+                {
+                  "name": "Copy",
+                  "value": "copy"
+                }
+              ],
+              "default": "upload",
+              "required": true
+            },
+            {
+              "name": "bucketName",
+              "displayName": "Bucket Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "delete",
+                    "getMany",
+                    "download"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "sourcePath",
+              "displayName": "Source Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "/source-bucket/source-file.png",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "copy"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "destinationPath",
+              "displayName": "Destination Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "/dest-bucket/dest-file.png",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "copy"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "parentFolderKey",
+              "displayName": "Parent Folder Key",
+              "type": "string",
+              "required": false,
+              "advanced": true,
+              "placeholder": "e.g. folder/subfolder/",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fileKey",
+              "displayName": "File Name",
+              "type": "string",
+              "required": true,
+              "description": "The name/path of the file to create",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "delete",
+                    "download"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "binaryFile",
+              "displayName": "Binary File",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputBinaryField",
+              "displayName": "Input Binary Field",
+              "type": "string",
+              "default": "data",
+              "required": true,
+              "description": "The name of the input binary field containing the file to be uploaded",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ],
+                  "binaryFile": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fileContent",
+              "displayName": "File Content",
+              "type": "string",
+              "required": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ],
+                  "binaryFile": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Tags",
+              "name": "tags",
+              "type": "array",
+              "placeholder": "Add Tag",
+              "fields": [
+                {
+                  "displayName": "Key",
+                  "name": "Key",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "displayName": "Value",
+                  "name": "Value",
+                  "type": "string",
+                  "default": ""
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 100,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fetchOwner",
+              "displayName": "Fetch Owner",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "folderKey",
+              "displayName": "Folder Key",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "versionId",
+              "displayName": "Version ID",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "acl",
+              "displayName": "ACL",
+              "type": "options",
+              "advanced": true,
+              "options": [
+                {
+                  "name": "Authenticated Read",
+                  "value": "authenticated-read"
+                },
+                {
+                  "name": "AWS Exec Read",
+                  "value": "aws-exec-read"
+                },
+                {
+                  "name": "Bucket Owner Full Control",
+                  "value": "bucket-owner-full-control"
+                },
+                {
+                  "name": "Bucket Owner Read",
+                  "value": "bucket-owner-read"
+                },
+                {
+                  "name": "Private",
+                  "value": "private"
+                },
+                {
+                  "name": "Public Read",
+                  "value": "public-read"
+                },
+                {
+                  "name": "Public Read Write",
+                  "value": "public-read-write"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "copy"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "upload"
+          },
+          "subCategory": "S3 File",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "upload"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

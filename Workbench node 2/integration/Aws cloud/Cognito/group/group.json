@@ -1,0 +1,1370 @@
+{
+  "nodes": [
+    {
+      "id": "aws.cognito.group.create-1783398245888",
+      "type": "action",
+      "position": {
+        "x": -105.05998319775517,
+        "y": 546.9415601228943
+      },
+      "data": {
+        "label": "Create",
+        "toolId": "aws.cognito.group.create",
+        "toolData": {
+          "id": "aws.cognito.group.create",
+          "displayName": "Create",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Create",
+          "icon": "/tools/awsCognito.png",
+          "actionGroup": "Cognito Group",
+          "description": "Create in Cognito Group",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "get",
+                  "getMany",
+                  "update",
+                  "delete"
+                ],
+                "description": "Operation to perform"
+              },
+              "userPoolId": {
+                "type": "string",
+                "description": "The ID of the user pool."
+              },
+              "groupName": {
+                "type": "string",
+                "description": "The name of the group."
+              },
+              "group": {
+                "type": "string",
+                "description": "The name of the group (from list)."
+              },
+              "includeUsers": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to include the list of users in the group (for Get/Get Many)."
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 60,
+                "default": 50,
+                "description": "The maximum number of groups to return."
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all groups."
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "description": {
+                    "type": "string",
+                    "description": "A string description of the group."
+                  },
+                  "precedence": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "A nonnegative integer value that specifies the precedence of this group relative to the other groups that a user can belong to."
+                  },
+                  "roleArn": {
+                    "type": "string",
+                    "description": "The role ARN for the group."
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "AWS Cognito credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region"
+              }
+            },
+            "required": [
+              "operation",
+              "userPoolId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "create",
+              "required": true
+            },
+            {
+              "name": "userPoolId",
+              "displayName": "User Pool",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-user-pools",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Select a user pool...",
+              "description": "Select an existing user pool from your account."
+            },
+            {
+              "name": "groupName",
+              "displayName": "Group Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. MyNewGroup",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The name of the group you want to create."
+            },
+            {
+              "name": "group",
+              "displayName": "Group",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-groups",
+              "dependsOn": [
+                "credentials",
+                "userPoolId"
+              ],
+              "placeholder": "Select a group...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "update",
+                    "delete"
+                  ]
+                }
+              },
+              "description": "Select a group from the chosen user pool."
+            },
+            {
+              "name": "includeUsers",
+              "displayName": "Include Users",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to include the list of users belonging to the group."
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all groups in the user pool."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "Max number of groups to return."
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Option",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "description",
+                  "displayName": "Description",
+                  "type": "string",
+                  "default": "",
+                  "description": "A description of the group."
+                },
+                {
+                  "name": "precedence",
+                  "displayName": "Precedence",
+                  "type": "number",
+                  "default": 0,
+                  "description": "The precedence of the group (lower values take priority)."
+                },
+                {
+                  "name": "roleArn",
+                  "displayName": "Role ARN",
+                  "type": "string",
+                  "default": "",
+                  "description": "The ARN of the IAM role assigned to the group."
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "create"
+          },
+          "subCategory": "Cognito Group"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "create"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.cognito.group.delete-1783398247296",
+      "type": "action",
+      "position": {
+        "x": 32.48700580303248,
+        "y": 785.4724144660324
+      },
+      "data": {
+        "label": "Delete",
+        "toolId": "aws.cognito.group.delete",
+        "toolData": {
+          "id": "aws.cognito.group.delete",
+          "displayName": "Delete",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Delete",
+          "icon": "/tools/awsCognito.png",
+          "actionGroup": "Cognito Group",
+          "description": "Delete in Cognito Group",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "get",
+                  "getMany",
+                  "update",
+                  "delete"
+                ],
+                "description": "Operation to perform"
+              },
+              "userPoolId": {
+                "type": "string",
+                "description": "The ID of the user pool."
+              },
+              "groupName": {
+                "type": "string",
+                "description": "The name of the group."
+              },
+              "group": {
+                "type": "string",
+                "description": "The name of the group (from list)."
+              },
+              "includeUsers": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to include the list of users in the group (for Get/Get Many)."
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 60,
+                "default": 50,
+                "description": "The maximum number of groups to return."
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all groups."
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "description": {
+                    "type": "string",
+                    "description": "A string description of the group."
+                  },
+                  "precedence": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "A nonnegative integer value that specifies the precedence of this group relative to the other groups that a user can belong to."
+                  },
+                  "roleArn": {
+                    "type": "string",
+                    "description": "The role ARN for the group."
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "AWS Cognito credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region"
+              }
+            },
+            "required": [
+              "operation",
+              "userPoolId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "delete",
+              "required": true
+            },
+            {
+              "name": "userPoolId",
+              "displayName": "User Pool",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-user-pools",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Select a user pool...",
+              "description": "Select an existing user pool from your account."
+            },
+            {
+              "name": "groupName",
+              "displayName": "Group Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. MyNewGroup",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The name of the group you want to create."
+            },
+            {
+              "name": "group",
+              "displayName": "Group",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-groups",
+              "dependsOn": [
+                "credentials",
+                "userPoolId"
+              ],
+              "placeholder": "Select a group...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "update",
+                    "delete"
+                  ]
+                }
+              },
+              "description": "Select a group from the chosen user pool."
+            },
+            {
+              "name": "includeUsers",
+              "displayName": "Include Users",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to include the list of users belonging to the group."
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all groups in the user pool."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "Max number of groups to return."
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Option",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "description",
+                  "displayName": "Description",
+                  "type": "string",
+                  "default": "",
+                  "description": "A description of the group."
+                },
+                {
+                  "name": "precedence",
+                  "displayName": "Precedence",
+                  "type": "number",
+                  "default": 0,
+                  "description": "The precedence of the group (lower values take priority)."
+                },
+                {
+                  "name": "roleArn",
+                  "displayName": "Role ARN",
+                  "type": "string",
+                  "default": "",
+                  "description": "The ARN of the IAM role assigned to the group."
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "delete"
+          },
+          "subCategory": "Cognito Group"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "delete"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.cognito.group.get-1783398248480",
+      "type": "action",
+      "position": {
+        "x": 72.5323317146542,
+        "y": 973.5113361379954
+      },
+      "data": {
+        "label": "Get",
+        "toolId": "aws.cognito.group.get",
+        "toolData": {
+          "id": "aws.cognito.group.get",
+          "displayName": "Get",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Get",
+          "icon": "/tools/awsCognito.png",
+          "actionGroup": "Cognito Group",
+          "description": "Get in Cognito Group",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "get",
+                  "getMany",
+                  "update",
+                  "delete"
+                ],
+                "description": "Operation to perform"
+              },
+              "userPoolId": {
+                "type": "string",
+                "description": "The ID of the user pool."
+              },
+              "groupName": {
+                "type": "string",
+                "description": "The name of the group."
+              },
+              "group": {
+                "type": "string",
+                "description": "The name of the group (from list)."
+              },
+              "includeUsers": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to include the list of users in the group (for Get/Get Many)."
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 60,
+                "default": 50,
+                "description": "The maximum number of groups to return."
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all groups."
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "description": {
+                    "type": "string",
+                    "description": "A string description of the group."
+                  },
+                  "precedence": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "A nonnegative integer value that specifies the precedence of this group relative to the other groups that a user can belong to."
+                  },
+                  "roleArn": {
+                    "type": "string",
+                    "description": "The role ARN for the group."
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "AWS Cognito credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region"
+              }
+            },
+            "required": [
+              "operation",
+              "userPoolId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "get",
+              "required": true
+            },
+            {
+              "name": "userPoolId",
+              "displayName": "User Pool",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-user-pools",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Select a user pool...",
+              "description": "Select an existing user pool from your account."
+            },
+            {
+              "name": "groupName",
+              "displayName": "Group Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. MyNewGroup",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The name of the group you want to create."
+            },
+            {
+              "name": "group",
+              "displayName": "Group",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-groups",
+              "dependsOn": [
+                "credentials",
+                "userPoolId"
+              ],
+              "placeholder": "Select a group...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "update",
+                    "delete"
+                  ]
+                }
+              },
+              "description": "Select a group from the chosen user pool."
+            },
+            {
+              "name": "includeUsers",
+              "displayName": "Include Users",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to include the list of users belonging to the group."
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all groups in the user pool."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "Max number of groups to return."
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Option",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "description",
+                  "displayName": "Description",
+                  "type": "string",
+                  "default": "",
+                  "description": "A description of the group."
+                },
+                {
+                  "name": "precedence",
+                  "displayName": "Precedence",
+                  "type": "number",
+                  "default": 0,
+                  "description": "The precedence of the group (lower values take priority)."
+                },
+                {
+                  "name": "roleArn",
+                  "displayName": "Role ARN",
+                  "type": "string",
+                  "default": "",
+                  "description": "The ARN of the IAM role assigned to the group."
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "get"
+          },
+          "subCategory": "Cognito Group"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.cognito.group.getmany-1783398250000",
+      "type": "action",
+      "position": {
+        "x": 584.4160629327754,
+        "y": 609.6212006802152
+      },
+      "data": {
+        "label": "Get Many",
+        "toolId": "aws.cognito.group.getmany",
+        "toolData": {
+          "id": "aws.cognito.group.getmany",
+          "displayName": "Get Many",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Get Many",
+          "icon": "/tools/awsCognito.png",
+          "actionGroup": "Cognito Group",
+          "description": "Get Many in Cognito Group",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "get",
+                  "getMany",
+                  "update",
+                  "delete"
+                ],
+                "description": "Operation to perform"
+              },
+              "userPoolId": {
+                "type": "string",
+                "description": "The ID of the user pool."
+              },
+              "groupName": {
+                "type": "string",
+                "description": "The name of the group."
+              },
+              "group": {
+                "type": "string",
+                "description": "The name of the group (from list)."
+              },
+              "includeUsers": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to include the list of users in the group (for Get/Get Many)."
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 60,
+                "default": 50,
+                "description": "The maximum number of groups to return."
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all groups."
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "description": {
+                    "type": "string",
+                    "description": "A string description of the group."
+                  },
+                  "precedence": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "A nonnegative integer value that specifies the precedence of this group relative to the other groups that a user can belong to."
+                  },
+                  "roleArn": {
+                    "type": "string",
+                    "description": "The role ARN for the group."
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "AWS Cognito credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region"
+              }
+            },
+            "required": [
+              "operation",
+              "userPoolId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "getMany",
+              "required": true
+            },
+            {
+              "name": "userPoolId",
+              "displayName": "User Pool",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-user-pools",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Select a user pool...",
+              "description": "Select an existing user pool from your account."
+            },
+            {
+              "name": "groupName",
+              "displayName": "Group Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. MyNewGroup",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The name of the group you want to create."
+            },
+            {
+              "name": "group",
+              "displayName": "Group",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-groups",
+              "dependsOn": [
+                "credentials",
+                "userPoolId"
+              ],
+              "placeholder": "Select a group...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "update",
+                    "delete"
+                  ]
+                }
+              },
+              "description": "Select a group from the chosen user pool."
+            },
+            {
+              "name": "includeUsers",
+              "displayName": "Include Users",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to include the list of users belonging to the group."
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all groups in the user pool."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "Max number of groups to return."
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Option",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "description",
+                  "displayName": "Description",
+                  "type": "string",
+                  "default": "",
+                  "description": "A description of the group."
+                },
+                {
+                  "name": "precedence",
+                  "displayName": "Precedence",
+                  "type": "number",
+                  "default": 0,
+                  "description": "The precedence of the group (lower values take priority)."
+                },
+                {
+                  "name": "roleArn",
+                  "displayName": "Role ARN",
+                  "type": "string",
+                  "default": "",
+                  "description": "The ARN of the IAM role assigned to the group."
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "getMany"
+          },
+          "subCategory": "Cognito Group"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "getMany"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.cognito.group.update-1783398250864",
+      "type": "action",
+      "position": {
+        "x": 683.6588271485335,
+        "y": 795.9190212255859
+      },
+      "data": {
+        "label": "Update",
+        "toolId": "aws.cognito.group.update",
+        "toolData": {
+          "id": "aws.cognito.group.update",
+          "displayName": "Update",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Update",
+          "icon": "/tools/awsCognito.png",
+          "actionGroup": "Cognito Group",
+          "description": "Update in Cognito Group",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "get",
+                  "getMany",
+                  "update",
+                  "delete"
+                ],
+                "description": "Operation to perform"
+              },
+              "userPoolId": {
+                "type": "string",
+                "description": "The ID of the user pool."
+              },
+              "groupName": {
+                "type": "string",
+                "description": "The name of the group."
+              },
+              "group": {
+                "type": "string",
+                "description": "The name of the group (from list)."
+              },
+              "includeUsers": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to include the list of users in the group (for Get/Get Many)."
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 60,
+                "default": 50,
+                "description": "The maximum number of groups to return."
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all groups."
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "description": {
+                    "type": "string",
+                    "description": "A string description of the group."
+                  },
+                  "precedence": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "A nonnegative integer value that specifies the precedence of this group relative to the other groups that a user can belong to."
+                  },
+                  "roleArn": {
+                    "type": "string",
+                    "description": "The role ARN for the group."
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "AWS Cognito credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region"
+              }
+            },
+            "required": [
+              "operation",
+              "userPoolId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "update",
+              "required": true
+            },
+            {
+              "name": "userPoolId",
+              "displayName": "User Pool",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-user-pools",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Select a user pool...",
+              "description": "Select an existing user pool from your account."
+            },
+            {
+              "name": "groupName",
+              "displayName": "Group Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. MyNewGroup",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The name of the group you want to create."
+            },
+            {
+              "name": "group",
+              "displayName": "Group",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-groups",
+              "dependsOn": [
+                "credentials",
+                "userPoolId"
+              ],
+              "placeholder": "Select a group...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "update",
+                    "delete"
+                  ]
+                }
+              },
+              "description": "Select a group from the chosen user pool."
+            },
+            {
+              "name": "includeUsers",
+              "displayName": "Include Users",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to include the list of users belonging to the group."
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all groups in the user pool."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "Max number of groups to return."
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Option",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "description",
+                  "displayName": "Description",
+                  "type": "string",
+                  "default": "",
+                  "description": "A description of the group."
+                },
+                {
+                  "name": "precedence",
+                  "displayName": "Precedence",
+                  "type": "number",
+                  "default": 0,
+                  "description": "The precedence of the group (lower values take priority)."
+                },
+                {
+                  "name": "roleArn",
+                  "displayName": "Role ARN",
+                  "type": "string",
+                  "default": "",
+                  "description": "The ARN of the IAM role assigned to the group."
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "update"
+          },
+          "subCategory": "Cognito Group"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "update"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

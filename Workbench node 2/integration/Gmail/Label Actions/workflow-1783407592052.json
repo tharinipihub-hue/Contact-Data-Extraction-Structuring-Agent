@@ -1,0 +1,276 @@
+{
+  "nodes": [
+    {
+      "id": "google.gmail.label.create-1783407584126",
+      "type": "action",
+      "position": {
+        "x": 690.9291859760503,
+        "y": 252.5041498954437
+      },
+      "data": {
+        "label": "Create a label",
+        "toolId": "google.gmail.label.create",
+        "toolData": {
+          "id": "google.gmail.label.create",
+          "displayName": "Create a label",
+          "category": "Integrations",
+          "provider": "gmail",
+          "operation": "create",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          "description": "Create a new Gmail label",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 225,
+                "description": "Label name (e.g., invoices)"
+              },
+              "labelListVisibility": {
+                "type": "string",
+                "enum": [
+                  "labelShow",
+                  "labelHide",
+                  "labelShowIfUnread"
+                ],
+                "default": "labelShow",
+                "description": "Show in label list: labelShow, labelHide, or labelShowIfUnread"
+              },
+              "messageListVisibility": {
+                "type": "string",
+                "enum": [
+                  "show",
+                  "hide"
+                ],
+                "default": "show",
+                "description": "Show in message list: show or hide"
+              }
+            },
+            "required": [
+              "credentials",
+              "name"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "LABEL ACTIONS"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 92,
+      "selected": true
+    },
+    {
+      "id": "google.gmail.label.delete-1783407585430",
+      "type": "action",
+      "position": {
+        "x": 1083.3734475078652,
+        "y": 309.07269209822783
+      },
+      "data": {
+        "label": "Delete a label",
+        "toolId": "google.gmail.label.delete",
+        "toolData": {
+          "id": "google.gmail.label.delete",
+          "displayName": "Delete a label",
+          "category": "Integrations",
+          "provider": "gmail",
+          "operation": "delete",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          "description": "Delete a Gmail label by ID",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "labelId": {
+                "type": "string",
+                "description": "Gmail label ID to delete"
+              }
+            },
+            "required": [
+              "credentials",
+              "labelId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "LABEL ACTIONS"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 92,
+      "selected": true
+    },
+    {
+      "id": "google.gmail.label.get-1783407586933",
+      "type": "action",
+      "position": {
+        "x": 743.9621942911605,
+        "y": 480.8996390391846
+      },
+      "data": {
+        "label": "Get a label info",
+        "toolId": "google.gmail.label.get",
+        "toolData": {
+          "id": "google.gmail.label.get",
+          "displayName": "Get a label info",
+          "category": "Integrations",
+          "provider": "gmail",
+          "operation": "get",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          "description": "Fetch details of a specific Gmail label",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "labelId": {
+                "type": "string",
+                "description": "Gmail label ID to fetch"
+              }
+            },
+            "required": [
+              "credentials",
+              "labelId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "LABEL ACTIONS"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 92,
+      "selected": true
+    },
+    {
+      "id": "google.gmail.label.getMany-1783407588376",
+      "type": "action",
+      "position": {
+        "x": 1104.5866508339093,
+        "y": 537.4681812419688
+      },
+      "data": {
+        "label": "Get many labels",
+        "toolId": "google.gmail.label.getMany",
+        "toolData": {
+          "id": "google.gmail.label.getMany",
+          "displayName": "Get many labels",
+          "category": "Integrations",
+          "provider": "gmail",
+          "operation": "getMany",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          "description": "List all Gmail labels with optional limit",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return all labels (if false, uses Limit)"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 10,
+                "description": "Number of labels to return (default 10)"
+              }
+            },
+            "required": [
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "LABEL ACTIONS"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 92,
+      "selected": true
+    }
+  ],
+  "edges": []
+}

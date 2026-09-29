@@ -1,0 +1,468 @@
+{
+  "nodes": [
+    {
+      "id": "telegram.message.deleteMessage-1783407706619",
+      "type": "action",
+      "position": {
+        "x": 824.0248232934766,
+        "y": -301.0532952072035
+      },
+      "data": {
+        "label": "Telegram Delete Message",
+        "toolId": "telegram.message.deleteMessage",
+        "toolData": {
+          "id": "telegram.message.deleteMessage",
+          "displayName": "Telegram Delete Message",
+          "category": "Integrations",
+          "provider": "telegram",
+          "operation": "deleteMessage",
+          "icon": "telegram",
+          "description": "Remove message from chat.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "telegram.message.editMessageText-1783407707267",
+      "type": "action",
+      "position": {
+        "x": 931.5647180214673,
+        "y": -260.1485499732438
+      },
+      "data": {
+        "label": "Telegram Edit Message Text",
+        "toolId": "telegram.message.editMessageText",
+        "toolData": {
+          "id": "telegram.message.editMessageText",
+          "displayName": "Telegram Edit Message Text",
+          "category": "Integrations",
+          "provider": "telegram",
+          "operation": "editMessageText",
+          "icon": "telegram",
+          "description": "Edit existing message text.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "telegram.message.pinChatMessage-1783407708004",
+      "type": "action",
+      "position": {
+        "x": 919.0293928691249,
+        "y": -237.0571615347182
+      },
+      "data": {
+        "label": "Telegram Pin Chat Message",
+        "toolId": "telegram.message.pinChatMessage",
+        "toolData": {
+          "id": "telegram.message.pinChatMessage",
+          "displayName": "Telegram Pin Chat Message",
+          "category": "Integrations",
+          "provider": "telegram",
+          "operation": "pinChatMessage",
+          "icon": "telegram",
+          "description": "Pin chat message for the chat",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "telegram.message.sendAndWait-1783407708914",
+      "type": "action",
+      "position": {
+        "x": 958.6146301923117,
+        "y": -185.59635301457536
+      },
+      "data": {
+        "label": "Telegram Send and Wait for Response",
+        "toolId": "telegram.message.sendAndWait",
+        "toolData": {
+          "id": "telegram.message.sendAndWait",
+          "displayName": "Telegram Send and Wait for Response",
+          "category": "Integrations",
+          "provider": "telegram",
+          "operation": "sendAndWait",
+          "icon": "telegram",
+          "description": "Send a message and wait for a response",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "telegram.message.sendAnimation-1783407710203",
+      "type": "action",
+      "position": {
+        "x": 1000.1791293816578,
+        "y": -162.50496457604973
+      },
+      "data": {
+        "label": "Telegram Send Animation",
+        "toolId": "telegram.message.sendAnimation",
+        "toolData": {
+          "id": "telegram.message.sendAnimation",
+          "displayName": "Telegram Send Animation",
+          "category": "Integrations",
+          "provider": "telegram",
+          "operation": "sendAnimation",
+          "icon": "telegram",
+          "description": "Send animation or GIF file to the chat",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "telegram.message.sendAudio-1783407711154",
+      "type": "action",
+      "position": {
+        "x": 965.8719237015627,
+        "y": -103.78686254665597
+      },
+      "data": {
+        "label": "Telegram Send Audio",
+        "toolId": "telegram.message.sendAudio",
+        "toolData": {
+          "id": "telegram.message.sendAudio",
+          "displayName": "Telegram Send Audio",
+          "category": "Integrations",
+          "provider": "telegram",
+          "operation": "sendAudio",
+          "icon": "telegram",
+          "description": "Send audio file to the chat",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "telegram.message.sendDocument-1783407712235",
+      "type": "action",
+      "position": {
+        "x": 940.1415194414913,
+        "y": -103.78686254665597
+      },
+      "data": {
+        "label": "Telegram Send Document",
+        "toolId": "telegram.message.sendDocument",
+        "toolData": {
+          "id": "telegram.message.sendDocument",
+          "displayName": "Telegram Send Document",
+          "category": "Integrations",
+          "provider": "telegram",
+          "operation": "sendDocument",
+          "icon": "telegram",
+          "description": "Send documents file to chat.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "telegram.message.sendLocation-1783407713651",
+      "type": "action",
+      "position": {
+        "x": 884.7221871890297,
+        "y": -103.78686254665597
+      },
+      "data": {
+        "label": "Telegram Send Location",
+        "toolId": "telegram.message.sendLocation",
+        "toolData": {
+          "id": "telegram.message.sendLocation",
+          "displayName": "Telegram Send Location",
+          "category": "Integrations",
+          "provider": "telegram",
+          "operation": "sendLocation",
+          "icon": "telegram",
+          "description": "Send map location to chat.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "telegram.message.sendMediaGroup-1783407716170",
+      "type": "action",
+      "position": {
+        "x": 1017.3327322217054,
+        "y": -258.16928810708447
+      },
+      "data": {
+        "label": "Telegram Send Media Group",
+        "toolId": "telegram.message.sendMediaGroup",
+        "toolData": {
+          "id": "telegram.message.sendMediaGroup",
+          "displayName": "Telegram Send Media Group",
+          "category": "Integrations",
+          "provider": "telegram",
+          "operation": "sendMediaGroup",
+          "icon": "telegram",
+          "description": "Send media group as album.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "telegram.message.sendMessage-1783407719995",
+      "type": "action",
+      "position": {
+        "x": 829.3028549365681,
+        "y": -192.19389256843982
+      },
+      "data": {
+        "label": "Telegram Send Message",
+        "toolId": "telegram.message.sendMessage",
+        "toolData": {
+          "id": "telegram.message.sendMessage",
+          "displayName": "Telegram Send Message",
+          "category": "Integrations",
+          "provider": "telegram",
+          "operation": "sendMessage",
+          "icon": "telegram",
+          "description": "Send text message to chat.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "telegram.message.sendPhoto-1783407721034",
+      "type": "action",
+      "position": {
+        "x": 789.0578636579949,
+        "y": -118.96120352054423
+      },
+      "data": {
+        "label": "Telegram Send Photo",
+        "toolId": "telegram.message.sendPhoto",
+        "toolData": {
+          "id": "telegram.message.sendPhoto",
+          "displayName": "Telegram Send Photo",
+          "category": "Integrations",
+          "provider": "telegram",
+          "operation": "sendPhoto",
+          "icon": "telegram",
+          "description": "Send photo to chat.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "telegram.message.sendSticker-1783407722308",
+      "type": "action",
+      "position": {
+        "x": 680.8582149746177,
+        "y": -109.72464814513398
+      },
+      "data": {
+        "label": "Telegram Send Sticker",
+        "toolId": "telegram.message.sendSticker",
+        "toolData": {
+          "id": "telegram.message.sendSticker",
+          "displayName": "Telegram Send Sticker",
+          "category": "Integrations",
+          "provider": "telegram",
+          "operation": "sendSticker",
+          "icon": "telegram",
+          "description": "Send static or animated sticker.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "telegram.message.sendVideo-1783407723557",
+      "type": "action",
+      "position": {
+        "x": 606.3060180159492,
+        "y": -138.0940682267512
+      },
+      "data": {
+        "label": "Telegram Send Video",
+        "toolId": "telegram.message.sendVideo",
+        "toolData": {
+          "id": "telegram.message.sendVideo",
+          "displayName": "Telegram Send Video",
+          "category": "Integrations",
+          "provider": "telegram",
+          "operation": "sendVideo",
+          "icon": "telegram",
+          "description": "Send video file to the chat",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "telegram.message.unpinChatMessage-1783407725066",
+      "type": "action",
+      "position": {
+        "x": 782.4603241041304,
+        "y": -111.70391001129332
+      },
+      "data": {
+        "label": "Telegram Unpin Chat Message",
+        "toolId": "telegram.message.unpinChatMessage",
+        "toolData": {
+          "id": "telegram.message.unpinChatMessage",
+          "displayName": "Telegram Unpin Chat Message",
+          "category": "Integrations",
+          "provider": "telegram",
+          "operation": "unpinChatMessage",
+          "icon": "telegram",
+          "description": "Unpin chat message from the chat",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

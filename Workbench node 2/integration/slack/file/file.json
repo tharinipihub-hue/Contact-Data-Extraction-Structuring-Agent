@@ -1,0 +1,111 @@
+{
+  "nodes": [
+    {
+      "id": "slack.file.get-1783408209228",
+      "type": "action",
+      "position": {
+        "x": 3074.9655839094826,
+        "y": -278.05382486005175
+      },
+      "data": {
+        "label": "Slack Get File",
+        "toolId": "slack.file.get",
+        "toolData": {
+          "id": "slack.file.get",
+          "displayName": "Slack Get File",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Get",
+          "icon": "slack",
+          "description": "Get information about a Slack file",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "File",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "slack.file.getMany-1783408210388",
+      "type": "action",
+      "position": {
+        "x": 3207.590783479142,
+        "y": -98.06248258694228
+      },
+      "data": {
+        "label": "Slack Get Many File",
+        "toolId": "slack.file.getMany",
+        "toolData": {
+          "id": "slack.file.getMany",
+          "displayName": "Slack Get Many File",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Get Many",
+          "icon": "slack",
+          "description": "List team files with filters",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            "returnAll",
+            "limit",
+            "additionalFields"
+          ],
+          "subCategory": "File",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "slack.file.upload-1783408211652",
+      "type": "action",
+      "position": {
+        "x": 3506.9448053649453,
+        "y": -217.42516219963593
+      },
+      "data": {
+        "label": "Slack Upload File",
+        "toolId": "slack.file.upload",
+        "toolData": {
+          "id": "slack.file.upload",
+          "displayName": "Slack Upload File",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Upload",
+          "icon": "slack",
+          "description": "Upload or create file.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "File"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

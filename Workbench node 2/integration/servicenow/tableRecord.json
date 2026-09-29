@@ -1,0 +1,1955 @@
+{
+  "nodes": [
+    {
+      "id": "servicenow.tableRecord.create-1783408005968",
+      "type": "action",
+      "position": {
+        "x": 604.9646603913317,
+        "y": -489.0652779435136
+      },
+      "data": {
+        "label": "Create",
+        "toolId": "servicenow.tableRecord.create",
+        "toolData": {
+          "id": "servicenow.tableRecord.create",
+          "displayName": "Create",
+          "category": "Integrations",
+          "provider": "servicenow",
+          "operation": "Create",
+          "icon": "/tools/servicenow.png",
+          "actionGroup": "Table Record",
+          "description": "Create in Table Record",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ]
+              },
+              "tableName": {
+                "type": "string",
+                "description": "ServiceNow table name or sys_id"
+              },
+              "tableRecordId": {
+                "type": "string",
+                "description": "Record sys_id (for Get/Delete/Update)"
+              },
+              "dataToSend": {
+                "type": "string",
+                "enum": [
+                  "autoMap",
+                  "defineBelow",
+                  "nothing"
+                ],
+                "description": "How to send data (Create/Update)"
+              },
+              "inputsToIgnore": {
+                "type": "string",
+                "description": "Comma-separated input fields to exclude when auto-mapping"
+              },
+              "fieldsToSend": {
+                "description": "Field name/value pairs when using Define Below"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "excludeReferenceLink": {
+                    "type": "boolean"
+                  },
+                  "fieldNamesOrIds": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "returnValues": {
+                    "type": "string",
+                    "enum": [
+                      "false",
+                      "true",
+                      "all"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "ServiceNow credentials"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Table Record",
+                  "value": "tableRecord"
+                }
+              ],
+              "default": "tableRecord",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "create",
+              "required": true
+            },
+            {
+              "name": "tableName",
+              "displayName": "Table Name or ID",
+              "type": "options",
+              "required": true,
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/serviceNow/tables",
+              "labelKey": "label",
+              "valueKey": "name",
+              "description": "The ServiceNow table to operate on"
+            },
+            {
+              "name": "tableRecordId",
+              "displayName": "Table Record ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              },
+              "description": "The sys_id of the record (32-character hex string)"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "dataToSend",
+              "displayName": "Data to Send",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Auto-Map Input Data to Columns",
+                  "value": "autoMap",
+                  "description": "Use when node input names match destination field names"
+                },
+                {
+                  "name": "Define Below for Each Column",
+                  "value": "defineBelow",
+                  "description": "Set the value for each destination column"
+                },
+                {
+                  "name": "Nothing",
+                  "value": "nothing",
+                  "description": "Don't send any column data"
+                }
+              ],
+              "default": "autoMap",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputsToIgnore",
+              "displayName": "Inputs to Ignore",
+              "type": "string",
+              "default": "",
+              "placeholder": "field1, field2",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ],
+                  "dataToSend": [
+                    "autoMap"
+                  ]
+                }
+              },
+              "description": "Comma-separated list of input field names to skip when auto-mapping"
+            },
+            {
+              "name": "fieldsToSend",
+              "displayName": "Fields to Send",
+              "type": "fixedCollection",
+              "typeOptions": {
+                "multipleValues": true
+              },
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ],
+                  "dataToSend": [
+                    "defineBelow"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "fieldData",
+                  "displayName": "Field",
+                  "values": [
+                    {
+                      "name": "fieldName",
+                      "displayName": "Field Name or ID",
+                      "type": "options",
+                      "required": true,
+                      "dependsOn": [
+                        "tableName",
+                        "credentialId"
+                      ],
+                      "fetchEndpoint": "/api/tools/serviceNow/columns",
+                      "labelKey": "label",
+                      "valueKey": "name",
+                      "description": "The column / field in the selected ServiceNow table"
+                    },
+                    {
+                      "name": "fieldValue",
+                      "displayName": "Field Value",
+                      "type": "string",
+                      "default": "",
+                      "description": "The value to write into this field"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "placeholder": "Add option",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "excludeReferenceLink",
+                  "displayName": "Exclude Reference Link",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Exclude reference links (sysparm_exclude_reference_link)"
+                },
+                {
+                  "name": "fieldNamesOrIds",
+                  "displayName": "Field Names or IDs",
+                  "type": "options",
+                  "multiple": true,
+                  "dependsOn": [
+                    "tableName",
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/columns",
+                  "labelKey": "label",
+                  "valueKey": "name",
+                  "description": "Limit the fields returned (sysparm_fields)"
+                },
+                {
+                  "name": "filter",
+                  "displayName": "Filter",
+                  "type": "string",
+                  "description": "ServiceNow encoded query string (sysparm_query)",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "returnValues",
+                  "displayName": "Return Values",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Actual Values",
+                      "value": "false"
+                    },
+                    {
+                      "name": "Display Values",
+                      "value": "true"
+                    },
+                    {
+                      "name": "Both",
+                      "value": "all"
+                    }
+                  ],
+                  "default": "false",
+                  "description": "What values to return (sysparm_display_value)"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "create"
+          },
+          "subCategory": "Table Record"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "create"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "servicenow.tableRecord.delete-1783408007568",
+      "type": "action",
+      "position": {
+        "x": 959.0024629300862,
+        "y": -422.28946465328585
+      },
+      "data": {
+        "label": "Delete",
+        "toolId": "servicenow.tableRecord.delete",
+        "toolData": {
+          "id": "servicenow.tableRecord.delete",
+          "displayName": "Delete",
+          "category": "Integrations",
+          "provider": "servicenow",
+          "operation": "Delete",
+          "icon": "/tools/servicenow.png",
+          "actionGroup": "Table Record",
+          "description": "Delete in Table Record",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ]
+              },
+              "tableName": {
+                "type": "string",
+                "description": "ServiceNow table name or sys_id"
+              },
+              "tableRecordId": {
+                "type": "string",
+                "description": "Record sys_id (for Get/Delete/Update)"
+              },
+              "dataToSend": {
+                "type": "string",
+                "enum": [
+                  "autoMap",
+                  "defineBelow",
+                  "nothing"
+                ],
+                "description": "How to send data (Create/Update)"
+              },
+              "inputsToIgnore": {
+                "type": "string",
+                "description": "Comma-separated input fields to exclude when auto-mapping"
+              },
+              "fieldsToSend": {
+                "description": "Field name/value pairs when using Define Below"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "excludeReferenceLink": {
+                    "type": "boolean"
+                  },
+                  "fieldNamesOrIds": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "returnValues": {
+                    "type": "string",
+                    "enum": [
+                      "false",
+                      "true",
+                      "all"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "ServiceNow credentials"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Table Record",
+                  "value": "tableRecord"
+                }
+              ],
+              "default": "tableRecord",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "delete",
+              "required": true
+            },
+            {
+              "name": "tableName",
+              "displayName": "Table Name or ID",
+              "type": "options",
+              "required": true,
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/serviceNow/tables",
+              "labelKey": "label",
+              "valueKey": "name",
+              "description": "The ServiceNow table to operate on"
+            },
+            {
+              "name": "tableRecordId",
+              "displayName": "Table Record ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              },
+              "description": "The sys_id of the record (32-character hex string)"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "dataToSend",
+              "displayName": "Data to Send",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Auto-Map Input Data to Columns",
+                  "value": "autoMap",
+                  "description": "Use when node input names match destination field names"
+                },
+                {
+                  "name": "Define Below for Each Column",
+                  "value": "defineBelow",
+                  "description": "Set the value for each destination column"
+                },
+                {
+                  "name": "Nothing",
+                  "value": "nothing",
+                  "description": "Don't send any column data"
+                }
+              ],
+              "default": "autoMap",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputsToIgnore",
+              "displayName": "Inputs to Ignore",
+              "type": "string",
+              "default": "",
+              "placeholder": "field1, field2",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ],
+                  "dataToSend": [
+                    "autoMap"
+                  ]
+                }
+              },
+              "description": "Comma-separated list of input field names to skip when auto-mapping"
+            },
+            {
+              "name": "fieldsToSend",
+              "displayName": "Fields to Send",
+              "type": "fixedCollection",
+              "typeOptions": {
+                "multipleValues": true
+              },
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ],
+                  "dataToSend": [
+                    "defineBelow"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "fieldData",
+                  "displayName": "Field",
+                  "values": [
+                    {
+                      "name": "fieldName",
+                      "displayName": "Field Name or ID",
+                      "type": "options",
+                      "required": true,
+                      "dependsOn": [
+                        "tableName",
+                        "credentialId"
+                      ],
+                      "fetchEndpoint": "/api/tools/serviceNow/columns",
+                      "labelKey": "label",
+                      "valueKey": "name",
+                      "description": "The column / field in the selected ServiceNow table"
+                    },
+                    {
+                      "name": "fieldValue",
+                      "displayName": "Field Value",
+                      "type": "string",
+                      "default": "",
+                      "description": "The value to write into this field"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "placeholder": "Add option",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "excludeReferenceLink",
+                  "displayName": "Exclude Reference Link",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Exclude reference links (sysparm_exclude_reference_link)"
+                },
+                {
+                  "name": "fieldNamesOrIds",
+                  "displayName": "Field Names or IDs",
+                  "type": "options",
+                  "multiple": true,
+                  "dependsOn": [
+                    "tableName",
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/columns",
+                  "labelKey": "label",
+                  "valueKey": "name",
+                  "description": "Limit the fields returned (sysparm_fields)"
+                },
+                {
+                  "name": "filter",
+                  "displayName": "Filter",
+                  "type": "string",
+                  "description": "ServiceNow encoded query string (sysparm_query)",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "returnValues",
+                  "displayName": "Return Values",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Actual Values",
+                      "value": "false"
+                    },
+                    {
+                      "name": "Display Values",
+                      "value": "true"
+                    },
+                    {
+                      "name": "Both",
+                      "value": "all"
+                    }
+                  ],
+                  "default": "false",
+                  "description": "What values to return (sysparm_display_value)"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "delete"
+          },
+          "subCategory": "Table Record"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "delete"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "servicenow.tableRecord.get-1783408009649",
+      "type": "action",
+      "position": {
+        "x": 637.7226065337076,
+        "y": -255.97989193045456
+      },
+      "data": {
+        "label": "Get",
+        "toolId": "servicenow.tableRecord.get",
+        "toolData": {
+          "id": "servicenow.tableRecord.get",
+          "displayName": "Get",
+          "category": "Integrations",
+          "provider": "servicenow",
+          "operation": "Get",
+          "icon": "/tools/servicenow.png",
+          "actionGroup": "Table Record",
+          "description": "Get in Table Record",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ]
+              },
+              "tableName": {
+                "type": "string",
+                "description": "ServiceNow table name or sys_id"
+              },
+              "tableRecordId": {
+                "type": "string",
+                "description": "Record sys_id (for Get/Delete/Update)"
+              },
+              "dataToSend": {
+                "type": "string",
+                "enum": [
+                  "autoMap",
+                  "defineBelow",
+                  "nothing"
+                ],
+                "description": "How to send data (Create/Update)"
+              },
+              "inputsToIgnore": {
+                "type": "string",
+                "description": "Comma-separated input fields to exclude when auto-mapping"
+              },
+              "fieldsToSend": {
+                "description": "Field name/value pairs when using Define Below"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "excludeReferenceLink": {
+                    "type": "boolean"
+                  },
+                  "fieldNamesOrIds": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "returnValues": {
+                    "type": "string",
+                    "enum": [
+                      "false",
+                      "true",
+                      "all"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "ServiceNow credentials"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Table Record",
+                  "value": "tableRecord"
+                }
+              ],
+              "default": "tableRecord",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "get",
+              "required": true
+            },
+            {
+              "name": "tableName",
+              "displayName": "Table Name or ID",
+              "type": "options",
+              "required": true,
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/serviceNow/tables",
+              "labelKey": "label",
+              "valueKey": "name",
+              "description": "The ServiceNow table to operate on"
+            },
+            {
+              "name": "tableRecordId",
+              "displayName": "Table Record ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              },
+              "description": "The sys_id of the record (32-character hex string)"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "dataToSend",
+              "displayName": "Data to Send",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Auto-Map Input Data to Columns",
+                  "value": "autoMap",
+                  "description": "Use when node input names match destination field names"
+                },
+                {
+                  "name": "Define Below for Each Column",
+                  "value": "defineBelow",
+                  "description": "Set the value for each destination column"
+                },
+                {
+                  "name": "Nothing",
+                  "value": "nothing",
+                  "description": "Don't send any column data"
+                }
+              ],
+              "default": "autoMap",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputsToIgnore",
+              "displayName": "Inputs to Ignore",
+              "type": "string",
+              "default": "",
+              "placeholder": "field1, field2",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ],
+                  "dataToSend": [
+                    "autoMap"
+                  ]
+                }
+              },
+              "description": "Comma-separated list of input field names to skip when auto-mapping"
+            },
+            {
+              "name": "fieldsToSend",
+              "displayName": "Fields to Send",
+              "type": "fixedCollection",
+              "typeOptions": {
+                "multipleValues": true
+              },
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ],
+                  "dataToSend": [
+                    "defineBelow"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "fieldData",
+                  "displayName": "Field",
+                  "values": [
+                    {
+                      "name": "fieldName",
+                      "displayName": "Field Name or ID",
+                      "type": "options",
+                      "required": true,
+                      "dependsOn": [
+                        "tableName",
+                        "credentialId"
+                      ],
+                      "fetchEndpoint": "/api/tools/serviceNow/columns",
+                      "labelKey": "label",
+                      "valueKey": "name",
+                      "description": "The column / field in the selected ServiceNow table"
+                    },
+                    {
+                      "name": "fieldValue",
+                      "displayName": "Field Value",
+                      "type": "string",
+                      "default": "",
+                      "description": "The value to write into this field"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "placeholder": "Add option",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "excludeReferenceLink",
+                  "displayName": "Exclude Reference Link",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Exclude reference links (sysparm_exclude_reference_link)"
+                },
+                {
+                  "name": "fieldNamesOrIds",
+                  "displayName": "Field Names or IDs",
+                  "type": "options",
+                  "multiple": true,
+                  "dependsOn": [
+                    "tableName",
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/columns",
+                  "labelKey": "label",
+                  "valueKey": "name",
+                  "description": "Limit the fields returned (sysparm_fields)"
+                },
+                {
+                  "name": "filter",
+                  "displayName": "Filter",
+                  "type": "string",
+                  "description": "ServiceNow encoded query string (sysparm_query)",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "returnValues",
+                  "displayName": "Return Values",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Actual Values",
+                      "value": "false"
+                    },
+                    {
+                      "name": "Display Values",
+                      "value": "true"
+                    },
+                    {
+                      "name": "Both",
+                      "value": "all"
+                    }
+                  ],
+                  "default": "false",
+                  "description": "What values to return (sysparm_display_value)"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "get"
+          },
+          "subCategory": "Table Record"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "servicenow.tableRecord.getmany-1783408011161",
+      "type": "action",
+      "position": {
+        "x": 1078.6949584503056,
+        "y": -186.68423662927484
+      },
+      "data": {
+        "label": "Get Many",
+        "toolId": "servicenow.tableRecord.getmany",
+        "toolData": {
+          "id": "servicenow.tableRecord.getmany",
+          "displayName": "Get Many",
+          "category": "Integrations",
+          "provider": "servicenow",
+          "operation": "Get Many",
+          "icon": "/tools/servicenow.png",
+          "actionGroup": "Table Record",
+          "description": "Get Many in Table Record",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ]
+              },
+              "tableName": {
+                "type": "string",
+                "description": "ServiceNow table name or sys_id"
+              },
+              "tableRecordId": {
+                "type": "string",
+                "description": "Record sys_id (for Get/Delete/Update)"
+              },
+              "dataToSend": {
+                "type": "string",
+                "enum": [
+                  "autoMap",
+                  "defineBelow",
+                  "nothing"
+                ],
+                "description": "How to send data (Create/Update)"
+              },
+              "inputsToIgnore": {
+                "type": "string",
+                "description": "Comma-separated input fields to exclude when auto-mapping"
+              },
+              "fieldsToSend": {
+                "description": "Field name/value pairs when using Define Below"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "excludeReferenceLink": {
+                    "type": "boolean"
+                  },
+                  "fieldNamesOrIds": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "returnValues": {
+                    "type": "string",
+                    "enum": [
+                      "false",
+                      "true",
+                      "all"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "ServiceNow credentials"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Table Record",
+                  "value": "tableRecord"
+                }
+              ],
+              "default": "tableRecord",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "getMany",
+              "required": true
+            },
+            {
+              "name": "tableName",
+              "displayName": "Table Name or ID",
+              "type": "options",
+              "required": true,
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/serviceNow/tables",
+              "labelKey": "label",
+              "valueKey": "name",
+              "description": "The ServiceNow table to operate on"
+            },
+            {
+              "name": "tableRecordId",
+              "displayName": "Table Record ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              },
+              "description": "The sys_id of the record (32-character hex string)"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "dataToSend",
+              "displayName": "Data to Send",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Auto-Map Input Data to Columns",
+                  "value": "autoMap",
+                  "description": "Use when node input names match destination field names"
+                },
+                {
+                  "name": "Define Below for Each Column",
+                  "value": "defineBelow",
+                  "description": "Set the value for each destination column"
+                },
+                {
+                  "name": "Nothing",
+                  "value": "nothing",
+                  "description": "Don't send any column data"
+                }
+              ],
+              "default": "autoMap",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputsToIgnore",
+              "displayName": "Inputs to Ignore",
+              "type": "string",
+              "default": "",
+              "placeholder": "field1, field2",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ],
+                  "dataToSend": [
+                    "autoMap"
+                  ]
+                }
+              },
+              "description": "Comma-separated list of input field names to skip when auto-mapping"
+            },
+            {
+              "name": "fieldsToSend",
+              "displayName": "Fields to Send",
+              "type": "fixedCollection",
+              "typeOptions": {
+                "multipleValues": true
+              },
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ],
+                  "dataToSend": [
+                    "defineBelow"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "fieldData",
+                  "displayName": "Field",
+                  "values": [
+                    {
+                      "name": "fieldName",
+                      "displayName": "Field Name or ID",
+                      "type": "options",
+                      "required": true,
+                      "dependsOn": [
+                        "tableName",
+                        "credentialId"
+                      ],
+                      "fetchEndpoint": "/api/tools/serviceNow/columns",
+                      "labelKey": "label",
+                      "valueKey": "name",
+                      "description": "The column / field in the selected ServiceNow table"
+                    },
+                    {
+                      "name": "fieldValue",
+                      "displayName": "Field Value",
+                      "type": "string",
+                      "default": "",
+                      "description": "The value to write into this field"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "placeholder": "Add option",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "excludeReferenceLink",
+                  "displayName": "Exclude Reference Link",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Exclude reference links (sysparm_exclude_reference_link)"
+                },
+                {
+                  "name": "fieldNamesOrIds",
+                  "displayName": "Field Names or IDs",
+                  "type": "options",
+                  "multiple": true,
+                  "dependsOn": [
+                    "tableName",
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/columns",
+                  "labelKey": "label",
+                  "valueKey": "name",
+                  "description": "Limit the fields returned (sysparm_fields)"
+                },
+                {
+                  "name": "filter",
+                  "displayName": "Filter",
+                  "type": "string",
+                  "description": "ServiceNow encoded query string (sysparm_query)",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "returnValues",
+                  "displayName": "Return Values",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Actual Values",
+                      "value": "false"
+                    },
+                    {
+                      "name": "Display Values",
+                      "value": "true"
+                    },
+                    {
+                      "name": "Both",
+                      "value": "all"
+                    }
+                  ],
+                  "default": "false",
+                  "description": "What values to return (sysparm_display_value)"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "getMany"
+          },
+          "subCategory": "Table Record"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "getMany"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "servicenow.tableRecord.update-1783408015695",
+      "type": "action",
+      "position": {
+        "x": 713.3178668622672,
+        "y": -53.13261004881941
+      },
+      "data": {
+        "label": "Update",
+        "toolId": "servicenow.tableRecord.update",
+        "toolData": {
+          "id": "servicenow.tableRecord.update",
+          "displayName": "Update",
+          "category": "Integrations",
+          "provider": "servicenow",
+          "operation": "Update",
+          "icon": "/tools/servicenow.png",
+          "actionGroup": "Table Record",
+          "description": "Update in Table Record",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ]
+              },
+              "tableName": {
+                "type": "string",
+                "description": "ServiceNow table name or sys_id"
+              },
+              "tableRecordId": {
+                "type": "string",
+                "description": "Record sys_id (for Get/Delete/Update)"
+              },
+              "dataToSend": {
+                "type": "string",
+                "enum": [
+                  "autoMap",
+                  "defineBelow",
+                  "nothing"
+                ],
+                "description": "How to send data (Create/Update)"
+              },
+              "inputsToIgnore": {
+                "type": "string",
+                "description": "Comma-separated input fields to exclude when auto-mapping"
+              },
+              "fieldsToSend": {
+                "description": "Field name/value pairs when using Define Below"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "excludeReferenceLink": {
+                    "type": "boolean"
+                  },
+                  "fieldNamesOrIds": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "returnValues": {
+                    "type": "string",
+                    "enum": [
+                      "false",
+                      "true",
+                      "all"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "ServiceNow credentials"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Table Record",
+                  "value": "tableRecord"
+                }
+              ],
+              "default": "tableRecord",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "update",
+              "required": true
+            },
+            {
+              "name": "tableName",
+              "displayName": "Table Name or ID",
+              "type": "options",
+              "required": true,
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/serviceNow/tables",
+              "labelKey": "label",
+              "valueKey": "name",
+              "description": "The ServiceNow table to operate on"
+            },
+            {
+              "name": "tableRecordId",
+              "displayName": "Table Record ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              },
+              "description": "The sys_id of the record (32-character hex string)"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "dataToSend",
+              "displayName": "Data to Send",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Auto-Map Input Data to Columns",
+                  "value": "autoMap",
+                  "description": "Use when node input names match destination field names"
+                },
+                {
+                  "name": "Define Below for Each Column",
+                  "value": "defineBelow",
+                  "description": "Set the value for each destination column"
+                },
+                {
+                  "name": "Nothing",
+                  "value": "nothing",
+                  "description": "Don't send any column data"
+                }
+              ],
+              "default": "autoMap",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputsToIgnore",
+              "displayName": "Inputs to Ignore",
+              "type": "string",
+              "default": "",
+              "placeholder": "field1, field2",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ],
+                  "dataToSend": [
+                    "autoMap"
+                  ]
+                }
+              },
+              "description": "Comma-separated list of input field names to skip when auto-mapping"
+            },
+            {
+              "name": "fieldsToSend",
+              "displayName": "Fields to Send",
+              "type": "fixedCollection",
+              "typeOptions": {
+                "multipleValues": true
+              },
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ],
+                  "dataToSend": [
+                    "defineBelow"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "fieldData",
+                  "displayName": "Field",
+                  "values": [
+                    {
+                      "name": "fieldName",
+                      "displayName": "Field Name or ID",
+                      "type": "options",
+                      "required": true,
+                      "dependsOn": [
+                        "tableName",
+                        "credentialId"
+                      ],
+                      "fetchEndpoint": "/api/tools/serviceNow/columns",
+                      "labelKey": "label",
+                      "valueKey": "name",
+                      "description": "The column / field in the selected ServiceNow table"
+                    },
+                    {
+                      "name": "fieldValue",
+                      "displayName": "Field Value",
+                      "type": "string",
+                      "default": "",
+                      "description": "The value to write into this field"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "placeholder": "Add option",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "excludeReferenceLink",
+                  "displayName": "Exclude Reference Link",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Exclude reference links (sysparm_exclude_reference_link)"
+                },
+                {
+                  "name": "fieldNamesOrIds",
+                  "displayName": "Field Names or IDs",
+                  "type": "options",
+                  "multiple": true,
+                  "dependsOn": [
+                    "tableName",
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/columns",
+                  "labelKey": "label",
+                  "valueKey": "name",
+                  "description": "Limit the fields returned (sysparm_fields)"
+                },
+                {
+                  "name": "filter",
+                  "displayName": "Filter",
+                  "type": "string",
+                  "description": "ServiceNow encoded query string (sysparm_query)",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "returnValues",
+                  "displayName": "Return Values",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Actual Values",
+                      "value": "false"
+                    },
+                    {
+                      "name": "Display Values",
+                      "value": "true"
+                    },
+                    {
+                      "name": "Both",
+                      "value": "all"
+                    }
+                  ],
+                  "default": "false",
+                  "description": "What values to return (sysparm_display_value)"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "update"
+          },
+          "subCategory": "Table Record"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "update"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

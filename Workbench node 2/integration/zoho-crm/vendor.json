@@ -1,0 +1,581 @@
+{
+  "nodes": [
+    {
+      "id": "zoho.crm.vendor.upsert-1783406970452",
+      "type": "action",
+      "position": {
+        "x": 27.701799142034858,
+        "y": -418.4894992659911
+      },
+      "data": {
+        "label": "Create or Update Vendor",
+        "toolId": "zoho.crm.vendor.upsert",
+        "toolData": {
+          "id": "zoho.crm.vendor.upsert",
+          "displayName": "Create or Update Vendor",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoVendorUpsert",
+          "icon": "zoho",
+          "description": "Create a new vendor, or update an existing one if it already exists (upsert)",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "Vendor_Name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Vendor Name"
+              },
+              "Email": {
+                "type": "string",
+                "format": "email",
+                "description": "Email"
+              },
+              "Phone": {
+                "type": "string",
+                "description": "Phone"
+              },
+              "Website": {
+                "type": "string",
+                "description": "Website"
+              },
+              "Category": {
+                "type": "string",
+                "description": "Category"
+              },
+              "Description": {
+                "type": "string",
+                "description": "Description"
+              },
+              "Street": {
+                "type": "string",
+                "description": "Street"
+              },
+              "City": {
+                "type": "string",
+                "description": "City"
+              },
+              "State": {
+                "type": "string",
+                "description": "State"
+              },
+              "Country": {
+                "type": "string",
+                "description": "Country"
+              },
+              "Zip_Code": {
+                "type": "string",
+                "description": "Zip Code"
+              },
+              "address": {
+                "type": "object",
+                "properties": {
+                  "Street": {
+                    "type": "string"
+                  },
+                  "City": {
+                    "type": "string"
+                  },
+                  "State": {
+                    "type": "string"
+                  },
+                  "Country": {
+                    "type": "string"
+                  },
+                  "Zip_Code": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Address"
+              },
+              "Currency": {
+                "type": "string",
+                "description": "Currency Code"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "Vendor_Name"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.vendor.create-1783406971841",
+      "type": "action",
+      "position": {
+        "x": 550.226931808101,
+        "y": -286.53870818870166
+      },
+      "data": {
+        "label": "Create Vendor",
+        "toolId": "zoho.crm.vendor.create",
+        "toolData": {
+          "id": "zoho.crm.vendor.create",
+          "displayName": "Create Vendor",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoVendorCreate",
+          "icon": "zoho",
+          "description": "Create a new vendor in Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "Vendor_Name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Vendor Name"
+              },
+              "Email": {
+                "type": "string",
+                "format": "email",
+                "description": "Email"
+              },
+              "Phone": {
+                "type": "string",
+                "description": "Phone"
+              },
+              "Website": {
+                "type": "string",
+                "description": "Website"
+              },
+              "Category": {
+                "type": "string",
+                "description": "Category"
+              },
+              "Description": {
+                "type": "string",
+                "description": "Description"
+              },
+              "Street": {
+                "type": "string",
+                "description": "Street"
+              },
+              "City": {
+                "type": "string",
+                "description": "City"
+              },
+              "State": {
+                "type": "string",
+                "description": "State"
+              },
+              "Country": {
+                "type": "string",
+                "description": "Country"
+              },
+              "Zip_Code": {
+                "type": "string",
+                "description": "Zip Code"
+              },
+              "address": {
+                "type": "object",
+                "properties": {
+                  "Street": {
+                    "type": "string"
+                  },
+                  "City": {
+                    "type": "string"
+                  },
+                  "State": {
+                    "type": "string"
+                  },
+                  "Country": {
+                    "type": "string"
+                  },
+                  "Zip_Code": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Address"
+              },
+              "Currency": {
+                "type": "string",
+                "description": "Currency Code"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "Vendor_Name"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.vendor.delete-1783406973307",
+      "type": "action",
+      "position": {
+        "x": 204.5158591856027,
+        "y": -283.89969236715586
+      },
+      "data": {
+        "label": "Delete Vendor",
+        "toolId": "zoho.crm.vendor.delete",
+        "toolData": {
+          "id": "zoho.crm.vendor.delete",
+          "displayName": "Delete Vendor",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoVendorDelete",
+          "icon": "zoho",
+          "description": "Delete a vendor from Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "vendorId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Vendor ID"
+              }
+            },
+            "required": [
+              "vendorId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.vendor.getMany-1783406974427",
+      "type": "action",
+      "position": {
+        "x": 228.26700157951478,
+        "y": -149.30988546832066
+      },
+      "data": {
+        "label": "Get Many Vendors",
+        "toolId": "zoho.crm.vendor.getMany",
+        "toolData": {
+          "id": "zoho.crm.vendor.getMany",
+          "displayName": "Get Many Vendors",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoVendorGetMany",
+          "icon": "zoho",
+          "description": "Retrieve multiple vendors from Zoho CRM with filtering and pagination",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all results or limit"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 50,
+                "description": "Maximum number of records to return"
+              },
+              "approved": {
+                "type": "boolean",
+                "description": "Filter by approved status"
+              },
+              "converted": {
+                "type": "boolean",
+                "description": "Filter by converted status"
+              },
+              "includeChild": {
+                "type": "boolean",
+                "description": "Include child records"
+              },
+              "territoryId": {
+                "type": "string",
+                "description": "Territory ID filter"
+              },
+              "fields": {
+                "type": "string",
+                "description": "Comma-separated list of fields to return"
+              },
+              "sortBy": {
+                "type": "string",
+                "description": "Field to sort by"
+              },
+              "sortOrder": {
+                "type": "string",
+                "enum": [
+                  "asc",
+                  "desc"
+                ],
+                "description": "Sort Order (Ascending / Descending)"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.vendor.get-1783406975604",
+      "type": "action",
+      "position": {
+        "x": 273.1302705457932,
+        "y": -281.2606765456101
+      },
+      "data": {
+        "label": "Get Vendor",
+        "toolId": "zoho.crm.vendor.get",
+        "toolData": {
+          "id": "zoho.crm.vendor.get",
+          "displayName": "Get Vendor",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoVendorGet",
+          "icon": "zoho",
+          "description": "Retrieve a specific vendor by its ID from Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "vendorId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Vendor ID"
+              }
+            },
+            "required": [
+              "vendorId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.vendor.update-1783406977490",
+      "type": "action",
+      "position": {
+        "x": 819.4065456057715,
+        "y": -83.33448992967595
+      },
+      "data": {
+        "label": "Update Vendor",
+        "toolId": "zoho.crm.vendor.update",
+        "toolData": {
+          "id": "zoho.crm.vendor.update",
+          "displayName": "Update Vendor",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoVendorUpdate",
+          "icon": "zoho",
+          "description": "Update an existing vendor in Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "vendorId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Vendor ID"
+              },
+              "Vendor_Name": {
+                "type": "string",
+                "description": "Vendor Name"
+              },
+              "Email": {
+                "type": "string",
+                "format": "email",
+                "description": "Email"
+              },
+              "Phone": {
+                "type": "string",
+                "description": "Phone"
+              },
+              "Website": {
+                "type": "string",
+                "description": "Website"
+              },
+              "Category": {
+                "type": "string",
+                "description": "Category"
+              },
+              "Description": {
+                "type": "string",
+                "description": "Description"
+              },
+              "Street": {
+                "type": "string",
+                "description": "Street"
+              },
+              "City": {
+                "type": "string",
+                "description": "City"
+              },
+              "State": {
+                "type": "string",
+                "description": "State"
+              },
+              "Country": {
+                "type": "string",
+                "description": "Country"
+              },
+              "Zip_Code": {
+                "type": "string",
+                "description": "Zip Code"
+              },
+              "address": {
+                "type": "object",
+                "properties": {
+                  "Street": {
+                    "type": "string"
+                  },
+                  "City": {
+                    "type": "string"
+                  },
+                  "State": {
+                    "type": "string"
+                  },
+                  "Country": {
+                    "type": "string"
+                  },
+                  "Zip_Code": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Address"
+              },
+              "Currency": {
+                "type": "string",
+                "description": "Currency Code"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "vendorId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

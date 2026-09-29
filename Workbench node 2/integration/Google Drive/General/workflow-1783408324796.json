@@ -1,0 +1,337 @@
+{
+  "nodes": [
+    {
+      "id": "google.drive.file_trigger-1783408321046",
+      "type": "manual-trigger",
+      "position": {
+        "x": 867.6469547668582,
+        "y": 283.1426814527687
+      },
+      "data": {
+        "label": "On File Changes",
+        "toolId": "google.drive.file_trigger",
+        "toolData": {
+          "id": "google.drive.file_trigger",
+          "displayName": "On File Changes",
+          "category": "Integrations",
+          "provider": "googleDrive",
+          "operation": "driveFileTrigger",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg",
+          "description": "Triggers when a specific file is modified",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string"
+              },
+              "pollTimes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "everyMinute",
+                        "everyHour",
+                        "everyDay",
+                        "everyWeek",
+                        "everyMonth",
+                        "everyX",
+                        "custom"
+                      ],
+                      "default": "everyMinute"
+                    },
+                    "value": {
+                      "type": "number"
+                    },
+                    "unit": {
+                      "type": "string",
+                      "enum": [
+                        "seconds",
+                        "minutes",
+                        "hours"
+                      ]
+                    },
+                    "hour": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 23
+                    },
+                    "minute": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 59
+                    },
+                    "weekday": {
+                      "type": "string",
+                      "enum": [
+                        "Monday",
+                        "Tuesday",
+                        "Wednesday",
+                        "Thursday",
+                        "Friday",
+                        "Saturday",
+                        "Sunday"
+                      ]
+                    },
+                    "dayOfMonth": {
+                      "type": "number",
+                      "minimum": 1,
+                      "maximum": 31
+                    },
+                    "cronExpression": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "default": [
+                  {
+                    "mode": "everyMinute"
+                  }
+                ]
+              },
+              "triggerOn": {
+                "type": "string",
+                "enum": [
+                  "Changes to a Specific File",
+                  "Changes Involving a Specific Folder"
+                ],
+                "default": "Changes to a Specific File"
+              },
+              "fileMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "id"
+                ],
+                "default": "list"
+              },
+              "fileId": {
+                "type": "string"
+              },
+              "folderMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "id"
+                ],
+                "default": "list"
+              },
+              "folderId": {
+                "type": "string"
+              },
+              "watchFor": {
+                "type": "string",
+                "default": "File Updated"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "fileType": {
+                    "type": "string",
+                    "description": "Filter by file type"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "credentialId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "dynamicFields": [
+            {
+              "fieldName": "fileId",
+              "dependsOn": [
+                "credentialId",
+                "fileMode"
+              ],
+              "fetchEndpoint": "/api/tools/drive/list-files",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": true,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 99,
+      "selected": true
+    },
+    {
+      "id": "google.drive.folder_trigger-1783408322128",
+      "type": "manual-trigger",
+      "position": {
+        "x": 1187.9663249901234,
+        "y": 287.3853221179775
+      },
+      "data": {
+        "label": "On Folder Changes",
+        "toolId": "google.drive.folder_trigger",
+        "toolData": {
+          "id": "google.drive.folder_trigger",
+          "displayName": "On Folder Changes",
+          "category": "Integrations",
+          "provider": "googleDrive",
+          "operation": "driveFolderTrigger",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg",
+          "description": "Trigger when files are updated in a folder",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string"
+              },
+              "pollTimes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "everyMinute",
+                        "everyHour",
+                        "everyDay",
+                        "everyWeek",
+                        "everyMonth",
+                        "everyX",
+                        "custom"
+                      ],
+                      "default": "everyMinute"
+                    },
+                    "value": {
+                      "type": "number"
+                    },
+                    "unit": {
+                      "type": "string",
+                      "enum": [
+                        "seconds",
+                        "minutes",
+                        "hours"
+                      ]
+                    },
+                    "hour": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 23
+                    },
+                    "minute": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 59
+                    },
+                    "weekday": {
+                      "type": "string",
+                      "enum": [
+                        "Monday",
+                        "Tuesday",
+                        "Wednesday",
+                        "Thursday",
+                        "Friday",
+                        "Saturday",
+                        "Sunday"
+                      ]
+                    },
+                    "dayOfMonth": {
+                      "type": "number",
+                      "minimum": 1,
+                      "maximum": 31
+                    },
+                    "cronExpression": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "default": [
+                  {
+                    "mode": "everyMinute"
+                  }
+                ]
+              },
+              "triggerOn": {
+                "type": "string",
+                "enum": [
+                  "Changes to a Specific File",
+                  "Changes Involving a Specific Folder"
+                ],
+                "default": "Changes to a Specific File"
+              },
+              "fileMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "id"
+                ],
+                "default": "list"
+              },
+              "fileId": {
+                "type": "string"
+              },
+              "folderMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "id"
+                ],
+                "default": "list"
+              },
+              "folderId": {
+                "type": "string"
+              },
+              "watchFor": {
+                "type": "string",
+                "default": "File Updated"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "fileType": {
+                    "type": "string",
+                    "description": "Filter by file type"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "credentialId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "dynamicFields": [
+            {
+              "fieldName": "folderId",
+              "dependsOn": [
+                "credentialId",
+                "folderMode"
+              ],
+              "fetchEndpoint": "/api/tools/drive/list-folders",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": true,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 99,
+      "selected": true
+    }
+  ],
+  "edges": []
+}

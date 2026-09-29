@@ -1,0 +1,4142 @@
+{
+  "nodes": [
+    {
+      "id": "aws.cognito.user.addtogroup-1783398309032",
+      "type": "action",
+      "position": {
+        "x": 305.83988267801556,
+        "y": 526.0483466037873
+      },
+      "data": {
+        "label": "Add to Group",
+        "toolId": "aws.cognito.user.addtogroup",
+        "toolData": {
+          "id": "aws.cognito.user.addtogroup",
+          "displayName": "Add to Group",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Add to Group",
+          "icon": "/tools/awsCognito.png",
+          "actionGroup": "Cognito User",
+          "description": "Add to Group in Cognito User",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "get",
+                  "getMany",
+                  "update",
+                  "delete",
+                  "addToGroup",
+                  "removeFromGroup"
+                ],
+                "description": "Operation to perform"
+              },
+              "userPoolId": {
+                "type": "string",
+                "description": "The ID of the user pool."
+              },
+              "username": {
+                "type": "string",
+                "description": "The username for the user (for Create)."
+              },
+              "user": {
+                "type": "string",
+                "description": "The username of the user (from list)."
+              },
+              "group": {
+                "type": "string",
+                "description": "The name of the group."
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true,
+                "description": "Return a simplified version of the user details."
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 60,
+                "default": 50,
+                "description": "The maximum number of users to return."
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all users."
+              },
+              "userAttributes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "attributeType": {
+                      "type": "string",
+                      "enum": [
+                        "Standard Attribute",
+                        "Custom Attribute"
+                      ]
+                    },
+                    "standardAttribute": {
+                      "type": "string"
+                    },
+                    "customAttribute": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "description": "A collection of user attributes."
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "userAttributes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "attributeType": {
+                          "type": "string",
+                          "enum": [
+                            "Standard Attribute",
+                            "Custom Attribute"
+                          ]
+                        },
+                        "standardAttribute": {
+                          "type": "string"
+                        },
+                        "customAttribute": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "description": "A collection of user attributes."
+                  },
+                  "messageAction": {
+                    "type": "string",
+                    "enum": [
+                      "RESEND",
+                      "SUPPRESS"
+                    ],
+                    "description": "The message action."
+                  },
+                  "forceAliasCreation": {
+                    "type": "boolean",
+                    "description": "Whether to force alias creation."
+                  },
+                  "desiredDeliveryMediums": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "SMS",
+                        "EMAIL"
+                      ]
+                    },
+                    "description": "The desired delivery mediums."
+                  },
+                  "temporaryPassword": {
+                    "type": "string",
+                    "description": "The temporary password."
+                  },
+                  "autoGeneratePassword": {
+                    "type": "boolean",
+                    "description": "Whether to auto-generate the password."
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "AWS Cognito credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region"
+              }
+            },
+            "required": [
+              "operation",
+              "userPoolId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Add to Group",
+                  "value": "addToGroup"
+                },
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Remove from Group",
+                  "value": "removeFromGroup"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "addToGroup",
+              "required": true
+            },
+            {
+              "name": "userPoolId",
+              "displayName": "User Pool",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-user-pools",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Select a user pool...",
+              "description": "Select an existing user pool from your account."
+            },
+            {
+              "name": "username",
+              "displayName": "Username",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. JohnSmith",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The username for the user."
+            },
+            {
+              "name": "user",
+              "displayName": "User",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-users",
+              "dependsOn": [
+                "credentials",
+                "userPoolId"
+              ],
+              "placeholder": "Choose...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "update",
+                    "delete",
+                    "addToGroup",
+                    "removeFromGroup"
+                  ]
+                }
+              },
+              "description": "Select a user from the chosen user pool."
+            },
+            {
+              "name": "group",
+              "displayName": "Group",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-groups",
+              "dependsOn": [
+                "credentials",
+                "userPoolId"
+              ],
+              "placeholder": "Select a group...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "addToGroup",
+                    "removeFromGroup"
+                  ]
+                }
+              },
+              "description": "Select a group to add/remove the user from."
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              },
+              "description": "Return a simplified version of the user details."
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all users in the pool."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "Max number of users to return."
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "userAttributes",
+                  "displayName": "User Attributes",
+                  "type": "array",
+                  "placeholder": "Add Attribute",
+                  "fields": [
+                    {
+                      "name": "attributeType",
+                      "displayName": "Attribute Type",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Standard Attribute",
+                          "value": "Standard Attribute"
+                        },
+                        {
+                          "name": "Custom Attribute",
+                          "value": "Custom Attribute"
+                        }
+                      ],
+                      "default": "Standard Attribute",
+                      "description": "Select the attribute category."
+                    },
+                    {
+                      "name": "standardAttribute",
+                      "displayName": "Standard Attribute",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Address",
+                          "value": "address"
+                        },
+                        {
+                          "name": "Birthdate",
+                          "value": "birthdate"
+                        },
+                        {
+                          "name": "Email",
+                          "value": "email"
+                        },
+                        {
+                          "name": "Email Verified",
+                          "value": "email_verified"
+                        },
+                        {
+                          "name": "Family Name",
+                          "value": "family_name"
+                        },
+                        {
+                          "name": "Gender",
+                          "value": "gender"
+                        },
+                        {
+                          "name": "Given Name",
+                          "value": "given_name"
+                        },
+                        {
+                          "name": "Locale",
+                          "value": "locale"
+                        },
+                        {
+                          "name": "Middle Name",
+                          "value": "middle_name"
+                        },
+                        {
+                          "name": "Name",
+                          "value": "name"
+                        },
+                        {
+                          "name": "Nickname",
+                          "value": "nickname"
+                        },
+                        {
+                          "name": "Phone Number",
+                          "value": "phone_number"
+                        },
+                        {
+                          "name": "Phone Number Verified",
+                          "value": "phone_number_verified"
+                        },
+                        {
+                          "name": "Picture",
+                          "value": "picture"
+                        },
+                        {
+                          "name": "Preferred Username",
+                          "value": "preferred_username"
+                        },
+                        {
+                          "name": "Profile",
+                          "value": "profile"
+                        },
+                        {
+                          "name": "Website",
+                          "value": "website"
+                        },
+                        {
+                          "name": "Zoneinfo",
+                          "value": "zoneinfo"
+                        }
+                      ],
+                      "default": "email",
+                      "displayOptions": {
+                        "show": {
+                          "attributeType": [
+                            "Standard Attribute"
+                          ]
+                        }
+                      },
+                      "description": "Select a standard Cognito attribute."
+                    },
+                    {
+                      "name": "customAttribute",
+                      "displayName": "Custom Attribute",
+                      "type": "string",
+                      "default": "",
+                      "displayOptions": {
+                        "show": {
+                          "attributeType": [
+                            "Custom Attribute"
+                          ]
+                        }
+                      },
+                      "description": "Enter the custom attribute name (e.g. employeeId)."
+                    },
+                    {
+                      "name": "value",
+                      "displayName": "Value",
+                      "type": "string",
+                      "default": "",
+                      "description": "The value for this attribute."
+                    }
+                  ]
+                },
+                {
+                  "name": "messageAction",
+                  "displayName": "Message Action",
+                  "type": "options",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "options": [
+                    {
+                      "name": "Resend",
+                      "value": "RESEND"
+                    },
+                    {
+                      "name": "Suppress",
+                      "value": "SUPPRESS"
+                    }
+                  ],
+                  "default": "RESEND",
+                  "description": "The message action."
+                },
+                {
+                  "name": "forceAliasCreation",
+                  "displayName": "Force Alias Creation",
+                  "type": "boolean",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "description": "Whether to force alias creation."
+                },
+                {
+                  "name": "desiredDeliveryMediums",
+                  "displayName": "Desired Delivery Mediums",
+                  "type": "options",
+                  "typeOptions": {
+                    "multipleValues": true
+                  },
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "options": [
+                    {
+                      "name": "SMS",
+                      "value": "SMS"
+                    },
+                    {
+                      "name": "Email",
+                      "value": "EMAIL"
+                    }
+                  ],
+                  "default": [
+                    "EMAIL"
+                  ],
+                  "description": "The desired delivery mediums."
+                },
+                {
+                  "name": "autoGeneratePassword",
+                  "displayName": "Auto Generate Password",
+                  "type": "boolean",
+                  "default": true,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "description": "Whether to auto-generate the password."
+                },
+                {
+                  "name": "temporaryPassword",
+                  "displayName": "Temporary Password",
+                  "type": "string",
+                  "default": "",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ],
+                      "autoGeneratePassword": [
+                        false
+                      ]
+                    }
+                  },
+                  "description": "The temporary password for the user."
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "addToGroup"
+          },
+          "subCategory": "Cognito User",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "addToGroup"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.cognito.user.create-1783398310225",
+      "type": "action",
+      "position": {
+        "x": 452.09237731176444,
+        "y": 693.1940547566433
+      },
+      "data": {
+        "label": "Create",
+        "toolId": "aws.cognito.user.create",
+        "toolData": {
+          "id": "aws.cognito.user.create",
+          "displayName": "Create",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Create",
+          "icon": "/tools/awsCognito.png",
+          "actionGroup": "Cognito User",
+          "description": "Create in Cognito User",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "get",
+                  "getMany",
+                  "update",
+                  "delete",
+                  "addToGroup",
+                  "removeFromGroup"
+                ],
+                "description": "Operation to perform"
+              },
+              "userPoolId": {
+                "type": "string",
+                "description": "The ID of the user pool."
+              },
+              "username": {
+                "type": "string",
+                "description": "The username for the user (for Create)."
+              },
+              "user": {
+                "type": "string",
+                "description": "The username of the user (from list)."
+              },
+              "group": {
+                "type": "string",
+                "description": "The name of the group."
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true,
+                "description": "Return a simplified version of the user details."
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 60,
+                "default": 50,
+                "description": "The maximum number of users to return."
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all users."
+              },
+              "userAttributes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "attributeType": {
+                      "type": "string",
+                      "enum": [
+                        "Standard Attribute",
+                        "Custom Attribute"
+                      ]
+                    },
+                    "standardAttribute": {
+                      "type": "string"
+                    },
+                    "customAttribute": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "description": "A collection of user attributes."
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "userAttributes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "attributeType": {
+                          "type": "string",
+                          "enum": [
+                            "Standard Attribute",
+                            "Custom Attribute"
+                          ]
+                        },
+                        "standardAttribute": {
+                          "type": "string"
+                        },
+                        "customAttribute": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "description": "A collection of user attributes."
+                  },
+                  "messageAction": {
+                    "type": "string",
+                    "enum": [
+                      "RESEND",
+                      "SUPPRESS"
+                    ],
+                    "description": "The message action."
+                  },
+                  "forceAliasCreation": {
+                    "type": "boolean",
+                    "description": "Whether to force alias creation."
+                  },
+                  "desiredDeliveryMediums": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "SMS",
+                        "EMAIL"
+                      ]
+                    },
+                    "description": "The desired delivery mediums."
+                  },
+                  "temporaryPassword": {
+                    "type": "string",
+                    "description": "The temporary password."
+                  },
+                  "autoGeneratePassword": {
+                    "type": "boolean",
+                    "description": "Whether to auto-generate the password."
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "AWS Cognito credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region"
+              }
+            },
+            "required": [
+              "operation",
+              "userPoolId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Add to Group",
+                  "value": "addToGroup"
+                },
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Remove from Group",
+                  "value": "removeFromGroup"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "create",
+              "required": true
+            },
+            {
+              "name": "userPoolId",
+              "displayName": "User Pool",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-user-pools",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Select a user pool...",
+              "description": "Select an existing user pool from your account."
+            },
+            {
+              "name": "username",
+              "displayName": "Username",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. JohnSmith",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The username for the user."
+            },
+            {
+              "name": "user",
+              "displayName": "User",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-users",
+              "dependsOn": [
+                "credentials",
+                "userPoolId"
+              ],
+              "placeholder": "Choose...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "update",
+                    "delete",
+                    "addToGroup",
+                    "removeFromGroup"
+                  ]
+                }
+              },
+              "description": "Select a user from the chosen user pool."
+            },
+            {
+              "name": "group",
+              "displayName": "Group",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-groups",
+              "dependsOn": [
+                "credentials",
+                "userPoolId"
+              ],
+              "placeholder": "Select a group...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "addToGroup",
+                    "removeFromGroup"
+                  ]
+                }
+              },
+              "description": "Select a group to add/remove the user from."
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              },
+              "description": "Return a simplified version of the user details."
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all users in the pool."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "Max number of users to return."
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "userAttributes",
+                  "displayName": "User Attributes",
+                  "type": "array",
+                  "placeholder": "Add Attribute",
+                  "fields": [
+                    {
+                      "name": "attributeType",
+                      "displayName": "Attribute Type",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Standard Attribute",
+                          "value": "Standard Attribute"
+                        },
+                        {
+                          "name": "Custom Attribute",
+                          "value": "Custom Attribute"
+                        }
+                      ],
+                      "default": "Standard Attribute",
+                      "description": "Select the attribute category."
+                    },
+                    {
+                      "name": "standardAttribute",
+                      "displayName": "Standard Attribute",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Address",
+                          "value": "address"
+                        },
+                        {
+                          "name": "Birthdate",
+                          "value": "birthdate"
+                        },
+                        {
+                          "name": "Email",
+                          "value": "email"
+                        },
+                        {
+                          "name": "Email Verified",
+                          "value": "email_verified"
+                        },
+                        {
+                          "name": "Family Name",
+                          "value": "family_name"
+                        },
+                        {
+                          "name": "Gender",
+                          "value": "gender"
+                        },
+                        {
+                          "name": "Given Name",
+                          "value": "given_name"
+                        },
+                        {
+                          "name": "Locale",
+                          "value": "locale"
+                        },
+                        {
+                          "name": "Middle Name",
+                          "value": "middle_name"
+                        },
+                        {
+                          "name": "Name",
+                          "value": "name"
+                        },
+                        {
+                          "name": "Nickname",
+                          "value": "nickname"
+                        },
+                        {
+                          "name": "Phone Number",
+                          "value": "phone_number"
+                        },
+                        {
+                          "name": "Phone Number Verified",
+                          "value": "phone_number_verified"
+                        },
+                        {
+                          "name": "Picture",
+                          "value": "picture"
+                        },
+                        {
+                          "name": "Preferred Username",
+                          "value": "preferred_username"
+                        },
+                        {
+                          "name": "Profile",
+                          "value": "profile"
+                        },
+                        {
+                          "name": "Website",
+                          "value": "website"
+                        },
+                        {
+                          "name": "Zoneinfo",
+                          "value": "zoneinfo"
+                        }
+                      ],
+                      "default": "email",
+                      "displayOptions": {
+                        "show": {
+                          "attributeType": [
+                            "Standard Attribute"
+                          ]
+                        }
+                      },
+                      "description": "Select a standard Cognito attribute."
+                    },
+                    {
+                      "name": "customAttribute",
+                      "displayName": "Custom Attribute",
+                      "type": "string",
+                      "default": "",
+                      "displayOptions": {
+                        "show": {
+                          "attributeType": [
+                            "Custom Attribute"
+                          ]
+                        }
+                      },
+                      "description": "Enter the custom attribute name (e.g. employeeId)."
+                    },
+                    {
+                      "name": "value",
+                      "displayName": "Value",
+                      "type": "string",
+                      "default": "",
+                      "description": "The value for this attribute."
+                    }
+                  ]
+                },
+                {
+                  "name": "messageAction",
+                  "displayName": "Message Action",
+                  "type": "options",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "options": [
+                    {
+                      "name": "Resend",
+                      "value": "RESEND"
+                    },
+                    {
+                      "name": "Suppress",
+                      "value": "SUPPRESS"
+                    }
+                  ],
+                  "default": "RESEND",
+                  "description": "The message action."
+                },
+                {
+                  "name": "forceAliasCreation",
+                  "displayName": "Force Alias Creation",
+                  "type": "boolean",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "description": "Whether to force alias creation."
+                },
+                {
+                  "name": "desiredDeliveryMediums",
+                  "displayName": "Desired Delivery Mediums",
+                  "type": "options",
+                  "typeOptions": {
+                    "multipleValues": true
+                  },
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "options": [
+                    {
+                      "name": "SMS",
+                      "value": "SMS"
+                    },
+                    {
+                      "name": "Email",
+                      "value": "EMAIL"
+                    }
+                  ],
+                  "default": [
+                    "EMAIL"
+                  ],
+                  "description": "The desired delivery mediums."
+                },
+                {
+                  "name": "autoGeneratePassword",
+                  "displayName": "Auto Generate Password",
+                  "type": "boolean",
+                  "default": true,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "description": "Whether to auto-generate the password."
+                },
+                {
+                  "name": "temporaryPassword",
+                  "displayName": "Temporary Password",
+                  "type": "string",
+                  "default": "",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ],
+                      "autoGeneratePassword": [
+                        false
+                      ]
+                    }
+                  },
+                  "description": "The temporary password for the user."
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "create"
+          },
+          "subCategory": "Cognito User",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "create"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.cognito.user.delete-1783398311425",
+      "type": "action",
+      "position": {
+        "x": 450.3512761851722,
+        "y": 888.1973809349751
+      },
+      "data": {
+        "label": "Delete",
+        "toolId": "aws.cognito.user.delete",
+        "toolData": {
+          "id": "aws.cognito.user.delete",
+          "displayName": "Delete",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Delete",
+          "icon": "/tools/awsCognito.png",
+          "actionGroup": "Cognito User",
+          "description": "Delete in Cognito User",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "get",
+                  "getMany",
+                  "update",
+                  "delete",
+                  "addToGroup",
+                  "removeFromGroup"
+                ],
+                "description": "Operation to perform"
+              },
+              "userPoolId": {
+                "type": "string",
+                "description": "The ID of the user pool."
+              },
+              "username": {
+                "type": "string",
+                "description": "The username for the user (for Create)."
+              },
+              "user": {
+                "type": "string",
+                "description": "The username of the user (from list)."
+              },
+              "group": {
+                "type": "string",
+                "description": "The name of the group."
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true,
+                "description": "Return a simplified version of the user details."
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 60,
+                "default": 50,
+                "description": "The maximum number of users to return."
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all users."
+              },
+              "userAttributes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "attributeType": {
+                      "type": "string",
+                      "enum": [
+                        "Standard Attribute",
+                        "Custom Attribute"
+                      ]
+                    },
+                    "standardAttribute": {
+                      "type": "string"
+                    },
+                    "customAttribute": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "description": "A collection of user attributes."
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "userAttributes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "attributeType": {
+                          "type": "string",
+                          "enum": [
+                            "Standard Attribute",
+                            "Custom Attribute"
+                          ]
+                        },
+                        "standardAttribute": {
+                          "type": "string"
+                        },
+                        "customAttribute": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "description": "A collection of user attributes."
+                  },
+                  "messageAction": {
+                    "type": "string",
+                    "enum": [
+                      "RESEND",
+                      "SUPPRESS"
+                    ],
+                    "description": "The message action."
+                  },
+                  "forceAliasCreation": {
+                    "type": "boolean",
+                    "description": "Whether to force alias creation."
+                  },
+                  "desiredDeliveryMediums": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "SMS",
+                        "EMAIL"
+                      ]
+                    },
+                    "description": "The desired delivery mediums."
+                  },
+                  "temporaryPassword": {
+                    "type": "string",
+                    "description": "The temporary password."
+                  },
+                  "autoGeneratePassword": {
+                    "type": "boolean",
+                    "description": "Whether to auto-generate the password."
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "AWS Cognito credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region"
+              }
+            },
+            "required": [
+              "operation",
+              "userPoolId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Add to Group",
+                  "value": "addToGroup"
+                },
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Remove from Group",
+                  "value": "removeFromGroup"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "delete",
+              "required": true
+            },
+            {
+              "name": "userPoolId",
+              "displayName": "User Pool",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-user-pools",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Select a user pool...",
+              "description": "Select an existing user pool from your account."
+            },
+            {
+              "name": "username",
+              "displayName": "Username",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. JohnSmith",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The username for the user."
+            },
+            {
+              "name": "user",
+              "displayName": "User",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-users",
+              "dependsOn": [
+                "credentials",
+                "userPoolId"
+              ],
+              "placeholder": "Choose...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "update",
+                    "delete",
+                    "addToGroup",
+                    "removeFromGroup"
+                  ]
+                }
+              },
+              "description": "Select a user from the chosen user pool."
+            },
+            {
+              "name": "group",
+              "displayName": "Group",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-groups",
+              "dependsOn": [
+                "credentials",
+                "userPoolId"
+              ],
+              "placeholder": "Select a group...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "addToGroup",
+                    "removeFromGroup"
+                  ]
+                }
+              },
+              "description": "Select a group to add/remove the user from."
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              },
+              "description": "Return a simplified version of the user details."
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all users in the pool."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "Max number of users to return."
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "userAttributes",
+                  "displayName": "User Attributes",
+                  "type": "array",
+                  "placeholder": "Add Attribute",
+                  "fields": [
+                    {
+                      "name": "attributeType",
+                      "displayName": "Attribute Type",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Standard Attribute",
+                          "value": "Standard Attribute"
+                        },
+                        {
+                          "name": "Custom Attribute",
+                          "value": "Custom Attribute"
+                        }
+                      ],
+                      "default": "Standard Attribute",
+                      "description": "Select the attribute category."
+                    },
+                    {
+                      "name": "standardAttribute",
+                      "displayName": "Standard Attribute",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Address",
+                          "value": "address"
+                        },
+                        {
+                          "name": "Birthdate",
+                          "value": "birthdate"
+                        },
+                        {
+                          "name": "Email",
+                          "value": "email"
+                        },
+                        {
+                          "name": "Email Verified",
+                          "value": "email_verified"
+                        },
+                        {
+                          "name": "Family Name",
+                          "value": "family_name"
+                        },
+                        {
+                          "name": "Gender",
+                          "value": "gender"
+                        },
+                        {
+                          "name": "Given Name",
+                          "value": "given_name"
+                        },
+                        {
+                          "name": "Locale",
+                          "value": "locale"
+                        },
+                        {
+                          "name": "Middle Name",
+                          "value": "middle_name"
+                        },
+                        {
+                          "name": "Name",
+                          "value": "name"
+                        },
+                        {
+                          "name": "Nickname",
+                          "value": "nickname"
+                        },
+                        {
+                          "name": "Phone Number",
+                          "value": "phone_number"
+                        },
+                        {
+                          "name": "Phone Number Verified",
+                          "value": "phone_number_verified"
+                        },
+                        {
+                          "name": "Picture",
+                          "value": "picture"
+                        },
+                        {
+                          "name": "Preferred Username",
+                          "value": "preferred_username"
+                        },
+                        {
+                          "name": "Profile",
+                          "value": "profile"
+                        },
+                        {
+                          "name": "Website",
+                          "value": "website"
+                        },
+                        {
+                          "name": "Zoneinfo",
+                          "value": "zoneinfo"
+                        }
+                      ],
+                      "default": "email",
+                      "displayOptions": {
+                        "show": {
+                          "attributeType": [
+                            "Standard Attribute"
+                          ]
+                        }
+                      },
+                      "description": "Select a standard Cognito attribute."
+                    },
+                    {
+                      "name": "customAttribute",
+                      "displayName": "Custom Attribute",
+                      "type": "string",
+                      "default": "",
+                      "displayOptions": {
+                        "show": {
+                          "attributeType": [
+                            "Custom Attribute"
+                          ]
+                        }
+                      },
+                      "description": "Enter the custom attribute name (e.g. employeeId)."
+                    },
+                    {
+                      "name": "value",
+                      "displayName": "Value",
+                      "type": "string",
+                      "default": "",
+                      "description": "The value for this attribute."
+                    }
+                  ]
+                },
+                {
+                  "name": "messageAction",
+                  "displayName": "Message Action",
+                  "type": "options",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "options": [
+                    {
+                      "name": "Resend",
+                      "value": "RESEND"
+                    },
+                    {
+                      "name": "Suppress",
+                      "value": "SUPPRESS"
+                    }
+                  ],
+                  "default": "RESEND",
+                  "description": "The message action."
+                },
+                {
+                  "name": "forceAliasCreation",
+                  "displayName": "Force Alias Creation",
+                  "type": "boolean",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "description": "Whether to force alias creation."
+                },
+                {
+                  "name": "desiredDeliveryMediums",
+                  "displayName": "Desired Delivery Mediums",
+                  "type": "options",
+                  "typeOptions": {
+                    "multipleValues": true
+                  },
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "options": [
+                    {
+                      "name": "SMS",
+                      "value": "SMS"
+                    },
+                    {
+                      "name": "Email",
+                      "value": "EMAIL"
+                    }
+                  ],
+                  "default": [
+                    "EMAIL"
+                  ],
+                  "description": "The desired delivery mediums."
+                },
+                {
+                  "name": "autoGeneratePassword",
+                  "displayName": "Auto Generate Password",
+                  "type": "boolean",
+                  "default": true,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "description": "Whether to auto-generate the password."
+                },
+                {
+                  "name": "temporaryPassword",
+                  "displayName": "Temporary Password",
+                  "type": "string",
+                  "default": "",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ],
+                      "autoGeneratePassword": [
+                        false
+                      ]
+                    }
+                  },
+                  "description": "The temporary password for the user."
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "delete"
+          },
+          "subCategory": "Cognito User",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "delete"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.cognito.user.get-1783398312753",
+      "type": "action",
+      "position": {
+        "x": 135.21197227197516,
+        "y": 860.3397629094991
+      },
+      "data": {
+        "label": "Get",
+        "toolId": "aws.cognito.user.get",
+        "toolData": {
+          "id": "aws.cognito.user.get",
+          "displayName": "Get",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Get",
+          "icon": "/tools/awsCognito.png",
+          "actionGroup": "Cognito User",
+          "description": "Get in Cognito User",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "get",
+                  "getMany",
+                  "update",
+                  "delete",
+                  "addToGroup",
+                  "removeFromGroup"
+                ],
+                "description": "Operation to perform"
+              },
+              "userPoolId": {
+                "type": "string",
+                "description": "The ID of the user pool."
+              },
+              "username": {
+                "type": "string",
+                "description": "The username for the user (for Create)."
+              },
+              "user": {
+                "type": "string",
+                "description": "The username of the user (from list)."
+              },
+              "group": {
+                "type": "string",
+                "description": "The name of the group."
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true,
+                "description": "Return a simplified version of the user details."
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 60,
+                "default": 50,
+                "description": "The maximum number of users to return."
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all users."
+              },
+              "userAttributes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "attributeType": {
+                      "type": "string",
+                      "enum": [
+                        "Standard Attribute",
+                        "Custom Attribute"
+                      ]
+                    },
+                    "standardAttribute": {
+                      "type": "string"
+                    },
+                    "customAttribute": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "description": "A collection of user attributes."
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "userAttributes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "attributeType": {
+                          "type": "string",
+                          "enum": [
+                            "Standard Attribute",
+                            "Custom Attribute"
+                          ]
+                        },
+                        "standardAttribute": {
+                          "type": "string"
+                        },
+                        "customAttribute": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "description": "A collection of user attributes."
+                  },
+                  "messageAction": {
+                    "type": "string",
+                    "enum": [
+                      "RESEND",
+                      "SUPPRESS"
+                    ],
+                    "description": "The message action."
+                  },
+                  "forceAliasCreation": {
+                    "type": "boolean",
+                    "description": "Whether to force alias creation."
+                  },
+                  "desiredDeliveryMediums": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "SMS",
+                        "EMAIL"
+                      ]
+                    },
+                    "description": "The desired delivery mediums."
+                  },
+                  "temporaryPassword": {
+                    "type": "string",
+                    "description": "The temporary password."
+                  },
+                  "autoGeneratePassword": {
+                    "type": "boolean",
+                    "description": "Whether to auto-generate the password."
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "AWS Cognito credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region"
+              }
+            },
+            "required": [
+              "operation",
+              "userPoolId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Add to Group",
+                  "value": "addToGroup"
+                },
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Remove from Group",
+                  "value": "removeFromGroup"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "get",
+              "required": true
+            },
+            {
+              "name": "userPoolId",
+              "displayName": "User Pool",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-user-pools",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Select a user pool...",
+              "description": "Select an existing user pool from your account."
+            },
+            {
+              "name": "username",
+              "displayName": "Username",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. JohnSmith",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The username for the user."
+            },
+            {
+              "name": "user",
+              "displayName": "User",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-users",
+              "dependsOn": [
+                "credentials",
+                "userPoolId"
+              ],
+              "placeholder": "Choose...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "update",
+                    "delete",
+                    "addToGroup",
+                    "removeFromGroup"
+                  ]
+                }
+              },
+              "description": "Select a user from the chosen user pool."
+            },
+            {
+              "name": "group",
+              "displayName": "Group",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-groups",
+              "dependsOn": [
+                "credentials",
+                "userPoolId"
+              ],
+              "placeholder": "Select a group...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "addToGroup",
+                    "removeFromGroup"
+                  ]
+                }
+              },
+              "description": "Select a group to add/remove the user from."
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              },
+              "description": "Return a simplified version of the user details."
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all users in the pool."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "Max number of users to return."
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "userAttributes",
+                  "displayName": "User Attributes",
+                  "type": "array",
+                  "placeholder": "Add Attribute",
+                  "fields": [
+                    {
+                      "name": "attributeType",
+                      "displayName": "Attribute Type",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Standard Attribute",
+                          "value": "Standard Attribute"
+                        },
+                        {
+                          "name": "Custom Attribute",
+                          "value": "Custom Attribute"
+                        }
+                      ],
+                      "default": "Standard Attribute",
+                      "description": "Select the attribute category."
+                    },
+                    {
+                      "name": "standardAttribute",
+                      "displayName": "Standard Attribute",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Address",
+                          "value": "address"
+                        },
+                        {
+                          "name": "Birthdate",
+                          "value": "birthdate"
+                        },
+                        {
+                          "name": "Email",
+                          "value": "email"
+                        },
+                        {
+                          "name": "Email Verified",
+                          "value": "email_verified"
+                        },
+                        {
+                          "name": "Family Name",
+                          "value": "family_name"
+                        },
+                        {
+                          "name": "Gender",
+                          "value": "gender"
+                        },
+                        {
+                          "name": "Given Name",
+                          "value": "given_name"
+                        },
+                        {
+                          "name": "Locale",
+                          "value": "locale"
+                        },
+                        {
+                          "name": "Middle Name",
+                          "value": "middle_name"
+                        },
+                        {
+                          "name": "Name",
+                          "value": "name"
+                        },
+                        {
+                          "name": "Nickname",
+                          "value": "nickname"
+                        },
+                        {
+                          "name": "Phone Number",
+                          "value": "phone_number"
+                        },
+                        {
+                          "name": "Phone Number Verified",
+                          "value": "phone_number_verified"
+                        },
+                        {
+                          "name": "Picture",
+                          "value": "picture"
+                        },
+                        {
+                          "name": "Preferred Username",
+                          "value": "preferred_username"
+                        },
+                        {
+                          "name": "Profile",
+                          "value": "profile"
+                        },
+                        {
+                          "name": "Website",
+                          "value": "website"
+                        },
+                        {
+                          "name": "Zoneinfo",
+                          "value": "zoneinfo"
+                        }
+                      ],
+                      "default": "email",
+                      "displayOptions": {
+                        "show": {
+                          "attributeType": [
+                            "Standard Attribute"
+                          ]
+                        }
+                      },
+                      "description": "Select a standard Cognito attribute."
+                    },
+                    {
+                      "name": "customAttribute",
+                      "displayName": "Custom Attribute",
+                      "type": "string",
+                      "default": "",
+                      "displayOptions": {
+                        "show": {
+                          "attributeType": [
+                            "Custom Attribute"
+                          ]
+                        }
+                      },
+                      "description": "Enter the custom attribute name (e.g. employeeId)."
+                    },
+                    {
+                      "name": "value",
+                      "displayName": "Value",
+                      "type": "string",
+                      "default": "",
+                      "description": "The value for this attribute."
+                    }
+                  ]
+                },
+                {
+                  "name": "messageAction",
+                  "displayName": "Message Action",
+                  "type": "options",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "options": [
+                    {
+                      "name": "Resend",
+                      "value": "RESEND"
+                    },
+                    {
+                      "name": "Suppress",
+                      "value": "SUPPRESS"
+                    }
+                  ],
+                  "default": "RESEND",
+                  "description": "The message action."
+                },
+                {
+                  "name": "forceAliasCreation",
+                  "displayName": "Force Alias Creation",
+                  "type": "boolean",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "description": "Whether to force alias creation."
+                },
+                {
+                  "name": "desiredDeliveryMediums",
+                  "displayName": "Desired Delivery Mediums",
+                  "type": "options",
+                  "typeOptions": {
+                    "multipleValues": true
+                  },
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "options": [
+                    {
+                      "name": "SMS",
+                      "value": "SMS"
+                    },
+                    {
+                      "name": "Email",
+                      "value": "EMAIL"
+                    }
+                  ],
+                  "default": [
+                    "EMAIL"
+                  ],
+                  "description": "The desired delivery mediums."
+                },
+                {
+                  "name": "autoGeneratePassword",
+                  "displayName": "Auto Generate Password",
+                  "type": "boolean",
+                  "default": true,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "description": "Whether to auto-generate the password."
+                },
+                {
+                  "name": "temporaryPassword",
+                  "displayName": "Temporary Password",
+                  "type": "string",
+                  "default": "",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ],
+                      "autoGeneratePassword": [
+                        false
+                      ]
+                    }
+                  },
+                  "description": "The temporary password for the user."
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "get"
+          },
+          "subCategory": "Cognito User",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.cognito.user.getmany-1783398315057",
+      "type": "action",
+      "position": {
+        "x": 25.522601296663485,
+        "y": 717.5694705289347
+      },
+      "data": {
+        "label": "Get Many",
+        "toolId": "aws.cognito.user.getmany",
+        "toolData": {
+          "id": "aws.cognito.user.getmany",
+          "displayName": "Get Many",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Get Many",
+          "icon": "/tools/awsCognito.png",
+          "actionGroup": "Cognito User",
+          "description": "Get Many in Cognito User",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "get",
+                  "getMany",
+                  "update",
+                  "delete",
+                  "addToGroup",
+                  "removeFromGroup"
+                ],
+                "description": "Operation to perform"
+              },
+              "userPoolId": {
+                "type": "string",
+                "description": "The ID of the user pool."
+              },
+              "username": {
+                "type": "string",
+                "description": "The username for the user (for Create)."
+              },
+              "user": {
+                "type": "string",
+                "description": "The username of the user (from list)."
+              },
+              "group": {
+                "type": "string",
+                "description": "The name of the group."
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true,
+                "description": "Return a simplified version of the user details."
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 60,
+                "default": 50,
+                "description": "The maximum number of users to return."
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all users."
+              },
+              "userAttributes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "attributeType": {
+                      "type": "string",
+                      "enum": [
+                        "Standard Attribute",
+                        "Custom Attribute"
+                      ]
+                    },
+                    "standardAttribute": {
+                      "type": "string"
+                    },
+                    "customAttribute": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "description": "A collection of user attributes."
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "userAttributes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "attributeType": {
+                          "type": "string",
+                          "enum": [
+                            "Standard Attribute",
+                            "Custom Attribute"
+                          ]
+                        },
+                        "standardAttribute": {
+                          "type": "string"
+                        },
+                        "customAttribute": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "description": "A collection of user attributes."
+                  },
+                  "messageAction": {
+                    "type": "string",
+                    "enum": [
+                      "RESEND",
+                      "SUPPRESS"
+                    ],
+                    "description": "The message action."
+                  },
+                  "forceAliasCreation": {
+                    "type": "boolean",
+                    "description": "Whether to force alias creation."
+                  },
+                  "desiredDeliveryMediums": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "SMS",
+                        "EMAIL"
+                      ]
+                    },
+                    "description": "The desired delivery mediums."
+                  },
+                  "temporaryPassword": {
+                    "type": "string",
+                    "description": "The temporary password."
+                  },
+                  "autoGeneratePassword": {
+                    "type": "boolean",
+                    "description": "Whether to auto-generate the password."
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "AWS Cognito credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region"
+              }
+            },
+            "required": [
+              "operation",
+              "userPoolId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Add to Group",
+                  "value": "addToGroup"
+                },
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Remove from Group",
+                  "value": "removeFromGroup"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "getMany",
+              "required": true
+            },
+            {
+              "name": "userPoolId",
+              "displayName": "User Pool",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-user-pools",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Select a user pool...",
+              "description": "Select an existing user pool from your account."
+            },
+            {
+              "name": "username",
+              "displayName": "Username",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. JohnSmith",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The username for the user."
+            },
+            {
+              "name": "user",
+              "displayName": "User",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-users",
+              "dependsOn": [
+                "credentials",
+                "userPoolId"
+              ],
+              "placeholder": "Choose...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "update",
+                    "delete",
+                    "addToGroup",
+                    "removeFromGroup"
+                  ]
+                }
+              },
+              "description": "Select a user from the chosen user pool."
+            },
+            {
+              "name": "group",
+              "displayName": "Group",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-groups",
+              "dependsOn": [
+                "credentials",
+                "userPoolId"
+              ],
+              "placeholder": "Select a group...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "addToGroup",
+                    "removeFromGroup"
+                  ]
+                }
+              },
+              "description": "Select a group to add/remove the user from."
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              },
+              "description": "Return a simplified version of the user details."
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all users in the pool."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "Max number of users to return."
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "userAttributes",
+                  "displayName": "User Attributes",
+                  "type": "array",
+                  "placeholder": "Add Attribute",
+                  "fields": [
+                    {
+                      "name": "attributeType",
+                      "displayName": "Attribute Type",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Standard Attribute",
+                          "value": "Standard Attribute"
+                        },
+                        {
+                          "name": "Custom Attribute",
+                          "value": "Custom Attribute"
+                        }
+                      ],
+                      "default": "Standard Attribute",
+                      "description": "Select the attribute category."
+                    },
+                    {
+                      "name": "standardAttribute",
+                      "displayName": "Standard Attribute",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Address",
+                          "value": "address"
+                        },
+                        {
+                          "name": "Birthdate",
+                          "value": "birthdate"
+                        },
+                        {
+                          "name": "Email",
+                          "value": "email"
+                        },
+                        {
+                          "name": "Email Verified",
+                          "value": "email_verified"
+                        },
+                        {
+                          "name": "Family Name",
+                          "value": "family_name"
+                        },
+                        {
+                          "name": "Gender",
+                          "value": "gender"
+                        },
+                        {
+                          "name": "Given Name",
+                          "value": "given_name"
+                        },
+                        {
+                          "name": "Locale",
+                          "value": "locale"
+                        },
+                        {
+                          "name": "Middle Name",
+                          "value": "middle_name"
+                        },
+                        {
+                          "name": "Name",
+                          "value": "name"
+                        },
+                        {
+                          "name": "Nickname",
+                          "value": "nickname"
+                        },
+                        {
+                          "name": "Phone Number",
+                          "value": "phone_number"
+                        },
+                        {
+                          "name": "Phone Number Verified",
+                          "value": "phone_number_verified"
+                        },
+                        {
+                          "name": "Picture",
+                          "value": "picture"
+                        },
+                        {
+                          "name": "Preferred Username",
+                          "value": "preferred_username"
+                        },
+                        {
+                          "name": "Profile",
+                          "value": "profile"
+                        },
+                        {
+                          "name": "Website",
+                          "value": "website"
+                        },
+                        {
+                          "name": "Zoneinfo",
+                          "value": "zoneinfo"
+                        }
+                      ],
+                      "default": "email",
+                      "displayOptions": {
+                        "show": {
+                          "attributeType": [
+                            "Standard Attribute"
+                          ]
+                        }
+                      },
+                      "description": "Select a standard Cognito attribute."
+                    },
+                    {
+                      "name": "customAttribute",
+                      "displayName": "Custom Attribute",
+                      "type": "string",
+                      "default": "",
+                      "displayOptions": {
+                        "show": {
+                          "attributeType": [
+                            "Custom Attribute"
+                          ]
+                        }
+                      },
+                      "description": "Enter the custom attribute name (e.g. employeeId)."
+                    },
+                    {
+                      "name": "value",
+                      "displayName": "Value",
+                      "type": "string",
+                      "default": "",
+                      "description": "The value for this attribute."
+                    }
+                  ]
+                },
+                {
+                  "name": "messageAction",
+                  "displayName": "Message Action",
+                  "type": "options",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "options": [
+                    {
+                      "name": "Resend",
+                      "value": "RESEND"
+                    },
+                    {
+                      "name": "Suppress",
+                      "value": "SUPPRESS"
+                    }
+                  ],
+                  "default": "RESEND",
+                  "description": "The message action."
+                },
+                {
+                  "name": "forceAliasCreation",
+                  "displayName": "Force Alias Creation",
+                  "type": "boolean",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "description": "Whether to force alias creation."
+                },
+                {
+                  "name": "desiredDeliveryMediums",
+                  "displayName": "Desired Delivery Mediums",
+                  "type": "options",
+                  "typeOptions": {
+                    "multipleValues": true
+                  },
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "options": [
+                    {
+                      "name": "SMS",
+                      "value": "SMS"
+                    },
+                    {
+                      "name": "Email",
+                      "value": "EMAIL"
+                    }
+                  ],
+                  "default": [
+                    "EMAIL"
+                  ],
+                  "description": "The desired delivery mediums."
+                },
+                {
+                  "name": "autoGeneratePassword",
+                  "displayName": "Auto Generate Password",
+                  "type": "boolean",
+                  "default": true,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "description": "Whether to auto-generate the password."
+                },
+                {
+                  "name": "temporaryPassword",
+                  "displayName": "Temporary Password",
+                  "type": "string",
+                  "default": "",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ],
+                      "autoGeneratePassword": [
+                        false
+                      ]
+                    }
+                  },
+                  "description": "The temporary password for the user."
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "getMany"
+          },
+          "subCategory": "Cognito User",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "getMany"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.cognito.user.removefromgroup-1783398318441",
+      "type": "action",
+      "position": {
+        "x": -49.344747146803215,
+        "y": 531.2716499835641
+      },
+      "data": {
+        "label": "Remove from Group",
+        "toolId": "aws.cognito.user.removefromgroup",
+        "toolData": {
+          "id": "aws.cognito.user.removefromgroup",
+          "displayName": "Remove from Group",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Remove from Group",
+          "icon": "/tools/awsCognito.png",
+          "actionGroup": "Cognito User",
+          "description": "Remove from Group in Cognito User",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "get",
+                  "getMany",
+                  "update",
+                  "delete",
+                  "addToGroup",
+                  "removeFromGroup"
+                ],
+                "description": "Operation to perform"
+              },
+              "userPoolId": {
+                "type": "string",
+                "description": "The ID of the user pool."
+              },
+              "username": {
+                "type": "string",
+                "description": "The username for the user (for Create)."
+              },
+              "user": {
+                "type": "string",
+                "description": "The username of the user (from list)."
+              },
+              "group": {
+                "type": "string",
+                "description": "The name of the group."
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true,
+                "description": "Return a simplified version of the user details."
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 60,
+                "default": 50,
+                "description": "The maximum number of users to return."
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all users."
+              },
+              "userAttributes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "attributeType": {
+                      "type": "string",
+                      "enum": [
+                        "Standard Attribute",
+                        "Custom Attribute"
+                      ]
+                    },
+                    "standardAttribute": {
+                      "type": "string"
+                    },
+                    "customAttribute": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "description": "A collection of user attributes."
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "userAttributes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "attributeType": {
+                          "type": "string",
+                          "enum": [
+                            "Standard Attribute",
+                            "Custom Attribute"
+                          ]
+                        },
+                        "standardAttribute": {
+                          "type": "string"
+                        },
+                        "customAttribute": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "description": "A collection of user attributes."
+                  },
+                  "messageAction": {
+                    "type": "string",
+                    "enum": [
+                      "RESEND",
+                      "SUPPRESS"
+                    ],
+                    "description": "The message action."
+                  },
+                  "forceAliasCreation": {
+                    "type": "boolean",
+                    "description": "Whether to force alias creation."
+                  },
+                  "desiredDeliveryMediums": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "SMS",
+                        "EMAIL"
+                      ]
+                    },
+                    "description": "The desired delivery mediums."
+                  },
+                  "temporaryPassword": {
+                    "type": "string",
+                    "description": "The temporary password."
+                  },
+                  "autoGeneratePassword": {
+                    "type": "boolean",
+                    "description": "Whether to auto-generate the password."
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "AWS Cognito credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region"
+              }
+            },
+            "required": [
+              "operation",
+              "userPoolId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Add to Group",
+                  "value": "addToGroup"
+                },
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Remove from Group",
+                  "value": "removeFromGroup"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "removeFromGroup",
+              "required": true
+            },
+            {
+              "name": "userPoolId",
+              "displayName": "User Pool",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-user-pools",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Select a user pool...",
+              "description": "Select an existing user pool from your account."
+            },
+            {
+              "name": "username",
+              "displayName": "Username",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. JohnSmith",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The username for the user."
+            },
+            {
+              "name": "user",
+              "displayName": "User",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-users",
+              "dependsOn": [
+                "credentials",
+                "userPoolId"
+              ],
+              "placeholder": "Choose...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "update",
+                    "delete",
+                    "addToGroup",
+                    "removeFromGroup"
+                  ]
+                }
+              },
+              "description": "Select a user from the chosen user pool."
+            },
+            {
+              "name": "group",
+              "displayName": "Group",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-groups",
+              "dependsOn": [
+                "credentials",
+                "userPoolId"
+              ],
+              "placeholder": "Select a group...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "addToGroup",
+                    "removeFromGroup"
+                  ]
+                }
+              },
+              "description": "Select a group to add/remove the user from."
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              },
+              "description": "Return a simplified version of the user details."
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all users in the pool."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "Max number of users to return."
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "userAttributes",
+                  "displayName": "User Attributes",
+                  "type": "array",
+                  "placeholder": "Add Attribute",
+                  "fields": [
+                    {
+                      "name": "attributeType",
+                      "displayName": "Attribute Type",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Standard Attribute",
+                          "value": "Standard Attribute"
+                        },
+                        {
+                          "name": "Custom Attribute",
+                          "value": "Custom Attribute"
+                        }
+                      ],
+                      "default": "Standard Attribute",
+                      "description": "Select the attribute category."
+                    },
+                    {
+                      "name": "standardAttribute",
+                      "displayName": "Standard Attribute",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Address",
+                          "value": "address"
+                        },
+                        {
+                          "name": "Birthdate",
+                          "value": "birthdate"
+                        },
+                        {
+                          "name": "Email",
+                          "value": "email"
+                        },
+                        {
+                          "name": "Email Verified",
+                          "value": "email_verified"
+                        },
+                        {
+                          "name": "Family Name",
+                          "value": "family_name"
+                        },
+                        {
+                          "name": "Gender",
+                          "value": "gender"
+                        },
+                        {
+                          "name": "Given Name",
+                          "value": "given_name"
+                        },
+                        {
+                          "name": "Locale",
+                          "value": "locale"
+                        },
+                        {
+                          "name": "Middle Name",
+                          "value": "middle_name"
+                        },
+                        {
+                          "name": "Name",
+                          "value": "name"
+                        },
+                        {
+                          "name": "Nickname",
+                          "value": "nickname"
+                        },
+                        {
+                          "name": "Phone Number",
+                          "value": "phone_number"
+                        },
+                        {
+                          "name": "Phone Number Verified",
+                          "value": "phone_number_verified"
+                        },
+                        {
+                          "name": "Picture",
+                          "value": "picture"
+                        },
+                        {
+                          "name": "Preferred Username",
+                          "value": "preferred_username"
+                        },
+                        {
+                          "name": "Profile",
+                          "value": "profile"
+                        },
+                        {
+                          "name": "Website",
+                          "value": "website"
+                        },
+                        {
+                          "name": "Zoneinfo",
+                          "value": "zoneinfo"
+                        }
+                      ],
+                      "default": "email",
+                      "displayOptions": {
+                        "show": {
+                          "attributeType": [
+                            "Standard Attribute"
+                          ]
+                        }
+                      },
+                      "description": "Select a standard Cognito attribute."
+                    },
+                    {
+                      "name": "customAttribute",
+                      "displayName": "Custom Attribute",
+                      "type": "string",
+                      "default": "",
+                      "displayOptions": {
+                        "show": {
+                          "attributeType": [
+                            "Custom Attribute"
+                          ]
+                        }
+                      },
+                      "description": "Enter the custom attribute name (e.g. employeeId)."
+                    },
+                    {
+                      "name": "value",
+                      "displayName": "Value",
+                      "type": "string",
+                      "default": "",
+                      "description": "The value for this attribute."
+                    }
+                  ]
+                },
+                {
+                  "name": "messageAction",
+                  "displayName": "Message Action",
+                  "type": "options",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "options": [
+                    {
+                      "name": "Resend",
+                      "value": "RESEND"
+                    },
+                    {
+                      "name": "Suppress",
+                      "value": "SUPPRESS"
+                    }
+                  ],
+                  "default": "RESEND",
+                  "description": "The message action."
+                },
+                {
+                  "name": "forceAliasCreation",
+                  "displayName": "Force Alias Creation",
+                  "type": "boolean",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "description": "Whether to force alias creation."
+                },
+                {
+                  "name": "desiredDeliveryMediums",
+                  "displayName": "Desired Delivery Mediums",
+                  "type": "options",
+                  "typeOptions": {
+                    "multipleValues": true
+                  },
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "options": [
+                    {
+                      "name": "SMS",
+                      "value": "SMS"
+                    },
+                    {
+                      "name": "Email",
+                      "value": "EMAIL"
+                    }
+                  ],
+                  "default": [
+                    "EMAIL"
+                  ],
+                  "description": "The desired delivery mediums."
+                },
+                {
+                  "name": "autoGeneratePassword",
+                  "displayName": "Auto Generate Password",
+                  "type": "boolean",
+                  "default": true,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "description": "Whether to auto-generate the password."
+                },
+                {
+                  "name": "temporaryPassword",
+                  "displayName": "Temporary Password",
+                  "type": "string",
+                  "default": "",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ],
+                      "autoGeneratePassword": [
+                        false
+                      ]
+                    }
+                  },
+                  "description": "The temporary password for the user."
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "removeFromGroup"
+          },
+          "subCategory": "Cognito User",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "removeFromGroup"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.cognito.user.update-1783398320024",
+      "type": "action",
+      "position": {
+        "x": -258.2768823378731,
+        "y": 463.36870604646634
+      },
+      "data": {
+        "label": "Update",
+        "toolId": "aws.cognito.user.update",
+        "toolData": {
+          "id": "aws.cognito.user.update",
+          "displayName": "Update",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Update",
+          "icon": "/tools/awsCognito.png",
+          "actionGroup": "Cognito User",
+          "description": "Update in Cognito User",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "get",
+                  "getMany",
+                  "update",
+                  "delete",
+                  "addToGroup",
+                  "removeFromGroup"
+                ],
+                "description": "Operation to perform"
+              },
+              "userPoolId": {
+                "type": "string",
+                "description": "The ID of the user pool."
+              },
+              "username": {
+                "type": "string",
+                "description": "The username for the user (for Create)."
+              },
+              "user": {
+                "type": "string",
+                "description": "The username of the user (from list)."
+              },
+              "group": {
+                "type": "string",
+                "description": "The name of the group."
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true,
+                "description": "Return a simplified version of the user details."
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 60,
+                "default": 50,
+                "description": "The maximum number of users to return."
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all users."
+              },
+              "userAttributes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "attributeType": {
+                      "type": "string",
+                      "enum": [
+                        "Standard Attribute",
+                        "Custom Attribute"
+                      ]
+                    },
+                    "standardAttribute": {
+                      "type": "string"
+                    },
+                    "customAttribute": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "description": "A collection of user attributes."
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "userAttributes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "attributeType": {
+                          "type": "string",
+                          "enum": [
+                            "Standard Attribute",
+                            "Custom Attribute"
+                          ]
+                        },
+                        "standardAttribute": {
+                          "type": "string"
+                        },
+                        "customAttribute": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "description": "A collection of user attributes."
+                  },
+                  "messageAction": {
+                    "type": "string",
+                    "enum": [
+                      "RESEND",
+                      "SUPPRESS"
+                    ],
+                    "description": "The message action."
+                  },
+                  "forceAliasCreation": {
+                    "type": "boolean",
+                    "description": "Whether to force alias creation."
+                  },
+                  "desiredDeliveryMediums": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "SMS",
+                        "EMAIL"
+                      ]
+                    },
+                    "description": "The desired delivery mediums."
+                  },
+                  "temporaryPassword": {
+                    "type": "string",
+                    "description": "The temporary password."
+                  },
+                  "autoGeneratePassword": {
+                    "type": "boolean",
+                    "description": "Whether to auto-generate the password."
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "AWS Cognito credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region"
+              }
+            },
+            "required": [
+              "operation",
+              "userPoolId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Add to Group",
+                  "value": "addToGroup"
+                },
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Remove from Group",
+                  "value": "removeFromGroup"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "update",
+              "required": true
+            },
+            {
+              "name": "userPoolId",
+              "displayName": "User Pool",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-user-pools",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Select a user pool...",
+              "description": "Select an existing user pool from your account."
+            },
+            {
+              "name": "username",
+              "displayName": "Username",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. JohnSmith",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The username for the user."
+            },
+            {
+              "name": "user",
+              "displayName": "User",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-users",
+              "dependsOn": [
+                "credentials",
+                "userPoolId"
+              ],
+              "placeholder": "Choose...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "update",
+                    "delete",
+                    "addToGroup",
+                    "removeFromGroup"
+                  ]
+                }
+              },
+              "description": "Select a user from the chosen user pool."
+            },
+            {
+              "name": "group",
+              "displayName": "Group",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-groups",
+              "dependsOn": [
+                "credentials",
+                "userPoolId"
+              ],
+              "placeholder": "Select a group...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "addToGroup",
+                    "removeFromGroup"
+                  ]
+                }
+              },
+              "description": "Select a group to add/remove the user from."
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              },
+              "description": "Return a simplified version of the user details."
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all users in the pool."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "Max number of users to return."
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "update"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "userAttributes",
+                  "displayName": "User Attributes",
+                  "type": "array",
+                  "placeholder": "Add Attribute",
+                  "fields": [
+                    {
+                      "name": "attributeType",
+                      "displayName": "Attribute Type",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Standard Attribute",
+                          "value": "Standard Attribute"
+                        },
+                        {
+                          "name": "Custom Attribute",
+                          "value": "Custom Attribute"
+                        }
+                      ],
+                      "default": "Standard Attribute",
+                      "description": "Select the attribute category."
+                    },
+                    {
+                      "name": "standardAttribute",
+                      "displayName": "Standard Attribute",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Address",
+                          "value": "address"
+                        },
+                        {
+                          "name": "Birthdate",
+                          "value": "birthdate"
+                        },
+                        {
+                          "name": "Email",
+                          "value": "email"
+                        },
+                        {
+                          "name": "Email Verified",
+                          "value": "email_verified"
+                        },
+                        {
+                          "name": "Family Name",
+                          "value": "family_name"
+                        },
+                        {
+                          "name": "Gender",
+                          "value": "gender"
+                        },
+                        {
+                          "name": "Given Name",
+                          "value": "given_name"
+                        },
+                        {
+                          "name": "Locale",
+                          "value": "locale"
+                        },
+                        {
+                          "name": "Middle Name",
+                          "value": "middle_name"
+                        },
+                        {
+                          "name": "Name",
+                          "value": "name"
+                        },
+                        {
+                          "name": "Nickname",
+                          "value": "nickname"
+                        },
+                        {
+                          "name": "Phone Number",
+                          "value": "phone_number"
+                        },
+                        {
+                          "name": "Phone Number Verified",
+                          "value": "phone_number_verified"
+                        },
+                        {
+                          "name": "Picture",
+                          "value": "picture"
+                        },
+                        {
+                          "name": "Preferred Username",
+                          "value": "preferred_username"
+                        },
+                        {
+                          "name": "Profile",
+                          "value": "profile"
+                        },
+                        {
+                          "name": "Website",
+                          "value": "website"
+                        },
+                        {
+                          "name": "Zoneinfo",
+                          "value": "zoneinfo"
+                        }
+                      ],
+                      "default": "email",
+                      "displayOptions": {
+                        "show": {
+                          "attributeType": [
+                            "Standard Attribute"
+                          ]
+                        }
+                      },
+                      "description": "Select a standard Cognito attribute."
+                    },
+                    {
+                      "name": "customAttribute",
+                      "displayName": "Custom Attribute",
+                      "type": "string",
+                      "default": "",
+                      "displayOptions": {
+                        "show": {
+                          "attributeType": [
+                            "Custom Attribute"
+                          ]
+                        }
+                      },
+                      "description": "Enter the custom attribute name (e.g. employeeId)."
+                    },
+                    {
+                      "name": "value",
+                      "displayName": "Value",
+                      "type": "string",
+                      "default": "",
+                      "description": "The value for this attribute."
+                    }
+                  ]
+                },
+                {
+                  "name": "messageAction",
+                  "displayName": "Message Action",
+                  "type": "options",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "options": [
+                    {
+                      "name": "Resend",
+                      "value": "RESEND"
+                    },
+                    {
+                      "name": "Suppress",
+                      "value": "SUPPRESS"
+                    }
+                  ],
+                  "default": "RESEND",
+                  "description": "The message action."
+                },
+                {
+                  "name": "forceAliasCreation",
+                  "displayName": "Force Alias Creation",
+                  "type": "boolean",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "description": "Whether to force alias creation."
+                },
+                {
+                  "name": "desiredDeliveryMediums",
+                  "displayName": "Desired Delivery Mediums",
+                  "type": "options",
+                  "typeOptions": {
+                    "multipleValues": true
+                  },
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "options": [
+                    {
+                      "name": "SMS",
+                      "value": "SMS"
+                    },
+                    {
+                      "name": "Email",
+                      "value": "EMAIL"
+                    }
+                  ],
+                  "default": [
+                    "EMAIL"
+                  ],
+                  "description": "The desired delivery mediums."
+                },
+                {
+                  "name": "autoGeneratePassword",
+                  "displayName": "Auto Generate Password",
+                  "type": "boolean",
+                  "default": true,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ]
+                    }
+                  },
+                  "description": "Whether to auto-generate the password."
+                },
+                {
+                  "name": "temporaryPassword",
+                  "displayName": "Temporary Password",
+                  "type": "string",
+                  "default": "",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "create"
+                      ],
+                      "autoGeneratePassword": [
+                        false
+                      ]
+                    }
+                  },
+                  "description": "The temporary password for the user."
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "update"
+          },
+          "subCategory": "Cognito User",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "update"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

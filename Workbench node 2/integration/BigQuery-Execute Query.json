@@ -1,0 +1,111 @@
+{
+  "nodes": [
+    {
+      "id": "google_bigquery_execute-1783408215115",
+      "type": "action",
+      "position": {
+        "x": 803.5724506764967,
+        "y": -250.91199459783357
+      },
+      "data": {
+        "label": "BigQuery — Execute Query",
+        "toolId": "google_bigquery_execute",
+        "toolData": {
+          "id": "google_bigquery_execute",
+          "displayName": "BigQuery — Execute Query",
+          "category": "Integrations",
+          "operation": "execute",
+          "icon": "bigquery",
+          "description": "Execute a SQL query on Google BigQuery and wait for the results.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The ID of the project to bill for the query."
+              },
+              "sqlQuery": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The SQL query to execute."
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "defaultDataset": {
+                    "type": "string",
+                    "description": "The default dataset to use for any unqualified table names in the query."
+                  },
+                  "dryRun": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If true, BigQuery verifies the query but does not run it."
+                  },
+                  "includeSchema": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If true, include the table schema in the output."
+                  },
+                  "location": {
+                    "type": "string",
+                    "description": "The geographic location where the job should run (e.g., US, EU)."
+                  },
+                  "maximumBytesBilled": {
+                    "type": "number",
+                    "description": "Limits the bytes billed for this query."
+                  },
+                  "maxResults": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "description": "The maximum number of rows of data to return per page of results."
+                  },
+                  "timeoutMs": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "default": 30000,
+                    "description": "How long to wait for the query to complete, in milliseconds."
+                  },
+                  "rawOutput": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If true, return the full API response instead of structured rows."
+                  },
+                  "useLegacySql": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Specifies whether to use BigQuery's legacy SQL dialect for this query."
+                  },
+                  "returnIntegersAsNumbers": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If true, converts integer strings in results to JavaScript numbers."
+                  },
+                  "queryParameters": {
+                    "type": "object",
+                    "additionalProperties": {},
+                    "description": "Named parameters for the query (e.g., {\"name\": \"value\"})."
+                  }
+                },
+                "additionalProperties": false,
+                "default": {}
+              }
+            },
+            "required": [
+              "projectId",
+              "sqlQuery"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

@@ -1,0 +1,873 @@
+{
+  "nodes": [
+    {
+      "id": "firestore:create-1783398479917",
+      "type": "action",
+      "position": {
+        "x": 1177.9344548060963,
+        "y": 228.21563231972715
+      },
+      "data": {
+        "label": "Create Document",
+        "toolId": "firestore:create",
+        "toolData": {
+          "id": "firestore:create",
+          "displayName": "Create Document",
+          "category": "Memory & State",
+          "provider": "Google Cloud Firestore",
+          "icon": "firestore",
+          "description": "Create a new document in Firestore",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Create or Update",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Query"
+                ],
+                "default": "Create",
+                "description": "Operation"
+              },
+              "projectId": {
+                "type": "string",
+                "description": "Project Name or ID"
+              },
+              "databaseId": {
+                "type": "string",
+                "minLength": 1,
+                "default": "(default)",
+                "description": "Database"
+              },
+              "collectionId": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[a-zA-Z0-9_\\-]+$",
+                "description": "Collection"
+              },
+              "documentId": {
+                "type": "string",
+                "description": "Document ID"
+              },
+              "additionalFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {}
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": true
+                },
+                "minItems": 1,
+                "description": "Attributes"
+              },
+              "queryJson": {
+                "type": "string",
+                "description": "Query JSON"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": true,
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "minimum": 1,
+                "default": 100,
+                "description": "Limit"
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true,
+                "description": "Simplify"
+              },
+              "credentialId": {
+                "type": "string",
+                "description": "Google Cloud Firestore Credential"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Document",
+                  "Collection"
+                ],
+                "default": "Document",
+                "description": "Resource"
+              },
+              "columns": {
+                "type": "string",
+                "description": "Columns / Attributes"
+              }
+            },
+            "required": [
+              "projectId",
+              "collectionId"
+            ],
+            "additionalProperties": true,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "firestore:createOrUpdate-1783398481244",
+      "type": "action",
+      "position": {
+        "x": 1582.3690975638906,
+        "y": 269.79302550043496
+      },
+      "data": {
+        "label": "Create or Update Document",
+        "toolId": "firestore:createOrUpdate",
+        "toolData": {
+          "id": "firestore:createOrUpdate",
+          "displayName": "Create or Update Document",
+          "category": "Memory & State",
+          "provider": "Google Cloud Firestore",
+          "icon": "firestore",
+          "description": "Create if missing, update if exists.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Create or Update",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Query"
+                ],
+                "default": "Create or Update",
+                "description": "Operation"
+              },
+              "projectId": {
+                "type": "string",
+                "description": "Project Name or ID"
+              },
+              "databaseId": {
+                "type": "string",
+                "minLength": 1,
+                "default": "(default)",
+                "description": "Database"
+              },
+              "collectionId": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[a-zA-Z0-9_\\-]+$",
+                "description": "Collection"
+              },
+              "documentId": {
+                "type": "string",
+                "description": "Document ID"
+              },
+              "additionalFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {}
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": true
+                },
+                "minItems": 1,
+                "description": "Attributes"
+              },
+              "queryJson": {
+                "type": "string",
+                "description": "Query JSON"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": true,
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "minimum": 1,
+                "default": 100,
+                "description": "Limit"
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true,
+                "description": "Simplify"
+              },
+              "credentialId": {
+                "type": "string",
+                "description": "Google Cloud Firestore Credential"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Document",
+                  "Collection"
+                ],
+                "default": "Document",
+                "description": "Resource"
+              },
+              "columns": {
+                "type": "string",
+                "description": "Columns / Attributes"
+              }
+            },
+            "required": [
+              "projectId",
+              "collectionId"
+            ],
+            "additionalProperties": true,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "firestore:delete-1783398483565",
+      "type": "action",
+      "position": {
+        "x": 1254.789636140132,
+        "y": 434.84267721779025
+      },
+      "data": {
+        "label": "Delete Document",
+        "toolId": "firestore:delete",
+        "toolData": {
+          "id": "firestore:delete",
+          "displayName": "Delete Document",
+          "category": "Memory & State",
+          "provider": "Google Cloud Firestore",
+          "icon": "firestore",
+          "description": "Delete a document from Firestore",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Create or Update",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Query"
+                ],
+                "default": "Delete",
+                "description": "Operation"
+              },
+              "projectId": {
+                "type": "string",
+                "description": "Project Name or ID"
+              },
+              "databaseId": {
+                "type": "string",
+                "minLength": 1,
+                "default": "(default)",
+                "description": "Database"
+              },
+              "collectionId": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[a-zA-Z0-9_\\-]+$",
+                "description": "Collection"
+              },
+              "documentId": {
+                "type": "string",
+                "description": "Document ID"
+              },
+              "additionalFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {}
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": true
+                },
+                "minItems": 1,
+                "description": "Attributes"
+              },
+              "queryJson": {
+                "type": "string",
+                "description": "Query JSON"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": true,
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "minimum": 1,
+                "default": 100,
+                "description": "Limit"
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true,
+                "description": "Simplify"
+              },
+              "credentialId": {
+                "type": "string",
+                "description": "Google Cloud Firestore Credential"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Document",
+                  "Collection"
+                ],
+                "default": "Document",
+                "description": "Resource"
+              },
+              "columns": {
+                "type": "string",
+                "description": "Columns / Attributes"
+              }
+            },
+            "required": [
+              "projectId",
+              "collectionId"
+            ],
+            "additionalProperties": true,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "firestore:get-1783398484901",
+      "type": "action",
+      "position": {
+        "x": 1356.8432375836876,
+        "y": 119.86242584879159
+      },
+      "data": {
+        "label": "Get Document",
+        "toolId": "firestore:get",
+        "toolData": {
+          "id": "firestore:get",
+          "displayName": "Get Document",
+          "category": "Memory & State",
+          "provider": "Google Cloud Firestore",
+          "icon": "firestore",
+          "description": "Retrieve a single document from Firestore",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Create or Update",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Query"
+                ],
+                "default": "Get",
+                "description": "Operation"
+              },
+              "projectId": {
+                "type": "string",
+                "description": "Project Name or ID"
+              },
+              "databaseId": {
+                "type": "string",
+                "minLength": 1,
+                "default": "(default)",
+                "description": "Database"
+              },
+              "collectionId": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[a-zA-Z0-9_\\-]+$",
+                "description": "Collection"
+              },
+              "documentId": {
+                "type": "string",
+                "description": "Document ID"
+              },
+              "additionalFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {}
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": true
+                },
+                "minItems": 1,
+                "description": "Attributes"
+              },
+              "queryJson": {
+                "type": "string",
+                "description": "Query JSON"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": true,
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "minimum": 1,
+                "default": 100,
+                "description": "Limit"
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true,
+                "description": "Simplify"
+              },
+              "credentialId": {
+                "type": "string",
+                "description": "Google Cloud Firestore Credential"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Document",
+                  "Collection"
+                ],
+                "default": "Document",
+                "description": "Resource"
+              },
+              "columns": {
+                "type": "string",
+                "description": "Columns / Attributes"
+              }
+            },
+            "required": [
+              "projectId",
+              "collectionId"
+            ],
+            "additionalProperties": true,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "firestore:getManyCollectionsDedicated-1783398487092",
+      "type": "action",
+      "position": {
+        "x": 1140.1368246418165,
+        "y": 44.26716552023191
+      },
+      "data": {
+        "label": "Get Many Collections",
+        "toolId": "firestore:getManyCollectionsDedicated",
+        "toolData": {
+          "id": "firestore:getManyCollectionsDedicated",
+          "displayName": "Get Many Collections",
+          "category": "Memory & State",
+          "provider": "Google Cloud Firestore",
+          "icon": "firestore",
+          "description": "Retrieve all root collections from Firestore",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Create or Update",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Query"
+                ],
+                "default": "Get Many",
+                "description": "Operation"
+              },
+              "projectId": {
+                "type": "string",
+                "description": "Project Name or ID"
+              },
+              "databaseId": {
+                "type": "string",
+                "minLength": 1,
+                "default": "(default)",
+                "description": "Database"
+              },
+              "collectionId": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[a-zA-Z0-9_\\-]+$",
+                "description": "Collection"
+              },
+              "documentId": {
+                "type": "string",
+                "description": "Document ID"
+              },
+              "additionalFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {}
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": true
+                },
+                "minItems": 1,
+                "description": "Attributes"
+              },
+              "queryJson": {
+                "type": "string",
+                "description": "Query JSON"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": true,
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "minimum": 1,
+                "default": 100,
+                "description": "Limit"
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true,
+                "description": "Simplify"
+              },
+              "credentialId": {
+                "type": "string",
+                "description": "Google Cloud Firestore Credential"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Document",
+                  "Collection"
+                ],
+                "default": "Document",
+                "description": "Resource"
+              },
+              "columns": {
+                "type": "string",
+                "description": "Columns / Attributes"
+              }
+            },
+            "required": [
+              "projectId",
+              "collectionId"
+            ],
+            "additionalProperties": true,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "firestore:getMany-1783398490469",
+      "type": "action",
+      "position": {
+        "x": 944.8490687930373,
+        "y": 369.32678493303854
+      },
+      "data": {
+        "label": "Get Many Documents",
+        "toolId": "firestore:getMany",
+        "toolData": {
+          "id": "firestore:getMany",
+          "displayName": "Get Many Documents",
+          "category": "Memory & State",
+          "provider": "Google Cloud Firestore",
+          "icon": "firestore",
+          "description": "Retrieve multiple documents from Firestore",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Create or Update",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Query"
+                ],
+                "default": "Get Many",
+                "description": "Operation"
+              },
+              "projectId": {
+                "type": "string",
+                "description": "Project Name or ID"
+              },
+              "databaseId": {
+                "type": "string",
+                "minLength": 1,
+                "default": "(default)",
+                "description": "Database"
+              },
+              "collectionId": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[a-zA-Z0-9_\\-]+$",
+                "description": "Collection"
+              },
+              "documentId": {
+                "type": "string",
+                "description": "Document ID"
+              },
+              "additionalFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {}
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": true
+                },
+                "minItems": 1,
+                "description": "Attributes"
+              },
+              "queryJson": {
+                "type": "string",
+                "description": "Query JSON"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": true,
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "minimum": 1,
+                "default": 100,
+                "description": "Limit"
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true,
+                "description": "Simplify"
+              },
+              "credentialId": {
+                "type": "string",
+                "description": "Google Cloud Firestore Credential"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Document",
+                  "Collection"
+                ],
+                "default": "Document",
+                "description": "Resource"
+              },
+              "columns": {
+                "type": "string",
+                "description": "Columns / Attributes"
+              }
+            },
+            "required": [
+              "projectId",
+              "collectionId"
+            ],
+            "additionalProperties": true,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "firestore:query-1783398492061",
+      "type": "action",
+      "position": {
+        "x": 884.3728605301897,
+        "y": 208.05689623211123
+      },
+      "data": {
+        "label": "Query Document",
+        "toolId": "firestore:query",
+        "toolData": {
+          "id": "firestore:query",
+          "displayName": "Query Document",
+          "category": "Memory & State",
+          "provider": "Google Cloud Firestore",
+          "icon": "firestore",
+          "description": "JSON query to fetch documents from Firestore.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Create or Update",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Query"
+                ],
+                "default": "Query",
+                "description": "Operation"
+              },
+              "projectId": {
+                "type": "string",
+                "description": "Project Name or ID"
+              },
+              "databaseId": {
+                "type": "string",
+                "minLength": 1,
+                "default": "(default)",
+                "description": "Database"
+              },
+              "collectionId": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[a-zA-Z0-9_\\-]+$",
+                "description": "Collection"
+              },
+              "documentId": {
+                "type": "string",
+                "description": "Document ID"
+              },
+              "additionalFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {}
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": true
+                },
+                "minItems": 1,
+                "description": "Attributes"
+              },
+              "queryJson": {
+                "type": "string",
+                "description": "Query JSON"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": true,
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "minimum": 1,
+                "default": 100,
+                "description": "Limit"
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true,
+                "description": "Simplify"
+              },
+              "credentialId": {
+                "type": "string",
+                "description": "Google Cloud Firestore Credential"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Document",
+                  "Collection"
+                ],
+                "default": "Document",
+                "description": "Resource"
+              },
+              "columns": {
+                "type": "string",
+                "description": "Columns / Attributes"
+              }
+            },
+            "required": [
+              "projectId",
+              "collectionId"
+            ],
+            "additionalProperties": true,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

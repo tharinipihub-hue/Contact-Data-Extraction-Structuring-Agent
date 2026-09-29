@@ -1,0 +1,351 @@
+{
+  "nodes": [
+    {
+      "id": "github.trigger-1783406939136",
+      "type": "manual-trigger",
+      "position": {
+        "x": 1563.540203942864,
+        "y": 513.1009329572136
+      },
+      "data": {
+        "label": "GitHub Trigger",
+        "toolId": "github.trigger",
+        "toolData": {
+          "id": "github.trigger",
+          "displayName": "GitHub Trigger",
+          "type": "trigger",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "githubTrigger",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Trigger workflow on GitHub events",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string"
+              },
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "ownerMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "name"
+                ]
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repositoryMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "name"
+                ]
+              },
+              "repository": {
+                "type": "string"
+              },
+              "events": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": [
+                  "push"
+                ]
+              },
+              "insecureSSL": {
+                "type": "boolean",
+                "default": false
+              },
+              "secret": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "owner",
+              "repository"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ]
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select or enter owner...",
+              "description": "GitHub organization or user"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ]
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select or enter repository...",
+              "description": "Repository name"
+            },
+            {
+              "name": "events",
+              "displayName": "Events",
+              "type": "multiSelect",
+              "required": true,
+              "default": [
+                "push"
+              ],
+              "description": "GitHub events to listen to",
+              "options": [
+                {
+                  "name": "check_run",
+                  "value": "check_run"
+                },
+                {
+                  "name": "check_suite",
+                  "value": "check_suite"
+                },
+                {
+                  "name": "commit_comment",
+                  "value": "commit_comment"
+                },
+                {
+                  "name": "create",
+                  "value": "create"
+                },
+                {
+                  "name": "delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "deploy_key",
+                  "value": "deploy_key"
+                },
+                {
+                  "name": "deployment",
+                  "value": "deployment"
+                },
+                {
+                  "name": "deployment_status",
+                  "value": "deployment_status"
+                },
+                {
+                  "name": "fork",
+                  "value": "fork"
+                },
+                {
+                  "name": "github_app_authorization",
+                  "value": "github_app_authorization"
+                },
+                {
+                  "name": "gollum",
+                  "value": "gollum"
+                },
+                {
+                  "name": "installation",
+                  "value": "installation"
+                },
+                {
+                  "name": "installation_repositories",
+                  "value": "installation_repositories"
+                },
+                {
+                  "name": "issue_comment",
+                  "value": "issue_comment"
+                },
+                {
+                  "name": "issues",
+                  "value": "issues"
+                },
+                {
+                  "name": "label",
+                  "value": "label"
+                },
+                {
+                  "name": "marketplace_purchase",
+                  "value": "marketplace_purchase"
+                },
+                {
+                  "name": "member",
+                  "value": "member"
+                },
+                {
+                  "name": "membership",
+                  "value": "membership"
+                },
+                {
+                  "name": "meta",
+                  "value": "meta"
+                },
+                {
+                  "name": "milestone",
+                  "value": "milestone"
+                },
+                {
+                  "name": "org_block",
+                  "value": "org_block"
+                },
+                {
+                  "name": "organization",
+                  "value": "organization"
+                },
+                {
+                  "name": "page_build",
+                  "value": "page_build"
+                },
+                {
+                  "name": "project",
+                  "value": "project"
+                },
+                {
+                  "name": "project_card",
+                  "value": "project_card"
+                },
+                {
+                  "name": "project_column",
+                  "value": "project_column"
+                },
+                {
+                  "name": "public",
+                  "value": "public"
+                },
+                {
+                  "name": "pull_request",
+                  "value": "pull_request"
+                },
+                {
+                  "name": "pull_request_review",
+                  "value": "pull_request_review"
+                },
+                {
+                  "name": "pull_request_review_comment",
+                  "value": "pull_request_review_comment"
+                },
+                {
+                  "name": "push",
+                  "value": "push"
+                },
+                {
+                  "name": "release",
+                  "value": "release"
+                },
+                {
+                  "name": "repository",
+                  "value": "repository"
+                },
+                {
+                  "name": "repository_import",
+                  "value": "repository_import"
+                },
+                {
+                  "name": "repository_vulnerability_alert",
+                  "value": "repository_vulnerability_alert"
+                },
+                {
+                  "name": "security_advisory",
+                  "value": "security_advisory"
+                },
+                {
+                  "name": "star",
+                  "value": "star"
+                },
+                {
+                  "name": "status",
+                  "value": "status"
+                },
+                {
+                  "name": "team",
+                  "value": "team"
+                },
+                {
+                  "name": "team_add",
+                  "value": "team_add"
+                },
+                {
+                  "name": "watch",
+                  "value": "watch"
+                }
+              ]
+            },
+            {
+              "name": "insecureSSL",
+              "displayName": "Insecure SSL",
+              "type": "toggle",
+              "required": false,
+              "default": false,
+              "description": "Allow GitHub to send payloads over unverified SSL"
+            }
+          ],
+          "subCategory": "TRIGGERS"
+        },
+        "isTrigger": true,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 100
+    }
+  ],
+  "edges": []
+}

@@ -1,0 +1,1338 @@
+{
+  "nodes": [
+    {
+      "id": "whatsapp.message.sendAndWait-1783407544165",
+      "type": "action",
+      "position": {
+        "x": 600.3682324174712,
+        "y": -283.23993841176946
+      },
+      "data": {
+        "label": "Send and Wait",
+        "toolId": "whatsapp.message.sendAndWait",
+        "toolData": {
+          "id": "whatsapp.message.sendAndWait",
+          "displayName": "Send and Wait",
+          "category": "Integrations",
+          "provider": "whatsapp",
+          "operation": "sendAndWait",
+          "icon": "/tools/whatsapp.png",
+          "description": "Send a message and wait for reply",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentialId"
+            ],
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "senderPhoneNumber",
+              "displayName": "Sender Phone Number (or ID)",
+              "type": "options",
+              "description": "The phone number or ID of the sender. Usually your WhatsApp Business phone number ID.",
+              "placeholder": "Select a phone number...",
+              "required": true,
+              "fetchEndpoint": "/api/tools/whatsapp/list-phone-numbers",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "value"
+            },
+            {
+              "name": "recipientPhoneNumber",
+              "displayName": "Recipient's Phone Number",
+              "type": "string",
+              "required": true,
+              "placeholder": "+91 **********",
+              "description": "When entering a phone number, make sure to include the country code"
+            },
+            {
+              "name": "messageBody",
+              "displayName": "Message",
+              "type": "textarea",
+              "required": true
+            },
+            {
+              "name": "responseType",
+              "displayName": "Response Type",
+              "type": "options",
+              "required": true,
+              "default": "freeText",
+              "options": [
+                {
+                  "name": "Approval",
+                  "value": "approval"
+                },
+                {
+                  "name": "Free Text",
+                  "value": "freeText"
+                },
+                {
+                  "name": "Custom Form",
+                  "value": "customForm"
+                }
+              ]
+            },
+            {
+              "name": "approvalType",
+              "displayName": "Type of Approval",
+              "type": "options",
+              "required": true,
+              "default": "approveOnly",
+              "options": [
+                {
+                  "name": "Approve Only",
+                  "value": "approveOnly"
+                },
+                {
+                  "name": "Approve and Disapprove",
+                  "value": "approveAndDisapprove"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "responseType": [
+                    "approval"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "approveButtonLabel",
+              "displayName": "Approve Button Label",
+              "type": "string",
+              "required": true,
+              "default": "Approve",
+              "displayOptions": {
+                "show": {
+                  "responseType": [
+                    "approval"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "disapproveButtonLabel",
+              "displayName": "Disapprove Button Label",
+              "type": "string",
+              "required": true,
+              "default": "Disapprove",
+              "displayOptions": {
+                "show": {
+                  "responseType": [
+                    "approval"
+                  ],
+                  "approvalType": [
+                    "approveAndDisapprove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "defineForm",
+              "displayName": "Define Form",
+              "type": "options",
+              "required": true,
+              "default": "fields",
+              "options": [
+                {
+                  "name": "Using Fields Below",
+                  "value": "fields"
+                },
+                {
+                  "name": "Using JSON",
+                  "value": "json"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "responseType": [
+                    "customForm"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "formFields",
+              "displayName": "Form Elements",
+              "type": "array",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "responseType": [
+                    "customForm"
+                  ],
+                  "defineForm": [
+                    "fields"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "label",
+                  "displayName": "Field Name",
+                  "type": "string",
+                  "required": true,
+                  "placeholder": "e.g. What is your name?"
+                },
+                {
+                  "name": "type",
+                  "displayName": "Element Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Checkboxes",
+                      "value": "checkbox"
+                    },
+                    {
+                      "name": "Custom HTML",
+                      "value": "html"
+                    },
+                    {
+                      "name": "Date",
+                      "value": "date"
+                    },
+                    {
+                      "name": "Dropdown",
+                      "value": "select"
+                    },
+                    {
+                      "name": "Email",
+                      "value": "email"
+                    },
+                    {
+                      "name": "File",
+                      "value": "file"
+                    },
+                    {
+                      "name": "Hidden Field",
+                      "value": "hidden"
+                    },
+                    {
+                      "name": "Number",
+                      "value": "number"
+                    },
+                    {
+                      "name": "Password",
+                      "value": "password"
+                    },
+                    {
+                      "name": "Radio Buttons",
+                      "value": "radio"
+                    },
+                    {
+                      "name": "Text Input",
+                      "value": "text"
+                    },
+                    {
+                      "name": "Textarea",
+                      "value": "textarea"
+                    }
+                  ],
+                  "required": true,
+                  "default": "text"
+                },
+                {
+                  "name": "fieldValue",
+                  "displayName": "Field Value",
+                  "type": "string",
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "hidden"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "elementName",
+                  "displayName": "Element Name",
+                  "type": "string",
+                  "placeholder": "e.g. content-section",
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "html"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "html",
+                  "displayName": "HTML",
+                  "type": "textarea",
+                  "placeholder": "<!-- Your custom HTML here -->",
+                  "description": "Does not accept <script>, <style> or <input> tags",
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "html"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "placeholder",
+                  "displayName": "Placeholder",
+                  "type": "string",
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "text",
+                        "number",
+                        "email",
+                        "password",
+                        "textarea"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "defaultValue",
+                  "displayName": "Default Value",
+                  "type": "string",
+                  "displayOptions": {
+                    "hide": {
+                      "type": [
+                        "html",
+                        "hidden",
+                        "date",
+                        "file",
+                        "password"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "defaultDateValue",
+                  "displayName": "Default Value",
+                  "type": "dateTime",
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "date"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "checkboxes",
+                  "displayName": "Checkboxes",
+                  "type": "array",
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "checkbox"
+                      ]
+                    }
+                  },
+                  "fields": [
+                    {
+                      "name": "label",
+                      "displayName": "Checkbox Label",
+                      "type": "string",
+                      "required": true
+                    }
+                  ]
+                },
+                {
+                  "name": "limitSelection",
+                  "displayName": "Limit Selection",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Unlimited",
+                      "value": "unlimited"
+                    },
+                    {
+                      "name": "Exact Number",
+                      "value": "exact"
+                    },
+                    {
+                      "name": "Range",
+                      "value": "range"
+                    }
+                  ],
+                  "default": "unlimited",
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "checkbox"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "selectionCount",
+                  "displayName": "Number of Selections",
+                  "type": "number",
+                  "default": 1,
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "checkbox"
+                      ],
+                      "limitSelection": [
+                        "exact"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "minSelections",
+                  "displayName": "Minimum Selections",
+                  "type": "number",
+                  "default": 0,
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "checkbox"
+                      ],
+                      "limitSelection": [
+                        "range"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "maxSelections",
+                  "displayName": "Maximum Selections",
+                  "type": "number",
+                  "default": 1,
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "checkbox"
+                      ],
+                      "limitSelection": [
+                        "range"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "fieldOptions",
+                  "displayName": "Field Options",
+                  "type": "array",
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "select"
+                      ]
+                    }
+                  },
+                  "fields": [
+                    {
+                      "name": "option",
+                      "displayName": "Option",
+                      "type": "string",
+                      "required": true
+                    }
+                  ]
+                },
+                {
+                  "name": "multipleChoice",
+                  "displayName": "Multiple Choice",
+                  "type": "toggle",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "select"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "radioButtons",
+                  "displayName": "Radio Buttons",
+                  "type": "array",
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "radio"
+                      ]
+                    }
+                  },
+                  "fields": [
+                    {
+                      "name": "label",
+                      "displayName": "Radio Button",
+                      "type": "string",
+                      "required": true
+                    }
+                  ]
+                },
+                {
+                  "name": "multipleFiles",
+                  "displayName": "Multiple Files",
+                  "type": "toggle",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "file"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "acceptedFileTypes",
+                  "displayName": "Accepted File Types",
+                  "type": "string",
+                  "placeholder": "e.g. .jpg, .png",
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "file"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "required",
+                  "displayName": "Required Field",
+                  "type": "toggle",
+                  "default": false,
+                  "displayOptions": {
+                    "hide": {
+                      "type": [
+                        "html",
+                        "hidden"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "formJson",
+              "displayName": "Form Fields (JSON)",
+              "type": "textarea",
+              "required": true,
+              "placeholder": "[\n  {\n    \"fieldLabel\": \"Name\",\n    \"placeholder\": \"enter your name\",\n    \"requiredField\": true\n  }\n]",
+              "description": "See docs for field syntax",
+              "displayOptions": {
+                "show": {
+                  "responseType": [
+                    "customForm"
+                  ],
+                  "defineForm": [
+                    "json"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "placeholder": "Add option",
+              "default": {},
+              "fields": [
+                {
+                  "name": "limitWaitTime",
+                  "displayName": "Limit Wait Time",
+                  "type": "collection",
+                  "placeholder": "Set Limit",
+                  "default": {},
+                  "fields": [
+                    {
+                      "name": "limitType",
+                      "displayName": "Limit Type",
+                      "type": "options",
+                      "default": "interval",
+                      "options": [
+                        {
+                          "name": "After Time Interval",
+                          "value": "interval"
+                        },
+                        {
+                          "name": "At Specified Time",
+                          "value": "time"
+                        }
+                      ],
+                      "required": true
+                    },
+                    {
+                      "name": "waitAmount",
+                      "displayName": "Amount",
+                      "type": "number",
+                      "default": 1,
+                      "required": true,
+                      "displayOptions": {
+                        "show": {
+                          "limitType": [
+                            "interval"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "waitUnit",
+                      "displayName": "Unit",
+                      "type": "options",
+                      "required": true,
+                      "default": "minutes",
+                      "options": [
+                        {
+                          "name": "Minutes",
+                          "value": "minutes"
+                        },
+                        {
+                          "name": "Hours",
+                          "value": "hours"
+                        },
+                        {
+                          "name": "Days",
+                          "value": "days"
+                        }
+                      ],
+                      "displayOptions": {
+                        "show": {
+                          "limitType": [
+                            "interval"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "maxWaitTime",
+                      "displayName": "Max Date and Time",
+                      "type": "dateTime",
+                      "required": true,
+                      "displayOptions": {
+                        "show": {
+                          "limitType": [
+                            "time"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "appendAttribution",
+                  "displayName": "Append Attribution",
+                  "type": "toggle",
+                  "default": true,
+                  "description": "Append attribution to the message"
+                },
+                {
+                  "name": "messageButtonLabel",
+                  "displayName": "Message Button Label",
+                  "type": "string",
+                  "default": "Respond",
+                  "displayOptions": {
+                    "show": {
+                      "/responseType": [
+                        "customForm"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "formTitle",
+                  "displayName": "Response Form Title",
+                  "type": "string",
+                  "displayOptions": {
+                    "show": {
+                      "/responseType": [
+                        "customForm"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "formDescription",
+                  "displayName": "Response Form Description",
+                  "type": "string",
+                  "displayOptions": {
+                    "show": {
+                      "/responseType": [
+                        "customForm"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "formButtonLabel",
+                  "displayName": "Response Form Button Label",
+                  "type": "string",
+                  "default": "Submit",
+                  "displayOptions": {
+                    "show": {
+                      "/responseType": [
+                        "customForm"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "formStyling",
+                  "displayName": "Response Form Custom Styling",
+                  "type": "textarea",
+                  "placeholder": ":root {\n  --font-family: 'Open Sans', sans-serif;\n}",
+                  "displayOptions": {
+                    "show": {
+                      "/responseType": [
+                        "customForm"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "message",
+            "operation": "sendAndWait"
+          },
+          "subCategory": "MESSAGE ACTIONS",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "message",
+          "operation": "sendAndWait"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "whatsapp.message.send-1783407545371",
+      "type": "action",
+      "position": {
+        "x": 924.3074245122165,
+        "y": -246.9534708655149
+      },
+      "data": {
+        "label": "Send Message",
+        "toolId": "whatsapp.message.send",
+        "toolData": {
+          "id": "whatsapp.message.send",
+          "displayName": "Send Message",
+          "category": "Integrations",
+          "provider": "whatsapp",
+          "operation": "send",
+          "icon": "/tools/whatsapp.png",
+          "description": "Send a text or media message",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string"
+              },
+              "senderPhoneNumber": {
+                "type": "string"
+              },
+              "recipientPhoneNumber": {
+                "type": "string"
+              },
+              "messageType": {
+                "type": "string",
+                "enum": [
+                  "text",
+                  "image",
+                  "video",
+                  "audio",
+                  "document",
+                  "location",
+                  "contacts"
+                ]
+              },
+              "textBody": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentialId",
+              "senderPhoneNumber",
+              "recipientPhoneNumber",
+              "messageType"
+            ],
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "senderPhoneNumber",
+              "displayName": "Sender Phone Number (or ID)",
+              "type": "options",
+              "description": "The phone number or ID of the sender. Usually your WhatsApp Business phone number ID.",
+              "placeholder": "Select a phone number...",
+              "required": true,
+              "fetchEndpoint": "/api/tools/whatsapp/list-phone-numbers",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "value"
+            },
+            {
+              "name": "recipientPhoneNumber",
+              "displayName": "Recipient's Phone Number",
+              "type": "string",
+              "required": true,
+              "placeholder": "+91 **********",
+              "description": "When entering a phone number, make sure to include the country code"
+            },
+            {
+              "name": "messageType",
+              "displayName": "MessageType",
+              "type": "options",
+              "required": true,
+              "default": "text",
+              "options": [
+                {
+                  "name": "Text",
+                  "value": "text"
+                },
+                {
+                  "name": "Image",
+                  "value": "image"
+                },
+                {
+                  "name": "Video",
+                  "value": "video"
+                },
+                {
+                  "name": "Audio",
+                  "value": "audio"
+                },
+                {
+                  "name": "Document",
+                  "value": "document"
+                },
+                {
+                  "name": "Location",
+                  "value": "location"
+                },
+                {
+                  "name": "Contacts",
+                  "value": "contacts"
+                }
+              ]
+            },
+            {
+              "name": "textBody",
+              "displayName": "Text Body",
+              "type": "textarea",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "messageType": [
+                    "text"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "sourceType",
+              "displayName": "Take Media From",
+              "type": "options",
+              "required": true,
+              "default": "link",
+              "options": [
+                {
+                  "name": "Link",
+                  "value": "link"
+                },
+                {
+                  "name": "WhatsApp Media",
+                  "value": "id"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "messageType": [
+                    "image",
+                    "video",
+                    "audio",
+                    "document"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "link",
+              "displayName": "Link",
+              "type": "string",
+              "required": true,
+              "placeholder": "https://example.com/media.file",
+              "displayOptions": {
+                "show": {
+                  "messageType": [
+                    "image",
+                    "video",
+                    "audio",
+                    "document"
+                  ],
+                  "sourceType": [
+                    "link"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "mediaId",
+              "displayName": "ID",
+              "type": "string",
+              "required": true,
+              "placeholder": "Media ID from WhatsApp",
+              "displayOptions": {
+                "show": {
+                  "messageType": [
+                    "image",
+                    "video",
+                    "audio",
+                    "document"
+                  ],
+                  "sourceType": [
+                    "id"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "filename",
+              "displayName": "Filename",
+              "type": "string",
+              "required": false,
+              "placeholder": "filename.pdf",
+              "displayOptions": {
+                "show": {
+                  "messageType": [
+                    "document"
+                  ],
+                  "sourceType": [
+                    "id"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "name",
+              "displayName": "Name",
+              "type": "array",
+              "maxItems": 1,
+              "placeholder": "Add Parameter",
+              "default": [],
+              "displayOptions": {
+                "show": {
+                  "messageType": [
+                    "contacts"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "formattedName",
+                  "displayName": "Formatted Name",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "firstName",
+                  "displayName": "First Name",
+                  "type": "string"
+                },
+                {
+                  "name": "lastName",
+                  "displayName": "Last Name",
+                  "type": "string"
+                },
+                {
+                  "name": "middleName",
+                  "displayName": "Middle Name",
+                  "type": "string"
+                },
+                {
+                  "name": "suffix",
+                  "displayName": "Suffix",
+                  "type": "string"
+                },
+                {
+                  "name": "prefix",
+                  "displayName": "Prefix",
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "longitude",
+              "displayName": "Longitude",
+              "type": "number",
+              "required": true,
+              "default": 0,
+              "displayOptions": {
+                "show": {
+                  "messageType": [
+                    "location"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "latitude",
+              "displayName": "Latitude",
+              "type": "number",
+              "required": true,
+              "default": 0,
+              "displayOptions": {
+                "show": {
+                  "messageType": [
+                    "location"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "messageType": [
+                    "text",
+                    "image",
+                    "video",
+                    "audio",
+                    "document",
+                    "location",
+                    "contacts"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "showUrlPreviews",
+                  "displayName": "Show URL Previews",
+                  "type": "toggle",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "/messageType": [
+                        "text"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "caption",
+                  "displayName": "Caption",
+                  "type": "textarea",
+                  "displayOptions": {
+                    "show": {
+                      "/messageType": [
+                        "image",
+                        "video",
+                        "audio",
+                        "document"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "filename",
+                  "displayName": "Filename",
+                  "type": "string",
+                  "displayOptions": {
+                    "show": {
+                      "/messageType": [
+                        "document"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "locationName",
+                  "displayName": "Name",
+                  "type": "string",
+                  "displayOptions": {
+                    "show": {
+                      "/messageType": [
+                        "location"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "locationAddress",
+                  "displayName": "Address",
+                  "type": "string",
+                  "displayOptions": {
+                    "show": {
+                      "/messageType": [
+                        "location"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "addresses",
+                  "displayName": "Addresses",
+                  "type": "array",
+                  "placeholder": "Add Parameter",
+                  "displayOptions": {
+                    "show": {
+                      "/messageType": [
+                        "contacts"
+                      ]
+                    }
+                  },
+                  "fields": [
+                    {
+                      "name": "type",
+                      "displayName": "Type",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Home",
+                          "value": "HOME"
+                        },
+                        {
+                          "name": "Work",
+                          "value": "WORK"
+                        }
+                      ],
+                      "default": "HOME"
+                    },
+                    {
+                      "name": "street",
+                      "displayName": "Street",
+                      "type": "string"
+                    },
+                    {
+                      "name": "city",
+                      "displayName": "City",
+                      "type": "string"
+                    },
+                    {
+                      "name": "state",
+                      "displayName": "State",
+                      "type": "string"
+                    },
+                    {
+                      "name": "zip",
+                      "displayName": "Zip",
+                      "type": "string"
+                    },
+                    {
+                      "name": "country",
+                      "displayName": "Country",
+                      "type": "string"
+                    },
+                    {
+                      "name": "countryCode",
+                      "displayName": "Country Code",
+                      "type": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "birthday",
+                  "displayName": "Birthday",
+                  "type": "string",
+                  "placeholder": "YYYY-MM-DD",
+                  "displayOptions": {
+                    "show": {
+                      "/messageType": [
+                        "contacts"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "emails",
+                  "displayName": "Emails",
+                  "type": "array",
+                  "placeholder": "Add Parameter",
+                  "displayOptions": {
+                    "show": {
+                      "/messageType": [
+                        "contacts"
+                      ]
+                    }
+                  },
+                  "fields": [
+                    {
+                      "name": "type",
+                      "displayName": "Type",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Home",
+                          "value": "HOME"
+                        },
+                        {
+                          "name": "Work",
+                          "value": "WORK"
+                        }
+                      ],
+                      "default": "HOME"
+                    },
+                    {
+                      "name": "email",
+                      "displayName": "Email",
+                      "type": "string",
+                      "placeholder": "name@email.com"
+                    }
+                  ]
+                },
+                {
+                  "name": "org",
+                  "displayName": "Organization",
+                  "type": "array",
+                  "maxItems": 1,
+                  "placeholder": "Add Parameter",
+                  "default": [],
+                  "displayOptions": {
+                    "show": {
+                      "/messageType": [
+                        "contacts"
+                      ]
+                    }
+                  },
+                  "fields": [
+                    {
+                      "name": "company",
+                      "displayName": "Company",
+                      "type": "string"
+                    },
+                    {
+                      "name": "department",
+                      "displayName": "Department",
+                      "type": "string"
+                    },
+                    {
+                      "name": "title",
+                      "displayName": "Title",
+                      "type": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "phones",
+                  "displayName": "Phones",
+                  "type": "array",
+                  "placeholder": "Add Parameter",
+                  "displayOptions": {
+                    "show": {
+                      "/messageType": [
+                        "contacts"
+                      ]
+                    }
+                  },
+                  "fields": [
+                    {
+                      "name": "type",
+                      "displayName": "Type",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Cell",
+                          "value": "CELL"
+                        },
+                        {
+                          "name": "Home",
+                          "value": "HOME"
+                        },
+                        {
+                          "name": "Iphone",
+                          "value": "IPHONE"
+                        },
+                        {
+                          "name": "Main",
+                          "value": "MAIN"
+                        },
+                        {
+                          "name": "Work",
+                          "value": "WORK"
+                        }
+                      ],
+                      "default": "CELL"
+                    },
+                    {
+                      "name": "phone",
+                      "displayName": "Phone",
+                      "type": "string"
+                    },
+                    {
+                      "name": "waId",
+                      "displayName": "WhatsApp User ID",
+                      "type": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "urls",
+                  "displayName": "URLs",
+                  "type": "array",
+                  "placeholder": "Add Parameter",
+                  "displayOptions": {
+                    "show": {
+                      "/messageType": [
+                        "contacts"
+                      ]
+                    }
+                  },
+                  "fields": [
+                    {
+                      "name": "type",
+                      "displayName": "Type",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Home",
+                          "value": "HOME"
+                        },
+                        {
+                          "name": "Work",
+                          "value": "WORK"
+                        }
+                      ],
+                      "default": "HOME"
+                    },
+                    {
+                      "name": "url",
+                      "displayName": "URL",
+                      "type": "string"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "message",
+            "operation": "send"
+          },
+          "subCategory": "MESSAGE ACTIONS",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "message",
+          "operation": "send"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

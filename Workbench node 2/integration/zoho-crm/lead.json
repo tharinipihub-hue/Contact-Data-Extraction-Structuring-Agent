@@ -1,0 +1,871 @@
+{
+  "nodes": [
+    {
+      "id": "zoho.crm.lead.create-1783406850649",
+      "type": "action",
+      "position": {
+        "x": 363.1510274431927,
+        "y": -222.28966522090164
+      },
+      "data": {
+        "label": "Create Lead",
+        "toolId": "zoho.crm.lead.create",
+        "toolData": {
+          "id": "zoho.crm.lead.create",
+          "displayName": "Create Lead",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoLeadCreate",
+          "icon": "zoho",
+          "description": "Create a new lead in Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "Last_Name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Last Name"
+              },
+              "Company": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Company"
+              },
+              "First_Name": {
+                "type": "string",
+                "description": "First Name"
+              },
+              "Full_Name": {
+                "type": "string",
+                "description": "Full Name"
+              },
+              "Email": {
+                "type": "string",
+                "description": "Email"
+              },
+              "Secondary_Email": {
+                "type": "string",
+                "description": "Secondary Email"
+              },
+              "Phone": {
+                "type": "string",
+                "description": "Phone"
+              },
+              "Mobile": {
+                "type": "string",
+                "description": "Mobile"
+              },
+              "Fax": {
+                "type": "string",
+                "description": "Fax"
+              },
+              "Lead_Status": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "New",
+                      "Contacted",
+                      "Contact in Future",
+                      "Contact Attempted",
+                      "Qualified",
+                      "Unqualified",
+                      "Junk Lead",
+                      "Not Contacted"
+                    ]
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "description": "Lead Status"
+              },
+              "Lead_Source": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "Advertisement",
+                      "Cold Call",
+                      "Employee Referral",
+                      "External Referral",
+                      "Online Store",
+                      "Partner",
+                      "Public Relations",
+                      "Sales Email Alias",
+                      "Seminar Partner",
+                      "Internal Seminar",
+                      "Trade Show",
+                      "Web Download",
+                      "Web Research",
+                      "Chat",
+                      "Twitter"
+                    ]
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "description": "Lead Source"
+              },
+              "Industry": {
+                "type": "string",
+                "description": "Industry"
+              },
+              "Annual_Revenue": {
+                "type": "number",
+                "description": "Annual Revenue"
+              },
+              "No_of_Employees": {
+                "type": "number",
+                "description": "Number of Employees"
+              },
+              "Address": {
+                "type": "object",
+                "properties": {
+                  "Street": {
+                    "type": "string",
+                    "description": "Street"
+                  },
+                  "City": {
+                    "type": "string",
+                    "description": "City"
+                  },
+                  "State": {
+                    "type": "string",
+                    "description": "State"
+                  },
+                  "Country": {
+                    "type": "string",
+                    "description": "Country"
+                  },
+                  "Zip_Code": {
+                    "type": "string",
+                    "description": "Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Address"
+              },
+              "Title": {
+                "type": "string",
+                "description": "Title"
+              },
+              "Salutation": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "Mr.",
+                      "Ms.",
+                      "Mrs.",
+                      "Dr.",
+                      "Prof."
+                    ]
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "description": "Salutation"
+              },
+              "Website": {
+                "type": "string",
+                "description": "Website"
+              },
+              "Skype_ID": {
+                "type": "string",
+                "description": "Skype ID"
+              },
+              "Twitter": {
+                "type": "string",
+                "description": "Twitter"
+              },
+              "Email_Opt_Out": {
+                "type": "boolean",
+                "description": "Email Opt Out"
+              },
+              "Description": {
+                "type": "string",
+                "description": "Description"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "Last_Name",
+              "Company"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.lead.upsert-1783406852139",
+      "type": "action",
+      "position": {
+        "x": 1017.9405841756849,
+        "y": -116.18950556517375
+      },
+      "data": {
+        "label": "Create or Update Lead",
+        "toolId": "zoho.crm.lead.upsert",
+        "toolData": {
+          "id": "zoho.crm.lead.upsert",
+          "displayName": "Create or Update Lead",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoLeadUpsert",
+          "icon": "zoho",
+          "description": "Create or update a lead (upsert)",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "Last_Name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Last Name"
+              },
+              "Company": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Company"
+              },
+              "First_Name": {
+                "type": "string",
+                "description": "First Name"
+              },
+              "Full_Name": {
+                "type": "string",
+                "description": "Full Name"
+              },
+              "Email": {
+                "type": "string",
+                "description": "Email"
+              },
+              "Secondary_Email": {
+                "type": "string",
+                "description": "Secondary Email"
+              },
+              "Phone": {
+                "type": "string",
+                "description": "Phone"
+              },
+              "Mobile": {
+                "type": "string",
+                "description": "Mobile"
+              },
+              "Fax": {
+                "type": "string",
+                "description": "Fax"
+              },
+              "Lead_Status": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "New",
+                      "Contacted",
+                      "Contact in Future",
+                      "Contact Attempted",
+                      "Qualified",
+                      "Unqualified",
+                      "Junk Lead",
+                      "Not Contacted"
+                    ]
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "description": "Lead Status"
+              },
+              "Lead_Source": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "Advertisement",
+                      "Cold Call",
+                      "Employee Referral",
+                      "External Referral",
+                      "Online Store",
+                      "Partner",
+                      "Public Relations",
+                      "Sales Email Alias",
+                      "Seminar Partner",
+                      "Internal Seminar",
+                      "Trade Show",
+                      "Web Download",
+                      "Web Research",
+                      "Chat",
+                      "Twitter"
+                    ]
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "description": "Lead Source"
+              },
+              "Industry": {
+                "type": "string",
+                "description": "Industry"
+              },
+              "Annual_Revenue": {
+                "type": "number",
+                "description": "Annual Revenue"
+              },
+              "No_of_Employees": {
+                "type": "number",
+                "description": "Number of Employees"
+              },
+              "Address": {
+                "type": "object",
+                "properties": {
+                  "Street": {
+                    "type": "string",
+                    "description": "Street"
+                  },
+                  "City": {
+                    "type": "string",
+                    "description": "City"
+                  },
+                  "State": {
+                    "type": "string",
+                    "description": "State"
+                  },
+                  "Country": {
+                    "type": "string",
+                    "description": "Country"
+                  },
+                  "Zip_Code": {
+                    "type": "string",
+                    "description": "Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Address"
+              },
+              "Title": {
+                "type": "string",
+                "description": "Title"
+              },
+              "Salutation": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "Mr.",
+                      "Ms.",
+                      "Mrs.",
+                      "Dr.",
+                      "Prof."
+                    ]
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "description": "Salutation"
+              },
+              "Website": {
+                "type": "string",
+                "description": "Website"
+              },
+              "Skype_ID": {
+                "type": "string",
+                "description": "Skype ID"
+              },
+              "Twitter": {
+                "type": "string",
+                "description": "Twitter"
+              },
+              "Email_Opt_Out": {
+                "type": "boolean",
+                "description": "Email Opt Out"
+              },
+              "Description": {
+                "type": "string",
+                "description": "Description"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "Last_Name",
+              "Company"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.lead.delete-1783406853220",
+      "type": "action",
+      "position": {
+        "x": 1639.3843764449484,
+        "y": -28.27794470757062
+      },
+      "data": {
+        "label": "Delete Lead",
+        "toolId": "zoho.crm.lead.delete",
+        "toolData": {
+          "id": "zoho.crm.lead.delete",
+          "displayName": "Delete Lead",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoLeadDelete",
+          "icon": "zoho",
+          "description": "Delete a lead from Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "leadId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Lead ID"
+              }
+            },
+            "required": [
+              "leadId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.lead.get-1783406854323",
+      "type": "action",
+      "position": {
+        "x": 672.357207011314,
+        "y": 226.36243846617634
+      },
+      "data": {
+        "label": "Get Lead",
+        "toolId": "zoho.crm.lead.get",
+        "toolData": {
+          "id": "zoho.crm.lead.get",
+          "displayName": "Get Lead",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoLeadGet",
+          "icon": "zoho",
+          "description": "Retrieve a specific lead by ID",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "leadId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Lead ID"
+              }
+            },
+            "required": [
+              "leadId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.lead.getMany-1783406859954",
+      "type": "action",
+      "position": {
+        "x": 1493.8755860599501,
+        "y": 271.8339354614883
+      },
+      "data": {
+        "label": "Get Many Leads",
+        "toolId": "zoho.crm.lead.getMany",
+        "toolData": {
+          "id": "zoho.crm.lead.getMany",
+          "displayName": "Get Many Leads",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoLeadGetMany",
+          "icon": "zoho",
+          "description": "Retrieve multiple leads with filtering",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all results or limit"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 50,
+                "description": "Maximum number of records to return"
+              },
+              "approved": {
+                "type": "boolean",
+                "description": "Filter by approved status"
+              },
+              "converted": {
+                "type": "boolean",
+                "description": "Filter by converted status"
+              },
+              "includeChild": {
+                "type": "boolean",
+                "description": "Include child records"
+              },
+              "territoryId": {
+                "type": "string",
+                "description": "Territory ID filter"
+              },
+              "fields": {
+                "type": "string",
+                "description": "Comma-separated list of fields to return"
+              },
+              "sortBy": {
+                "type": "string",
+                "description": "Field to sort by"
+              },
+              "sortOrder": {
+                "type": "string",
+                "enum": [
+                  "asc",
+                  "desc"
+                ],
+                "description": "Sort Order (Ascending / Descending)"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.lead.update-1783406861275",
+      "type": "action",
+      "position": {
+        "x": 1008.8462847766225,
+        "y": 662.8888096211712
+      },
+      "data": {
+        "label": "Update Lead",
+        "toolId": "zoho.crm.lead.update",
+        "toolData": {
+          "id": "zoho.crm.lead.update",
+          "displayName": "Update Lead",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoLeadUpdate",
+          "icon": "zoho",
+          "description": "Update an existing lead in Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "leadId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Lead ID"
+              },
+              "Last_Name": {
+                "type": "string",
+                "description": "Last Name"
+              },
+              "Company": {
+                "type": "string",
+                "description": "Company"
+              },
+              "First_Name": {
+                "type": "string",
+                "description": "First Name"
+              },
+              "Full_Name": {
+                "type": "string",
+                "description": "Full Name"
+              },
+              "Email": {
+                "type": "string",
+                "description": "Email"
+              },
+              "Secondary_Email": {
+                "type": "string",
+                "description": "Secondary Email"
+              },
+              "Phone": {
+                "type": "string",
+                "description": "Phone"
+              },
+              "Mobile": {
+                "type": "string",
+                "description": "Mobile"
+              },
+              "Fax": {
+                "type": "string",
+                "description": "Fax"
+              },
+              "Lead_Status": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "New",
+                      "Contacted",
+                      "Contact in Future",
+                      "Contact Attempted",
+                      "Qualified",
+                      "Unqualified",
+                      "Junk Lead",
+                      "Not Contacted"
+                    ]
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "description": "Lead Status"
+              },
+              "Lead_Source": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "Advertisement",
+                      "Cold Call",
+                      "Employee Referral",
+                      "External Referral",
+                      "Online Store",
+                      "Partner",
+                      "Public Relations",
+                      "Sales Email Alias",
+                      "Seminar Partner",
+                      "Internal Seminar",
+                      "Trade Show",
+                      "Web Download",
+                      "Web Research",
+                      "Chat",
+                      "Twitter"
+                    ]
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "description": "Lead Source"
+              },
+              "Industry": {
+                "type": "string",
+                "description": "Industry"
+              },
+              "Annual_Revenue": {
+                "type": "number",
+                "description": "Annual Revenue"
+              },
+              "No_of_Employees": {
+                "type": "number",
+                "description": "Number of Employees"
+              },
+              "Address": {
+                "type": "object",
+                "properties": {
+                  "Street": {
+                    "type": "string",
+                    "description": "Street"
+                  },
+                  "City": {
+                    "type": "string",
+                    "description": "City"
+                  },
+                  "State": {
+                    "type": "string",
+                    "description": "State"
+                  },
+                  "Country": {
+                    "type": "string",
+                    "description": "Country"
+                  },
+                  "Zip_Code": {
+                    "type": "string",
+                    "description": "Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Address"
+              },
+              "Title": {
+                "type": "string",
+                "description": "Title"
+              },
+              "Salutation": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "Mr.",
+                      "Ms.",
+                      "Mrs.",
+                      "Dr.",
+                      "Prof."
+                    ]
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "description": "Salutation"
+              },
+              "Website": {
+                "type": "string",
+                "description": "Website"
+              },
+              "Skype_ID": {
+                "type": "string",
+                "description": "Skype ID"
+              },
+              "Twitter": {
+                "type": "string",
+                "description": "Twitter"
+              },
+              "Email_Opt_Out": {
+                "type": "boolean",
+                "description": "Email Opt Out"
+              },
+              "Description": {
+                "type": "string",
+                "description": "Description"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "leadId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

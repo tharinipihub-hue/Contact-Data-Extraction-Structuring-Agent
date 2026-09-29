@@ -1,0 +1,169 @@
+{
+  "nodes": [
+    {
+      "id": "notion.user.get-1783407591271",
+      "type": "action",
+      "position": {
+        "x": 1031.5280666855695,
+        "y": 396.95100968998554
+      },
+      "data": {
+        "label": "Get a user",
+        "toolId": "notion.user.get",
+        "toolData": {
+          "id": "notion.user.get",
+          "displayName": "Get a user",
+          "category": "Integrations",
+          "provider": "notion",
+          "operation": "get",
+          "icon": "notion",
+          "description": "Get a user",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "userId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentials",
+              "userId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "userId",
+              "displayName": "User ID",
+              "type": "string",
+              "required": true,
+              "placeholder": "Enter User ID..."
+            }
+          ],
+          "initialData": {
+            "resource": "user",
+            "operation": "get"
+          },
+          "subCategory": "User"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "user",
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "notion.user.getMany-1783407592408",
+      "type": "action",
+      "position": {
+        "x": 1524.259664665502,
+        "y": 396.95100968998554
+      },
+      "data": {
+        "label": "Get many users",
+        "toolId": "notion.user.getMany",
+        "toolData": {
+          "id": "notion.user.getMany",
+          "displayName": "Get many users",
+          "category": "Integrations",
+          "provider": "notion",
+          "operation": "getMany",
+          "icon": "notion",
+          "description": "Get many users",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "limit": {
+                "type": "number",
+                "default": 50
+              }
+            },
+            "required": [
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "toggle",
+              "default": false,
+              "description": "Whether to return all users"
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "description": "Maximum number of users to return",
+              "displayOptions": {
+                "show": {
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "resource": "user",
+            "operation": "getMany"
+          },
+          "subCategory": "User"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "user",
+          "operation": "getMany"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

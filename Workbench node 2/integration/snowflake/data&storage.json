@@ -1,0 +1,146 @@
+{
+  "nodes": [
+    {
+      "id": "snowflake-1783408052299",
+      "type": "action",
+      "position": {
+        "x": 686.7960005730956,
+        "y": -241.01568526703687
+      },
+      "data": {
+        "label": "Execute Query",
+        "toolId": "snowflake",
+        "toolData": {
+          "id": "snowflake",
+          "displayName": "Snowflake",
+          "category": "Integrations",
+          "provider": "snowflake",
+          "icon": "/tools/snowflake.png",
+          "description": "Automate work in Snowflake, and integrate Snowflake with other applications.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "executeQuery",
+                  "insert",
+                  "update"
+                ],
+                "default": "executeQuery"
+              },
+              "query": {
+                "type": "string"
+              },
+              "table": {
+                "type": "string"
+              },
+              "updateKey": {
+                "type": "string"
+              },
+              "columns": {
+                "type": "string"
+              },
+              "credentialId": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Execute Query",
+                  "value": "executeQuery"
+                },
+                {
+                  "name": "Insert",
+                  "value": "insert"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "executeQuery",
+              "required": true
+            },
+            {
+              "name": "query",
+              "displayName": "Query",
+              "type": "string",
+              "format": "text",
+              "required": true,
+              "placeholder": "SELECT * FROM table_name LIMIT 10;",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "executeQuery"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "table",
+              "displayName": "Table",
+              "type": "string",
+              "required": true,
+              "placeholder": "table_name",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "insert",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "updateKey",
+              "displayName": "Update Key",
+              "type": "string",
+              "required": true,
+              "placeholder": "id",
+              "description": "Name of the column that will be used to look up the row to update",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "columns",
+              "displayName": "Columns",
+              "type": "string",
+              "required": true,
+              "placeholder": "id, name, description",
+              "description": "Comma-separated list of columns to include",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "insert",
+                    "update"
+                  ]
+                }
+              }
+            }
+          ],
+          "subCategory": "Data & Storage"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

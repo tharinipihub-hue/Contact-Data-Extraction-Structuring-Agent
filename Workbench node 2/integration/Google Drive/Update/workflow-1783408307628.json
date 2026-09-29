@@ -1,0 +1,206 @@
+{
+  "nodes": [
+    {
+      "id": "google.drive.move_file-1783408299398",
+      "type": "action",
+      "position": {
+        "x": 777.8443940199385,
+        "y": 372.9452421996885
+      },
+      "data": {
+        "label": "Move file",
+        "toolId": "google.drive.move_file",
+        "toolData": {
+          "id": "google.drive.move_file",
+          "displayName": "Move file",
+          "category": "Integrations",
+          "provider": "googleDrive",
+          "operation": "driveMoveFile",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg",
+          "description": "Move a file to a different folder",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "The credential to use for the connection"
+              },
+              "fileMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "id"
+                ],
+                "default": "list"
+              },
+              "fileId": {
+                "type": "string",
+                "description": "The ID of the file to move"
+              },
+              "parentDriveMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "id"
+                ],
+                "default": "list"
+              },
+              "parentDriveId": {
+                "type": "string"
+              },
+              "parentFolderMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "id"
+                ],
+                "default": "list"
+              },
+              "parentFolderId": {
+                "type": "string",
+                "description": "The ID of the folder to move the file to"
+              }
+            },
+            "required": [
+              "credentialId",
+              "fileId",
+              "parentFolderId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Update"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 777.8443940199385,
+        "y": 372.9452421996885
+      },
+      "dragging": false
+    },
+    {
+      "id": "google.drive.share_file-1783408300285",
+      "type": "action",
+      "position": {
+        "x": 1118.6698607917128,
+        "y": 400.5224065235458
+      },
+      "data": {
+        "label": "Share file",
+        "toolId": "google.drive.share_file",
+        "toolData": {
+          "id": "google.drive.share_file",
+          "displayName": "Share file",
+          "category": "Integrations",
+          "provider": "googleDrive",
+          "operation": "driveShareFile",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg",
+          "description": "Update sharing permissions for a file",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "The credential to use for the connection"
+              },
+              "fileMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "id"
+                ],
+                "default": "list"
+              },
+              "fileId": {
+                "type": "string",
+                "description": "The ID of the file to share"
+              },
+              "permissions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "role": {
+                      "type": "string",
+                      "enum": [
+                        "reader",
+                        "commenter",
+                        "writer",
+                        "fileOrganizer",
+                        "organizer",
+                        "owner"
+                      ]
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "user",
+                        "group",
+                        "domain",
+                        "anyone"
+                      ]
+                    },
+                    "emailAddress": {
+                      "type": "string"
+                    },
+                    "domain": {
+                      "type": "string"
+                    },
+                    "allowFileDiscovery": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "role",
+                    "type"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "The permissions to add"
+              },
+              "emailMessage": {
+                "type": "string"
+              },
+              "moveToNewOwnersRoot": {
+                "type": "boolean"
+              },
+              "sendNotificationEmail": {
+                "type": "boolean",
+                "default": true
+              },
+              "transferOwnership": {
+                "type": "boolean"
+              },
+              "useDomainAdminAccess": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "credentialId",
+              "fileId",
+              "permissions"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Update"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true
+    }
+  ],
+  "edges": []
+}

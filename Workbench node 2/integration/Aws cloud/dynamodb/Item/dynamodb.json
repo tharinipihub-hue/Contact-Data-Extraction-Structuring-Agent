@@ -1,0 +1,2913 @@
+{
+  "nodes": [
+    {
+      "id": "aws.dynamodb.item.createorupdate-1783398536913",
+      "type": "action",
+      "position": {
+        "x": 512.2920468248565,
+        "y": 604.541686275318
+      },
+      "data": {
+        "label": "Create or Update",
+        "toolId": "aws.dynamodb.item.createorupdate",
+        "toolData": {
+          "id": "aws.dynamodb.item.createorupdate",
+          "displayName": "Create or Update",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Create or Update",
+          "actionGroup": "DynamoDB",
+          "description": "Create or Update in DynamoDB",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "createOrUpdate",
+                  "delete",
+                  "get",
+                  "getMany"
+                ],
+                "description": "Operation to perform"
+              },
+              "tableName": {
+                "type": "string",
+                "description": "The name of the DynamoDB table."
+              },
+              "dataToSend": {
+                "type": "string",
+                "enum": [
+                  "defineBelow",
+                  "json",
+                  "autoMap"
+                ]
+              },
+              "inputsToIgnore": {
+                "type": "string"
+              },
+              "fieldsToSend": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string"
+                    },
+                    "fieldId": {
+                      "type": "string"
+                    },
+                    "attribute": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "S",
+                        "N",
+                        "BOOL",
+                        "M",
+                        "L"
+                      ]
+                    },
+                    "value": {},
+                    "fieldValue": {}
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "jsonData": {
+                "type": "string"
+              },
+              "keys": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/properties/fieldsToSend/items"
+                }
+              },
+              "scan": {
+                "type": "boolean"
+              },
+              "keyConditionExpression": {
+                "type": "string"
+              },
+              "expressionAttributeValues": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/properties/fieldsToSend/items"
+                }
+              },
+              "returnOptions": {
+                "type": "string",
+                "enum": [
+                  "NONE",
+                  "ALL_OLD"
+                ]
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "select": {
+                "type": "string"
+              },
+              "selectGetMany": {
+                "type": "string"
+              },
+              "simplify": {
+                "type": "boolean"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "conditionExpression": {
+                    "type": "string"
+                  },
+                  "attributesToSelect": {
+                    "type": "string"
+                  },
+                  "filterExpression": {
+                    "type": "string"
+                  },
+                  "indexName": {
+                    "type": "string"
+                  },
+                  "readType": {
+                    "type": "string",
+                    "enum": [
+                      "stronglyConsistent",
+                      "eventuallyConsistent"
+                    ]
+                  },
+                  "expressionAttributeNames": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/properties/fieldsToSend/items"
+                    }
+                  },
+                  "expressionAttributeValuesCollection": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/properties/fieldsToSend/items"
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "AWS DynamoDB credentials"
+              },
+              "region": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "operation",
+              "tableName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Item",
+                  "value": "item"
+                }
+              ],
+              "default": "item",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create or Update",
+                  "value": "createOrUpdate"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                }
+              ],
+              "default": "createOrUpdate",
+              "required": true
+            },
+            {
+              "name": "tableName",
+              "displayName": "Table Name or ID",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/dynamodb/list-tables",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Select a table...",
+              "description": "Select an existing DynamoDB table from your account."
+            },
+            {
+              "name": "dataToSend",
+              "displayName": "Data to Send",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Auto-Map Input Data to Columns",
+                  "value": "autoMap"
+                },
+                {
+                  "name": "Define Below for Each Column",
+                  "value": "defineBelow"
+                }
+              ],
+              "default": "autoMap",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createOrUpdate"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputsToIgnore",
+              "displayName": "Inputs to Ignore",
+              "type": "string",
+              "placeholder": "Enter properties...",
+              "description": "List of input properties to avoid sending, separated by commas. Leave empty to send all properties.",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createOrUpdate"
+                  ],
+                  "dataToSend": [
+                    "autoMap"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fieldsToSend",
+              "displayName": "Fields to Send",
+              "type": "array",
+              "placeholder": "Add Field",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createOrUpdate"
+                  ],
+                  "dataToSend": [
+                    "defineBelow"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "fieldId",
+                  "displayName": "Field ID",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "fieldValue",
+                  "displayName": "Field Value",
+                  "type": "string",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "name": "returnOptions",
+              "displayName": "Return",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Attribute Values",
+                  "value": "ALL_OLD",
+                  "description": "The content of the old item is returned"
+                },
+                {
+                  "name": "Nothing",
+                  "value": "NONE",
+                  "description": "Nothing is returned"
+                }
+              ],
+              "default": "ALL_OLD",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "select",
+              "displayName": "Select",
+              "type": "options",
+              "options": [
+                {
+                  "name": "All Attributes",
+                  "value": "ALL_ATTRIBUTES"
+                },
+                {
+                  "name": "All Projected Attributes",
+                  "value": "ALL_PROJECTED_ATTRIBUTES"
+                },
+                {
+                  "name": "Specific Attributes",
+                  "value": "SPECIFIC_ATTRIBUTES"
+                }
+              ],
+              "default": "ALL_ATTRIBUTES",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "selectGetMany",
+              "displayName": "Select",
+              "type": "options",
+              "options": [
+                {
+                  "name": "All Attributes",
+                  "value": "ALL_ATTRIBUTES"
+                },
+                {
+                  "name": "All Projected Attributes",
+                  "value": "ALL_PROJECTED_ATTRIBUTES"
+                },
+                {
+                  "name": "Specific Attributes",
+                  "value": "SPECIFIC_ATTRIBUTES"
+                },
+                {
+                  "name": "Count",
+                  "value": "COUNT"
+                }
+              ],
+              "default": "ALL_ATTRIBUTES",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "keys",
+              "displayName": "Keys",
+              "type": "array",
+              "placeholder": "Add Key",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "key",
+                  "displayName": "Key",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "type",
+                  "displayName": "Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "String",
+                      "value": "S"
+                    },
+                    {
+                      "name": "Number",
+                      "value": "N"
+                    },
+                    {
+                      "name": "Boolean",
+                      "value": "BOOL"
+                    },
+                    {
+                      "name": "JSON/Object",
+                      "value": "M"
+                    },
+                    {
+                      "name": "List",
+                      "value": "L"
+                    }
+                  ],
+                  "default": "S"
+                },
+                {
+                  "name": "value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "name": "scan",
+              "displayName": "Scan",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "keyConditionExpression",
+              "displayName": "Key Condition Expression",
+              "type": "string",
+              "default": "",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "scan": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "expressionAttributeValues",
+              "displayName": "Expression Attribute Values",
+              "type": "array",
+              "placeholder": "Add Attribute Value",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "attribute",
+                  "displayName": "Attribute (e.g. :id)",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "type",
+                  "displayName": "Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "String",
+                      "value": "S"
+                    },
+                    {
+                      "name": "Number",
+                      "value": "N"
+                    },
+                    {
+                      "name": "Boolean",
+                      "value": "BOOL"
+                    }
+                  ],
+                  "default": "S"
+                },
+                {
+                  "name": "value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createOrUpdate",
+                    "delete",
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "indexName",
+                  "displayName": "Index Name",
+                  "type": "string",
+                  "default": "",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "attributesToSelect",
+                  "displayName": "Attributes to Select",
+                  "type": "string",
+                  "description": "Comma separated string of attributes to select",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "get",
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "filterExpression",
+                  "displayName": "Filter Expression",
+                  "type": "string",
+                  "default": "",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "expressionAttributeNames",
+                  "displayName": "Expression Attribute Names",
+                  "type": "array",
+                  "fields": [
+                    {
+                      "name": "key",
+                      "displayName": "Key (e.g. #n)",
+                      "type": "string"
+                    },
+                    {
+                      "name": "value",
+                      "displayName": "Value",
+                      "type": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "conditionExpression",
+                  "displayName": "Condition Expression",
+                  "type": "string",
+                  "default": "",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "createOrUpdate",
+                        "delete"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "expressionAttributeValuesCollection",
+                  "displayName": "Expression Attribute Values",
+                  "type": "array",
+                  "fields": [
+                    {
+                      "name": "attribute",
+                      "displayName": "Attribute (e.g. :v)",
+                      "type": "string"
+                    },
+                    {
+                      "name": "type",
+                      "displayName": "Type",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "String",
+                          "value": "S"
+                        },
+                        {
+                          "name": "Number",
+                          "value": "N"
+                        },
+                        {
+                          "name": "Boolean",
+                          "value": "BOOL"
+                        }
+                      ],
+                      "default": "S"
+                    },
+                    {
+                      "name": "value",
+                      "displayName": "Value",
+                      "type": "string"
+                    }
+                  ],
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "createOrUpdate",
+                        "delete"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "readType",
+                  "displayName": "Read Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Strongly Consistent",
+                      "value": "stronglyConsistent"
+                    },
+                    {
+                      "name": "Eventually Consistent",
+                      "value": "eventuallyConsistent"
+                    }
+                  ],
+                  "default": "eventuallyConsistent",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "get"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "createOrUpdate"
+          },
+          "subCategory": "DynamoDB"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "createOrUpdate"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.dynamodb.item.delete-1783398538273",
+      "type": "action",
+      "position": {
+        "x": 496.210269854898,
+        "y": 505.753627745573
+      },
+      "data": {
+        "label": "Delete",
+        "toolId": "aws.dynamodb.item.delete",
+        "toolData": {
+          "id": "aws.dynamodb.item.delete",
+          "displayName": "Delete",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Delete",
+          "actionGroup": "DynamoDB",
+          "description": "Delete in DynamoDB",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "createOrUpdate",
+                  "delete",
+                  "get",
+                  "getMany"
+                ],
+                "description": "Operation to perform"
+              },
+              "tableName": {
+                "type": "string",
+                "description": "The name of the DynamoDB table."
+              },
+              "dataToSend": {
+                "type": "string",
+                "enum": [
+                  "defineBelow",
+                  "json",
+                  "autoMap"
+                ]
+              },
+              "inputsToIgnore": {
+                "type": "string"
+              },
+              "fieldsToSend": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string"
+                    },
+                    "fieldId": {
+                      "type": "string"
+                    },
+                    "attribute": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "S",
+                        "N",
+                        "BOOL",
+                        "M",
+                        "L"
+                      ]
+                    },
+                    "value": {},
+                    "fieldValue": {}
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "jsonData": {
+                "type": "string"
+              },
+              "keys": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/properties/fieldsToSend/items"
+                }
+              },
+              "scan": {
+                "type": "boolean"
+              },
+              "keyConditionExpression": {
+                "type": "string"
+              },
+              "expressionAttributeValues": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/properties/fieldsToSend/items"
+                }
+              },
+              "returnOptions": {
+                "type": "string",
+                "enum": [
+                  "NONE",
+                  "ALL_OLD"
+                ]
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "select": {
+                "type": "string"
+              },
+              "selectGetMany": {
+                "type": "string"
+              },
+              "simplify": {
+                "type": "boolean"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "conditionExpression": {
+                    "type": "string"
+                  },
+                  "attributesToSelect": {
+                    "type": "string"
+                  },
+                  "filterExpression": {
+                    "type": "string"
+                  },
+                  "indexName": {
+                    "type": "string"
+                  },
+                  "readType": {
+                    "type": "string",
+                    "enum": [
+                      "stronglyConsistent",
+                      "eventuallyConsistent"
+                    ]
+                  },
+                  "expressionAttributeNames": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/properties/fieldsToSend/items"
+                    }
+                  },
+                  "expressionAttributeValuesCollection": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/properties/fieldsToSend/items"
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "AWS DynamoDB credentials"
+              },
+              "region": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "operation",
+              "tableName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Item",
+                  "value": "item"
+                }
+              ],
+              "default": "item",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create or Update",
+                  "value": "createOrUpdate"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                }
+              ],
+              "default": "delete",
+              "required": true
+            },
+            {
+              "name": "tableName",
+              "displayName": "Table Name or ID",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/dynamodb/list-tables",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Select a table...",
+              "description": "Select an existing DynamoDB table from your account."
+            },
+            {
+              "name": "dataToSend",
+              "displayName": "Data to Send",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Auto-Map Input Data to Columns",
+                  "value": "autoMap"
+                },
+                {
+                  "name": "Define Below for Each Column",
+                  "value": "defineBelow"
+                }
+              ],
+              "default": "autoMap",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createOrUpdate"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputsToIgnore",
+              "displayName": "Inputs to Ignore",
+              "type": "string",
+              "placeholder": "Enter properties...",
+              "description": "List of input properties to avoid sending, separated by commas. Leave empty to send all properties.",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createOrUpdate"
+                  ],
+                  "dataToSend": [
+                    "autoMap"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fieldsToSend",
+              "displayName": "Fields to Send",
+              "type": "array",
+              "placeholder": "Add Field",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createOrUpdate"
+                  ],
+                  "dataToSend": [
+                    "defineBelow"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "fieldId",
+                  "displayName": "Field ID",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "fieldValue",
+                  "displayName": "Field Value",
+                  "type": "string",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "name": "returnOptions",
+              "displayName": "Return",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Attribute Values",
+                  "value": "ALL_OLD",
+                  "description": "The content of the old item is returned"
+                },
+                {
+                  "name": "Nothing",
+                  "value": "NONE",
+                  "description": "Nothing is returned"
+                }
+              ],
+              "default": "ALL_OLD",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "select",
+              "displayName": "Select",
+              "type": "options",
+              "options": [
+                {
+                  "name": "All Attributes",
+                  "value": "ALL_ATTRIBUTES"
+                },
+                {
+                  "name": "All Projected Attributes",
+                  "value": "ALL_PROJECTED_ATTRIBUTES"
+                },
+                {
+                  "name": "Specific Attributes",
+                  "value": "SPECIFIC_ATTRIBUTES"
+                }
+              ],
+              "default": "ALL_ATTRIBUTES",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "selectGetMany",
+              "displayName": "Select",
+              "type": "options",
+              "options": [
+                {
+                  "name": "All Attributes",
+                  "value": "ALL_ATTRIBUTES"
+                },
+                {
+                  "name": "All Projected Attributes",
+                  "value": "ALL_PROJECTED_ATTRIBUTES"
+                },
+                {
+                  "name": "Specific Attributes",
+                  "value": "SPECIFIC_ATTRIBUTES"
+                },
+                {
+                  "name": "Count",
+                  "value": "COUNT"
+                }
+              ],
+              "default": "ALL_ATTRIBUTES",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "keys",
+              "displayName": "Keys",
+              "type": "array",
+              "placeholder": "Add Key",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "key",
+                  "displayName": "Key",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "type",
+                  "displayName": "Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "String",
+                      "value": "S"
+                    },
+                    {
+                      "name": "Number",
+                      "value": "N"
+                    },
+                    {
+                      "name": "Boolean",
+                      "value": "BOOL"
+                    },
+                    {
+                      "name": "JSON/Object",
+                      "value": "M"
+                    },
+                    {
+                      "name": "List",
+                      "value": "L"
+                    }
+                  ],
+                  "default": "S"
+                },
+                {
+                  "name": "value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "name": "scan",
+              "displayName": "Scan",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "keyConditionExpression",
+              "displayName": "Key Condition Expression",
+              "type": "string",
+              "default": "",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "scan": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "expressionAttributeValues",
+              "displayName": "Expression Attribute Values",
+              "type": "array",
+              "placeholder": "Add Attribute Value",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "attribute",
+                  "displayName": "Attribute (e.g. :id)",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "type",
+                  "displayName": "Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "String",
+                      "value": "S"
+                    },
+                    {
+                      "name": "Number",
+                      "value": "N"
+                    },
+                    {
+                      "name": "Boolean",
+                      "value": "BOOL"
+                    }
+                  ],
+                  "default": "S"
+                },
+                {
+                  "name": "value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createOrUpdate",
+                    "delete",
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "indexName",
+                  "displayName": "Index Name",
+                  "type": "string",
+                  "default": "",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "attributesToSelect",
+                  "displayName": "Attributes to Select",
+                  "type": "string",
+                  "description": "Comma separated string of attributes to select",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "get",
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "filterExpression",
+                  "displayName": "Filter Expression",
+                  "type": "string",
+                  "default": "",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "expressionAttributeNames",
+                  "displayName": "Expression Attribute Names",
+                  "type": "array",
+                  "fields": [
+                    {
+                      "name": "key",
+                      "displayName": "Key (e.g. #n)",
+                      "type": "string"
+                    },
+                    {
+                      "name": "value",
+                      "displayName": "Value",
+                      "type": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "conditionExpression",
+                  "displayName": "Condition Expression",
+                  "type": "string",
+                  "default": "",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "createOrUpdate",
+                        "delete"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "expressionAttributeValuesCollection",
+                  "displayName": "Expression Attribute Values",
+                  "type": "array",
+                  "fields": [
+                    {
+                      "name": "attribute",
+                      "displayName": "Attribute (e.g. :v)",
+                      "type": "string"
+                    },
+                    {
+                      "name": "type",
+                      "displayName": "Type",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "String",
+                          "value": "S"
+                        },
+                        {
+                          "name": "Number",
+                          "value": "N"
+                        },
+                        {
+                          "name": "Boolean",
+                          "value": "BOOL"
+                        }
+                      ],
+                      "default": "S"
+                    },
+                    {
+                      "name": "value",
+                      "displayName": "Value",
+                      "type": "string"
+                    }
+                  ],
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "createOrUpdate",
+                        "delete"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "readType",
+                  "displayName": "Read Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Strongly Consistent",
+                      "value": "stronglyConsistent"
+                    },
+                    {
+                      "name": "Eventually Consistent",
+                      "value": "eventuallyConsistent"
+                    }
+                  ],
+                  "default": "eventuallyConsistent",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "get"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "delete"
+          },
+          "subCategory": "DynamoDB"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "delete"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.dynamodb.item.get-1783398539360",
+      "type": "action",
+      "position": {
+        "x": 410.0578932301203,
+        "y": 761.9133609099118
+      },
+      "data": {
+        "label": "Get",
+        "toolId": "aws.dynamodb.item.get",
+        "toolData": {
+          "id": "aws.dynamodb.item.get",
+          "displayName": "Get",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Get",
+          "actionGroup": "DynamoDB",
+          "description": "Get in DynamoDB",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "createOrUpdate",
+                  "delete",
+                  "get",
+                  "getMany"
+                ],
+                "description": "Operation to perform"
+              },
+              "tableName": {
+                "type": "string",
+                "description": "The name of the DynamoDB table."
+              },
+              "dataToSend": {
+                "type": "string",
+                "enum": [
+                  "defineBelow",
+                  "json",
+                  "autoMap"
+                ]
+              },
+              "inputsToIgnore": {
+                "type": "string"
+              },
+              "fieldsToSend": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string"
+                    },
+                    "fieldId": {
+                      "type": "string"
+                    },
+                    "attribute": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "S",
+                        "N",
+                        "BOOL",
+                        "M",
+                        "L"
+                      ]
+                    },
+                    "value": {},
+                    "fieldValue": {}
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "jsonData": {
+                "type": "string"
+              },
+              "keys": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/properties/fieldsToSend/items"
+                }
+              },
+              "scan": {
+                "type": "boolean"
+              },
+              "keyConditionExpression": {
+                "type": "string"
+              },
+              "expressionAttributeValues": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/properties/fieldsToSend/items"
+                }
+              },
+              "returnOptions": {
+                "type": "string",
+                "enum": [
+                  "NONE",
+                  "ALL_OLD"
+                ]
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "select": {
+                "type": "string"
+              },
+              "selectGetMany": {
+                "type": "string"
+              },
+              "simplify": {
+                "type": "boolean"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "conditionExpression": {
+                    "type": "string"
+                  },
+                  "attributesToSelect": {
+                    "type": "string"
+                  },
+                  "filterExpression": {
+                    "type": "string"
+                  },
+                  "indexName": {
+                    "type": "string"
+                  },
+                  "readType": {
+                    "type": "string",
+                    "enum": [
+                      "stronglyConsistent",
+                      "eventuallyConsistent"
+                    ]
+                  },
+                  "expressionAttributeNames": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/properties/fieldsToSend/items"
+                    }
+                  },
+                  "expressionAttributeValuesCollection": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/properties/fieldsToSend/items"
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "AWS DynamoDB credentials"
+              },
+              "region": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "operation",
+              "tableName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Item",
+                  "value": "item"
+                }
+              ],
+              "default": "item",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create or Update",
+                  "value": "createOrUpdate"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                }
+              ],
+              "default": "get",
+              "required": true
+            },
+            {
+              "name": "tableName",
+              "displayName": "Table Name or ID",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/dynamodb/list-tables",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Select a table...",
+              "description": "Select an existing DynamoDB table from your account."
+            },
+            {
+              "name": "dataToSend",
+              "displayName": "Data to Send",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Auto-Map Input Data to Columns",
+                  "value": "autoMap"
+                },
+                {
+                  "name": "Define Below for Each Column",
+                  "value": "defineBelow"
+                }
+              ],
+              "default": "autoMap",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createOrUpdate"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputsToIgnore",
+              "displayName": "Inputs to Ignore",
+              "type": "string",
+              "placeholder": "Enter properties...",
+              "description": "List of input properties to avoid sending, separated by commas. Leave empty to send all properties.",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createOrUpdate"
+                  ],
+                  "dataToSend": [
+                    "autoMap"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fieldsToSend",
+              "displayName": "Fields to Send",
+              "type": "array",
+              "placeholder": "Add Field",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createOrUpdate"
+                  ],
+                  "dataToSend": [
+                    "defineBelow"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "fieldId",
+                  "displayName": "Field ID",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "fieldValue",
+                  "displayName": "Field Value",
+                  "type": "string",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "name": "returnOptions",
+              "displayName": "Return",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Attribute Values",
+                  "value": "ALL_OLD",
+                  "description": "The content of the old item is returned"
+                },
+                {
+                  "name": "Nothing",
+                  "value": "NONE",
+                  "description": "Nothing is returned"
+                }
+              ],
+              "default": "ALL_OLD",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "select",
+              "displayName": "Select",
+              "type": "options",
+              "options": [
+                {
+                  "name": "All Attributes",
+                  "value": "ALL_ATTRIBUTES"
+                },
+                {
+                  "name": "All Projected Attributes",
+                  "value": "ALL_PROJECTED_ATTRIBUTES"
+                },
+                {
+                  "name": "Specific Attributes",
+                  "value": "SPECIFIC_ATTRIBUTES"
+                }
+              ],
+              "default": "ALL_ATTRIBUTES",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "selectGetMany",
+              "displayName": "Select",
+              "type": "options",
+              "options": [
+                {
+                  "name": "All Attributes",
+                  "value": "ALL_ATTRIBUTES"
+                },
+                {
+                  "name": "All Projected Attributes",
+                  "value": "ALL_PROJECTED_ATTRIBUTES"
+                },
+                {
+                  "name": "Specific Attributes",
+                  "value": "SPECIFIC_ATTRIBUTES"
+                },
+                {
+                  "name": "Count",
+                  "value": "COUNT"
+                }
+              ],
+              "default": "ALL_ATTRIBUTES",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "keys",
+              "displayName": "Keys",
+              "type": "array",
+              "placeholder": "Add Key",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "key",
+                  "displayName": "Key",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "type",
+                  "displayName": "Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "String",
+                      "value": "S"
+                    },
+                    {
+                      "name": "Number",
+                      "value": "N"
+                    },
+                    {
+                      "name": "Boolean",
+                      "value": "BOOL"
+                    },
+                    {
+                      "name": "JSON/Object",
+                      "value": "M"
+                    },
+                    {
+                      "name": "List",
+                      "value": "L"
+                    }
+                  ],
+                  "default": "S"
+                },
+                {
+                  "name": "value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "name": "scan",
+              "displayName": "Scan",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "keyConditionExpression",
+              "displayName": "Key Condition Expression",
+              "type": "string",
+              "default": "",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "scan": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "expressionAttributeValues",
+              "displayName": "Expression Attribute Values",
+              "type": "array",
+              "placeholder": "Add Attribute Value",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "attribute",
+                  "displayName": "Attribute (e.g. :id)",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "type",
+                  "displayName": "Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "String",
+                      "value": "S"
+                    },
+                    {
+                      "name": "Number",
+                      "value": "N"
+                    },
+                    {
+                      "name": "Boolean",
+                      "value": "BOOL"
+                    }
+                  ],
+                  "default": "S"
+                },
+                {
+                  "name": "value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createOrUpdate",
+                    "delete",
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "indexName",
+                  "displayName": "Index Name",
+                  "type": "string",
+                  "default": "",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "attributesToSelect",
+                  "displayName": "Attributes to Select",
+                  "type": "string",
+                  "description": "Comma separated string of attributes to select",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "get",
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "filterExpression",
+                  "displayName": "Filter Expression",
+                  "type": "string",
+                  "default": "",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "expressionAttributeNames",
+                  "displayName": "Expression Attribute Names",
+                  "type": "array",
+                  "fields": [
+                    {
+                      "name": "key",
+                      "displayName": "Key (e.g. #n)",
+                      "type": "string"
+                    },
+                    {
+                      "name": "value",
+                      "displayName": "Value",
+                      "type": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "conditionExpression",
+                  "displayName": "Condition Expression",
+                  "type": "string",
+                  "default": "",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "createOrUpdate",
+                        "delete"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "expressionAttributeValuesCollection",
+                  "displayName": "Expression Attribute Values",
+                  "type": "array",
+                  "fields": [
+                    {
+                      "name": "attribute",
+                      "displayName": "Attribute (e.g. :v)",
+                      "type": "string"
+                    },
+                    {
+                      "name": "type",
+                      "displayName": "Type",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "String",
+                          "value": "S"
+                        },
+                        {
+                          "name": "Number",
+                          "value": "N"
+                        },
+                        {
+                          "name": "Boolean",
+                          "value": "BOOL"
+                        }
+                      ],
+                      "default": "S"
+                    },
+                    {
+                      "name": "value",
+                      "displayName": "Value",
+                      "type": "string"
+                    }
+                  ],
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "createOrUpdate",
+                        "delete"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "readType",
+                  "displayName": "Read Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Strongly Consistent",
+                      "value": "stronglyConsistent"
+                    },
+                    {
+                      "name": "Eventually Consistent",
+                      "value": "eventuallyConsistent"
+                    }
+                  ],
+                  "default": "eventuallyConsistent",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "get"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "get"
+          },
+          "subCategory": "DynamoDB"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.dynamodb.item.getmany-1783398540513",
+      "type": "action",
+      "position": {
+        "x": 204.44088768565103,
+        "y": 625.2182566652647
+      },
+      "data": {
+        "label": "Get Many",
+        "toolId": "aws.dynamodb.item.getmany",
+        "toolData": {
+          "id": "aws.dynamodb.item.getmany",
+          "displayName": "Get Many",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Get Many",
+          "actionGroup": "DynamoDB",
+          "description": "Get Many in DynamoDB",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "createOrUpdate",
+                  "delete",
+                  "get",
+                  "getMany"
+                ],
+                "description": "Operation to perform"
+              },
+              "tableName": {
+                "type": "string",
+                "description": "The name of the DynamoDB table."
+              },
+              "dataToSend": {
+                "type": "string",
+                "enum": [
+                  "defineBelow",
+                  "json",
+                  "autoMap"
+                ]
+              },
+              "inputsToIgnore": {
+                "type": "string"
+              },
+              "fieldsToSend": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string"
+                    },
+                    "fieldId": {
+                      "type": "string"
+                    },
+                    "attribute": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "S",
+                        "N",
+                        "BOOL",
+                        "M",
+                        "L"
+                      ]
+                    },
+                    "value": {},
+                    "fieldValue": {}
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "jsonData": {
+                "type": "string"
+              },
+              "keys": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/properties/fieldsToSend/items"
+                }
+              },
+              "scan": {
+                "type": "boolean"
+              },
+              "keyConditionExpression": {
+                "type": "string"
+              },
+              "expressionAttributeValues": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/properties/fieldsToSend/items"
+                }
+              },
+              "returnOptions": {
+                "type": "string",
+                "enum": [
+                  "NONE",
+                  "ALL_OLD"
+                ]
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "select": {
+                "type": "string"
+              },
+              "selectGetMany": {
+                "type": "string"
+              },
+              "simplify": {
+                "type": "boolean"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "conditionExpression": {
+                    "type": "string"
+                  },
+                  "attributesToSelect": {
+                    "type": "string"
+                  },
+                  "filterExpression": {
+                    "type": "string"
+                  },
+                  "indexName": {
+                    "type": "string"
+                  },
+                  "readType": {
+                    "type": "string",
+                    "enum": [
+                      "stronglyConsistent",
+                      "eventuallyConsistent"
+                    ]
+                  },
+                  "expressionAttributeNames": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/properties/fieldsToSend/items"
+                    }
+                  },
+                  "expressionAttributeValuesCollection": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/properties/fieldsToSend/items"
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "AWS DynamoDB credentials"
+              },
+              "region": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "operation",
+              "tableName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Item",
+                  "value": "item"
+                }
+              ],
+              "default": "item",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create or Update",
+                  "value": "createOrUpdate"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                }
+              ],
+              "default": "getMany",
+              "required": true
+            },
+            {
+              "name": "tableName",
+              "displayName": "Table Name or ID",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/dynamodb/list-tables",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Select a table...",
+              "description": "Select an existing DynamoDB table from your account."
+            },
+            {
+              "name": "dataToSend",
+              "displayName": "Data to Send",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Auto-Map Input Data to Columns",
+                  "value": "autoMap"
+                },
+                {
+                  "name": "Define Below for Each Column",
+                  "value": "defineBelow"
+                }
+              ],
+              "default": "autoMap",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createOrUpdate"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputsToIgnore",
+              "displayName": "Inputs to Ignore",
+              "type": "string",
+              "placeholder": "Enter properties...",
+              "description": "List of input properties to avoid sending, separated by commas. Leave empty to send all properties.",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createOrUpdate"
+                  ],
+                  "dataToSend": [
+                    "autoMap"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fieldsToSend",
+              "displayName": "Fields to Send",
+              "type": "array",
+              "placeholder": "Add Field",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createOrUpdate"
+                  ],
+                  "dataToSend": [
+                    "defineBelow"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "fieldId",
+                  "displayName": "Field ID",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "fieldValue",
+                  "displayName": "Field Value",
+                  "type": "string",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "name": "returnOptions",
+              "displayName": "Return",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Attribute Values",
+                  "value": "ALL_OLD",
+                  "description": "The content of the old item is returned"
+                },
+                {
+                  "name": "Nothing",
+                  "value": "NONE",
+                  "description": "Nothing is returned"
+                }
+              ],
+              "default": "ALL_OLD",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "select",
+              "displayName": "Select",
+              "type": "options",
+              "options": [
+                {
+                  "name": "All Attributes",
+                  "value": "ALL_ATTRIBUTES"
+                },
+                {
+                  "name": "All Projected Attributes",
+                  "value": "ALL_PROJECTED_ATTRIBUTES"
+                },
+                {
+                  "name": "Specific Attributes",
+                  "value": "SPECIFIC_ATTRIBUTES"
+                }
+              ],
+              "default": "ALL_ATTRIBUTES",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "selectGetMany",
+              "displayName": "Select",
+              "type": "options",
+              "options": [
+                {
+                  "name": "All Attributes",
+                  "value": "ALL_ATTRIBUTES"
+                },
+                {
+                  "name": "All Projected Attributes",
+                  "value": "ALL_PROJECTED_ATTRIBUTES"
+                },
+                {
+                  "name": "Specific Attributes",
+                  "value": "SPECIFIC_ATTRIBUTES"
+                },
+                {
+                  "name": "Count",
+                  "value": "COUNT"
+                }
+              ],
+              "default": "ALL_ATTRIBUTES",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "keys",
+              "displayName": "Keys",
+              "type": "array",
+              "placeholder": "Add Key",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "key",
+                  "displayName": "Key",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "type",
+                  "displayName": "Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "String",
+                      "value": "S"
+                    },
+                    {
+                      "name": "Number",
+                      "value": "N"
+                    },
+                    {
+                      "name": "Boolean",
+                      "value": "BOOL"
+                    },
+                    {
+                      "name": "JSON/Object",
+                      "value": "M"
+                    },
+                    {
+                      "name": "List",
+                      "value": "L"
+                    }
+                  ],
+                  "default": "S"
+                },
+                {
+                  "name": "value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "name": "scan",
+              "displayName": "Scan",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "keyConditionExpression",
+              "displayName": "Key Condition Expression",
+              "type": "string",
+              "default": "",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "scan": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "expressionAttributeValues",
+              "displayName": "Expression Attribute Values",
+              "type": "array",
+              "placeholder": "Add Attribute Value",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "attribute",
+                  "displayName": "Attribute (e.g. :id)",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "type",
+                  "displayName": "Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "String",
+                      "value": "S"
+                    },
+                    {
+                      "name": "Number",
+                      "value": "N"
+                    },
+                    {
+                      "name": "Boolean",
+                      "value": "BOOL"
+                    }
+                  ],
+                  "default": "S"
+                },
+                {
+                  "name": "value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createOrUpdate",
+                    "delete",
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "indexName",
+                  "displayName": "Index Name",
+                  "type": "string",
+                  "default": "",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "attributesToSelect",
+                  "displayName": "Attributes to Select",
+                  "type": "string",
+                  "description": "Comma separated string of attributes to select",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "get",
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "filterExpression",
+                  "displayName": "Filter Expression",
+                  "type": "string",
+                  "default": "",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "expressionAttributeNames",
+                  "displayName": "Expression Attribute Names",
+                  "type": "array",
+                  "fields": [
+                    {
+                      "name": "key",
+                      "displayName": "Key (e.g. #n)",
+                      "type": "string"
+                    },
+                    {
+                      "name": "value",
+                      "displayName": "Value",
+                      "type": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "conditionExpression",
+                  "displayName": "Condition Expression",
+                  "type": "string",
+                  "default": "",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "createOrUpdate",
+                        "delete"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "expressionAttributeValuesCollection",
+                  "displayName": "Expression Attribute Values",
+                  "type": "array",
+                  "fields": [
+                    {
+                      "name": "attribute",
+                      "displayName": "Attribute (e.g. :v)",
+                      "type": "string"
+                    },
+                    {
+                      "name": "type",
+                      "displayName": "Type",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "String",
+                          "value": "S"
+                        },
+                        {
+                          "name": "Number",
+                          "value": "N"
+                        },
+                        {
+                          "name": "Boolean",
+                          "value": "BOOL"
+                        }
+                      ],
+                      "default": "S"
+                    },
+                    {
+                      "name": "value",
+                      "displayName": "Value",
+                      "type": "string"
+                    }
+                  ],
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "createOrUpdate",
+                        "delete"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "readType",
+                  "displayName": "Read Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Strongly Consistent",
+                      "value": "stronglyConsistent"
+                    },
+                    {
+                      "name": "Eventually Consistent",
+                      "value": "eventuallyConsistent"
+                    }
+                  ],
+                  "default": "eventuallyConsistent",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "get"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "getMany"
+          },
+          "subCategory": "DynamoDB"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "getMany"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

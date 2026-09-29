@@ -1,0 +1,194 @@
+{
+  "nodes": [
+    {
+      "id": "stripe.customer_card.add-1783407902155",
+      "type": "action",
+      "position": {
+        "x": 773.2237687287202,
+        "y": -254.87051833015227
+      },
+      "data": {
+        "label": "Add Customer Card",
+        "toolId": "stripe.customer_card.add",
+        "toolData": {
+          "id": "stripe.customer_card.add",
+          "displayName": "Add Customer Card",
+          "category": "Integrations",
+          "provider": "stripe",
+          "operation": "Add",
+          "icon": "/tools/stripe.svg",
+          "description": "Add a new card to a customer",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Balance",
+                  "Charge",
+                  "Coupon",
+                  "Customer",
+                  "Customer Card",
+                  "Meter Event",
+                  "Source",
+                  "Token"
+                ],
+                "default": "Customer Card",
+                "description": "The resource to act on"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Update",
+                  "Add",
+                  "Remove"
+                ],
+                "default": "Add",
+                "description": "The operation to perform"
+              }
+            },
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Stripe"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "stripe.customer_card.get-1783407903049",
+      "type": "action",
+      "position": {
+        "x": 833.2613786688869,
+        "y": -222.54257451621638
+      },
+      "data": {
+        "label": "Get Customer Card",
+        "toolId": "stripe.customer_card.get",
+        "toolData": {
+          "id": "stripe.customer_card.get",
+          "displayName": "Get Customer Card",
+          "category": "Integrations",
+          "provider": "stripe",
+          "operation": "Get",
+          "icon": "/tools/stripe.svg",
+          "description": "Retrieve a customer card",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Balance",
+                  "Charge",
+                  "Coupon",
+                  "Customer",
+                  "Customer Card",
+                  "Meter Event",
+                  "Source",
+                  "Token"
+                ],
+                "default": "Customer Card",
+                "description": "The resource to act on"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Update",
+                  "Add",
+                  "Remove"
+                ],
+                "default": "Get",
+                "description": "The operation to perform"
+              }
+            },
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Stripe"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "stripe.customer_card.remove-1783407904099",
+      "type": "action",
+      "position": {
+        "x": 785.0993399256762,
+        "y": -202.74995585462295
+      },
+      "data": {
+        "label": "Remove Customer Card",
+        "toolId": "stripe.customer_card.remove",
+        "toolData": {
+          "id": "stripe.customer_card.remove",
+          "displayName": "Remove Customer Card",
+          "category": "Integrations",
+          "provider": "stripe",
+          "operation": "Remove",
+          "icon": "/tools/stripe.svg",
+          "description": "Remove a card from a customer",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Balance",
+                  "Charge",
+                  "Coupon",
+                  "Customer",
+                  "Customer Card",
+                  "Meter Event",
+                  "Source",
+                  "Token"
+                ],
+                "default": "Customer Card",
+                "description": "The resource to act on"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Update",
+                  "Add",
+                  "Remove"
+                ],
+                "default": "Remove",
+                "description": "The operation to perform"
+              }
+            },
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Stripe"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

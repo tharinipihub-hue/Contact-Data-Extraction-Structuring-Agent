@@ -1,0 +1,866 @@
+{
+  "nodes": [
+    {
+      "id": "aws.s3.folder.create-1783400381896",
+      "type": "action",
+      "position": {
+        "x": 809.693796492484,
+        "y": 488.8878226113959
+      },
+      "data": {
+        "label": "Create",
+        "toolId": "aws.s3.folder.create",
+        "toolData": {
+          "id": "aws.s3.folder.create",
+          "displayName": "Create",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Create",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Amazon-S3-Logo.svg",
+          "actionGroup": "S3 Folder",
+          "description": "Create in S3 Folder",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "getMany"
+                ],
+                "description": "Folder Operation"
+              },
+              "bucketName": {
+                "type": "string",
+                "description": "Bucket Name"
+              },
+              "folderName": {
+                "type": "string",
+                "description": "Folder Name (Create)"
+              },
+              "folderKey": {
+                "type": "string",
+                "description": "Folder Key (Delete)"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit"
+              },
+              "parentFolderKey": {
+                "type": "string",
+                "description": "Parent Folder Key"
+              },
+              "requesterPays": {
+                "type": "boolean",
+                "description": "Requester Pays"
+              },
+              "storageClass": {
+                "type": "string",
+                "description": "Storage Class"
+              },
+              "fetchOwner": {
+                "type": "boolean",
+                "description": "Fetch Owner"
+              },
+              "folderKeyAdvanced": {
+                "type": "string",
+                "description": "Folder Key (Get Many)"
+              },
+              "credentials": {
+                "description": "AWS S3 credentials"
+              }
+            },
+            "required": [
+              "operation",
+              "bucketName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                }
+              ],
+              "default": "create",
+              "required": true
+            },
+            {
+              "name": "bucketName",
+              "displayName": "Bucket Name",
+              "type": "string",
+              "required": true
+            },
+            {
+              "name": "folderName",
+              "displayName": "Folder Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "folderKey",
+              "displayName": "Folder Key",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 100,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "parentFolderKey",
+              "displayName": "Parent Folder Key",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "requesterPays",
+              "displayName": "Requester Pays",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "storageClass",
+              "displayName": "Storage Class",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Standard",
+                  "value": "STANDARD"
+                },
+                {
+                  "name": "Reduced Redundancy",
+                  "value": "REDUCED_REDUNDANCY"
+                },
+                {
+                  "name": "Standard IA",
+                  "value": "STANDARD_IA"
+                },
+                {
+                  "name": "Onezone IA",
+                  "value": "ONEZONE_IA"
+                },
+                {
+                  "name": "Intelligent Tiering",
+                  "value": "INTELLIGENT_TIERING"
+                },
+                {
+                  "name": "Glacier",
+                  "value": "GLACIER"
+                },
+                {
+                  "name": "Deep Archive",
+                  "value": "DEEP_ARCHIVE"
+                },
+                {
+                  "name": "Outposts",
+                  "value": "OUTPOSTS"
+                },
+                {
+                  "name": "Glacier IR",
+                  "value": "GLACIER_IR"
+                }
+              ],
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fetchOwner",
+              "displayName": "Fetch Owner",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "folderKeyAdvanced",
+              "displayName": "Folder Key",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "create"
+          },
+          "subCategory": "S3 Folder"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "create"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.s3.folder.delete-1783400383354",
+      "type": "action",
+      "position": {
+        "x": 961.4372062313669,
+        "y": 652.5068035472348
+      },
+      "data": {
+        "label": "Delete",
+        "toolId": "aws.s3.folder.delete",
+        "toolData": {
+          "id": "aws.s3.folder.delete",
+          "displayName": "Delete",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Delete",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Amazon-S3-Logo.svg",
+          "actionGroup": "S3 Folder",
+          "description": "Delete in S3 Folder",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "getMany"
+                ],
+                "description": "Folder Operation"
+              },
+              "bucketName": {
+                "type": "string",
+                "description": "Bucket Name"
+              },
+              "folderName": {
+                "type": "string",
+                "description": "Folder Name (Create)"
+              },
+              "folderKey": {
+                "type": "string",
+                "description": "Folder Key (Delete)"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit"
+              },
+              "parentFolderKey": {
+                "type": "string",
+                "description": "Parent Folder Key"
+              },
+              "requesterPays": {
+                "type": "boolean",
+                "description": "Requester Pays"
+              },
+              "storageClass": {
+                "type": "string",
+                "description": "Storage Class"
+              },
+              "fetchOwner": {
+                "type": "boolean",
+                "description": "Fetch Owner"
+              },
+              "folderKeyAdvanced": {
+                "type": "string",
+                "description": "Folder Key (Get Many)"
+              },
+              "credentials": {
+                "description": "AWS S3 credentials"
+              }
+            },
+            "required": [
+              "operation",
+              "bucketName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                }
+              ],
+              "default": "delete",
+              "required": true
+            },
+            {
+              "name": "bucketName",
+              "displayName": "Bucket Name",
+              "type": "string",
+              "required": true
+            },
+            {
+              "name": "folderName",
+              "displayName": "Folder Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "folderKey",
+              "displayName": "Folder Key",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 100,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "parentFolderKey",
+              "displayName": "Parent Folder Key",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "requesterPays",
+              "displayName": "Requester Pays",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "storageClass",
+              "displayName": "Storage Class",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Standard",
+                  "value": "STANDARD"
+                },
+                {
+                  "name": "Reduced Redundancy",
+                  "value": "REDUCED_REDUNDANCY"
+                },
+                {
+                  "name": "Standard IA",
+                  "value": "STANDARD_IA"
+                },
+                {
+                  "name": "Onezone IA",
+                  "value": "ONEZONE_IA"
+                },
+                {
+                  "name": "Intelligent Tiering",
+                  "value": "INTELLIGENT_TIERING"
+                },
+                {
+                  "name": "Glacier",
+                  "value": "GLACIER"
+                },
+                {
+                  "name": "Deep Archive",
+                  "value": "DEEP_ARCHIVE"
+                },
+                {
+                  "name": "Outposts",
+                  "value": "OUTPOSTS"
+                },
+                {
+                  "name": "Glacier IR",
+                  "value": "GLACIER_IR"
+                }
+              ],
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fetchOwner",
+              "displayName": "Fetch Owner",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "folderKeyAdvanced",
+              "displayName": "Folder Key",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "delete"
+          },
+          "subCategory": "S3 Folder"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "delete"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.s3.folder.getmany-1783400385474",
+      "type": "action",
+      "position": {
+        "x": 818.9303518678943,
+        "y": 785.777102535297
+      },
+      "data": {
+        "label": "Get Many",
+        "toolId": "aws.s3.folder.getmany",
+        "toolData": {
+          "id": "aws.s3.folder.getmany",
+          "displayName": "Get Many",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Get Many",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Amazon-S3-Logo.svg",
+          "actionGroup": "S3 Folder",
+          "description": "Get Many in S3 Folder",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "getMany"
+                ],
+                "description": "Folder Operation"
+              },
+              "bucketName": {
+                "type": "string",
+                "description": "Bucket Name"
+              },
+              "folderName": {
+                "type": "string",
+                "description": "Folder Name (Create)"
+              },
+              "folderKey": {
+                "type": "string",
+                "description": "Folder Key (Delete)"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit"
+              },
+              "parentFolderKey": {
+                "type": "string",
+                "description": "Parent Folder Key"
+              },
+              "requesterPays": {
+                "type": "boolean",
+                "description": "Requester Pays"
+              },
+              "storageClass": {
+                "type": "string",
+                "description": "Storage Class"
+              },
+              "fetchOwner": {
+                "type": "boolean",
+                "description": "Fetch Owner"
+              },
+              "folderKeyAdvanced": {
+                "type": "string",
+                "description": "Folder Key (Get Many)"
+              },
+              "credentials": {
+                "description": "AWS S3 credentials"
+              }
+            },
+            "required": [
+              "operation",
+              "bucketName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                }
+              ],
+              "default": "getMany",
+              "required": true
+            },
+            {
+              "name": "bucketName",
+              "displayName": "Bucket Name",
+              "type": "string",
+              "required": true
+            },
+            {
+              "name": "folderName",
+              "displayName": "Folder Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "folderKey",
+              "displayName": "Folder Key",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 100,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "parentFolderKey",
+              "displayName": "Parent Folder Key",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "requesterPays",
+              "displayName": "Requester Pays",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "storageClass",
+              "displayName": "Storage Class",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Standard",
+                  "value": "STANDARD"
+                },
+                {
+                  "name": "Reduced Redundancy",
+                  "value": "REDUCED_REDUNDANCY"
+                },
+                {
+                  "name": "Standard IA",
+                  "value": "STANDARD_IA"
+                },
+                {
+                  "name": "Onezone IA",
+                  "value": "ONEZONE_IA"
+                },
+                {
+                  "name": "Intelligent Tiering",
+                  "value": "INTELLIGENT_TIERING"
+                },
+                {
+                  "name": "Glacier",
+                  "value": "GLACIER"
+                },
+                {
+                  "name": "Deep Archive",
+                  "value": "DEEP_ARCHIVE"
+                },
+                {
+                  "name": "Outposts",
+                  "value": "OUTPOSTS"
+                },
+                {
+                  "name": "Glacier IR",
+                  "value": "GLACIER_IR"
+                }
+              ],
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fetchOwner",
+              "displayName": "Fetch Owner",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "folderKeyAdvanced",
+              "displayName": "Folder Key",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "getMany"
+          },
+          "subCategory": "S3 Folder"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "getMany"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 818.9303518678943,
+        "y": 785.777102535297
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

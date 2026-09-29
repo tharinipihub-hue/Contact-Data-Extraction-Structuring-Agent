@@ -1,0 +1,675 @@
+{
+  "nodes": [
+    {
+      "id": "aws.ses.email.send-1783401526801",
+      "type": "action",
+      "position": {
+        "x": 829.4864151540775,
+        "y": 342.42244451560464
+      },
+      "data": {
+        "label": "Send",
+        "toolId": "aws.ses.email.send",
+        "toolData": {
+          "id": "aws.ses.email.send",
+          "displayName": "Send",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Send",
+          "icon": "/tools/aws-ses.png",
+          "actionGroup": "SES Email",
+          "description": "Send in SES Email",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "email"
+                ],
+                "default": "email"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "send",
+                  "sendTemplate"
+                ],
+                "default": "send"
+              },
+              "fromEmail": {
+                "type": "string",
+                "format": "email"
+              },
+              "toAddresses": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "email"
+                    }
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "subject": {
+                "type": "string"
+              },
+              "body": {
+                "type": "string"
+              },
+              "isBodyHtml": {
+                "type": "boolean",
+                "default": false
+              },
+              "templateName": {
+                "type": "string"
+              },
+              "templateData": {},
+              "credentials": {},
+              "region": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "fromEmail",
+              "toAddresses"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "string",
+              "default": "email",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "__never__"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Send",
+                  "value": "send"
+                },
+                {
+                  "name": "Send Template",
+                  "value": "sendTemplate"
+                }
+              ],
+              "default": "send",
+              "required": true
+            },
+            {
+              "name": "fromEmail",
+              "displayName": "From Email",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/ses/list-identities",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Verified Identity (Email/Domain)",
+              "description": "The verified email address or domain that is sending the email."
+            },
+            {
+              "name": "toAddresses",
+              "displayName": "To Addresses",
+              "type": "array",
+              "placeholder": "Add To Email",
+              "fields": [
+                {
+                  "name": "email",
+                  "displayName": "Email",
+                  "type": "string",
+                  "placeholder": "Recipient Email"
+                }
+              ],
+              "description": "The destination email addresses."
+            },
+            {
+              "name": "isBodyHtml",
+              "displayName": "Is Body HTML",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "send"
+                  ]
+                }
+              },
+              "description": "Whether the body of the email is HTML."
+            },
+            {
+              "name": "subject",
+              "displayName": "Subject",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "send"
+                  ]
+                }
+              },
+              "description": "The subject of the email."
+            },
+            {
+              "name": "body",
+              "displayName": "Body",
+              "type": "string",
+              "required": true,
+              "format": "text",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "send"
+                  ]
+                }
+              },
+              "description": "The content of the email."
+            },
+            {
+              "name": "templateName",
+              "displayName": "Template Name or ID",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/ses/list-templates",
+              "dependsOn": [
+                "credentials"
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "sendTemplate"
+                  ]
+                }
+              },
+              "description": "The name of the template to use."
+            },
+            {
+              "name": "templateData",
+              "displayName": "Template Data",
+              "type": "array",
+              "placeholder": "Add Data",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "sendTemplate"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "key",
+                  "displayName": "Key",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "default": ""
+                }
+              ],
+              "description": "Key-value pairs for replacement in the template."
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "send",
+                    "sendTemplate"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "bccAddresses",
+                  "displayName": "Bcc Addresses",
+                  "type": "array",
+                  "placeholder": "Add Bcc Email",
+                  "default": [],
+                  "fields": [
+                    {
+                      "name": "email",
+                      "displayName": "Email",
+                      "type": "string",
+                      "placeholder": "bcc@example.com"
+                    }
+                  ]
+                },
+                {
+                  "name": "ccAddresses",
+                  "displayName": "Cc Addresses",
+                  "type": "array",
+                  "placeholder": "Add Cc Email",
+                  "default": [],
+                  "fields": [
+                    {
+                      "name": "email",
+                      "displayName": "Email",
+                      "type": "string",
+                      "placeholder": "cc@example.com"
+                    }
+                  ]
+                },
+                {
+                  "name": "configurationSetName",
+                  "displayName": "Configuration Set Name",
+                  "type": "string",
+                  "default": "",
+                  "description": "The name of the configuration set to use for this email."
+                },
+                {
+                  "name": "replyToAddresses",
+                  "displayName": "Reply To Addresses",
+                  "type": "array",
+                  "placeholder": "Add Reply-To Email",
+                  "default": [],
+                  "fields": [
+                    {
+                      "name": "email",
+                      "displayName": "Email",
+                      "type": "string",
+                      "placeholder": "reply-to@example.com"
+                    }
+                  ]
+                },
+                {
+                  "name": "returnPath",
+                  "displayName": "Return Path",
+                  "type": "string",
+                  "default": "",
+                  "description": "The email address where bounces and complaints are sent."
+                },
+                {
+                  "name": "returnPathArn",
+                  "displayName": "Return Path ARN",
+                  "type": "string",
+                  "default": "",
+                  "advanced": true
+                },
+                {
+                  "name": "sourceArn",
+                  "displayName": "Source ARN",
+                  "type": "string",
+                  "default": "",
+                  "advanced": true
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "send"
+          },
+          "subCategory": "SES Email",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "send"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.ses.email.sendtemplate-1783401528402",
+      "type": "action",
+      "position": {
+        "x": 853.2375575479895,
+        "y": 599.7264871163189
+      },
+      "data": {
+        "label": "Send Template",
+        "toolId": "aws.ses.email.sendtemplate",
+        "toolData": {
+          "id": "aws.ses.email.sendtemplate",
+          "displayName": "Send Template",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Send Template",
+          "icon": "/tools/aws-ses.png",
+          "actionGroup": "SES Email",
+          "description": "Send Template in SES Email",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "email"
+                ],
+                "default": "email"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "send",
+                  "sendTemplate"
+                ],
+                "default": "send"
+              },
+              "fromEmail": {
+                "type": "string",
+                "format": "email"
+              },
+              "toAddresses": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "email"
+                    }
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "subject": {
+                "type": "string"
+              },
+              "body": {
+                "type": "string"
+              },
+              "isBodyHtml": {
+                "type": "boolean",
+                "default": false
+              },
+              "templateName": {
+                "type": "string"
+              },
+              "templateData": {},
+              "credentials": {},
+              "region": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "fromEmail",
+              "toAddresses"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "string",
+              "default": "email",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "__never__"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Send",
+                  "value": "send"
+                },
+                {
+                  "name": "Send Template",
+                  "value": "sendTemplate"
+                }
+              ],
+              "default": "sendTemplate",
+              "required": true
+            },
+            {
+              "name": "fromEmail",
+              "displayName": "From Email",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/ses/list-identities",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Verified Identity (Email/Domain)",
+              "description": "The verified email address or domain that is sending the email."
+            },
+            {
+              "name": "toAddresses",
+              "displayName": "To Addresses",
+              "type": "array",
+              "placeholder": "Add To Email",
+              "fields": [
+                {
+                  "name": "email",
+                  "displayName": "Email",
+                  "type": "string",
+                  "placeholder": "Recipient Email"
+                }
+              ],
+              "description": "The destination email addresses."
+            },
+            {
+              "name": "isBodyHtml",
+              "displayName": "Is Body HTML",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "send"
+                  ]
+                }
+              },
+              "description": "Whether the body of the email is HTML."
+            },
+            {
+              "name": "subject",
+              "displayName": "Subject",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "send"
+                  ]
+                }
+              },
+              "description": "The subject of the email."
+            },
+            {
+              "name": "body",
+              "displayName": "Body",
+              "type": "string",
+              "required": true,
+              "format": "text",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "send"
+                  ]
+                }
+              },
+              "description": "The content of the email."
+            },
+            {
+              "name": "templateName",
+              "displayName": "Template Name or ID",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/ses/list-templates",
+              "dependsOn": [
+                "credentials"
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "sendTemplate"
+                  ]
+                }
+              },
+              "description": "The name of the template to use."
+            },
+            {
+              "name": "templateData",
+              "displayName": "Template Data",
+              "type": "array",
+              "placeholder": "Add Data",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "sendTemplate"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "key",
+                  "displayName": "Key",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "default": ""
+                }
+              ],
+              "description": "Key-value pairs for replacement in the template."
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "send",
+                    "sendTemplate"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "bccAddresses",
+                  "displayName": "Bcc Addresses",
+                  "type": "array",
+                  "placeholder": "Add Bcc Email",
+                  "default": [],
+                  "fields": [
+                    {
+                      "name": "email",
+                      "displayName": "Email",
+                      "type": "string",
+                      "placeholder": "bcc@example.com"
+                    }
+                  ]
+                },
+                {
+                  "name": "ccAddresses",
+                  "displayName": "Cc Addresses",
+                  "type": "array",
+                  "placeholder": "Add Cc Email",
+                  "default": [],
+                  "fields": [
+                    {
+                      "name": "email",
+                      "displayName": "Email",
+                      "type": "string",
+                      "placeholder": "cc@example.com"
+                    }
+                  ]
+                },
+                {
+                  "name": "configurationSetName",
+                  "displayName": "Configuration Set Name",
+                  "type": "string",
+                  "default": "",
+                  "description": "The name of the configuration set to use for this email."
+                },
+                {
+                  "name": "replyToAddresses",
+                  "displayName": "Reply To Addresses",
+                  "type": "array",
+                  "placeholder": "Add Reply-To Email",
+                  "default": [],
+                  "fields": [
+                    {
+                      "name": "email",
+                      "displayName": "Email",
+                      "type": "string",
+                      "placeholder": "reply-to@example.com"
+                    }
+                  ]
+                },
+                {
+                  "name": "returnPath",
+                  "displayName": "Return Path",
+                  "type": "string",
+                  "default": "",
+                  "description": "The email address where bounces and complaints are sent."
+                },
+                {
+                  "name": "returnPathArn",
+                  "displayName": "Return Path ARN",
+                  "type": "string",
+                  "default": "",
+                  "advanced": true
+                },
+                {
+                  "name": "sourceArn",
+                  "displayName": "Source ARN",
+                  "type": "string",
+                  "default": "",
+                  "advanced": true
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "sendTemplate"
+          },
+          "subCategory": "SES Email",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "sendTemplate"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

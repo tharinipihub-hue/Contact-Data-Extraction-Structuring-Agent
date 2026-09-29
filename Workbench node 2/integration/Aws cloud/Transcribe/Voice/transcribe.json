@@ -1,0 +1,1419 @@
+{
+  "nodes": [
+    {
+      "id": "aws.transcribe.voice.create-1783405269500",
+      "type": "action",
+      "position": {
+        "x": 1030.9237168097625,
+        "y": 406.00059859080545
+      },
+      "data": {
+        "label": "Create Transcription Job",
+        "toolId": "aws.transcribe.voice.create",
+        "toolData": {
+          "id": "aws.transcribe.voice.create",
+          "displayName": "Create Transcription Job",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Create Transcription Job",
+          "icon": "/tools/aws_transcribe.jpg",
+          "actionGroup": "AWS Transcribe",
+          "description": "Create Transcription Job in AWS Transcribe",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany"
+                ],
+                "default": "create"
+              },
+              "jobName": {
+                "type": "string",
+                "description": "The name of the transcription job."
+              },
+              "mediaFileUri": {
+                "type": "string",
+                "format": "uri",
+                "description": "The S3 object location of the media file."
+              },
+              "identifyLanguage": {
+                "type": "boolean",
+                "default": false,
+                "description": "Automatically identify the language."
+              },
+              "languageCode": {
+                "type": "string",
+                "description": "The language code."
+              },
+              "returnTranscript": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether to fetch the transcript content."
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true,
+                "description": "Return only plain text if true, full JSON details if false."
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all results."
+              },
+              "limit": {
+                "type": "number",
+                "default": 20,
+                "description": "Number of results to return."
+              },
+              "filters": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string"
+                  },
+                  "jobNameContains": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {},
+              "region": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "jobName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create Transcription Job",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete Transcription Job",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get Transcription Job",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many Transcription Jobs",
+                  "value": "getMany"
+                }
+              ],
+              "default": "create",
+              "required": true
+            },
+            {
+              "name": "jobName",
+              "displayName": "Job Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The unique name for your transcription job."
+            },
+            {
+              "name": "jobName",
+              "displayName": "Job Name",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/transcribe/list-jobs",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Select a transcription job...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get"
+                  ]
+                }
+              },
+              "description": "Select an existing transcription job from your account."
+            },
+            {
+              "name": "mediaFileUri",
+              "displayName": "Media File URI",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The S3 object location of the media file (e.g., s3://bucket-name/file.mp3)."
+            },
+            {
+              "name": "identifyLanguage",
+              "displayName": "Detect Language",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "Whether to automatically identify the language."
+            },
+            {
+              "name": "languageCode",
+              "displayName": "Language",
+              "type": "options",
+              "options": [
+                {
+                  "name": "American English",
+                  "value": "en-US"
+                },
+                {
+                  "name": "British English",
+                  "value": "en-GB"
+                },
+                {
+                  "name": "German",
+                  "value": "de-DE"
+                },
+                {
+                  "name": "Indian English",
+                  "value": "en-IN"
+                },
+                {
+                  "name": "Irish English",
+                  "value": "en-IE"
+                },
+                {
+                  "name": "Russian",
+                  "value": "ru-RU"
+                },
+                {
+                  "name": "Spanish",
+                  "value": "es-ES"
+                }
+              ],
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ],
+                  "identifyLanguage": [
+                    false
+                  ]
+                }
+              },
+              "description": "Select the language for the transcription."
+            },
+            {
+              "name": "returnTranscript",
+              "displayName": "Return Transcript",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              },
+              "description": "Whether to fetch the transcript content."
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              },
+              "description": "Return only plain text if true, full JSON details if false."
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all results."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 10,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "Number of results to return."
+            },
+            {
+              "name": "filters",
+              "displayName": "Filters",
+              "type": "collection",
+              "placeholder": "Add Filter",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "status",
+                  "displayName": "Status",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Completed",
+                      "value": "COMPLETED"
+                    },
+                    {
+                      "name": "Failed",
+                      "value": "FAILED"
+                    },
+                    {
+                      "name": "In Progress",
+                      "value": "IN_PROGRESS"
+                    },
+                    {
+                      "name": "Queued",
+                      "value": "QUEUED"
+                    }
+                  ],
+                  "default": "COMPLETED",
+                  "description": "Filter by status."
+                },
+                {
+                  "name": "jobNameContains",
+                  "displayName": "Job Name Contains",
+                  "type": "string",
+                  "default": "",
+                  "description": "Filter by job name contains."
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "create"
+          },
+          "subCategory": "AWS Transcribe"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "create"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.transcribe.voice.delete-1783405270747",
+      "type": "action",
+      "position": {
+        "x": 1035.4708665092937,
+        "y": 519.6793410790852
+      },
+      "data": {
+        "label": "Delete Transcription Job",
+        "toolId": "aws.transcribe.voice.delete",
+        "toolData": {
+          "id": "aws.transcribe.voice.delete",
+          "displayName": "Delete Transcription Job",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Delete Transcription Job",
+          "icon": "/tools/aws_transcribe.jpg",
+          "actionGroup": "AWS Transcribe",
+          "description": "Delete Transcription Job in AWS Transcribe",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany"
+                ],
+                "default": "create"
+              },
+              "jobName": {
+                "type": "string",
+                "description": "The name of the transcription job."
+              },
+              "mediaFileUri": {
+                "type": "string",
+                "format": "uri",
+                "description": "The S3 object location of the media file."
+              },
+              "identifyLanguage": {
+                "type": "boolean",
+                "default": false,
+                "description": "Automatically identify the language."
+              },
+              "languageCode": {
+                "type": "string",
+                "description": "The language code."
+              },
+              "returnTranscript": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether to fetch the transcript content."
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true,
+                "description": "Return only plain text if true, full JSON details if false."
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all results."
+              },
+              "limit": {
+                "type": "number",
+                "default": 20,
+                "description": "Number of results to return."
+              },
+              "filters": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string"
+                  },
+                  "jobNameContains": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {},
+              "region": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "jobName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create Transcription Job",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete Transcription Job",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get Transcription Job",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many Transcription Jobs",
+                  "value": "getMany"
+                }
+              ],
+              "default": "delete",
+              "required": true
+            },
+            {
+              "name": "jobName",
+              "displayName": "Job Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The unique name for your transcription job."
+            },
+            {
+              "name": "jobName",
+              "displayName": "Job Name",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/transcribe/list-jobs",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Select a transcription job...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get"
+                  ]
+                }
+              },
+              "description": "Select an existing transcription job from your account."
+            },
+            {
+              "name": "mediaFileUri",
+              "displayName": "Media File URI",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The S3 object location of the media file (e.g., s3://bucket-name/file.mp3)."
+            },
+            {
+              "name": "identifyLanguage",
+              "displayName": "Detect Language",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "Whether to automatically identify the language."
+            },
+            {
+              "name": "languageCode",
+              "displayName": "Language",
+              "type": "options",
+              "options": [
+                {
+                  "name": "American English",
+                  "value": "en-US"
+                },
+                {
+                  "name": "British English",
+                  "value": "en-GB"
+                },
+                {
+                  "name": "German",
+                  "value": "de-DE"
+                },
+                {
+                  "name": "Indian English",
+                  "value": "en-IN"
+                },
+                {
+                  "name": "Irish English",
+                  "value": "en-IE"
+                },
+                {
+                  "name": "Russian",
+                  "value": "ru-RU"
+                },
+                {
+                  "name": "Spanish",
+                  "value": "es-ES"
+                }
+              ],
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ],
+                  "identifyLanguage": [
+                    false
+                  ]
+                }
+              },
+              "description": "Select the language for the transcription."
+            },
+            {
+              "name": "returnTranscript",
+              "displayName": "Return Transcript",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              },
+              "description": "Whether to fetch the transcript content."
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              },
+              "description": "Return only plain text if true, full JSON details if false."
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all results."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 10,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "Number of results to return."
+            },
+            {
+              "name": "filters",
+              "displayName": "Filters",
+              "type": "collection",
+              "placeholder": "Add Filter",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "status",
+                  "displayName": "Status",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Completed",
+                      "value": "COMPLETED"
+                    },
+                    {
+                      "name": "Failed",
+                      "value": "FAILED"
+                    },
+                    {
+                      "name": "In Progress",
+                      "value": "IN_PROGRESS"
+                    },
+                    {
+                      "name": "Queued",
+                      "value": "QUEUED"
+                    }
+                  ],
+                  "default": "COMPLETED",
+                  "description": "Filter by status."
+                },
+                {
+                  "name": "jobNameContains",
+                  "displayName": "Job Name Contains",
+                  "type": "string",
+                  "default": "",
+                  "description": "Filter by job name contains."
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "delete"
+          },
+          "subCategory": "AWS Transcribe"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "delete"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1035.4708665092937,
+        "y": 519.6793410790852
+      },
+      "dragging": false
+    },
+    {
+      "id": "aws.transcribe.voice.getmany-1783405274012",
+      "type": "action",
+      "position": {
+        "x": 1037.7444413590592,
+        "y": 627.2952173013235
+      },
+      "data": {
+        "label": "Get Many Transcription Jobs",
+        "toolId": "aws.transcribe.voice.getmany",
+        "toolData": {
+          "id": "aws.transcribe.voice.getmany",
+          "displayName": "Get Many Transcription Jobs",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Get Many Transcription Jobs",
+          "icon": "/tools/aws_transcribe.jpg",
+          "actionGroup": "AWS Transcribe",
+          "description": "Get Many Transcription Jobs in AWS Transcribe",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany"
+                ],
+                "default": "create"
+              },
+              "jobName": {
+                "type": "string",
+                "description": "The name of the transcription job."
+              },
+              "mediaFileUri": {
+                "type": "string",
+                "format": "uri",
+                "description": "The S3 object location of the media file."
+              },
+              "identifyLanguage": {
+                "type": "boolean",
+                "default": false,
+                "description": "Automatically identify the language."
+              },
+              "languageCode": {
+                "type": "string",
+                "description": "The language code."
+              },
+              "returnTranscript": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether to fetch the transcript content."
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true,
+                "description": "Return only plain text if true, full JSON details if false."
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all results."
+              },
+              "limit": {
+                "type": "number",
+                "default": 20,
+                "description": "Number of results to return."
+              },
+              "filters": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string"
+                  },
+                  "jobNameContains": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {},
+              "region": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "jobName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create Transcription Job",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete Transcription Job",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get Transcription Job",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many Transcription Jobs",
+                  "value": "getMany"
+                }
+              ],
+              "default": "getMany",
+              "required": true
+            },
+            {
+              "name": "jobName",
+              "displayName": "Job Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The unique name for your transcription job."
+            },
+            {
+              "name": "jobName",
+              "displayName": "Job Name",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/transcribe/list-jobs",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Select a transcription job...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get"
+                  ]
+                }
+              },
+              "description": "Select an existing transcription job from your account."
+            },
+            {
+              "name": "mediaFileUri",
+              "displayName": "Media File URI",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The S3 object location of the media file (e.g., s3://bucket-name/file.mp3)."
+            },
+            {
+              "name": "identifyLanguage",
+              "displayName": "Detect Language",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "Whether to automatically identify the language."
+            },
+            {
+              "name": "languageCode",
+              "displayName": "Language",
+              "type": "options",
+              "options": [
+                {
+                  "name": "American English",
+                  "value": "en-US"
+                },
+                {
+                  "name": "British English",
+                  "value": "en-GB"
+                },
+                {
+                  "name": "German",
+                  "value": "de-DE"
+                },
+                {
+                  "name": "Indian English",
+                  "value": "en-IN"
+                },
+                {
+                  "name": "Irish English",
+                  "value": "en-IE"
+                },
+                {
+                  "name": "Russian",
+                  "value": "ru-RU"
+                },
+                {
+                  "name": "Spanish",
+                  "value": "es-ES"
+                }
+              ],
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ],
+                  "identifyLanguage": [
+                    false
+                  ]
+                }
+              },
+              "description": "Select the language for the transcription."
+            },
+            {
+              "name": "returnTranscript",
+              "displayName": "Return Transcript",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              },
+              "description": "Whether to fetch the transcript content."
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              },
+              "description": "Return only plain text if true, full JSON details if false."
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all results."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 10,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "Number of results to return."
+            },
+            {
+              "name": "filters",
+              "displayName": "Filters",
+              "type": "collection",
+              "placeholder": "Add Filter",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "status",
+                  "displayName": "Status",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Completed",
+                      "value": "COMPLETED"
+                    },
+                    {
+                      "name": "Failed",
+                      "value": "FAILED"
+                    },
+                    {
+                      "name": "In Progress",
+                      "value": "IN_PROGRESS"
+                    },
+                    {
+                      "name": "Queued",
+                      "value": "QUEUED"
+                    }
+                  ],
+                  "default": "COMPLETED",
+                  "description": "Filter by status."
+                },
+                {
+                  "name": "jobNameContains",
+                  "displayName": "Job Name Contains",
+                  "type": "string",
+                  "default": "",
+                  "description": "Filter by job name contains."
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "getMany"
+          },
+          "subCategory": "AWS Transcribe"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "getMany"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1037.7444413590592,
+        "y": 627.2952173013235
+      },
+      "dragging": false
+    },
+    {
+      "id": "aws.transcribe.voice.get-1783405277380",
+      "type": "action",
+      "position": {
+        "x": 1045.323024191611,
+        "y": 740.2161015063482
+      },
+      "data": {
+        "label": "Get Transcription Job",
+        "toolId": "aws.transcribe.voice.get",
+        "toolData": {
+          "id": "aws.transcribe.voice.get",
+          "displayName": "Get Transcription Job",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Get Transcription Job",
+          "icon": "/tools/aws_transcribe.jpg",
+          "actionGroup": "AWS Transcribe",
+          "description": "Get Transcription Job in AWS Transcribe",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany"
+                ],
+                "default": "create"
+              },
+              "jobName": {
+                "type": "string",
+                "description": "The name of the transcription job."
+              },
+              "mediaFileUri": {
+                "type": "string",
+                "format": "uri",
+                "description": "The S3 object location of the media file."
+              },
+              "identifyLanguage": {
+                "type": "boolean",
+                "default": false,
+                "description": "Automatically identify the language."
+              },
+              "languageCode": {
+                "type": "string",
+                "description": "The language code."
+              },
+              "returnTranscript": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether to fetch the transcript content."
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true,
+                "description": "Return only plain text if true, full JSON details if false."
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all results."
+              },
+              "limit": {
+                "type": "number",
+                "default": 20,
+                "description": "Number of results to return."
+              },
+              "filters": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string"
+                  },
+                  "jobNameContains": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {},
+              "region": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "jobName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create Transcription Job",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete Transcription Job",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get Transcription Job",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many Transcription Jobs",
+                  "value": "getMany"
+                }
+              ],
+              "default": "get",
+              "required": true
+            },
+            {
+              "name": "jobName",
+              "displayName": "Job Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The unique name for your transcription job."
+            },
+            {
+              "name": "jobName",
+              "displayName": "Job Name",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/transcribe/list-jobs",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Select a transcription job...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get"
+                  ]
+                }
+              },
+              "description": "Select an existing transcription job from your account."
+            },
+            {
+              "name": "mediaFileUri",
+              "displayName": "Media File URI",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The S3 object location of the media file (e.g., s3://bucket-name/file.mp3)."
+            },
+            {
+              "name": "identifyLanguage",
+              "displayName": "Detect Language",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "Whether to automatically identify the language."
+            },
+            {
+              "name": "languageCode",
+              "displayName": "Language",
+              "type": "options",
+              "options": [
+                {
+                  "name": "American English",
+                  "value": "en-US"
+                },
+                {
+                  "name": "British English",
+                  "value": "en-GB"
+                },
+                {
+                  "name": "German",
+                  "value": "de-DE"
+                },
+                {
+                  "name": "Indian English",
+                  "value": "en-IN"
+                },
+                {
+                  "name": "Irish English",
+                  "value": "en-IE"
+                },
+                {
+                  "name": "Russian",
+                  "value": "ru-RU"
+                },
+                {
+                  "name": "Spanish",
+                  "value": "es-ES"
+                }
+              ],
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ],
+                  "identifyLanguage": [
+                    false
+                  ]
+                }
+              },
+              "description": "Select the language for the transcription."
+            },
+            {
+              "name": "returnTranscript",
+              "displayName": "Return Transcript",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              },
+              "description": "Whether to fetch the transcript content."
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              },
+              "description": "Return only plain text if true, full JSON details if false."
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all results."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 10,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "Number of results to return."
+            },
+            {
+              "name": "filters",
+              "displayName": "Filters",
+              "type": "collection",
+              "placeholder": "Add Filter",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "status",
+                  "displayName": "Status",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Completed",
+                      "value": "COMPLETED"
+                    },
+                    {
+                      "name": "Failed",
+                      "value": "FAILED"
+                    },
+                    {
+                      "name": "In Progress",
+                      "value": "IN_PROGRESS"
+                    },
+                    {
+                      "name": "Queued",
+                      "value": "QUEUED"
+                    }
+                  ],
+                  "default": "COMPLETED",
+                  "description": "Filter by status."
+                },
+                {
+                  "name": "jobNameContains",
+                  "displayName": "Job Name Contains",
+                  "type": "string",
+                  "default": "",
+                  "description": "Filter by job name contains."
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "get"
+          },
+          "subCategory": "AWS Transcribe"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1045.323024191611,
+        "y": 740.2161015063482
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

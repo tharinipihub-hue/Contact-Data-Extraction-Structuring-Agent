@@ -1,0 +1,662 @@
+{
+  "nodes": [
+    {
+      "id": "google.drive.copy_file-1783408157654",
+      "type": "action",
+      "position": {
+        "x": 510.5580321117835,
+        "y": 172.12691737980487
+      },
+      "data": {
+        "label": "Copy file",
+        "toolId": "google.drive.copy_file",
+        "toolData": {
+          "id": "google.drive.copy_file",
+          "displayName": "Copy file",
+          "category": "Integrations",
+          "provider": "googleDrive",
+          "operation": "driveCopyFile",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg",
+          "description": "Copy an existing file",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "The credential to use for the connection"
+              },
+              "fileMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "id"
+                ],
+                "default": "list",
+                "description": "How to specify the file to copy"
+              },
+              "fileId": {
+                "type": "string",
+                "description": "The file to copy"
+              },
+              "name": {
+                "type": "string",
+                "description": "The name of the new file"
+              },
+              "copyInSameFolder": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether to copy the file into the same folder as the original"
+              },
+              "parentDriveMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "id"
+                ],
+                "default": "list",
+                "description": "How to specify the parent drive"
+              },
+              "parentDriveId": {
+                "type": "string",
+                "description": "The ID of the drive where the parent folder is located"
+              },
+              "parentFolderMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "id"
+                ],
+                "default": "list",
+                "description": "How to specify the parent folder"
+              },
+              "parentFolderId": {
+                "type": "string",
+                "description": "The ID of the parent folder"
+              },
+              "copyRequiresWriterPermission": {
+                "type": "boolean",
+                "description": "Copy requires writer permission"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description for the new file"
+              }
+            },
+            "required": [
+              "credentialId",
+              "fileId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "File",
+          "dynamicFields": [
+            {
+              "fieldName": "fileId",
+              "dependsOn": [
+                "credentialId",
+                "fileMode"
+              ],
+              "fetchEndpoint": "/api/tools/drive/list-files",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "parentDriveId",
+              "dependsOn": [
+                "credentialId",
+                "parentDriveMode"
+              ],
+              "fetchEndpoint": "/api/tools/drive/list-drives",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "parentFolderId",
+              "dependsOn": [
+                "credentialId",
+                "parentFolderMode"
+              ],
+              "fetchEndpoint": "/api/tools/drive/list-folders",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true
+    },
+    {
+      "id": "google.drive.create_file-1783408158695",
+      "type": "action",
+      "position": {
+        "x": 861.9901005465798,
+        "y": 216.6746443644974
+      },
+      "data": {
+        "label": "Create file from text",
+        "toolId": "google.drive.create_file",
+        "toolData": {
+          "id": "google.drive.create_file",
+          "displayName": "Create file from text",
+          "category": "Integrations",
+          "provider": "googleDrive",
+          "operation": "driveCreateFileFromText",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg",
+          "description": "Create a new file from text content",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "The credential to use for the connection"
+              },
+              "content": {
+                "type": "string",
+                "description": "The text content of the file"
+              },
+              "name": {
+                "type": "string",
+                "description": "The name of the new file"
+              },
+              "parentDriveMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "id"
+                ],
+                "default": "list",
+                "description": "How to specify the parent drive"
+              },
+              "parentDriveId": {
+                "type": "string",
+                "description": "The ID of the drive where the parent folder is located"
+              },
+              "parentFolderMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "id"
+                ],
+                "default": "list",
+                "description": "How to specify the parent folder"
+              },
+              "parentFolderId": {
+                "type": "string",
+                "description": "The ID of the parent folder"
+              },
+              "appProperties": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "App-specific properties"
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "General properties"
+              },
+              "keepRevisionForever": {
+                "type": "boolean",
+                "description": "Whether to keep the revision forever"
+              },
+              "ocrLanguage": {
+                "type": "string",
+                "description": "OCR language (e.g. en)"
+              },
+              "useContentAsIndexableText": {
+                "type": "boolean",
+                "description": "Whether to use content as indexable text"
+              },
+              "convertToGoogleDocument": {
+                "type": "boolean",
+                "description": "Whether to convert to a Google Document"
+              }
+            },
+            "required": [
+              "credentialId",
+              "content",
+              "name"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "File",
+          "dynamicFields": [
+            {
+              "fieldName": "parentDriveId",
+              "dependsOn": [
+                "credentialId",
+                "parentDriveMode"
+              ],
+              "fetchEndpoint": "/api/tools/drive/list-drives",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "parentFolderId",
+              "dependsOn": [
+                "credentialId",
+                "parentFolderMode"
+              ],
+              "fetchEndpoint": "/api/tools/drive/list-folders",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ],
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true
+    },
+    {
+      "id": "google.drive.delete_file-1783408159919",
+      "type": "action",
+      "position": {
+        "x": 1250.1917214131859,
+        "y": 254.85841035137668
+      },
+      "data": {
+        "label": "Delete a file",
+        "toolId": "google.drive.delete_file",
+        "toolData": {
+          "id": "google.drive.delete_file",
+          "displayName": "Delete a file",
+          "category": "Integrations",
+          "provider": "googleDrive",
+          "operation": "driveDeleteFile",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg",
+          "description": "Delete a file from Drive",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "The credential to use for the connection"
+              },
+              "fileMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "id",
+                  "url"
+                ],
+                "default": "list",
+                "description": "How to specify the file to delete"
+              },
+              "fileId": {
+                "type": "string",
+                "description": "The ID of the file to delete"
+              },
+              "deletePermanently": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to delete the file permanently (bypass trash)"
+              }
+            },
+            "required": [
+              "credentialId",
+              "fileId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "File",
+          "dynamicFields": [
+            {
+              "fieldName": "fileId",
+              "dependsOn": [
+                "credentialId",
+                "fileMode"
+              ],
+              "fetchEndpoint": "/api/tools/drive/list-files",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true
+    },
+    {
+      "id": "google.drive.download_file-1783408161375",
+      "type": "action",
+      "position": {
+        "x": 536.7209828805712,
+        "y": 389.208698082989
+      },
+      "data": {
+        "label": "Download file",
+        "toolId": "google.drive.download_file",
+        "toolData": {
+          "id": "google.drive.download_file",
+          "displayName": "Download file",
+          "category": "Integrations",
+          "provider": "googleDrive",
+          "operation": "driveDownloadFile",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg",
+          "description": "Download a file from Drive",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "The credential to use for the connection"
+              },
+              "fileId": {
+                "type": "string",
+                "description": "The ID of the file to download"
+              },
+              "fileMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "id"
+                ],
+                "default": "list"
+              },
+              "binaryPropertyName": {
+                "type": "string",
+                "default": "data"
+              },
+              "fileName": {
+                "type": "string"
+              },
+              "googleFileConversion": {
+                "type": "object",
+                "properties": {
+                  "googleDocs": {
+                    "type": "string"
+                  },
+                  "googleDrawings": {
+                    "type": "string"
+                  },
+                  "googleSlides": {
+                    "type": "string"
+                  },
+                  "googleSheets": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "credentialId",
+              "fileId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "File"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true
+    },
+    {
+      "id": "google.drive.update_file-1783408162654",
+      "type": "action",
+      "position": {
+        "x": 890.2743716479719,
+        "y": 434.46353184521627
+      },
+      "data": {
+        "label": "Update file",
+        "toolId": "google.drive.update_file",
+        "toolData": {
+          "id": "google.drive.update_file",
+          "displayName": "Update file",
+          "category": "Integrations",
+          "provider": "googleDrive",
+          "operation": "driveUpdateFile",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg",
+          "description": "Update an existing file",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "The credential to use for the connection"
+              },
+              "fileId": {
+                "type": "string",
+                "description": "The ID of the file to update"
+              },
+              "fileMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "id"
+                ],
+                "default": "list"
+              },
+              "changeFileContent": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to update the file content"
+              },
+              "inputDataFieldName": {
+                "type": "string",
+                "default": "data",
+                "description": "The name of the input field containing the binary file data to update the file"
+              },
+              "name": {
+                "type": "string",
+                "description": "New name for the file"
+              },
+              "appProperties": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "keepRevisionForever": {
+                "type": "boolean"
+              },
+              "ocrLanguage": {
+                "type": "string"
+              },
+              "useContentAsIndexableText": {
+                "type": "boolean"
+              },
+              "moveToTrash": {
+                "type": "boolean"
+              },
+              "returnFields": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentialId",
+              "fileId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "File",
+          "dynamicFields": [
+            {
+              "fieldName": "fileId",
+              "dependsOn": [
+                "credentialId",
+                "fileMode"
+              ],
+              "fetchEndpoint": "/api/tools/drive/list-files",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true
+    },
+    {
+      "id": "google.drive.upload_file-1783408163647",
+      "type": "action",
+      "position": {
+        "x": 1311.7100110587137,
+        "y": 461.3335893915387
+      },
+      "data": {
+        "label": "Upload file",
+        "toolId": "google.drive.upload_file",
+        "toolData": {
+          "id": "google.drive.upload_file",
+          "displayName": "Upload file",
+          "category": "Integrations",
+          "provider": "googleDrive",
+          "operation": "driveUploadFile",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg",
+          "description": "Upload a new file to Drive",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "The credential to use for the connection"
+              },
+              "inputDataFieldName": {
+                "type": "string",
+                "default": "data",
+                "description": "The name of the input field containing the binary file data to upload the file"
+              },
+              "fileName": {
+                "type": "string",
+                "description": "The name of the new file"
+              },
+              "parentDriveMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "id"
+                ],
+                "default": "list",
+                "description": "How to specify the parent drive"
+              },
+              "parentDriveId": {
+                "type": "string",
+                "description": "The ID of the drive where the parent folder is located"
+              },
+              "parentFolderMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "id"
+                ],
+                "default": "list",
+                "description": "How to specify the parent folder"
+              },
+              "parentFolderId": {
+                "type": "string",
+                "description": "The ID of the parent folder"
+              },
+              "appProperties": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "App-specific properties"
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "General properties"
+              },
+              "keepRevisionForever": {
+                "type": "boolean",
+                "description": "Whether to keep the revision forever"
+              },
+              "ocrLanguage": {
+                "type": "string",
+                "description": "OCR language (e.g. en)"
+              },
+              "useContentAsIndexableText": {
+                "type": "boolean",
+                "description": "Whether to use content as indexable text"
+              },
+              "simplifyOutput": {
+                "type": "boolean",
+                "description": "Whether to return a simplified output"
+              }
+            },
+            "required": [
+              "credentialId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "File",
+          "dynamicFields": [
+            {
+              "fieldName": "parentDriveId",
+              "dependsOn": [
+                "credentialId",
+                "parentDriveMode"
+              ],
+              "fetchEndpoint": "/api/tools/drive/list-drives",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "parentFolderId",
+              "dependsOn": [
+                "credentialId",
+                "parentFolderMode"
+              ],
+              "fetchEndpoint": "/api/tools/drive/list-folders",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ],
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true
+    }
+  ],
+  "edges": []
+}

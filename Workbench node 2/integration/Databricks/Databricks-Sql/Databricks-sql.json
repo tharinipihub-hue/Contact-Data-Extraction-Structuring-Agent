@@ -1,0 +1,252 @@
+{
+  "nodes": [
+    {
+      "id": "databricks.sql.executequery-1783405546548",
+      "type": "action",
+      "position": {
+        "x": 1205.2311219584583,
+        "y": 527.2579239116374
+      },
+      "data": {
+        "label": "Execute Query",
+        "toolId": "databricks.sql.executequery",
+        "toolData": {
+          "id": "databricks.sql.executequery",
+          "displayName": "Execute Query",
+          "category": "Integrations",
+          "provider": "databricks",
+          "operation": "Execute Query",
+          "icon": "https://www.databricks.com/sites/default/files/2021-10/db-nav-logo.svg",
+          "actionGroup": "Databricks SQL",
+          "description": "Execute Query in Databricks SQL",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "databricksSql"
+                ],
+                "default": "databricksSql"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "executeQuery"
+                ],
+                "default": "executeQuery"
+              },
+              "warehouseId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "query": {
+                "type": "string",
+                "minLength": 1
+              },
+              "queryParameters": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "value": {
+                      "type": [
+                        "string",
+                        "number",
+                        "boolean"
+                      ]
+                    },
+                    "type": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "value"
+                  ],
+                  "additionalProperties": false
+                },
+                "default": []
+              },
+              "credentials": {
+                "description": "Databricks credentials"
+              }
+            },
+            "required": [
+              "warehouseId",
+              "query"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Databricks SQL",
+                  "value": "databricksSql"
+                }
+              ],
+              "default": "databricksSql",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Execute Query",
+                  "value": "executeQuery"
+                }
+              ],
+              "default": "executeQuery",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "databricksSql"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "warehouseId",
+              "displayName": "Warehouse",
+              "type": "options",
+              "required": true,
+              "placeholder": "Select a warehouse",
+              "description": "Databricks SQL warehouse",
+              "fetchEndpoint": "/api/tools/databricks/list-warehouses",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "value",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "databricksSql"
+                  ],
+                  "operation": [
+                    "executeQuery"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "query",
+              "displayName": "Query",
+              "type": "string",
+              "format": "text",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "databricksSql"
+                  ],
+                  "operation": [
+                    "executeQuery"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "queryParameters",
+              "displayName": "Query Parameters",
+              "type": "array",
+              "placeholder": "Add Parameter",
+              "default": [],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "databricksSql"
+                  ],
+                  "operation": [
+                    "executeQuery"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "name",
+                  "displayName": "Name",
+                  "type": "string",
+                  "required": true,
+                  "placeholder": "e.g. user_id"
+                },
+                {
+                  "name": "value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "type",
+                  "displayName": "Type",
+                  "type": "options",
+                  "default": "TEXT",
+                  "options": [
+                    {
+                      "name": "Default",
+                      "value": "TEXT"
+                    },
+                    {
+                      "name": "Integer",
+                      "value": "INT"
+                    },
+                    {
+                      "name": "Float",
+                      "value": "DOUBLE"
+                    },
+                    {
+                      "name": "Boolean",
+                      "value": "BOOLEAN"
+                    },
+                    {
+                      "name": "Date",
+                      "value": "DATE"
+                    },
+                    {
+                      "name": "Timestamp",
+                      "value": "TIMESTAMP"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "executeQuery",
+            "resource": "databricksSql"
+          },
+          "subCategory": "Databricks SQL"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "executeQuery",
+          "resource": "databricksSql"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 1205.2311219584583,
+        "y": 527.2579239116374
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

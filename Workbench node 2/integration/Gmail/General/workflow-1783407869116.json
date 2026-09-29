@@ -1,0 +1,165 @@
+{
+  "nodes": [
+    {
+      "id": "trigger:gmail-1783407866152",
+      "type": "manual-trigger",
+      "position": {
+        "x": 1011.8967373839578,
+        "y": 372.0024331629754
+      },
+      "data": {
+        "label": "Gmail Trigger",
+        "toolId": "trigger:gmail",
+        "toolData": {
+          "id": "trigger:gmail",
+          "displayName": "Gmail Trigger",
+          "category": "Integrations",
+          "provider": "gmail",
+          "operation": "trigger",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          "description": "Trigger on new Gmail messages",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string"
+              },
+              "schedule": {
+                "type": "object",
+                "properties": {
+                  "mode": {
+                    "type": "string",
+                    "enum": [
+                      "preset",
+                      "every",
+                      "custom"
+                    ]
+                  },
+                  "preset": {
+                    "type": "string",
+                    "enum": [
+                      "minute",
+                      "hour",
+                      "day",
+                      "week",
+                      "month"
+                    ]
+                  },
+                  "minute": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 59
+                  },
+                  "hour": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 23
+                  },
+                  "weekday": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 6
+                  },
+                  "dayOfMonth": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 31
+                  },
+                  "every": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "unit": {
+                        "type": "string",
+                        "enum": [
+                          "minutes",
+                          "hours"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "value",
+                      "unit"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "cronExpression": {
+                    "type": "string"
+                  },
+                  "timezone": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "message_received"
+                ],
+                "default": "message_received"
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true
+              },
+              "includeSpamTrash": {
+                "type": "boolean",
+                "default": false
+              },
+              "includeDrafts": {
+                "type": "boolean",
+                "default": false
+              },
+              "labelIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "search": {
+                "type": "string"
+              },
+              "readStatus": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "unread",
+                  "read"
+                ],
+                "default": "all"
+              },
+              "sender": {
+                "type": "string"
+              },
+              "executionMode": {
+                "type": "string"
+              },
+              "executionId": {
+                "type": "string"
+              },
+              "parentWorkflowId": {
+                "type": "string"
+              },
+              "nodeId": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": true,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 99,
+      "selected": true
+    }
+  ],
+  "edges": []
+}

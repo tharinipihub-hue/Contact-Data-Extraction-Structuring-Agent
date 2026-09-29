@@ -1,0 +1,4314 @@
+{
+  "nodes": [
+    {
+      "id": "servicenow.incident.create-1783407971721",
+      "type": "action",
+      "position": {
+        "x": 529.369400062772,
+        "y": -494.10496196541754
+      },
+      "data": {
+        "label": "Create",
+        "toolId": "servicenow.incident.create",
+        "toolData": {
+          "id": "servicenow.incident.create",
+          "displayName": "Create",
+          "category": "Integrations",
+          "provider": "servicenow",
+          "operation": "Create",
+          "icon": "/tools/servicenow.png",
+          "actionGroup": "Incident",
+          "description": "Create in Incident",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ]
+              },
+              "incidentId": {
+                "type": "string",
+                "description": "Incident sys_id (for Get/Delete/Update)"
+              },
+              "shortDescription": {
+                "type": "string",
+                "description": "Short Description (required for Create)"
+              },
+              "additionalFields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Additional Fields (for Create)"
+              },
+              "updateFields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Update Fields (for Update)"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "excludeReferenceLink": {
+                    "type": "boolean"
+                  },
+                  "fieldNamesOrIds": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "returnValues": {
+                    "type": "string",
+                    "enum": [
+                      "false",
+                      "true",
+                      "all"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "ServiceNow credentials"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Incident",
+                  "value": "incident"
+                }
+              ],
+              "default": "incident",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "create",
+              "required": true
+            },
+            {
+              "name": "incidentId",
+              "displayName": "Incident ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              },
+              "description": "The sys_id of the incident record (32-character hex string)"
+            },
+            {
+              "name": "shortDescription",
+              "displayName": "Short Description",
+              "type": "string",
+              "default": "",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "Short description / title of the incident"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "assignedTo",
+                  "displayName": "Assigned To Name or ID",
+                  "type": "options",
+                  "allowExpression": true,
+                  "dependsOn": [
+                    "credentialId",
+                    "assignmentGroup"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_user&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The user this incident is assigned to"
+                },
+                {
+                  "name": "assignmentGroup",
+                  "displayName": "Assignment Group Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_user_group&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The group this incident is assigned to"
+                },
+                {
+                  "name": "businessService",
+                  "displayName": "Business Service Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=cmdb_ci_service&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The business service affected"
+                },
+                {
+                  "name": "callerID",
+                  "displayName": "Caller ID",
+                  "type": "string",
+                  "default": "",
+                  "description": "The person who reported the incident (name or sys_id)"
+                },
+                {
+                  "name": "category",
+                  "displayName": "Category Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_choice&labelField=label&valueField=value&query=name%3Dincident%5Eelement%3Dcategory%5Elanguage%3Den&limit=50",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "Incident category"
+                },
+                {
+                  "name": "closeNotes",
+                  "displayName": "Close Notes",
+                  "type": "string",
+                  "default": "",
+                  "description": "Resolution notes when closing the incident"
+                },
+                {
+                  "name": "cmdbCi",
+                  "displayName": "Configuration Item Names or IDs",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=cmdb_ci&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The configuration item (CI) related to this incident"
+                },
+                {
+                  "name": "contactType",
+                  "displayName": "Contact Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Email",
+                      "value": "email"
+                    },
+                    {
+                      "name": "Phone",
+                      "value": "phone"
+                    },
+                    {
+                      "name": "Self-service",
+                      "value": "self-service"
+                    },
+                    {
+                      "name": "Walk In",
+                      "value": "walk-in"
+                    }
+                  ],
+                  "default": "phone",
+                  "description": "How the incident was reported"
+                },
+                {
+                  "name": "description",
+                  "displayName": "Description",
+                  "type": "string",
+                  "default": "",
+                  "description": "Detailed description of the incident"
+                },
+                {
+                  "name": "impact",
+                  "displayName": "Impact",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "High",
+                      "value": "1"
+                    },
+                    {
+                      "name": "Medium",
+                      "value": "2"
+                    },
+                    {
+                      "name": "Low",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "3",
+                  "description": "Measure of the effect of the incident"
+                },
+                {
+                  "name": "resolutionCode",
+                  "displayName": "Resolution Code Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Duplicate",
+                      "value": "Duplicate"
+                    },
+                    {
+                      "name": "Known error",
+                      "value": "Known Error"
+                    },
+                    {
+                      "name": "No resolution provided",
+                      "value": "No Resolution"
+                    },
+                    {
+                      "name": "Resolved by caller",
+                      "value": "Resolved by Caller"
+                    },
+                    {
+                      "name": "Resolved by change",
+                      "value": "Resolved by Change"
+                    },
+                    {
+                      "name": "Resolved by problem",
+                      "value": "Resolved by Problem"
+                    },
+                    {
+                      "name": "Resolved by request",
+                      "value": "Resolved by Request"
+                    },
+                    {
+                      "name": "Solution provided",
+                      "value": "Solution Provided"
+                    }
+                  ],
+                  "default": "Solution Provided",
+                  "description": "The resolution code when closing the incident"
+                },
+                {
+                  "name": "onHoldReason",
+                  "displayName": "On Hold Reason Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Awaiting Caller",
+                      "value": "1"
+                    },
+                    {
+                      "name": "Awaiting Change",
+                      "value": "5"
+                    },
+                    {
+                      "name": "Awaiting Problem",
+                      "value": "2"
+                    },
+                    {
+                      "name": "Awaiting Vendor",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "1",
+                  "description": "Reason the incident is on hold"
+                },
+                {
+                  "name": "state",
+                  "displayName": "State Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "New",
+                      "value": "1"
+                    },
+                    {
+                      "name": "In Progress",
+                      "value": "2"
+                    },
+                    {
+                      "name": "On Hold",
+                      "value": "3"
+                    },
+                    {
+                      "name": "Resolved",
+                      "value": "6"
+                    },
+                    {
+                      "name": "Closed",
+                      "value": "7"
+                    },
+                    {
+                      "name": "Cancelled",
+                      "value": "8"
+                    }
+                  ],
+                  "default": "1",
+                  "description": "Current state of the incident"
+                },
+                {
+                  "name": "subCategory",
+                  "displayName": "Subcategory Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_choice&labelField=label&valueField=value&query=name%3Dincident%5Eelement%3Dsubcategory%5Elanguage%3Den&limit=50",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "Incident subcategory"
+                },
+                {
+                  "name": "urgency",
+                  "displayName": "Urgency",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "1 - High",
+                      "value": "1"
+                    },
+                    {
+                      "name": "2 - Medium",
+                      "value": "2"
+                    },
+                    {
+                      "name": "3 - Low",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "3",
+                  "description": "The speed at which the incident should be resolved"
+                },
+                {
+                  "name": "workNotes",
+                  "displayName": "Work Notes",
+                  "type": "string",
+                  "default": "",
+                  "description": "Internal notes visible only to agents"
+                }
+              ]
+            },
+            {
+              "name": "updateFields",
+              "displayName": "Update Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "update"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "assignedTo",
+                  "displayName": "Assigned To Name or ID",
+                  "type": "options",
+                  "allowExpression": true,
+                  "dependsOn": [
+                    "credentialId",
+                    "assignmentGroup"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_user&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The user this incident is assigned to"
+                },
+                {
+                  "name": "assignmentGroup",
+                  "displayName": "Assignment Group Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_user_group&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The group this incident is assigned to"
+                },
+                {
+                  "name": "businessService",
+                  "displayName": "Business Service Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=cmdb_ci_service&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The business service affected"
+                },
+                {
+                  "name": "callerID",
+                  "displayName": "Caller ID",
+                  "type": "string",
+                  "default": "",
+                  "description": "The person who reported the incident (name or sys_id)"
+                },
+                {
+                  "name": "category",
+                  "displayName": "Category Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_choice&labelField=label&valueField=value&query=name%3Dincident%5Eelement%3Dcategory%5Elanguage%3Den&limit=50",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "Incident category"
+                },
+                {
+                  "name": "closeNotes",
+                  "displayName": "Close Notes",
+                  "type": "string",
+                  "default": "",
+                  "description": "Resolution notes when closing the incident"
+                },
+                {
+                  "name": "cmdbCi",
+                  "displayName": "Configuration Item Names or IDs",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=cmdb_ci&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The configuration item (CI) related to this incident"
+                },
+                {
+                  "name": "contactType",
+                  "displayName": "Contact Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Email",
+                      "value": "email"
+                    },
+                    {
+                      "name": "Phone",
+                      "value": "phone"
+                    },
+                    {
+                      "name": "Self-service",
+                      "value": "self-service"
+                    },
+                    {
+                      "name": "Virtual Agent",
+                      "value": "virtual_agent"
+                    },
+                    {
+                      "name": "Walk In",
+                      "value": "walk-in"
+                    }
+                  ],
+                  "default": "phone",
+                  "description": "How the incident was reported"
+                },
+                {
+                  "name": "description",
+                  "displayName": "Description",
+                  "type": "string",
+                  "default": "",
+                  "description": "Detailed description of the incident"
+                },
+                {
+                  "name": "impact",
+                  "displayName": "Impact",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "High",
+                      "value": "1"
+                    },
+                    {
+                      "name": "Medium",
+                      "value": "2"
+                    },
+                    {
+                      "name": "Low",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "3",
+                  "description": "Measure of the effect of the incident"
+                },
+                {
+                  "name": "resolutionCode",
+                  "displayName": "Resolution Code Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Duplicate",
+                      "value": "Duplicate"
+                    },
+                    {
+                      "name": "Known error",
+                      "value": "Known Error"
+                    },
+                    {
+                      "name": "No resolution provided",
+                      "value": "No Resolution"
+                    },
+                    {
+                      "name": "Resolved by caller",
+                      "value": "Resolved by Caller"
+                    },
+                    {
+                      "name": "Resolved by change",
+                      "value": "Resolved by Change"
+                    },
+                    {
+                      "name": "Resolved by problem",
+                      "value": "Resolved by Problem"
+                    },
+                    {
+                      "name": "Resolved by request",
+                      "value": "Resolved by Request"
+                    },
+                    {
+                      "name": "Solution provided",
+                      "value": "Solution Provided"
+                    }
+                  ],
+                  "default": "Solution Provided",
+                  "description": "The resolution code when closing the incident"
+                },
+                {
+                  "name": "onHoldReason",
+                  "displayName": "On Hold Reason Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Awaiting Caller",
+                      "value": "1"
+                    },
+                    {
+                      "name": "Awaiting Change",
+                      "value": "5"
+                    },
+                    {
+                      "name": "Awaiting Problem",
+                      "value": "2"
+                    },
+                    {
+                      "name": "Awaiting Vendor",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "1",
+                  "description": "Reason the incident is on hold"
+                },
+                {
+                  "name": "state",
+                  "displayName": "State Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "New",
+                      "value": "1"
+                    },
+                    {
+                      "name": "In Progress",
+                      "value": "2"
+                    },
+                    {
+                      "name": "On Hold",
+                      "value": "3"
+                    },
+                    {
+                      "name": "Resolved",
+                      "value": "6"
+                    },
+                    {
+                      "name": "Closed",
+                      "value": "7"
+                    },
+                    {
+                      "name": "Cancelled",
+                      "value": "8"
+                    }
+                  ],
+                  "default": "1",
+                  "description": "Current state of the incident"
+                },
+                {
+                  "name": "subCategory",
+                  "displayName": "Subcategory Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_choice&labelField=label&valueField=value&query=name%3Dincident%5Eelement%3Dsubcategory%5Elanguage%3Den&limit=50",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "Incident subcategory"
+                },
+                {
+                  "name": "urgency",
+                  "displayName": "Urgency",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "1 - High",
+                      "value": "1"
+                    },
+                    {
+                      "name": "2 - Medium",
+                      "value": "2"
+                    },
+                    {
+                      "name": "3 - Low",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "3",
+                  "description": "The speed at which the incident should be resolved"
+                },
+                {
+                  "name": "workNotes",
+                  "displayName": "Work Notes",
+                  "type": "string",
+                  "default": "",
+                  "description": "Internal notes visible only to agents"
+                }
+              ]
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "placeholder": "Add option",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "excludeReferenceLink",
+                  "displayName": "Exclude Reference Link",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to exclude reference links (sysparm_exclude_reference_link)"
+                },
+                {
+                  "name": "fieldNamesOrIds",
+                  "displayName": "Field Names or IDs",
+                  "type": "options",
+                  "multiple": true,
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/columns?tableName=incident",
+                  "labelKey": "label",
+                  "valueKey": "name",
+                  "description": "The fields to return (sysparm_fields)"
+                },
+                {
+                  "name": "filter",
+                  "displayName": "Filter",
+                  "type": "string",
+                  "description": "ServiceNow encoded query (sysparm_query)",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "returnValues",
+                  "displayName": "Return Values",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Actual Values",
+                      "value": "false"
+                    },
+                    {
+                      "name": "Display Values",
+                      "value": "true"
+                    },
+                    {
+                      "name": "Both",
+                      "value": "all"
+                    }
+                  ],
+                  "default": "false",
+                  "description": "What values to return (sysparm_display_value)"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "create"
+          },
+          "subCategory": "Incident"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "create"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "servicenow.incident.delete-1783407973200",
+      "type": "action",
+      "position": {
+        "x": 783.8734431689229,
+        "y": -500.4045669927975
+      },
+      "data": {
+        "label": "Delete",
+        "toolId": "servicenow.incident.delete",
+        "toolData": {
+          "id": "servicenow.incident.delete",
+          "displayName": "Delete",
+          "category": "Integrations",
+          "provider": "servicenow",
+          "operation": "Delete",
+          "icon": "/tools/servicenow.png",
+          "actionGroup": "Incident",
+          "description": "Delete in Incident",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ]
+              },
+              "incidentId": {
+                "type": "string",
+                "description": "Incident sys_id (for Get/Delete/Update)"
+              },
+              "shortDescription": {
+                "type": "string",
+                "description": "Short Description (required for Create)"
+              },
+              "additionalFields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Additional Fields (for Create)"
+              },
+              "updateFields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Update Fields (for Update)"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "excludeReferenceLink": {
+                    "type": "boolean"
+                  },
+                  "fieldNamesOrIds": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "returnValues": {
+                    "type": "string",
+                    "enum": [
+                      "false",
+                      "true",
+                      "all"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "ServiceNow credentials"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Incident",
+                  "value": "incident"
+                }
+              ],
+              "default": "incident",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "delete",
+              "required": true
+            },
+            {
+              "name": "incidentId",
+              "displayName": "Incident ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              },
+              "description": "The sys_id of the incident record (32-character hex string)"
+            },
+            {
+              "name": "shortDescription",
+              "displayName": "Short Description",
+              "type": "string",
+              "default": "",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "Short description / title of the incident"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "assignedTo",
+                  "displayName": "Assigned To Name or ID",
+                  "type": "options",
+                  "allowExpression": true,
+                  "dependsOn": [
+                    "credentialId",
+                    "assignmentGroup"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_user&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The user this incident is assigned to"
+                },
+                {
+                  "name": "assignmentGroup",
+                  "displayName": "Assignment Group Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_user_group&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The group this incident is assigned to"
+                },
+                {
+                  "name": "businessService",
+                  "displayName": "Business Service Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=cmdb_ci_service&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The business service affected"
+                },
+                {
+                  "name": "callerID",
+                  "displayName": "Caller ID",
+                  "type": "string",
+                  "default": "",
+                  "description": "The person who reported the incident (name or sys_id)"
+                },
+                {
+                  "name": "category",
+                  "displayName": "Category Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_choice&labelField=label&valueField=value&query=name%3Dincident%5Eelement%3Dcategory%5Elanguage%3Den&limit=50",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "Incident category"
+                },
+                {
+                  "name": "closeNotes",
+                  "displayName": "Close Notes",
+                  "type": "string",
+                  "default": "",
+                  "description": "Resolution notes when closing the incident"
+                },
+                {
+                  "name": "cmdbCi",
+                  "displayName": "Configuration Item Names or IDs",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=cmdb_ci&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The configuration item (CI) related to this incident"
+                },
+                {
+                  "name": "contactType",
+                  "displayName": "Contact Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Email",
+                      "value": "email"
+                    },
+                    {
+                      "name": "Phone",
+                      "value": "phone"
+                    },
+                    {
+                      "name": "Self-service",
+                      "value": "self-service"
+                    },
+                    {
+                      "name": "Walk In",
+                      "value": "walk-in"
+                    }
+                  ],
+                  "default": "phone",
+                  "description": "How the incident was reported"
+                },
+                {
+                  "name": "description",
+                  "displayName": "Description",
+                  "type": "string",
+                  "default": "",
+                  "description": "Detailed description of the incident"
+                },
+                {
+                  "name": "impact",
+                  "displayName": "Impact",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "High",
+                      "value": "1"
+                    },
+                    {
+                      "name": "Medium",
+                      "value": "2"
+                    },
+                    {
+                      "name": "Low",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "3",
+                  "description": "Measure of the effect of the incident"
+                },
+                {
+                  "name": "resolutionCode",
+                  "displayName": "Resolution Code Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Duplicate",
+                      "value": "Duplicate"
+                    },
+                    {
+                      "name": "Known error",
+                      "value": "Known Error"
+                    },
+                    {
+                      "name": "No resolution provided",
+                      "value": "No Resolution"
+                    },
+                    {
+                      "name": "Resolved by caller",
+                      "value": "Resolved by Caller"
+                    },
+                    {
+                      "name": "Resolved by change",
+                      "value": "Resolved by Change"
+                    },
+                    {
+                      "name": "Resolved by problem",
+                      "value": "Resolved by Problem"
+                    },
+                    {
+                      "name": "Resolved by request",
+                      "value": "Resolved by Request"
+                    },
+                    {
+                      "name": "Solution provided",
+                      "value": "Solution Provided"
+                    }
+                  ],
+                  "default": "Solution Provided",
+                  "description": "The resolution code when closing the incident"
+                },
+                {
+                  "name": "onHoldReason",
+                  "displayName": "On Hold Reason Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Awaiting Caller",
+                      "value": "1"
+                    },
+                    {
+                      "name": "Awaiting Change",
+                      "value": "5"
+                    },
+                    {
+                      "name": "Awaiting Problem",
+                      "value": "2"
+                    },
+                    {
+                      "name": "Awaiting Vendor",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "1",
+                  "description": "Reason the incident is on hold"
+                },
+                {
+                  "name": "state",
+                  "displayName": "State Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "New",
+                      "value": "1"
+                    },
+                    {
+                      "name": "In Progress",
+                      "value": "2"
+                    },
+                    {
+                      "name": "On Hold",
+                      "value": "3"
+                    },
+                    {
+                      "name": "Resolved",
+                      "value": "6"
+                    },
+                    {
+                      "name": "Closed",
+                      "value": "7"
+                    },
+                    {
+                      "name": "Cancelled",
+                      "value": "8"
+                    }
+                  ],
+                  "default": "1",
+                  "description": "Current state of the incident"
+                },
+                {
+                  "name": "subCategory",
+                  "displayName": "Subcategory Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_choice&labelField=label&valueField=value&query=name%3Dincident%5Eelement%3Dsubcategory%5Elanguage%3Den&limit=50",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "Incident subcategory"
+                },
+                {
+                  "name": "urgency",
+                  "displayName": "Urgency",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "1 - High",
+                      "value": "1"
+                    },
+                    {
+                      "name": "2 - Medium",
+                      "value": "2"
+                    },
+                    {
+                      "name": "3 - Low",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "3",
+                  "description": "The speed at which the incident should be resolved"
+                },
+                {
+                  "name": "workNotes",
+                  "displayName": "Work Notes",
+                  "type": "string",
+                  "default": "",
+                  "description": "Internal notes visible only to agents"
+                }
+              ]
+            },
+            {
+              "name": "updateFields",
+              "displayName": "Update Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "update"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "assignedTo",
+                  "displayName": "Assigned To Name or ID",
+                  "type": "options",
+                  "allowExpression": true,
+                  "dependsOn": [
+                    "credentialId",
+                    "assignmentGroup"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_user&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The user this incident is assigned to"
+                },
+                {
+                  "name": "assignmentGroup",
+                  "displayName": "Assignment Group Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_user_group&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The group this incident is assigned to"
+                },
+                {
+                  "name": "businessService",
+                  "displayName": "Business Service Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=cmdb_ci_service&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The business service affected"
+                },
+                {
+                  "name": "callerID",
+                  "displayName": "Caller ID",
+                  "type": "string",
+                  "default": "",
+                  "description": "The person who reported the incident (name or sys_id)"
+                },
+                {
+                  "name": "category",
+                  "displayName": "Category Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_choice&labelField=label&valueField=value&query=name%3Dincident%5Eelement%3Dcategory%5Elanguage%3Den&limit=50",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "Incident category"
+                },
+                {
+                  "name": "closeNotes",
+                  "displayName": "Close Notes",
+                  "type": "string",
+                  "default": "",
+                  "description": "Resolution notes when closing the incident"
+                },
+                {
+                  "name": "cmdbCi",
+                  "displayName": "Configuration Item Names or IDs",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=cmdb_ci&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The configuration item (CI) related to this incident"
+                },
+                {
+                  "name": "contactType",
+                  "displayName": "Contact Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Email",
+                      "value": "email"
+                    },
+                    {
+                      "name": "Phone",
+                      "value": "phone"
+                    },
+                    {
+                      "name": "Self-service",
+                      "value": "self-service"
+                    },
+                    {
+                      "name": "Virtual Agent",
+                      "value": "virtual_agent"
+                    },
+                    {
+                      "name": "Walk In",
+                      "value": "walk-in"
+                    }
+                  ],
+                  "default": "phone",
+                  "description": "How the incident was reported"
+                },
+                {
+                  "name": "description",
+                  "displayName": "Description",
+                  "type": "string",
+                  "default": "",
+                  "description": "Detailed description of the incident"
+                },
+                {
+                  "name": "impact",
+                  "displayName": "Impact",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "High",
+                      "value": "1"
+                    },
+                    {
+                      "name": "Medium",
+                      "value": "2"
+                    },
+                    {
+                      "name": "Low",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "3",
+                  "description": "Measure of the effect of the incident"
+                },
+                {
+                  "name": "resolutionCode",
+                  "displayName": "Resolution Code Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Duplicate",
+                      "value": "Duplicate"
+                    },
+                    {
+                      "name": "Known error",
+                      "value": "Known Error"
+                    },
+                    {
+                      "name": "No resolution provided",
+                      "value": "No Resolution"
+                    },
+                    {
+                      "name": "Resolved by caller",
+                      "value": "Resolved by Caller"
+                    },
+                    {
+                      "name": "Resolved by change",
+                      "value": "Resolved by Change"
+                    },
+                    {
+                      "name": "Resolved by problem",
+                      "value": "Resolved by Problem"
+                    },
+                    {
+                      "name": "Resolved by request",
+                      "value": "Resolved by Request"
+                    },
+                    {
+                      "name": "Solution provided",
+                      "value": "Solution Provided"
+                    }
+                  ],
+                  "default": "Solution Provided",
+                  "description": "The resolution code when closing the incident"
+                },
+                {
+                  "name": "onHoldReason",
+                  "displayName": "On Hold Reason Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Awaiting Caller",
+                      "value": "1"
+                    },
+                    {
+                      "name": "Awaiting Change",
+                      "value": "5"
+                    },
+                    {
+                      "name": "Awaiting Problem",
+                      "value": "2"
+                    },
+                    {
+                      "name": "Awaiting Vendor",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "1",
+                  "description": "Reason the incident is on hold"
+                },
+                {
+                  "name": "state",
+                  "displayName": "State Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "New",
+                      "value": "1"
+                    },
+                    {
+                      "name": "In Progress",
+                      "value": "2"
+                    },
+                    {
+                      "name": "On Hold",
+                      "value": "3"
+                    },
+                    {
+                      "name": "Resolved",
+                      "value": "6"
+                    },
+                    {
+                      "name": "Closed",
+                      "value": "7"
+                    },
+                    {
+                      "name": "Cancelled",
+                      "value": "8"
+                    }
+                  ],
+                  "default": "1",
+                  "description": "Current state of the incident"
+                },
+                {
+                  "name": "subCategory",
+                  "displayName": "Subcategory Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_choice&labelField=label&valueField=value&query=name%3Dincident%5Eelement%3Dsubcategory%5Elanguage%3Den&limit=50",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "Incident subcategory"
+                },
+                {
+                  "name": "urgency",
+                  "displayName": "Urgency",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "1 - High",
+                      "value": "1"
+                    },
+                    {
+                      "name": "2 - Medium",
+                      "value": "2"
+                    },
+                    {
+                      "name": "3 - Low",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "3",
+                  "description": "The speed at which the incident should be resolved"
+                },
+                {
+                  "name": "workNotes",
+                  "displayName": "Work Notes",
+                  "type": "string",
+                  "default": "",
+                  "description": "Internal notes visible only to agents"
+                }
+              ]
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "placeholder": "Add option",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "excludeReferenceLink",
+                  "displayName": "Exclude Reference Link",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to exclude reference links (sysparm_exclude_reference_link)"
+                },
+                {
+                  "name": "fieldNamesOrIds",
+                  "displayName": "Field Names or IDs",
+                  "type": "options",
+                  "multiple": true,
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/columns?tableName=incident",
+                  "labelKey": "label",
+                  "valueKey": "name",
+                  "description": "The fields to return (sysparm_fields)"
+                },
+                {
+                  "name": "filter",
+                  "displayName": "Filter",
+                  "type": "string",
+                  "description": "ServiceNow encoded query (sysparm_query)",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "returnValues",
+                  "displayName": "Return Values",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Actual Values",
+                      "value": "false"
+                    },
+                    {
+                      "name": "Display Values",
+                      "value": "true"
+                    },
+                    {
+                      "name": "Both",
+                      "value": "all"
+                    }
+                  ],
+                  "default": "false",
+                  "description": "What values to return (sysparm_display_value)"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "delete"
+          },
+          "subCategory": "Incident"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "delete"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 783.8734431689229,
+        "y": -500.4045669927975
+      },
+      "dragging": false
+    },
+    {
+      "id": "servicenow.incident.get-1783407976025",
+      "type": "action",
+      "position": {
+        "x": 1074.9151954338774,
+        "y": -510.4839350366055
+      },
+      "data": {
+        "label": "Get",
+        "toolId": "servicenow.incident.get",
+        "toolData": {
+          "id": "servicenow.incident.get",
+          "displayName": "Get",
+          "category": "Integrations",
+          "provider": "servicenow",
+          "operation": "Get",
+          "icon": "/tools/servicenow.png",
+          "actionGroup": "Incident",
+          "description": "Get in Incident",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ]
+              },
+              "incidentId": {
+                "type": "string",
+                "description": "Incident sys_id (for Get/Delete/Update)"
+              },
+              "shortDescription": {
+                "type": "string",
+                "description": "Short Description (required for Create)"
+              },
+              "additionalFields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Additional Fields (for Create)"
+              },
+              "updateFields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Update Fields (for Update)"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "excludeReferenceLink": {
+                    "type": "boolean"
+                  },
+                  "fieldNamesOrIds": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "returnValues": {
+                    "type": "string",
+                    "enum": [
+                      "false",
+                      "true",
+                      "all"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "ServiceNow credentials"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Incident",
+                  "value": "incident"
+                }
+              ],
+              "default": "incident",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "get",
+              "required": true
+            },
+            {
+              "name": "incidentId",
+              "displayName": "Incident ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              },
+              "description": "The sys_id of the incident record (32-character hex string)"
+            },
+            {
+              "name": "shortDescription",
+              "displayName": "Short Description",
+              "type": "string",
+              "default": "",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "Short description / title of the incident"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "assignedTo",
+                  "displayName": "Assigned To Name or ID",
+                  "type": "options",
+                  "allowExpression": true,
+                  "dependsOn": [
+                    "credentialId",
+                    "assignmentGroup"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_user&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The user this incident is assigned to"
+                },
+                {
+                  "name": "assignmentGroup",
+                  "displayName": "Assignment Group Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_user_group&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The group this incident is assigned to"
+                },
+                {
+                  "name": "businessService",
+                  "displayName": "Business Service Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=cmdb_ci_service&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The business service affected"
+                },
+                {
+                  "name": "callerID",
+                  "displayName": "Caller ID",
+                  "type": "string",
+                  "default": "",
+                  "description": "The person who reported the incident (name or sys_id)"
+                },
+                {
+                  "name": "category",
+                  "displayName": "Category Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_choice&labelField=label&valueField=value&query=name%3Dincident%5Eelement%3Dcategory%5Elanguage%3Den&limit=50",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "Incident category"
+                },
+                {
+                  "name": "closeNotes",
+                  "displayName": "Close Notes",
+                  "type": "string",
+                  "default": "",
+                  "description": "Resolution notes when closing the incident"
+                },
+                {
+                  "name": "cmdbCi",
+                  "displayName": "Configuration Item Names or IDs",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=cmdb_ci&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The configuration item (CI) related to this incident"
+                },
+                {
+                  "name": "contactType",
+                  "displayName": "Contact Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Email",
+                      "value": "email"
+                    },
+                    {
+                      "name": "Phone",
+                      "value": "phone"
+                    },
+                    {
+                      "name": "Self-service",
+                      "value": "self-service"
+                    },
+                    {
+                      "name": "Walk In",
+                      "value": "walk-in"
+                    }
+                  ],
+                  "default": "phone",
+                  "description": "How the incident was reported"
+                },
+                {
+                  "name": "description",
+                  "displayName": "Description",
+                  "type": "string",
+                  "default": "",
+                  "description": "Detailed description of the incident"
+                },
+                {
+                  "name": "impact",
+                  "displayName": "Impact",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "High",
+                      "value": "1"
+                    },
+                    {
+                      "name": "Medium",
+                      "value": "2"
+                    },
+                    {
+                      "name": "Low",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "3",
+                  "description": "Measure of the effect of the incident"
+                },
+                {
+                  "name": "resolutionCode",
+                  "displayName": "Resolution Code Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Duplicate",
+                      "value": "Duplicate"
+                    },
+                    {
+                      "name": "Known error",
+                      "value": "Known Error"
+                    },
+                    {
+                      "name": "No resolution provided",
+                      "value": "No Resolution"
+                    },
+                    {
+                      "name": "Resolved by caller",
+                      "value": "Resolved by Caller"
+                    },
+                    {
+                      "name": "Resolved by change",
+                      "value": "Resolved by Change"
+                    },
+                    {
+                      "name": "Resolved by problem",
+                      "value": "Resolved by Problem"
+                    },
+                    {
+                      "name": "Resolved by request",
+                      "value": "Resolved by Request"
+                    },
+                    {
+                      "name": "Solution provided",
+                      "value": "Solution Provided"
+                    }
+                  ],
+                  "default": "Solution Provided",
+                  "description": "The resolution code when closing the incident"
+                },
+                {
+                  "name": "onHoldReason",
+                  "displayName": "On Hold Reason Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Awaiting Caller",
+                      "value": "1"
+                    },
+                    {
+                      "name": "Awaiting Change",
+                      "value": "5"
+                    },
+                    {
+                      "name": "Awaiting Problem",
+                      "value": "2"
+                    },
+                    {
+                      "name": "Awaiting Vendor",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "1",
+                  "description": "Reason the incident is on hold"
+                },
+                {
+                  "name": "state",
+                  "displayName": "State Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "New",
+                      "value": "1"
+                    },
+                    {
+                      "name": "In Progress",
+                      "value": "2"
+                    },
+                    {
+                      "name": "On Hold",
+                      "value": "3"
+                    },
+                    {
+                      "name": "Resolved",
+                      "value": "6"
+                    },
+                    {
+                      "name": "Closed",
+                      "value": "7"
+                    },
+                    {
+                      "name": "Cancelled",
+                      "value": "8"
+                    }
+                  ],
+                  "default": "1",
+                  "description": "Current state of the incident"
+                },
+                {
+                  "name": "subCategory",
+                  "displayName": "Subcategory Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_choice&labelField=label&valueField=value&query=name%3Dincident%5Eelement%3Dsubcategory%5Elanguage%3Den&limit=50",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "Incident subcategory"
+                },
+                {
+                  "name": "urgency",
+                  "displayName": "Urgency",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "1 - High",
+                      "value": "1"
+                    },
+                    {
+                      "name": "2 - Medium",
+                      "value": "2"
+                    },
+                    {
+                      "name": "3 - Low",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "3",
+                  "description": "The speed at which the incident should be resolved"
+                },
+                {
+                  "name": "workNotes",
+                  "displayName": "Work Notes",
+                  "type": "string",
+                  "default": "",
+                  "description": "Internal notes visible only to agents"
+                }
+              ]
+            },
+            {
+              "name": "updateFields",
+              "displayName": "Update Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "update"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "assignedTo",
+                  "displayName": "Assigned To Name or ID",
+                  "type": "options",
+                  "allowExpression": true,
+                  "dependsOn": [
+                    "credentialId",
+                    "assignmentGroup"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_user&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The user this incident is assigned to"
+                },
+                {
+                  "name": "assignmentGroup",
+                  "displayName": "Assignment Group Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_user_group&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The group this incident is assigned to"
+                },
+                {
+                  "name": "businessService",
+                  "displayName": "Business Service Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=cmdb_ci_service&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The business service affected"
+                },
+                {
+                  "name": "callerID",
+                  "displayName": "Caller ID",
+                  "type": "string",
+                  "default": "",
+                  "description": "The person who reported the incident (name or sys_id)"
+                },
+                {
+                  "name": "category",
+                  "displayName": "Category Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_choice&labelField=label&valueField=value&query=name%3Dincident%5Eelement%3Dcategory%5Elanguage%3Den&limit=50",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "Incident category"
+                },
+                {
+                  "name": "closeNotes",
+                  "displayName": "Close Notes",
+                  "type": "string",
+                  "default": "",
+                  "description": "Resolution notes when closing the incident"
+                },
+                {
+                  "name": "cmdbCi",
+                  "displayName": "Configuration Item Names or IDs",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=cmdb_ci&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The configuration item (CI) related to this incident"
+                },
+                {
+                  "name": "contactType",
+                  "displayName": "Contact Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Email",
+                      "value": "email"
+                    },
+                    {
+                      "name": "Phone",
+                      "value": "phone"
+                    },
+                    {
+                      "name": "Self-service",
+                      "value": "self-service"
+                    },
+                    {
+                      "name": "Virtual Agent",
+                      "value": "virtual_agent"
+                    },
+                    {
+                      "name": "Walk In",
+                      "value": "walk-in"
+                    }
+                  ],
+                  "default": "phone",
+                  "description": "How the incident was reported"
+                },
+                {
+                  "name": "description",
+                  "displayName": "Description",
+                  "type": "string",
+                  "default": "",
+                  "description": "Detailed description of the incident"
+                },
+                {
+                  "name": "impact",
+                  "displayName": "Impact",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "High",
+                      "value": "1"
+                    },
+                    {
+                      "name": "Medium",
+                      "value": "2"
+                    },
+                    {
+                      "name": "Low",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "3",
+                  "description": "Measure of the effect of the incident"
+                },
+                {
+                  "name": "resolutionCode",
+                  "displayName": "Resolution Code Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Duplicate",
+                      "value": "Duplicate"
+                    },
+                    {
+                      "name": "Known error",
+                      "value": "Known Error"
+                    },
+                    {
+                      "name": "No resolution provided",
+                      "value": "No Resolution"
+                    },
+                    {
+                      "name": "Resolved by caller",
+                      "value": "Resolved by Caller"
+                    },
+                    {
+                      "name": "Resolved by change",
+                      "value": "Resolved by Change"
+                    },
+                    {
+                      "name": "Resolved by problem",
+                      "value": "Resolved by Problem"
+                    },
+                    {
+                      "name": "Resolved by request",
+                      "value": "Resolved by Request"
+                    },
+                    {
+                      "name": "Solution provided",
+                      "value": "Solution Provided"
+                    }
+                  ],
+                  "default": "Solution Provided",
+                  "description": "The resolution code when closing the incident"
+                },
+                {
+                  "name": "onHoldReason",
+                  "displayName": "On Hold Reason Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Awaiting Caller",
+                      "value": "1"
+                    },
+                    {
+                      "name": "Awaiting Change",
+                      "value": "5"
+                    },
+                    {
+                      "name": "Awaiting Problem",
+                      "value": "2"
+                    },
+                    {
+                      "name": "Awaiting Vendor",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "1",
+                  "description": "Reason the incident is on hold"
+                },
+                {
+                  "name": "state",
+                  "displayName": "State Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "New",
+                      "value": "1"
+                    },
+                    {
+                      "name": "In Progress",
+                      "value": "2"
+                    },
+                    {
+                      "name": "On Hold",
+                      "value": "3"
+                    },
+                    {
+                      "name": "Resolved",
+                      "value": "6"
+                    },
+                    {
+                      "name": "Closed",
+                      "value": "7"
+                    },
+                    {
+                      "name": "Cancelled",
+                      "value": "8"
+                    }
+                  ],
+                  "default": "1",
+                  "description": "Current state of the incident"
+                },
+                {
+                  "name": "subCategory",
+                  "displayName": "Subcategory Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_choice&labelField=label&valueField=value&query=name%3Dincident%5Eelement%3Dsubcategory%5Elanguage%3Den&limit=50",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "Incident subcategory"
+                },
+                {
+                  "name": "urgency",
+                  "displayName": "Urgency",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "1 - High",
+                      "value": "1"
+                    },
+                    {
+                      "name": "2 - Medium",
+                      "value": "2"
+                    },
+                    {
+                      "name": "3 - Low",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "3",
+                  "description": "The speed at which the incident should be resolved"
+                },
+                {
+                  "name": "workNotes",
+                  "displayName": "Work Notes",
+                  "type": "string",
+                  "default": "",
+                  "description": "Internal notes visible only to agents"
+                }
+              ]
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "placeholder": "Add option",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "excludeReferenceLink",
+                  "displayName": "Exclude Reference Link",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to exclude reference links (sysparm_exclude_reference_link)"
+                },
+                {
+                  "name": "fieldNamesOrIds",
+                  "displayName": "Field Names or IDs",
+                  "type": "options",
+                  "multiple": true,
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/columns?tableName=incident",
+                  "labelKey": "label",
+                  "valueKey": "name",
+                  "description": "The fields to return (sysparm_fields)"
+                },
+                {
+                  "name": "filter",
+                  "displayName": "Filter",
+                  "type": "string",
+                  "description": "ServiceNow encoded query (sysparm_query)",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "returnValues",
+                  "displayName": "Return Values",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Actual Values",
+                      "value": "false"
+                    },
+                    {
+                      "name": "Display Values",
+                      "value": "true"
+                    },
+                    {
+                      "name": "Both",
+                      "value": "all"
+                    }
+                  ],
+                  "default": "false",
+                  "description": "What values to return (sysparm_display_value)"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "get"
+          },
+          "subCategory": "Incident"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1074.9151954338774,
+        "y": -510.4839350366055
+      },
+      "dragging": false
+    },
+    {
+      "id": "servicenow.incident.getmany-1783407979496",
+      "type": "action",
+      "position": {
+        "x": 612.5241864241876,
+        "y": -347.9541253302022
+      },
+      "data": {
+        "label": "Get Many",
+        "toolId": "servicenow.incident.getmany",
+        "toolData": {
+          "id": "servicenow.incident.getmany",
+          "displayName": "Get Many",
+          "category": "Integrations",
+          "provider": "servicenow",
+          "operation": "Get Many",
+          "icon": "/tools/servicenow.png",
+          "actionGroup": "Incident",
+          "description": "Get Many in Incident",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ]
+              },
+              "incidentId": {
+                "type": "string",
+                "description": "Incident sys_id (for Get/Delete/Update)"
+              },
+              "shortDescription": {
+                "type": "string",
+                "description": "Short Description (required for Create)"
+              },
+              "additionalFields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Additional Fields (for Create)"
+              },
+              "updateFields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Update Fields (for Update)"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "excludeReferenceLink": {
+                    "type": "boolean"
+                  },
+                  "fieldNamesOrIds": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "returnValues": {
+                    "type": "string",
+                    "enum": [
+                      "false",
+                      "true",
+                      "all"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "ServiceNow credentials"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Incident",
+                  "value": "incident"
+                }
+              ],
+              "default": "incident",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "getMany",
+              "required": true
+            },
+            {
+              "name": "incidentId",
+              "displayName": "Incident ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              },
+              "description": "The sys_id of the incident record (32-character hex string)"
+            },
+            {
+              "name": "shortDescription",
+              "displayName": "Short Description",
+              "type": "string",
+              "default": "",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "Short description / title of the incident"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "assignedTo",
+                  "displayName": "Assigned To Name or ID",
+                  "type": "options",
+                  "allowExpression": true,
+                  "dependsOn": [
+                    "credentialId",
+                    "assignmentGroup"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_user&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The user this incident is assigned to"
+                },
+                {
+                  "name": "assignmentGroup",
+                  "displayName": "Assignment Group Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_user_group&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The group this incident is assigned to"
+                },
+                {
+                  "name": "businessService",
+                  "displayName": "Business Service Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=cmdb_ci_service&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The business service affected"
+                },
+                {
+                  "name": "callerID",
+                  "displayName": "Caller ID",
+                  "type": "string",
+                  "default": "",
+                  "description": "The person who reported the incident (name or sys_id)"
+                },
+                {
+                  "name": "category",
+                  "displayName": "Category Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_choice&labelField=label&valueField=value&query=name%3Dincident%5Eelement%3Dcategory%5Elanguage%3Den&limit=50",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "Incident category"
+                },
+                {
+                  "name": "closeNotes",
+                  "displayName": "Close Notes",
+                  "type": "string",
+                  "default": "",
+                  "description": "Resolution notes when closing the incident"
+                },
+                {
+                  "name": "cmdbCi",
+                  "displayName": "Configuration Item Names or IDs",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=cmdb_ci&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The configuration item (CI) related to this incident"
+                },
+                {
+                  "name": "contactType",
+                  "displayName": "Contact Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Email",
+                      "value": "email"
+                    },
+                    {
+                      "name": "Phone",
+                      "value": "phone"
+                    },
+                    {
+                      "name": "Self-service",
+                      "value": "self-service"
+                    },
+                    {
+                      "name": "Walk In",
+                      "value": "walk-in"
+                    }
+                  ],
+                  "default": "phone",
+                  "description": "How the incident was reported"
+                },
+                {
+                  "name": "description",
+                  "displayName": "Description",
+                  "type": "string",
+                  "default": "",
+                  "description": "Detailed description of the incident"
+                },
+                {
+                  "name": "impact",
+                  "displayName": "Impact",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "High",
+                      "value": "1"
+                    },
+                    {
+                      "name": "Medium",
+                      "value": "2"
+                    },
+                    {
+                      "name": "Low",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "3",
+                  "description": "Measure of the effect of the incident"
+                },
+                {
+                  "name": "resolutionCode",
+                  "displayName": "Resolution Code Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Duplicate",
+                      "value": "Duplicate"
+                    },
+                    {
+                      "name": "Known error",
+                      "value": "Known Error"
+                    },
+                    {
+                      "name": "No resolution provided",
+                      "value": "No Resolution"
+                    },
+                    {
+                      "name": "Resolved by caller",
+                      "value": "Resolved by Caller"
+                    },
+                    {
+                      "name": "Resolved by change",
+                      "value": "Resolved by Change"
+                    },
+                    {
+                      "name": "Resolved by problem",
+                      "value": "Resolved by Problem"
+                    },
+                    {
+                      "name": "Resolved by request",
+                      "value": "Resolved by Request"
+                    },
+                    {
+                      "name": "Solution provided",
+                      "value": "Solution Provided"
+                    }
+                  ],
+                  "default": "Solution Provided",
+                  "description": "The resolution code when closing the incident"
+                },
+                {
+                  "name": "onHoldReason",
+                  "displayName": "On Hold Reason Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Awaiting Caller",
+                      "value": "1"
+                    },
+                    {
+                      "name": "Awaiting Change",
+                      "value": "5"
+                    },
+                    {
+                      "name": "Awaiting Problem",
+                      "value": "2"
+                    },
+                    {
+                      "name": "Awaiting Vendor",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "1",
+                  "description": "Reason the incident is on hold"
+                },
+                {
+                  "name": "state",
+                  "displayName": "State Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "New",
+                      "value": "1"
+                    },
+                    {
+                      "name": "In Progress",
+                      "value": "2"
+                    },
+                    {
+                      "name": "On Hold",
+                      "value": "3"
+                    },
+                    {
+                      "name": "Resolved",
+                      "value": "6"
+                    },
+                    {
+                      "name": "Closed",
+                      "value": "7"
+                    },
+                    {
+                      "name": "Cancelled",
+                      "value": "8"
+                    }
+                  ],
+                  "default": "1",
+                  "description": "Current state of the incident"
+                },
+                {
+                  "name": "subCategory",
+                  "displayName": "Subcategory Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_choice&labelField=label&valueField=value&query=name%3Dincident%5Eelement%3Dsubcategory%5Elanguage%3Den&limit=50",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "Incident subcategory"
+                },
+                {
+                  "name": "urgency",
+                  "displayName": "Urgency",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "1 - High",
+                      "value": "1"
+                    },
+                    {
+                      "name": "2 - Medium",
+                      "value": "2"
+                    },
+                    {
+                      "name": "3 - Low",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "3",
+                  "description": "The speed at which the incident should be resolved"
+                },
+                {
+                  "name": "workNotes",
+                  "displayName": "Work Notes",
+                  "type": "string",
+                  "default": "",
+                  "description": "Internal notes visible only to agents"
+                }
+              ]
+            },
+            {
+              "name": "updateFields",
+              "displayName": "Update Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "update"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "assignedTo",
+                  "displayName": "Assigned To Name or ID",
+                  "type": "options",
+                  "allowExpression": true,
+                  "dependsOn": [
+                    "credentialId",
+                    "assignmentGroup"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_user&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The user this incident is assigned to"
+                },
+                {
+                  "name": "assignmentGroup",
+                  "displayName": "Assignment Group Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_user_group&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The group this incident is assigned to"
+                },
+                {
+                  "name": "businessService",
+                  "displayName": "Business Service Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=cmdb_ci_service&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The business service affected"
+                },
+                {
+                  "name": "callerID",
+                  "displayName": "Caller ID",
+                  "type": "string",
+                  "default": "",
+                  "description": "The person who reported the incident (name or sys_id)"
+                },
+                {
+                  "name": "category",
+                  "displayName": "Category Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_choice&labelField=label&valueField=value&query=name%3Dincident%5Eelement%3Dcategory%5Elanguage%3Den&limit=50",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "Incident category"
+                },
+                {
+                  "name": "closeNotes",
+                  "displayName": "Close Notes",
+                  "type": "string",
+                  "default": "",
+                  "description": "Resolution notes when closing the incident"
+                },
+                {
+                  "name": "cmdbCi",
+                  "displayName": "Configuration Item Names or IDs",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=cmdb_ci&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The configuration item (CI) related to this incident"
+                },
+                {
+                  "name": "contactType",
+                  "displayName": "Contact Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Email",
+                      "value": "email"
+                    },
+                    {
+                      "name": "Phone",
+                      "value": "phone"
+                    },
+                    {
+                      "name": "Self-service",
+                      "value": "self-service"
+                    },
+                    {
+                      "name": "Virtual Agent",
+                      "value": "virtual_agent"
+                    },
+                    {
+                      "name": "Walk In",
+                      "value": "walk-in"
+                    }
+                  ],
+                  "default": "phone",
+                  "description": "How the incident was reported"
+                },
+                {
+                  "name": "description",
+                  "displayName": "Description",
+                  "type": "string",
+                  "default": "",
+                  "description": "Detailed description of the incident"
+                },
+                {
+                  "name": "impact",
+                  "displayName": "Impact",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "High",
+                      "value": "1"
+                    },
+                    {
+                      "name": "Medium",
+                      "value": "2"
+                    },
+                    {
+                      "name": "Low",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "3",
+                  "description": "Measure of the effect of the incident"
+                },
+                {
+                  "name": "resolutionCode",
+                  "displayName": "Resolution Code Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Duplicate",
+                      "value": "Duplicate"
+                    },
+                    {
+                      "name": "Known error",
+                      "value": "Known Error"
+                    },
+                    {
+                      "name": "No resolution provided",
+                      "value": "No Resolution"
+                    },
+                    {
+                      "name": "Resolved by caller",
+                      "value": "Resolved by Caller"
+                    },
+                    {
+                      "name": "Resolved by change",
+                      "value": "Resolved by Change"
+                    },
+                    {
+                      "name": "Resolved by problem",
+                      "value": "Resolved by Problem"
+                    },
+                    {
+                      "name": "Resolved by request",
+                      "value": "Resolved by Request"
+                    },
+                    {
+                      "name": "Solution provided",
+                      "value": "Solution Provided"
+                    }
+                  ],
+                  "default": "Solution Provided",
+                  "description": "The resolution code when closing the incident"
+                },
+                {
+                  "name": "onHoldReason",
+                  "displayName": "On Hold Reason Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Awaiting Caller",
+                      "value": "1"
+                    },
+                    {
+                      "name": "Awaiting Change",
+                      "value": "5"
+                    },
+                    {
+                      "name": "Awaiting Problem",
+                      "value": "2"
+                    },
+                    {
+                      "name": "Awaiting Vendor",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "1",
+                  "description": "Reason the incident is on hold"
+                },
+                {
+                  "name": "state",
+                  "displayName": "State Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "New",
+                      "value": "1"
+                    },
+                    {
+                      "name": "In Progress",
+                      "value": "2"
+                    },
+                    {
+                      "name": "On Hold",
+                      "value": "3"
+                    },
+                    {
+                      "name": "Resolved",
+                      "value": "6"
+                    },
+                    {
+                      "name": "Closed",
+                      "value": "7"
+                    },
+                    {
+                      "name": "Cancelled",
+                      "value": "8"
+                    }
+                  ],
+                  "default": "1",
+                  "description": "Current state of the incident"
+                },
+                {
+                  "name": "subCategory",
+                  "displayName": "Subcategory Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_choice&labelField=label&valueField=value&query=name%3Dincident%5Eelement%3Dsubcategory%5Elanguage%3Den&limit=50",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "Incident subcategory"
+                },
+                {
+                  "name": "urgency",
+                  "displayName": "Urgency",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "1 - High",
+                      "value": "1"
+                    },
+                    {
+                      "name": "2 - Medium",
+                      "value": "2"
+                    },
+                    {
+                      "name": "3 - Low",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "3",
+                  "description": "The speed at which the incident should be resolved"
+                },
+                {
+                  "name": "workNotes",
+                  "displayName": "Work Notes",
+                  "type": "string",
+                  "default": "",
+                  "description": "Internal notes visible only to agents"
+                }
+              ]
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "placeholder": "Add option",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "excludeReferenceLink",
+                  "displayName": "Exclude Reference Link",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to exclude reference links (sysparm_exclude_reference_link)"
+                },
+                {
+                  "name": "fieldNamesOrIds",
+                  "displayName": "Field Names or IDs",
+                  "type": "options",
+                  "multiple": true,
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/columns?tableName=incident",
+                  "labelKey": "label",
+                  "valueKey": "name",
+                  "description": "The fields to return (sysparm_fields)"
+                },
+                {
+                  "name": "filter",
+                  "displayName": "Filter",
+                  "type": "string",
+                  "description": "ServiceNow encoded query (sysparm_query)",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "returnValues",
+                  "displayName": "Return Values",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Actual Values",
+                      "value": "false"
+                    },
+                    {
+                      "name": "Display Values",
+                      "value": "true"
+                    },
+                    {
+                      "name": "Both",
+                      "value": "all"
+                    }
+                  ],
+                  "default": "false",
+                  "description": "What values to return (sysparm_display_value)"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "getMany"
+          },
+          "subCategory": "Incident"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "getMany"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 612.5241864241876,
+        "y": -347.9541253302022
+      },
+      "dragging": false
+    },
+    {
+      "id": "servicenow.incident.update-1783407980888",
+      "type": "action",
+      "position": {
+        "x": 930.0242798041384,
+        "y": -351.7338883466301
+      },
+      "data": {
+        "label": "Update",
+        "toolId": "servicenow.incident.update",
+        "toolData": {
+          "id": "servicenow.incident.update",
+          "displayName": "Update",
+          "category": "Integrations",
+          "provider": "servicenow",
+          "operation": "Update",
+          "icon": "/tools/servicenow.png",
+          "actionGroup": "Incident",
+          "description": "Update in Incident",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ]
+              },
+              "incidentId": {
+                "type": "string",
+                "description": "Incident sys_id (for Get/Delete/Update)"
+              },
+              "shortDescription": {
+                "type": "string",
+                "description": "Short Description (required for Create)"
+              },
+              "additionalFields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Additional Fields (for Create)"
+              },
+              "updateFields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Update Fields (for Update)"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "excludeReferenceLink": {
+                    "type": "boolean"
+                  },
+                  "fieldNamesOrIds": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "returnValues": {
+                    "type": "string",
+                    "enum": [
+                      "false",
+                      "true",
+                      "all"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "ServiceNow credentials"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Incident",
+                  "value": "incident"
+                }
+              ],
+              "default": "incident",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "update",
+              "required": true
+            },
+            {
+              "name": "incidentId",
+              "displayName": "Incident ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              },
+              "description": "The sys_id of the incident record (32-character hex string)"
+            },
+            {
+              "name": "shortDescription",
+              "displayName": "Short Description",
+              "type": "string",
+              "default": "",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "Short description / title of the incident"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "assignedTo",
+                  "displayName": "Assigned To Name or ID",
+                  "type": "options",
+                  "allowExpression": true,
+                  "dependsOn": [
+                    "credentialId",
+                    "assignmentGroup"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_user&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The user this incident is assigned to"
+                },
+                {
+                  "name": "assignmentGroup",
+                  "displayName": "Assignment Group Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_user_group&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The group this incident is assigned to"
+                },
+                {
+                  "name": "businessService",
+                  "displayName": "Business Service Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=cmdb_ci_service&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The business service affected"
+                },
+                {
+                  "name": "callerID",
+                  "displayName": "Caller ID",
+                  "type": "string",
+                  "default": "",
+                  "description": "The person who reported the incident (name or sys_id)"
+                },
+                {
+                  "name": "category",
+                  "displayName": "Category Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_choice&labelField=label&valueField=value&query=name%3Dincident%5Eelement%3Dcategory%5Elanguage%3Den&limit=50",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "Incident category"
+                },
+                {
+                  "name": "closeNotes",
+                  "displayName": "Close Notes",
+                  "type": "string",
+                  "default": "",
+                  "description": "Resolution notes when closing the incident"
+                },
+                {
+                  "name": "cmdbCi",
+                  "displayName": "Configuration Item Names or IDs",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=cmdb_ci&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The configuration item (CI) related to this incident"
+                },
+                {
+                  "name": "contactType",
+                  "displayName": "Contact Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Email",
+                      "value": "email"
+                    },
+                    {
+                      "name": "Phone",
+                      "value": "phone"
+                    },
+                    {
+                      "name": "Self-service",
+                      "value": "self-service"
+                    },
+                    {
+                      "name": "Walk In",
+                      "value": "walk-in"
+                    }
+                  ],
+                  "default": "phone",
+                  "description": "How the incident was reported"
+                },
+                {
+                  "name": "description",
+                  "displayName": "Description",
+                  "type": "string",
+                  "default": "",
+                  "description": "Detailed description of the incident"
+                },
+                {
+                  "name": "impact",
+                  "displayName": "Impact",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "High",
+                      "value": "1"
+                    },
+                    {
+                      "name": "Medium",
+                      "value": "2"
+                    },
+                    {
+                      "name": "Low",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "3",
+                  "description": "Measure of the effect of the incident"
+                },
+                {
+                  "name": "resolutionCode",
+                  "displayName": "Resolution Code Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Duplicate",
+                      "value": "Duplicate"
+                    },
+                    {
+                      "name": "Known error",
+                      "value": "Known Error"
+                    },
+                    {
+                      "name": "No resolution provided",
+                      "value": "No Resolution"
+                    },
+                    {
+                      "name": "Resolved by caller",
+                      "value": "Resolved by Caller"
+                    },
+                    {
+                      "name": "Resolved by change",
+                      "value": "Resolved by Change"
+                    },
+                    {
+                      "name": "Resolved by problem",
+                      "value": "Resolved by Problem"
+                    },
+                    {
+                      "name": "Resolved by request",
+                      "value": "Resolved by Request"
+                    },
+                    {
+                      "name": "Solution provided",
+                      "value": "Solution Provided"
+                    }
+                  ],
+                  "default": "Solution Provided",
+                  "description": "The resolution code when closing the incident"
+                },
+                {
+                  "name": "onHoldReason",
+                  "displayName": "On Hold Reason Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Awaiting Caller",
+                      "value": "1"
+                    },
+                    {
+                      "name": "Awaiting Change",
+                      "value": "5"
+                    },
+                    {
+                      "name": "Awaiting Problem",
+                      "value": "2"
+                    },
+                    {
+                      "name": "Awaiting Vendor",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "1",
+                  "description": "Reason the incident is on hold"
+                },
+                {
+                  "name": "state",
+                  "displayName": "State Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "New",
+                      "value": "1"
+                    },
+                    {
+                      "name": "In Progress",
+                      "value": "2"
+                    },
+                    {
+                      "name": "On Hold",
+                      "value": "3"
+                    },
+                    {
+                      "name": "Resolved",
+                      "value": "6"
+                    },
+                    {
+                      "name": "Closed",
+                      "value": "7"
+                    },
+                    {
+                      "name": "Cancelled",
+                      "value": "8"
+                    }
+                  ],
+                  "default": "1",
+                  "description": "Current state of the incident"
+                },
+                {
+                  "name": "subCategory",
+                  "displayName": "Subcategory Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_choice&labelField=label&valueField=value&query=name%3Dincident%5Eelement%3Dsubcategory%5Elanguage%3Den&limit=50",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "Incident subcategory"
+                },
+                {
+                  "name": "urgency",
+                  "displayName": "Urgency",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "1 - High",
+                      "value": "1"
+                    },
+                    {
+                      "name": "2 - Medium",
+                      "value": "2"
+                    },
+                    {
+                      "name": "3 - Low",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "3",
+                  "description": "The speed at which the incident should be resolved"
+                },
+                {
+                  "name": "workNotes",
+                  "displayName": "Work Notes",
+                  "type": "string",
+                  "default": "",
+                  "description": "Internal notes visible only to agents"
+                }
+              ]
+            },
+            {
+              "name": "updateFields",
+              "displayName": "Update Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "update"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "assignedTo",
+                  "displayName": "Assigned To Name or ID",
+                  "type": "options",
+                  "allowExpression": true,
+                  "dependsOn": [
+                    "credentialId",
+                    "assignmentGroup"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_user&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The user this incident is assigned to"
+                },
+                {
+                  "name": "assignmentGroup",
+                  "displayName": "Assignment Group Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_user_group&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The group this incident is assigned to"
+                },
+                {
+                  "name": "businessService",
+                  "displayName": "Business Service Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=cmdb_ci_service&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The business service affected"
+                },
+                {
+                  "name": "callerID",
+                  "displayName": "Caller ID",
+                  "type": "string",
+                  "default": "",
+                  "description": "The person who reported the incident (name or sys_id)"
+                },
+                {
+                  "name": "category",
+                  "displayName": "Category Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_choice&labelField=label&valueField=value&query=name%3Dincident%5Eelement%3Dcategory%5Elanguage%3Den&limit=50",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "Incident category"
+                },
+                {
+                  "name": "closeNotes",
+                  "displayName": "Close Notes",
+                  "type": "string",
+                  "default": "",
+                  "description": "Resolution notes when closing the incident"
+                },
+                {
+                  "name": "cmdbCi",
+                  "displayName": "Configuration Item Names or IDs",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=cmdb_ci&labelField=name&valueField=sys_id&limit=100",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "The configuration item (CI) related to this incident"
+                },
+                {
+                  "name": "contactType",
+                  "displayName": "Contact Type",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Email",
+                      "value": "email"
+                    },
+                    {
+                      "name": "Phone",
+                      "value": "phone"
+                    },
+                    {
+                      "name": "Self-service",
+                      "value": "self-service"
+                    },
+                    {
+                      "name": "Virtual Agent",
+                      "value": "virtual_agent"
+                    },
+                    {
+                      "name": "Walk In",
+                      "value": "walk-in"
+                    }
+                  ],
+                  "default": "phone",
+                  "description": "How the incident was reported"
+                },
+                {
+                  "name": "description",
+                  "displayName": "Description",
+                  "type": "string",
+                  "default": "",
+                  "description": "Detailed description of the incident"
+                },
+                {
+                  "name": "impact",
+                  "displayName": "Impact",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "High",
+                      "value": "1"
+                    },
+                    {
+                      "name": "Medium",
+                      "value": "2"
+                    },
+                    {
+                      "name": "Low",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "3",
+                  "description": "Measure of the effect of the incident"
+                },
+                {
+                  "name": "resolutionCode",
+                  "displayName": "Resolution Code Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Duplicate",
+                      "value": "Duplicate"
+                    },
+                    {
+                      "name": "Known error",
+                      "value": "Known Error"
+                    },
+                    {
+                      "name": "No resolution provided",
+                      "value": "No Resolution"
+                    },
+                    {
+                      "name": "Resolved by caller",
+                      "value": "Resolved by Caller"
+                    },
+                    {
+                      "name": "Resolved by change",
+                      "value": "Resolved by Change"
+                    },
+                    {
+                      "name": "Resolved by problem",
+                      "value": "Resolved by Problem"
+                    },
+                    {
+                      "name": "Resolved by request",
+                      "value": "Resolved by Request"
+                    },
+                    {
+                      "name": "Solution provided",
+                      "value": "Solution Provided"
+                    }
+                  ],
+                  "default": "Solution Provided",
+                  "description": "The resolution code when closing the incident"
+                },
+                {
+                  "name": "onHoldReason",
+                  "displayName": "On Hold Reason Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Awaiting Caller",
+                      "value": "1"
+                    },
+                    {
+                      "name": "Awaiting Change",
+                      "value": "5"
+                    },
+                    {
+                      "name": "Awaiting Problem",
+                      "value": "2"
+                    },
+                    {
+                      "name": "Awaiting Vendor",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "1",
+                  "description": "Reason the incident is on hold"
+                },
+                {
+                  "name": "state",
+                  "displayName": "State Name or ID",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "New",
+                      "value": "1"
+                    },
+                    {
+                      "name": "In Progress",
+                      "value": "2"
+                    },
+                    {
+                      "name": "On Hold",
+                      "value": "3"
+                    },
+                    {
+                      "name": "Resolved",
+                      "value": "6"
+                    },
+                    {
+                      "name": "Closed",
+                      "value": "7"
+                    },
+                    {
+                      "name": "Cancelled",
+                      "value": "8"
+                    }
+                  ],
+                  "default": "1",
+                  "description": "Current state of the incident"
+                },
+                {
+                  "name": "subCategory",
+                  "displayName": "Subcategory Name or ID",
+                  "type": "options",
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/records?tableName=sys_choice&labelField=label&valueField=value&query=name%3Dincident%5Eelement%3Dsubcategory%5Elanguage%3Den&limit=50",
+                  "labelKey": "label",
+                  "valueKey": "value",
+                  "description": "Incident subcategory"
+                },
+                {
+                  "name": "urgency",
+                  "displayName": "Urgency",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "1 - High",
+                      "value": "1"
+                    },
+                    {
+                      "name": "2 - Medium",
+                      "value": "2"
+                    },
+                    {
+                      "name": "3 - Low",
+                      "value": "3"
+                    }
+                  ],
+                  "default": "3",
+                  "description": "The speed at which the incident should be resolved"
+                },
+                {
+                  "name": "workNotes",
+                  "displayName": "Work Notes",
+                  "type": "string",
+                  "default": "",
+                  "description": "Internal notes visible only to agents"
+                }
+              ]
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "placeholder": "Add option",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "excludeReferenceLink",
+                  "displayName": "Exclude Reference Link",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to exclude reference links (sysparm_exclude_reference_link)"
+                },
+                {
+                  "name": "fieldNamesOrIds",
+                  "displayName": "Field Names or IDs",
+                  "type": "options",
+                  "multiple": true,
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/columns?tableName=incident",
+                  "labelKey": "label",
+                  "valueKey": "name",
+                  "description": "The fields to return (sysparm_fields)"
+                },
+                {
+                  "name": "filter",
+                  "displayName": "Filter",
+                  "type": "string",
+                  "description": "ServiceNow encoded query (sysparm_query)",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "returnValues",
+                  "displayName": "Return Values",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Actual Values",
+                      "value": "false"
+                    },
+                    {
+                      "name": "Display Values",
+                      "value": "true"
+                    },
+                    {
+                      "name": "Both",
+                      "value": "all"
+                    }
+                  ],
+                  "default": "false",
+                  "description": "What values to return (sysparm_display_value)"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "update"
+          },
+          "subCategory": "Incident"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "update"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 930.0242798041384,
+        "y": -351.7338883466301
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

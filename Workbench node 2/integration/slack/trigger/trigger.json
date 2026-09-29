@@ -1,0 +1,102 @@
+{
+  "nodes": [
+    {
+      "id": "slack.trigger-1783408092077",
+      "type": "manual-trigger",
+      "position": {
+        "x": 3082.8742846548425,
+        "y": 65.86592399866376
+      },
+      "data": {
+        "label": "Slack Trigger",
+        "toolId": "slack.trigger",
+        "toolData": {
+          "id": "slack.trigger",
+          "displayName": "Slack Trigger",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "New Message Posted",
+          "icon": "slack",
+          "description": "Trigger a workflow when a message is posted to Slack.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "event",
+              "displayName": "Trigger Event",
+              "type": "options",
+              "options": [
+                {
+                  "name": "New Message Posted to Channel",
+                  "value": "message.channels"
+                }
+              ],
+              "default": "message.channels",
+              "required": true
+            },
+            {
+              "name": "watchMode",
+              "displayName": "Watch Mode",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Watch Whole Workspace",
+                  "value": "workspace"
+                },
+                {
+                  "name": "Watch Specific Channel",
+                  "value": "channel"
+                }
+              ],
+              "default": "workspace",
+              "description": "Whether to watch all channels the bot is in, or just one specific channel."
+            },
+            {
+              "name": "channel",
+              "displayName": "Channel to Watch",
+              "type": "string",
+              "default": "",
+              "placeholder": "e.g. general or #updates",
+              "description": "Name or ID of the Slack channel to watch. Bot must be a member of this channel.",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "watchMode": [
+                    "channel"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "resolveIds",
+              "displayName": "Resolve IDs",
+              "type": "boolean",
+              "default": false,
+              "description": "Whether to convert User and Channel IDs into their human-readable names (e.g. U123 -> Manya)."
+            },
+            {
+              "name": "ignoreUsers",
+              "displayName": "Usernames or IDs to Ignore",
+              "type": "string",
+              "default": "",
+              "placeholder": "e.g. U123, @username",
+              "description": "Comma-separated list of Slack User IDs or usernames to ignore. Events from these users will not trigger the workflow."
+            }
+          ],
+          "subCategory": "Trigger",
+          "featured": true
+        },
+        "isTrigger": true,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 100
+    }
+  ],
+  "edges": []
+}

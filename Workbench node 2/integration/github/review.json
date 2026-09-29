@@ -1,0 +1,707 @@
+{
+  "nodes": [
+    {
+      "id": "github.review.create-1783407222696",
+      "type": "action",
+      "position": {
+        "x": 1135.9941298615267,
+        "y": 457.8895465426274
+      },
+      "data": {
+        "label": "Create a review",
+        "toolId": "github.review.create",
+        "toolData": {
+          "id": "github.review.create",
+          "displayName": "Create a review",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "create",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Add a review to a pull request",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "pullRequestNumber": {
+                "type": "number"
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "APPROVE",
+                  "REQUEST_CHANGES",
+                  "COMMENT"
+                ]
+              },
+              "body": {
+                "type": "string"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "commitId": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "pullRequestNumber",
+              "event"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "pullRequestNumber",
+              "displayName": "PR Number",
+              "type": "number",
+              "required": true,
+              "description": "The number of the pull request"
+            },
+            {
+              "name": "event",
+              "displayName": "Event",
+              "type": "options",
+              "required": true,
+              "default": "APPROVE",
+              "options": [
+                {
+                  "name": "Approve",
+                  "value": "APPROVE"
+                },
+                {
+                  "name": "Request Changes",
+                  "value": "REQUEST_CHANGES"
+                },
+                {
+                  "name": "Comment",
+                  "value": "COMMENT"
+                }
+              ],
+              "description": "The review action to perform"
+            },
+            {
+              "name": "body",
+              "displayName": "Body",
+              "type": "string",
+              "required": false,
+              "displayOptions": {
+                "show": {
+                  "event": [
+                    "REQUEST_CHANGES",
+                    "COMMENT"
+                  ]
+                }
+              },
+              "description": "The body text of the pull request review"
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "default": {},
+              "fields": [
+                {
+                  "name": "commitId",
+                  "displayName": "Commit ID",
+                  "type": "string",
+                  "required": false,
+                  "description": "The SHA of the commit that needs a review"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "review",
+            "operation": "create"
+          },
+          "subCategory": "Review"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "review",
+          "operation": "create"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "github.review.get-1783407223943",
+      "type": "action",
+      "position": {
+        "x": 1642.6545362649204,
+        "y": 569.3200139303153
+      },
+      "data": {
+        "label": "Get a review",
+        "toolId": "github.review.get",
+        "toolData": {
+          "id": "github.review.get",
+          "displayName": "Get a review",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "get",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Fetch a specific pull request review",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "pullRequestNumber": {
+                "type": "number"
+              },
+              "reviewId": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "pullRequestNumber",
+              "reviewId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "pullRequestNumber",
+              "displayName": "PR Number",
+              "type": "number",
+              "required": true
+            },
+            {
+              "name": "reviewId",
+              "displayName": "Review ID",
+              "type": "number",
+              "required": true
+            }
+          ],
+          "initialData": {
+            "resource": "review",
+            "operation": "get"
+          },
+          "subCategory": "Review"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "review",
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "github.review.getMany-1783407226280",
+      "type": "action",
+      "position": {
+        "x": 1329.256346737048,
+        "y": 828.7440708172762
+      },
+      "data": {
+        "label": "Get all reviews",
+        "toolId": "github.review.getMany",
+        "toolData": {
+          "id": "github.review.getMany",
+          "displayName": "Get all reviews",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "getMany",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Retrieve all reviews for a pull request",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "pullRequestNumber": {
+                "type": "number"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false
+              },
+              "limit": {
+                "type": "number",
+                "default": 50
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "pullRequestNumber"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "pullRequestNumber",
+              "displayName": "PR Number",
+              "type": "number",
+              "required": true
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "toggle",
+              "default": false,
+              "description": "Whether to return all results or only up to a limit"
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "description": "How many results to return",
+              "displayOptions": {
+                "show": {
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "resource": "review",
+            "operation": "getMany"
+          },
+          "subCategory": "Review"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "review",
+          "operation": "getMany"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "github.review.update-1783407227640",
+      "type": "action",
+      "position": {
+        "x": 1773.2371152348671,
+        "y": 877.4949002993898
+      },
+      "data": {
+        "label": "Update a review",
+        "toolId": "github.review.update",
+        "toolData": {
+          "id": "github.review.update",
+          "displayName": "Update a review",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "update",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Edit an existing pull request review",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "pullRequestNumber": {
+                "type": "number"
+              },
+              "reviewId": {
+                "type": "number"
+              },
+              "body": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "pullRequestNumber",
+              "reviewId",
+              "body"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "pullRequestNumber",
+              "displayName": "PR Number",
+              "type": "number",
+              "required": true
+            },
+            {
+              "name": "reviewId",
+              "displayName": "Review ID",
+              "type": "number",
+              "required": true
+            },
+            {
+              "name": "body",
+              "displayName": "Body",
+              "type": "string",
+              "required": true,
+              "description": "New review comment body"
+            }
+          ],
+          "initialData": {
+            "resource": "review",
+            "operation": "update"
+          },
+          "subCategory": "Review"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "review",
+          "operation": "update"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

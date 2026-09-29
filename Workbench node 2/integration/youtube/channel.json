@@ -1,0 +1,92 @@
+{
+  "nodes": [
+    {
+      "id": "youtube_getChannelInfo-1783407415291",
+      "type": "action",
+      "position": {
+        "x": 608.2852798821084,
+        "y": -405.2944201582622
+      },
+      "data": {
+        "label": "YouTube Channel Info",
+        "toolId": "youtube_getChannelInfo",
+        "toolData": {
+          "id": "youtube_getChannelInfo",
+          "displayName": "YouTube Channel Info",
+          "category": "Integrations",
+          "provider": "youtube",
+          "operation": "getChannelInfo",
+          "icon": "youtube",
+          "description": "Get information about a YouTube channel",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "channelId": {
+                "type": "string",
+                "description": "The ID of the channel"
+              }
+            },
+            "required": [
+              "channelId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Channel"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "youtube_listChannelVideos-1783407416491",
+      "type": "action",
+      "position": {
+        "x": 753.4311500671267,
+        "y": -133.47579053904593
+      },
+      "data": {
+        "label": "YouTube Channel Videos",
+        "toolId": "youtube_listChannelVideos",
+        "toolData": {
+          "id": "youtube_listChannelVideos",
+          "displayName": "YouTube Channel Videos",
+          "category": "Integrations",
+          "provider": "youtube",
+          "operation": "listChannelVideos",
+          "icon": "youtube",
+          "description": "Get videos from a specific channel",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "channelId": {
+                "type": "string",
+                "description": "The ID of the channel"
+              },
+              "maxResults": {
+                "type": "number",
+                "default": 10,
+                "description": "Maximum number of results"
+              }
+            },
+            "required": [
+              "channelId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Channel"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

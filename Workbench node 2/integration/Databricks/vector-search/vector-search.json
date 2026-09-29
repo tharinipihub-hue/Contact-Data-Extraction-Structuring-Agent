@@ -1,0 +1,2370 @@
+{
+  "nodes": [
+    {
+      "id": "databricks.vectorSearch.createindex-1783405948387",
+      "type": "action",
+      "position": {
+        "x": 727.6089687764112,
+        "y": 177.21747646891657
+      },
+      "data": {
+        "label": "Create Index",
+        "toolId": "databricks.vectorSearch.createindex",
+        "toolData": {
+          "id": "databricks.vectorSearch.createindex",
+          "displayName": "Create Index",
+          "category": "Integrations",
+          "provider": "databricks",
+          "operation": "Create Index",
+          "icon": "https://www.databricks.com/sites/default/files/2021-10/db-nav-logo.svg",
+          "actionGroup": "Vector Search",
+          "description": "Create Index in Vector Search",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "vectorSearch"
+                ],
+                "default": "vectorSearch"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "createIndex",
+                  "getIndex",
+                  "deleteIndex",
+                  "listIndexes",
+                  "queryIndex"
+                ],
+                "default": "createIndex"
+              },
+              "indexName": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "endpointName": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "primaryKey": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "indexType": {
+                "type": "string",
+                "enum": [
+                  "DELTA_SYNC"
+                ],
+                "default": "DELTA_SYNC"
+              },
+              "deltaSyncIndexSpec": {
+                "default": "{\n  \"source_table\": \"workspace.default.docs\",\n  \"pipeline_type\": \"TRIGGERED\",\n  \"embedding_source_columns\": [{\n    \"name\": \"text\",\n    \"embedding_model_endpoint_name\": \"databricks-bge-large-en\"\n  }],\n  \"columns_to_sync\": [\"id\", \"text\"]\n}"
+              },
+              "queryType": {
+                "type": "string",
+                "enum": [
+                  "text",
+                  "vector"
+                ],
+                "default": "text"
+              },
+              "queryText": {
+                "type": "string"
+              },
+              "queryVector": {},
+              "searchMode": {
+                "type": "string",
+                "enum": [
+                  "ann",
+                  "hybrid"
+                ],
+                "default": "ann"
+              },
+              "columnsToReturn": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "numberOfResults": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "default": 5
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "filterExpression": {
+                    "type": "string"
+                  },
+                  "scoreThreshold": {
+                    "type": "number"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "Databricks credentials"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Vector Search",
+                  "value": "vectorSearch"
+                }
+              ],
+              "default": "vectorSearch",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create Index",
+                  "value": "createIndex"
+                },
+                {
+                  "name": "Get Index",
+                  "value": "getIndex"
+                },
+                {
+                  "name": "Delete Index",
+                  "value": "deleteIndex"
+                },
+                {
+                  "name": "List Indexes",
+                  "value": "listIndexes"
+                },
+                {
+                  "name": "Query Index",
+                  "value": "queryIndex"
+                }
+              ],
+              "default": "createIndex",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "indexName",
+              "displayName": "Index Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "workspace.default.my_index",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex",
+                    "getIndex",
+                    "deleteIndex",
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "endpointName",
+              "displayName": "Endpoint Name",
+              "type": "options",
+              "required": true,
+              "placeholder": "Select a vector search endpoint",
+              "description": "Databricks Vector Search endpoint",
+              "fetchEndpoint": "/api/tools/databricks/list-vector-search-endpoints",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "value",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex",
+                    "listIndexes"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "primaryKey",
+              "displayName": "Primary Key",
+              "type": "string",
+              "required": true,
+              "placeholder": "id",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "indexType",
+              "displayName": "Index Type",
+              "type": "options",
+              "required": true,
+              "default": "DELTA_SYNC",
+              "options": [
+                {
+                  "name": "Delta Sync",
+                  "value": "DELTA_SYNC"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "deltaSyncIndexSpec",
+              "displayName": "Delta Sync Index Spec",
+              "type": "string",
+              "format": "json",
+              "required": true,
+              "default": "{\n  \"source_table\": \"workspace.default.docs\",\n  \"pipeline_type\": \"TRIGGERED\",\n  \"embedding_source_columns\": [{\n    \"name\": \"text\",\n    \"embedding_model_endpoint_name\": \"databricks-bge-large-en\"\n  }],\n  \"columns_to_sync\": [\"id\", \"text\"]\n}",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex"
+                  ],
+                  "indexType": [
+                    "DELTA_SYNC"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "queryType",
+              "displayName": "Query Type",
+              "type": "options",
+              "required": true,
+              "default": "text",
+              "options": [
+                {
+                  "name": "Text Query",
+                  "value": "text"
+                },
+                {
+                  "name": "Vector Query",
+                  "value": "vector"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "queryText",
+              "displayName": "Query Text",
+              "type": "string",
+              "format": "text",
+              "required": true,
+              "placeholder": "vector search example",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ],
+                  "queryType": [
+                    "text"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "queryVector",
+              "displayName": "Query Vector",
+              "type": "string",
+              "format": "json",
+              "required": true,
+              "placeholder": "[0.1, 0.2, 0.3]",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ],
+                  "queryType": [
+                    "vector"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "searchMode",
+              "displayName": "Search Mode",
+              "type": "options",
+              "required": true,
+              "default": "ann",
+              "options": [
+                {
+                  "name": "ANN (Approximate Nearest Neighbor)",
+                  "value": "ann"
+                },
+                {
+                  "name": "Hybrid",
+                  "value": "hybrid"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "columnsToReturn",
+              "displayName": "Columns to Return",
+              "type": "string",
+              "required": false,
+              "placeholder": "text, score",
+              "description": "Comma-separated or JSON array of columns",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "numberOfResults",
+              "displayName": "Number of Results",
+              "type": "number",
+              "default": 5,
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Options",
+              "type": "collection",
+              "placeholder": "Add Option",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "filterExpression",
+                  "displayName": "Filter Expression",
+                  "type": "string",
+                  "description": "JSON string filter for vector search query",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "queryIndex"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "scoreThreshold",
+                  "displayName": "Score Threshold",
+                  "type": "number",
+                  "description": "Minimum score threshold for returned results",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "queryIndex"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "createIndex",
+            "resource": "vectorSearch"
+          },
+          "subCategory": "Vector Search"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "createIndex",
+          "resource": "vectorSearch"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "databricks.vectorSearch.deleteindex-1783405949835",
+      "type": "action",
+      "position": {
+        "x": 1921.993623186604,
+        "y": 231.78327286329088
+      },
+      "data": {
+        "label": "Delete Index",
+        "toolId": "databricks.vectorSearch.deleteindex",
+        "toolData": {
+          "id": "databricks.vectorSearch.deleteindex",
+          "displayName": "Delete Index",
+          "category": "Integrations",
+          "provider": "databricks",
+          "operation": "Delete Index",
+          "icon": "https://www.databricks.com/sites/default/files/2021-10/db-nav-logo.svg",
+          "actionGroup": "Vector Search",
+          "description": "Delete Index in Vector Search",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "vectorSearch"
+                ],
+                "default": "vectorSearch"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "createIndex",
+                  "getIndex",
+                  "deleteIndex",
+                  "listIndexes",
+                  "queryIndex"
+                ],
+                "default": "createIndex"
+              },
+              "indexName": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "endpointName": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "primaryKey": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "indexType": {
+                "type": "string",
+                "enum": [
+                  "DELTA_SYNC"
+                ],
+                "default": "DELTA_SYNC"
+              },
+              "deltaSyncIndexSpec": {
+                "default": "{\n  \"source_table\": \"workspace.default.docs\",\n  \"pipeline_type\": \"TRIGGERED\",\n  \"embedding_source_columns\": [{\n    \"name\": \"text\",\n    \"embedding_model_endpoint_name\": \"databricks-bge-large-en\"\n  }],\n  \"columns_to_sync\": [\"id\", \"text\"]\n}"
+              },
+              "queryType": {
+                "type": "string",
+                "enum": [
+                  "text",
+                  "vector"
+                ],
+                "default": "text"
+              },
+              "queryText": {
+                "type": "string"
+              },
+              "queryVector": {},
+              "searchMode": {
+                "type": "string",
+                "enum": [
+                  "ann",
+                  "hybrid"
+                ],
+                "default": "ann"
+              },
+              "columnsToReturn": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "numberOfResults": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "default": 5
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "filterExpression": {
+                    "type": "string"
+                  },
+                  "scoreThreshold": {
+                    "type": "number"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "Databricks credentials"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Vector Search",
+                  "value": "vectorSearch"
+                }
+              ],
+              "default": "vectorSearch",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create Index",
+                  "value": "createIndex"
+                },
+                {
+                  "name": "Get Index",
+                  "value": "getIndex"
+                },
+                {
+                  "name": "Delete Index",
+                  "value": "deleteIndex"
+                },
+                {
+                  "name": "List Indexes",
+                  "value": "listIndexes"
+                },
+                {
+                  "name": "Query Index",
+                  "value": "queryIndex"
+                }
+              ],
+              "default": "deleteIndex",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "indexName",
+              "displayName": "Index Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "workspace.default.my_index",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex",
+                    "getIndex",
+                    "deleteIndex",
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "endpointName",
+              "displayName": "Endpoint Name",
+              "type": "options",
+              "required": true,
+              "placeholder": "Select a vector search endpoint",
+              "description": "Databricks Vector Search endpoint",
+              "fetchEndpoint": "/api/tools/databricks/list-vector-search-endpoints",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "value",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex",
+                    "listIndexes"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "primaryKey",
+              "displayName": "Primary Key",
+              "type": "string",
+              "required": true,
+              "placeholder": "id",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "indexType",
+              "displayName": "Index Type",
+              "type": "options",
+              "required": true,
+              "default": "DELTA_SYNC",
+              "options": [
+                {
+                  "name": "Delta Sync",
+                  "value": "DELTA_SYNC"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "deltaSyncIndexSpec",
+              "displayName": "Delta Sync Index Spec",
+              "type": "string",
+              "format": "json",
+              "required": true,
+              "default": "{\n  \"source_table\": \"workspace.default.docs\",\n  \"pipeline_type\": \"TRIGGERED\",\n  \"embedding_source_columns\": [{\n    \"name\": \"text\",\n    \"embedding_model_endpoint_name\": \"databricks-bge-large-en\"\n  }],\n  \"columns_to_sync\": [\"id\", \"text\"]\n}",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex"
+                  ],
+                  "indexType": [
+                    "DELTA_SYNC"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "queryType",
+              "displayName": "Query Type",
+              "type": "options",
+              "required": true,
+              "default": "text",
+              "options": [
+                {
+                  "name": "Text Query",
+                  "value": "text"
+                },
+                {
+                  "name": "Vector Query",
+                  "value": "vector"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "queryText",
+              "displayName": "Query Text",
+              "type": "string",
+              "format": "text",
+              "required": true,
+              "placeholder": "vector search example",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ],
+                  "queryType": [
+                    "text"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "queryVector",
+              "displayName": "Query Vector",
+              "type": "string",
+              "format": "json",
+              "required": true,
+              "placeholder": "[0.1, 0.2, 0.3]",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ],
+                  "queryType": [
+                    "vector"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "searchMode",
+              "displayName": "Search Mode",
+              "type": "options",
+              "required": true,
+              "default": "ann",
+              "options": [
+                {
+                  "name": "ANN (Approximate Nearest Neighbor)",
+                  "value": "ann"
+                },
+                {
+                  "name": "Hybrid",
+                  "value": "hybrid"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "columnsToReturn",
+              "displayName": "Columns to Return",
+              "type": "string",
+              "required": false,
+              "placeholder": "text, score",
+              "description": "Comma-separated or JSON array of columns",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "numberOfResults",
+              "displayName": "Number of Results",
+              "type": "number",
+              "default": 5,
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Options",
+              "type": "collection",
+              "placeholder": "Add Option",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "filterExpression",
+                  "displayName": "Filter Expression",
+                  "type": "string",
+                  "description": "JSON string filter for vector search query",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "queryIndex"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "scoreThreshold",
+                  "displayName": "Score Threshold",
+                  "type": "number",
+                  "description": "Minimum score threshold for returned results",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "queryIndex"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "deleteIndex",
+            "resource": "vectorSearch"
+          },
+          "subCategory": "Vector Search"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "deleteIndex",
+          "resource": "vectorSearch"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "databricks.vectorSearch.getindex-1783405951468",
+      "type": "action",
+      "position": {
+        "x": 2782.9206329645094,
+        "y": 735.0011729447427
+      },
+      "data": {
+        "label": "Get Index",
+        "toolId": "databricks.vectorSearch.getindex",
+        "toolData": {
+          "id": "databricks.vectorSearch.getindex",
+          "displayName": "Get Index",
+          "category": "Integrations",
+          "provider": "databricks",
+          "operation": "Get Index",
+          "icon": "https://www.databricks.com/sites/default/files/2021-10/db-nav-logo.svg",
+          "actionGroup": "Vector Search",
+          "description": "Get Index in Vector Search",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "vectorSearch"
+                ],
+                "default": "vectorSearch"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "createIndex",
+                  "getIndex",
+                  "deleteIndex",
+                  "listIndexes",
+                  "queryIndex"
+                ],
+                "default": "createIndex"
+              },
+              "indexName": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "endpointName": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "primaryKey": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "indexType": {
+                "type": "string",
+                "enum": [
+                  "DELTA_SYNC"
+                ],
+                "default": "DELTA_SYNC"
+              },
+              "deltaSyncIndexSpec": {
+                "default": "{\n  \"source_table\": \"workspace.default.docs\",\n  \"pipeline_type\": \"TRIGGERED\",\n  \"embedding_source_columns\": [{\n    \"name\": \"text\",\n    \"embedding_model_endpoint_name\": \"databricks-bge-large-en\"\n  }],\n  \"columns_to_sync\": [\"id\", \"text\"]\n}"
+              },
+              "queryType": {
+                "type": "string",
+                "enum": [
+                  "text",
+                  "vector"
+                ],
+                "default": "text"
+              },
+              "queryText": {
+                "type": "string"
+              },
+              "queryVector": {},
+              "searchMode": {
+                "type": "string",
+                "enum": [
+                  "ann",
+                  "hybrid"
+                ],
+                "default": "ann"
+              },
+              "columnsToReturn": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "numberOfResults": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "default": 5
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "filterExpression": {
+                    "type": "string"
+                  },
+                  "scoreThreshold": {
+                    "type": "number"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "Databricks credentials"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Vector Search",
+                  "value": "vectorSearch"
+                }
+              ],
+              "default": "vectorSearch",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create Index",
+                  "value": "createIndex"
+                },
+                {
+                  "name": "Get Index",
+                  "value": "getIndex"
+                },
+                {
+                  "name": "Delete Index",
+                  "value": "deleteIndex"
+                },
+                {
+                  "name": "List Indexes",
+                  "value": "listIndexes"
+                },
+                {
+                  "name": "Query Index",
+                  "value": "queryIndex"
+                }
+              ],
+              "default": "getIndex",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "indexName",
+              "displayName": "Index Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "workspace.default.my_index",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex",
+                    "getIndex",
+                    "deleteIndex",
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "endpointName",
+              "displayName": "Endpoint Name",
+              "type": "options",
+              "required": true,
+              "placeholder": "Select a vector search endpoint",
+              "description": "Databricks Vector Search endpoint",
+              "fetchEndpoint": "/api/tools/databricks/list-vector-search-endpoints",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "value",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex",
+                    "listIndexes"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "primaryKey",
+              "displayName": "Primary Key",
+              "type": "string",
+              "required": true,
+              "placeholder": "id",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "indexType",
+              "displayName": "Index Type",
+              "type": "options",
+              "required": true,
+              "default": "DELTA_SYNC",
+              "options": [
+                {
+                  "name": "Delta Sync",
+                  "value": "DELTA_SYNC"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "deltaSyncIndexSpec",
+              "displayName": "Delta Sync Index Spec",
+              "type": "string",
+              "format": "json",
+              "required": true,
+              "default": "{\n  \"source_table\": \"workspace.default.docs\",\n  \"pipeline_type\": \"TRIGGERED\",\n  \"embedding_source_columns\": [{\n    \"name\": \"text\",\n    \"embedding_model_endpoint_name\": \"databricks-bge-large-en\"\n  }],\n  \"columns_to_sync\": [\"id\", \"text\"]\n}",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex"
+                  ],
+                  "indexType": [
+                    "DELTA_SYNC"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "queryType",
+              "displayName": "Query Type",
+              "type": "options",
+              "required": true,
+              "default": "text",
+              "options": [
+                {
+                  "name": "Text Query",
+                  "value": "text"
+                },
+                {
+                  "name": "Vector Query",
+                  "value": "vector"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "queryText",
+              "displayName": "Query Text",
+              "type": "string",
+              "format": "text",
+              "required": true,
+              "placeholder": "vector search example",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ],
+                  "queryType": [
+                    "text"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "queryVector",
+              "displayName": "Query Vector",
+              "type": "string",
+              "format": "json",
+              "required": true,
+              "placeholder": "[0.1, 0.2, 0.3]",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ],
+                  "queryType": [
+                    "vector"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "searchMode",
+              "displayName": "Search Mode",
+              "type": "options",
+              "required": true,
+              "default": "ann",
+              "options": [
+                {
+                  "name": "ANN (Approximate Nearest Neighbor)",
+                  "value": "ann"
+                },
+                {
+                  "name": "Hybrid",
+                  "value": "hybrid"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "columnsToReturn",
+              "displayName": "Columns to Return",
+              "type": "string",
+              "required": false,
+              "placeholder": "text, score",
+              "description": "Comma-separated or JSON array of columns",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "numberOfResults",
+              "displayName": "Number of Results",
+              "type": "number",
+              "default": 5,
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Options",
+              "type": "collection",
+              "placeholder": "Add Option",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "filterExpression",
+                  "displayName": "Filter Expression",
+                  "type": "string",
+                  "description": "JSON string filter for vector search query",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "queryIndex"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "scoreThreshold",
+                  "displayName": "Score Threshold",
+                  "type": "number",
+                  "description": "Minimum score threshold for returned results",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "queryIndex"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "getIndex",
+            "resource": "vectorSearch"
+          },
+          "subCategory": "Vector Search"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "getIndex",
+          "resource": "vectorSearch"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "databricks.vectorSearch.listindexes-1783405953086",
+      "type": "action",
+      "position": {
+        "x": 945.8721543539084,
+        "y": 1074.5216838430717
+      },
+      "data": {
+        "label": "List Indexes",
+        "toolId": "databricks.vectorSearch.listindexes",
+        "toolData": {
+          "id": "databricks.vectorSearch.listindexes",
+          "displayName": "List Indexes",
+          "category": "Integrations",
+          "provider": "databricks",
+          "operation": "List Indexes",
+          "icon": "https://www.databricks.com/sites/default/files/2021-10/db-nav-logo.svg",
+          "actionGroup": "Vector Search",
+          "description": "List Indexes in Vector Search",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "vectorSearch"
+                ],
+                "default": "vectorSearch"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "createIndex",
+                  "getIndex",
+                  "deleteIndex",
+                  "listIndexes",
+                  "queryIndex"
+                ],
+                "default": "createIndex"
+              },
+              "indexName": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "endpointName": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "primaryKey": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "indexType": {
+                "type": "string",
+                "enum": [
+                  "DELTA_SYNC"
+                ],
+                "default": "DELTA_SYNC"
+              },
+              "deltaSyncIndexSpec": {
+                "default": "{\n  \"source_table\": \"workspace.default.docs\",\n  \"pipeline_type\": \"TRIGGERED\",\n  \"embedding_source_columns\": [{\n    \"name\": \"text\",\n    \"embedding_model_endpoint_name\": \"databricks-bge-large-en\"\n  }],\n  \"columns_to_sync\": [\"id\", \"text\"]\n}"
+              },
+              "queryType": {
+                "type": "string",
+                "enum": [
+                  "text",
+                  "vector"
+                ],
+                "default": "text"
+              },
+              "queryText": {
+                "type": "string"
+              },
+              "queryVector": {},
+              "searchMode": {
+                "type": "string",
+                "enum": [
+                  "ann",
+                  "hybrid"
+                ],
+                "default": "ann"
+              },
+              "columnsToReturn": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "numberOfResults": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "default": 5
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "filterExpression": {
+                    "type": "string"
+                  },
+                  "scoreThreshold": {
+                    "type": "number"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "Databricks credentials"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Vector Search",
+                  "value": "vectorSearch"
+                }
+              ],
+              "default": "vectorSearch",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create Index",
+                  "value": "createIndex"
+                },
+                {
+                  "name": "Get Index",
+                  "value": "getIndex"
+                },
+                {
+                  "name": "Delete Index",
+                  "value": "deleteIndex"
+                },
+                {
+                  "name": "List Indexes",
+                  "value": "listIndexes"
+                },
+                {
+                  "name": "Query Index",
+                  "value": "queryIndex"
+                }
+              ],
+              "default": "listIndexes",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "indexName",
+              "displayName": "Index Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "workspace.default.my_index",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex",
+                    "getIndex",
+                    "deleteIndex",
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "endpointName",
+              "displayName": "Endpoint Name",
+              "type": "options",
+              "required": true,
+              "placeholder": "Select a vector search endpoint",
+              "description": "Databricks Vector Search endpoint",
+              "fetchEndpoint": "/api/tools/databricks/list-vector-search-endpoints",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "value",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex",
+                    "listIndexes"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "primaryKey",
+              "displayName": "Primary Key",
+              "type": "string",
+              "required": true,
+              "placeholder": "id",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "indexType",
+              "displayName": "Index Type",
+              "type": "options",
+              "required": true,
+              "default": "DELTA_SYNC",
+              "options": [
+                {
+                  "name": "Delta Sync",
+                  "value": "DELTA_SYNC"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "deltaSyncIndexSpec",
+              "displayName": "Delta Sync Index Spec",
+              "type": "string",
+              "format": "json",
+              "required": true,
+              "default": "{\n  \"source_table\": \"workspace.default.docs\",\n  \"pipeline_type\": \"TRIGGERED\",\n  \"embedding_source_columns\": [{\n    \"name\": \"text\",\n    \"embedding_model_endpoint_name\": \"databricks-bge-large-en\"\n  }],\n  \"columns_to_sync\": [\"id\", \"text\"]\n}",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex"
+                  ],
+                  "indexType": [
+                    "DELTA_SYNC"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "queryType",
+              "displayName": "Query Type",
+              "type": "options",
+              "required": true,
+              "default": "text",
+              "options": [
+                {
+                  "name": "Text Query",
+                  "value": "text"
+                },
+                {
+                  "name": "Vector Query",
+                  "value": "vector"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "queryText",
+              "displayName": "Query Text",
+              "type": "string",
+              "format": "text",
+              "required": true,
+              "placeholder": "vector search example",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ],
+                  "queryType": [
+                    "text"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "queryVector",
+              "displayName": "Query Vector",
+              "type": "string",
+              "format": "json",
+              "required": true,
+              "placeholder": "[0.1, 0.2, 0.3]",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ],
+                  "queryType": [
+                    "vector"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "searchMode",
+              "displayName": "Search Mode",
+              "type": "options",
+              "required": true,
+              "default": "ann",
+              "options": [
+                {
+                  "name": "ANN (Approximate Nearest Neighbor)",
+                  "value": "ann"
+                },
+                {
+                  "name": "Hybrid",
+                  "value": "hybrid"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "columnsToReturn",
+              "displayName": "Columns to Return",
+              "type": "string",
+              "required": false,
+              "placeholder": "text, score",
+              "description": "Comma-separated or JSON array of columns",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "numberOfResults",
+              "displayName": "Number of Results",
+              "type": "number",
+              "default": 5,
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Options",
+              "type": "collection",
+              "placeholder": "Add Option",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "filterExpression",
+                  "displayName": "Filter Expression",
+                  "type": "string",
+                  "description": "JSON string filter for vector search query",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "queryIndex"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "scoreThreshold",
+                  "displayName": "Score Threshold",
+                  "type": "number",
+                  "description": "Minimum score threshold for returned results",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "queryIndex"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "listIndexes",
+            "resource": "vectorSearch"
+          },
+          "subCategory": "Vector Search"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "listIndexes",
+          "resource": "vectorSearch"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "databricks.vectorSearch.queryindex-1783405954740",
+      "type": "action",
+      "position": {
+        "x": 2103.8796111678516,
+        "y": 583.429516293703
+      },
+      "data": {
+        "label": "Query Index",
+        "toolId": "databricks.vectorSearch.queryindex",
+        "toolData": {
+          "id": "databricks.vectorSearch.queryindex",
+          "displayName": "Query Index",
+          "category": "Integrations",
+          "provider": "databricks",
+          "operation": "Query Index",
+          "icon": "https://www.databricks.com/sites/default/files/2021-10/db-nav-logo.svg",
+          "actionGroup": "Vector Search",
+          "description": "Query Index in Vector Search",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "vectorSearch"
+                ],
+                "default": "vectorSearch"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "createIndex",
+                  "getIndex",
+                  "deleteIndex",
+                  "listIndexes",
+                  "queryIndex"
+                ],
+                "default": "createIndex"
+              },
+              "indexName": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "endpointName": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "primaryKey": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "indexType": {
+                "type": "string",
+                "enum": [
+                  "DELTA_SYNC"
+                ],
+                "default": "DELTA_SYNC"
+              },
+              "deltaSyncIndexSpec": {
+                "default": "{\n  \"source_table\": \"workspace.default.docs\",\n  \"pipeline_type\": \"TRIGGERED\",\n  \"embedding_source_columns\": [{\n    \"name\": \"text\",\n    \"embedding_model_endpoint_name\": \"databricks-bge-large-en\"\n  }],\n  \"columns_to_sync\": [\"id\", \"text\"]\n}"
+              },
+              "queryType": {
+                "type": "string",
+                "enum": [
+                  "text",
+                  "vector"
+                ],
+                "default": "text"
+              },
+              "queryText": {
+                "type": "string"
+              },
+              "queryVector": {},
+              "searchMode": {
+                "type": "string",
+                "enum": [
+                  "ann",
+                  "hybrid"
+                ],
+                "default": "ann"
+              },
+              "columnsToReturn": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "numberOfResults": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "default": 5
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "filterExpression": {
+                    "type": "string"
+                  },
+                  "scoreThreshold": {
+                    "type": "number"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "Databricks credentials"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Vector Search",
+                  "value": "vectorSearch"
+                }
+              ],
+              "default": "vectorSearch",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create Index",
+                  "value": "createIndex"
+                },
+                {
+                  "name": "Get Index",
+                  "value": "getIndex"
+                },
+                {
+                  "name": "Delete Index",
+                  "value": "deleteIndex"
+                },
+                {
+                  "name": "List Indexes",
+                  "value": "listIndexes"
+                },
+                {
+                  "name": "Query Index",
+                  "value": "queryIndex"
+                }
+              ],
+              "default": "queryIndex",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "indexName",
+              "displayName": "Index Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "workspace.default.my_index",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex",
+                    "getIndex",
+                    "deleteIndex",
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "endpointName",
+              "displayName": "Endpoint Name",
+              "type": "options",
+              "required": true,
+              "placeholder": "Select a vector search endpoint",
+              "description": "Databricks Vector Search endpoint",
+              "fetchEndpoint": "/api/tools/databricks/list-vector-search-endpoints",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "value",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex",
+                    "listIndexes"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "primaryKey",
+              "displayName": "Primary Key",
+              "type": "string",
+              "required": true,
+              "placeholder": "id",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "indexType",
+              "displayName": "Index Type",
+              "type": "options",
+              "required": true,
+              "default": "DELTA_SYNC",
+              "options": [
+                {
+                  "name": "Delta Sync",
+                  "value": "DELTA_SYNC"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "deltaSyncIndexSpec",
+              "displayName": "Delta Sync Index Spec",
+              "type": "string",
+              "format": "json",
+              "required": true,
+              "default": "{\n  \"source_table\": \"workspace.default.docs\",\n  \"pipeline_type\": \"TRIGGERED\",\n  \"embedding_source_columns\": [{\n    \"name\": \"text\",\n    \"embedding_model_endpoint_name\": \"databricks-bge-large-en\"\n  }],\n  \"columns_to_sync\": [\"id\", \"text\"]\n}",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "createIndex"
+                  ],
+                  "indexType": [
+                    "DELTA_SYNC"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "queryType",
+              "displayName": "Query Type",
+              "type": "options",
+              "required": true,
+              "default": "text",
+              "options": [
+                {
+                  "name": "Text Query",
+                  "value": "text"
+                },
+                {
+                  "name": "Vector Query",
+                  "value": "vector"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "queryText",
+              "displayName": "Query Text",
+              "type": "string",
+              "format": "text",
+              "required": true,
+              "placeholder": "vector search example",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ],
+                  "queryType": [
+                    "text"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "queryVector",
+              "displayName": "Query Vector",
+              "type": "string",
+              "format": "json",
+              "required": true,
+              "placeholder": "[0.1, 0.2, 0.3]",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ],
+                  "queryType": [
+                    "vector"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "searchMode",
+              "displayName": "Search Mode",
+              "type": "options",
+              "required": true,
+              "default": "ann",
+              "options": [
+                {
+                  "name": "ANN (Approximate Nearest Neighbor)",
+                  "value": "ann"
+                },
+                {
+                  "name": "Hybrid",
+                  "value": "hybrid"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "columnsToReturn",
+              "displayName": "Columns to Return",
+              "type": "string",
+              "required": false,
+              "placeholder": "text, score",
+              "description": "Comma-separated or JSON array of columns",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "numberOfResults",
+              "displayName": "Number of Results",
+              "type": "number",
+              "default": 5,
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Options",
+              "type": "collection",
+              "placeholder": "Add Option",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "vectorSearch"
+                  ],
+                  "operation": [
+                    "queryIndex"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "filterExpression",
+                  "displayName": "Filter Expression",
+                  "type": "string",
+                  "description": "JSON string filter for vector search query",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "queryIndex"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "scoreThreshold",
+                  "displayName": "Score Threshold",
+                  "type": "number",
+                  "description": "Minimum score threshold for returned results",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "queryIndex"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "queryIndex",
+            "resource": "vectorSearch"
+          },
+          "subCategory": "Vector Search"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "queryIndex",
+          "resource": "vectorSearch"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

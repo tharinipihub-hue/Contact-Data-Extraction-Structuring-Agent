@@ -1,0 +1,52 @@
+{
+  "nodes": [
+    {
+      "id": "manual-trigger-1783396959778",
+      "type": "manual-trigger",
+      "position": {
+        "x": -1103.9567302442724,
+        "y": 96.69004653308863
+      },
+      "data": {
+        "label": "Manual Trigger",
+        "toolId": "manual-trigger",
+        "toolData": {
+          "id": "manual-trigger",
+          "displayName": "Manual Trigger",
+          "category": "Triggers",
+          "icon": "play_arrow",
+          "description": "Start a workflow manually by clicking the Execute button",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "payloadMessage": {
+                "description": "JSON or text payload to pass as trigger output"
+              },
+              "numberOfProcesses": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100,
+                "description": "Number of items to emit (duplicates payload N times)"
+              },
+              "items": {
+                "type": "array",
+                "description": "Array of items to process"
+              },
+              "data": {
+                "description": "Data payload"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": true,
+        "isPrimaryTrigger": true,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 100
+    }
+  ],
+  "edges": []
+}

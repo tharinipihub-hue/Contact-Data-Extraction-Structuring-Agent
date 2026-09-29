@@ -1,0 +1,257 @@
+{
+  "nodes": [
+    {
+      "id": "stripe.charge.create-1783407860372",
+      "type": "action",
+      "position": {
+        "x": 764.6469673086964,
+        "y": -330.74222319959364
+      },
+      "data": {
+        "label": "Create Charge",
+        "toolId": "stripe.charge.create",
+        "toolData": {
+          "id": "stripe.charge.create",
+          "displayName": "Create Charge",
+          "category": "Integrations",
+          "provider": "stripe",
+          "operation": "Create",
+          "icon": "/tools/stripe.svg",
+          "description": "Create a new charge in Stripe",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Balance",
+                  "Charge",
+                  "Coupon",
+                  "Customer",
+                  "Customer Card",
+                  "Meter Event",
+                  "Source",
+                  "Token"
+                ],
+                "default": "Charge",
+                "description": "The resource to act on"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Update",
+                  "Add",
+                  "Remove"
+                ],
+                "default": "Create",
+                "description": "The operation to perform"
+              }
+            },
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Stripe"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "stripe.charge.get_many-1783407861196",
+      "type": "action",
+      "position": {
+        "x": 903.1952979398502,
+        "y": -235.07789966855884
+      },
+      "data": {
+        "label": "Get All Charges",
+        "toolId": "stripe.charge.get_many",
+        "toolData": {
+          "id": "stripe.charge.get_many",
+          "displayName": "Get All Charges",
+          "category": "Integrations",
+          "provider": "stripe",
+          "operation": "Get Many",
+          "icon": "/tools/stripe.svg",
+          "description": "Retrieve multiple charges",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Balance",
+                  "Charge",
+                  "Coupon",
+                  "Customer",
+                  "Customer Card",
+                  "Meter Event",
+                  "Source",
+                  "Token"
+                ],
+                "default": "Charge",
+                "description": "The resource to act on"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Update",
+                  "Add",
+                  "Remove"
+                ],
+                "default": "Get Many",
+                "description": "The operation to perform"
+              }
+            },
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Stripe"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "stripe.charge.get-1783407862082",
+      "type": "action",
+      "position": {
+        "x": 884.0624332336432,
+        "y": -232.43888384701307
+      },
+      "data": {
+        "label": "Get Charge",
+        "toolId": "stripe.charge.get",
+        "toolData": {
+          "id": "stripe.charge.get",
+          "displayName": "Get Charge",
+          "category": "Integrations",
+          "provider": "stripe",
+          "operation": "Get",
+          "icon": "/tools/stripe.svg",
+          "description": "Retrieve a specific charge",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Balance",
+                  "Charge",
+                  "Coupon",
+                  "Customer",
+                  "Customer Card",
+                  "Meter Event",
+                  "Source",
+                  "Token"
+                ],
+                "default": "Charge",
+                "description": "The resource to act on"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Update",
+                  "Add",
+                  "Remove"
+                ],
+                "default": "Get",
+                "description": "The operation to perform"
+              }
+            },
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Stripe"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "stripe.charge.update-1783407863009",
+      "type": "action",
+      "position": {
+        "x": 827.3235930704088,
+        "y": -252.8912564639929
+      },
+      "data": {
+        "label": "Update Charge",
+        "toolId": "stripe.charge.update",
+        "toolData": {
+          "id": "stripe.charge.update",
+          "displayName": "Update Charge",
+          "category": "Integrations",
+          "provider": "stripe",
+          "operation": "Update",
+          "icon": "/tools/stripe.svg",
+          "description": "Update an existing charge",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Balance",
+                  "Charge",
+                  "Coupon",
+                  "Customer",
+                  "Customer Card",
+                  "Meter Event",
+                  "Source",
+                  "Token"
+                ],
+                "default": "Charge",
+                "description": "The resource to act on"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Update",
+                  "Add",
+                  "Remove"
+                ],
+                "default": "Update",
+                "description": "The operation to perform"
+              }
+            },
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Stripe"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

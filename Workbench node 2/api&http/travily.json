@@ -1,0 +1,641 @@
+{
+  "nodes": [
+    {
+      "id": "tavily_research_create-1783398277284",
+      "type": "action",
+      "position": {
+        "x": 822.636731261866,
+        "y": -20.828749891883003
+      },
+      "data": {
+        "label": "Research - Create Task",
+        "toolId": "tavily_research_create",
+        "toolData": {
+          "id": "tavily_research_create",
+          "displayName": "Research - Create Task",
+          "category": "API & HTTP",
+          "provider": "tavily",
+          "operation": "research_create",
+          "icon": "https://tavily.com/favicon.ico",
+          "description": "Start a comprehensive research task",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Research topic or question"
+              },
+              "model": {
+                "type": "string",
+                "enum": [
+                  "auto",
+                  "mini",
+                  "pro"
+                ],
+                "default": "auto",
+                "description": "Research model"
+              },
+              "citation_format": {
+                "type": "string",
+                "enum": [
+                  "numbered",
+                  "mla",
+                  "apa",
+                  "chicago"
+                ],
+                "default": "numbered",
+                "description": "Citation format"
+              },
+              "output_schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": {}
+                  },
+                  {
+                    "type": "array"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "description": "JSON Schema for output (object or JSON string)"
+              },
+              "stream": {
+                "type": "boolean",
+                "default": false,
+                "description": "Stream results"
+              },
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "apiKey": {
+                    "type": "string"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Tavily API Credential"
+              }
+            },
+            "required": [
+              "input",
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "dynamicFields": []
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "tavily_research_status-1783398278789",
+      "type": "action",
+      "position": {
+        "x": 1285.027740271556,
+        "y": -9.489460842599051
+      },
+      "data": {
+        "label": "Research - Get Status",
+        "toolId": "tavily_research_status",
+        "toolData": {
+          "id": "tavily_research_status",
+          "displayName": "Research - Get Status",
+          "category": "API & HTTP",
+          "provider": "tavily",
+          "operation": "research_status",
+          "icon": "https://tavily.com/favicon.ico",
+          "description": "Check status of a research task",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "request_id": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Research Request ID"
+              },
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "apiKey": {
+                    "type": "string"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Tavily API Credential"
+              }
+            },
+            "required": [
+              "request_id",
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "dynamicFields": []
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "tavily_crawl-1783398281342",
+      "type": "action",
+      "position": {
+        "x": 1264.8690041839402,
+        "y": 141.70105981452036
+      },
+      "data": {
+        "label": "Web Crawl ",
+        "toolId": "tavily_crawl",
+        "toolData": {
+          "id": "tavily_crawl",
+          "displayName": "Web Crawl ",
+          "category": "API & HTTP",
+          "provider": "tavily",
+          "operation": "crawl",
+          "icon": "https://tavily.com/favicon.ico",
+          "description": "Crawl a website and extract content",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Root URL to crawl"
+              },
+              "instructions": {
+                "type": "string",
+                "description": "Crawler instructions"
+              },
+              "max_depth": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 2,
+                "description": "Max depth"
+              },
+              "max_breadth": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 10,
+                "description": "Max breadth"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 20,
+                "description": "Max results limit"
+              },
+              "max_pages": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 10,
+                "description": "Max pages to crawl"
+              },
+              "select_paths": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "description": "Paths to include"
+              },
+              "select_domains": {
+                "$ref": "#/properties/select_paths",
+                "description": "Domains to include"
+              },
+              "exclude_paths": {
+                "$ref": "#/properties/select_paths",
+                "description": "Paths to exclude"
+              },
+              "exclude_domains": {
+                "$ref": "#/properties/select_paths",
+                "description": "Domains to exclude"
+              },
+              "allow_external": {
+                "type": "boolean",
+                "default": true,
+                "description": "Allow external links"
+              },
+              "timeout": {
+                "type": "integer",
+                "minimum": 10,
+                "maximum": 180,
+                "default": 30,
+                "description": "Timeout in seconds (10–180)"
+              },
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "apiKey": {
+                    "type": "string"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Tavily API Credential"
+              }
+            },
+            "required": [
+              "url",
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "dynamicFields": []
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 1264.8690041839402,
+        "y": 141.70105981452036
+      },
+      "dragging": false
+    },
+    {
+      "id": "tavily_map-1783398282572",
+      "type": "action",
+      "position": {
+        "x": 944.2191082902993,
+        "y": 129.73181026249836
+      },
+      "data": {
+        "label": "Web Map ",
+        "toolId": "tavily_map",
+        "toolData": {
+          "id": "tavily_map",
+          "displayName": "Web Map ",
+          "category": "API & HTTP",
+          "provider": "tavily",
+          "operation": "map",
+          "icon": "https://tavily.com/favicon.ico",
+          "description": "Map URL structure of a website",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Root URL to map"
+              },
+              "instructions": {
+                "type": "string",
+                "description": "Mapping instructions"
+              },
+              "max_depth": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 1,
+                "description": "Max depth"
+              },
+              "max_breadth": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 5,
+                "description": "Max breadth"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 10,
+                "description": "Max results limit"
+              },
+              "select_paths": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "description": "Paths to include"
+              },
+              "select_domains": {
+                "$ref": "#/properties/select_paths",
+                "description": "Domains to include"
+              },
+              "exclude_paths": {
+                "$ref": "#/properties/select_paths",
+                "description": "Paths to exclude"
+              },
+              "exclude_domains": {
+                "$ref": "#/properties/select_paths",
+                "description": "Domains to exclude"
+              },
+              "allow_external": {
+                "type": "boolean",
+                "default": true,
+                "description": "Allow external links"
+              },
+              "timeout": {
+                "type": "integer",
+                "minimum": 10,
+                "maximum": 180,
+                "default": 30,
+                "description": "Timeout in seconds (10–180)"
+              },
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "apiKey": {
+                    "type": "string"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Tavily API Credential"
+              }
+            },
+            "required": [
+              "url",
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "dynamicFields": []
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "tavily_extract-1783398287212",
+      "type": "action",
+      "position": {
+        "x": 688.4551441786724,
+        "y": 190.2080185253461
+      },
+      "data": {
+        "label": "Web Extract",
+        "toolId": "tavily_extract",
+        "toolData": {
+          "id": "tavily_extract",
+          "displayName": "Web Extract",
+          "category": "API & HTTP",
+          "provider": "tavily",
+          "operation": "extract",
+          "icon": "https://tavily.com/favicon.ico",
+          "description": "Extract content from URLs using Tavily API",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "urls": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "description": "URLs to extract content from (array or comma-separated string)"
+              },
+              "include_images": {
+                "type": "boolean",
+                "default": false,
+                "description": "Include images"
+              },
+              "extract_depth": {
+                "type": "string",
+                "enum": [
+                  "basic",
+                  "advanced"
+                ],
+                "default": "basic",
+                "description": "Extraction depth"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "markdown",
+                  "text"
+                ],
+                "default": "markdown",
+                "description": "Output format"
+              },
+              "include_favicon": {
+                "type": "boolean",
+                "default": false,
+                "description": "Include favicon"
+              },
+              "include_usage": {
+                "type": "boolean",
+                "default": true,
+                "description": "Include usage stats"
+              },
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "apiKey": {
+                    "type": "string"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Tavily API Credential"
+              }
+            },
+            "required": [
+              "urls",
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "dynamicFields": []
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 688.4551441786724,
+        "y": 190.2080185253461
+      },
+      "dragging": false
+    },
+    {
+      "id": "tavily_search-1783398289539",
+      "type": "action",
+      "position": {
+        "x": 963.1179233724392,
+        "y": 293.5215409743777
+      },
+      "data": {
+        "label": "Web Search",
+        "toolId": "tavily_search",
+        "toolData": {
+          "id": "tavily_search",
+          "displayName": "Web Search",
+          "category": "API & HTTP",
+          "provider": "tavily",
+          "operation": "search",
+          "icon": "https://tavily.com/favicon.ico",
+          "description": "Search the web using Tavily API. Optimized for LLMs.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "query": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 400,
+                "description": "The search query"
+              },
+              "search_depth": {
+                "type": "string",
+                "enum": [
+                  "basic",
+                  "advanced"
+                ],
+                "default": "basic",
+                "description": "Search depth (basic or advanced)"
+              },
+              "max_results": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 20,
+                "default": 5,
+                "description": "Max number of results"
+              },
+              "include_answer": {
+                "type": "boolean",
+                "default": true,
+                "description": "Include a short answer summary"
+              },
+              "include_raw_content": {
+                "type": "boolean",
+                "default": false,
+                "description": "Include raw HTML content"
+              },
+              "include_images": {
+                "type": "boolean",
+                "default": false,
+                "description": "Include image results"
+              },
+              "topic": {
+                "type": "string",
+                "enum": [
+                  "general",
+                  "news",
+                  "finance"
+                ],
+                "default": "general",
+                "description": "Search topic category (news returns published_date)"
+              },
+              "days": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Number of days back to filter results (used with news topic)"
+              },
+              "include_domains": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "description": "Domains to include in results (comma-separated or array)"
+              },
+              "exclude_domains": {
+                "$ref": "#/properties/include_domains",
+                "description": "Domains to exclude from results (comma-separated or array)"
+              },
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "apiKey": {
+                    "type": "string",
+                    "description": "Tavily API Key"
+                  },
+                  "api_key": {
+                    "type": "string",
+                    "description": "Tavily API Key (normalized)"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Tavily API Credential"
+              }
+            },
+            "required": [
+              "query",
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "dynamicFields": []
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 963.1179233724392,
+        "y": 293.5215409743777
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

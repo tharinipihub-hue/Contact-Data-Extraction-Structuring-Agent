@@ -1,0 +1,1224 @@
+{
+  "nodes": [
+    {
+      "id": "filter-1783397407220",
+      "type": "action",
+      "position": {
+        "x": -905.4978266006057,
+        "y": 147.66807534411058
+      },
+      "data": {
+        "label": "Filter Data",
+        "toolId": "filter",
+        "toolData": {
+          "id": "filter",
+          "displayName": "Filter Data",
+          "category": "Data  Processing",
+          "icon": "filter",
+          "description": "Filter items by condition",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "conditions": {
+                "type": "object",
+                "properties": {
+                  "conditions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "leftValue": {
+                          "description": "The value to check (leftValue)"
+                        },
+                        "rightValue": {
+                          "description": "The value to compare against (rightValue)"
+                        },
+                        "operator": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string"
+                            },
+                            "operation": {
+                              "type": "string"
+                            },
+                            "singleValue": {
+                              "type": "boolean"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "operation"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "operator"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "combinator": {
+                    "type": "string",
+                    "enum": [
+                      "and",
+                      "or"
+                    ],
+                    "default": "and",
+                    "description": "How to combine multiple conditions"
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "caseSensitive": {
+                        "type": "boolean",
+                        "default": false
+                      },
+                      "leftValue": {
+                        "type": "string"
+                      },
+                      "typeValidation": {
+                        "type": "string"
+                      },
+                      "version": {
+                        "type": "number",
+                        "default": 3
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "conditions"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "quickchart.generate-1783397408754",
+      "type": "action",
+      "position": {
+        "x": -287.08546746436315,
+        "y": 218.9067539700993
+      },
+      "data": {
+        "label": "QuickChart",
+        "toolId": "quickchart.generate",
+        "toolData": {
+          "id": "quickchart.generate",
+          "displayName": "QuickChart",
+          "category": "Data  Processing",
+          "operation": "generate",
+          "icon": "tools/quickChart.svg",
+          "description": "Generate chart images (Bar, Line, Pie, etc..) from arrays and return binary output.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "chartType": {
+                "type": "string",
+                "enum": [
+                  "bar",
+                  "line",
+                  "pie",
+                  "doughnut",
+                  "polarArea"
+                ],
+                "default": "bar"
+              },
+              "addLabels": {
+                "type": "string",
+                "enum": [
+                  "fromArray"
+                ],
+                "default": "fromArray"
+              },
+              "labelsArray": {},
+              "dataArray": {},
+              "outputFieldName": {
+                "type": "string",
+                "default": "data"
+              },
+              "datasetLabel": {
+                "type": "string",
+                "default": "Chart"
+              },
+              "options": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "$inputItem": {}
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "displayName": "Chart Type",
+              "name": "chartType",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Bar Chart",
+                  "value": "bar"
+                },
+                {
+                  "name": "Donut Chart",
+                  "value": "doughnut"
+                },
+                {
+                  "name": "Line Chart",
+                  "value": "line"
+                },
+                {
+                  "name": "Pie Chart",
+                  "value": "pie"
+                },
+                {
+                  "name": "Polar Chart",
+                  "value": "polarArea"
+                }
+              ],
+              "default": "bar",
+              "required": true
+            },
+            {
+              "displayName": "Add Labels",
+              "name": "addLabels",
+              "type": "options",
+              "options": [
+                {
+                  "name": "From Array",
+                  "value": "fromArray"
+                }
+              ],
+              "default": "fromArray",
+              "required": true
+            },
+            {
+              "displayName": "Labels Array",
+              "name": "labelsArray",
+              "type": "json",
+              "default": "[]",
+              "required": false,
+              "displayOptions": {
+                "show": {
+                  "addLabels": [
+                    "fromArray"
+                  ]
+                }
+              },
+              "description": "Array of labels, e.g. [\"AWS\", \"Azure\", \"GCP\"]."
+            },
+            {
+              "displayName": "Data",
+              "name": "dataArray",
+              "type": "json",
+              "default": "[]",
+              "required": true,
+              "description": "Numeric array for the dataset, e.g. [40, 25, 30]."
+            },
+            {
+              "displayName": "Dataset Label",
+              "name": "datasetLabel",
+              "type": "string",
+              "default": "Chart",
+              "required": false
+            },
+            {
+              "displayName": "Put Output In Field",
+              "name": "outputFieldName",
+              "type": "string",
+              "default": "data",
+              "required": true,
+              "description": "The name of the binary field to put the chart image in."
+            },
+            {
+              "displayName": "Chart Options",
+              "name": "options",
+              "type": "collection",
+              "placeholder": "Add option",
+              "default": {},
+              "options": [
+                {
+                  "displayName": "Background Color",
+                  "name": "backgroundColor",
+                  "type": "color",
+                  "default": "#ffffff",
+                  "typeOptions": {
+                    "colorPicker": true
+                  },
+                  "description": "Canvas background color for the generated chart image."
+                },
+                {
+                  "displayName": "Device Pixel Ratio",
+                  "name": "devicePixelRatio",
+                  "type": "number",
+                  "default": 2,
+                  "description": "Higher values improve quality but increase image size."
+                },
+                {
+                  "displayName": "Format",
+                  "name": "format",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "PNG",
+                      "value": "png"
+                    },
+                    {
+                      "name": "WebP",
+                      "value": "webp"
+                    },
+                    {
+                      "name": "SVG",
+                      "value": "svg"
+                    }
+                  ],
+                  "default": "png",
+                  "description": "Image output format."
+                },
+                {
+                  "displayName": "Height",
+                  "name": "height",
+                  "type": "number",
+                  "default": 400,
+                  "description": "Chart height in pixels."
+                },
+                {
+                  "displayName": "Width",
+                  "name": "width",
+                  "type": "number",
+                  "default": 800,
+                  "description": "Chart width in pixels."
+                }
+              ]
+            }
+          ],
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "sort-1783397409900",
+      "type": "action",
+      "position": {
+        "x": -734.2218545849307,
+        "y": 412.91847448343026
+      },
+      "data": {
+        "label": "Sort Data",
+        "toolId": "sort",
+        "toolData": {
+          "id": "sort",
+          "displayName": "Sort Data",
+          "category": "Data  Processing",
+          "icon": "tools/sort.svg",
+          "description": "Sort items or records",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "Simple",
+                  "Random",
+                  "Code"
+                ],
+                "default": "Simple",
+                "description": "The type of sorting to perform"
+              },
+              "fields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldName": {
+                      "type": "string",
+                      "description": "Field name to sort by (e.g. \"email\" or \"address.city\")"
+                    },
+                    "order": {
+                      "type": "string",
+                      "enum": [
+                        "Ascending",
+                        "Descending"
+                      ],
+                      "default": "Ascending"
+                    }
+                  },
+                  "required": [
+                    "fieldName"
+                  ],
+                  "additionalProperties": false
+                },
+                "default": [],
+                "description": "List of fields to sort by"
+              },
+              "code": {
+                "type": "string",
+                "description": "Custom JavaScript code to sort items when type is Code"
+              },
+              "disableDotNotation": {
+                "type": "boolean",
+                "default": false,
+                "description": "If true, field names are treated as literal keys, not nested paths"
+              },
+              "items": {
+                "type": "array",
+                "description": "The items to sort (passed from previous node)"
+              }
+            },
+            "required": [
+              "items"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "split-1783397411251",
+      "type": "action",
+      "position": {
+        "x": -184.01674094165605,
+        "y": 414.4341910499407
+      },
+      "data": {
+        "label": "Split Items",
+        "toolId": "split",
+        "toolData": {
+          "id": "split",
+          "displayName": "Split Items",
+          "category": "Data  Processing",
+          "icon": "scissors",
+          "description": "Split items into batches",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "fieldsToSplitOut": {
+                "description": "The field containing the array to split out (e.g. data.items). Or use an expression that returns an array directly."
+              },
+              "include": {
+                "type": "string",
+                "enum": [
+                  "No Other Fields",
+                  "All Other Fields",
+                  "Selected Other Fields"
+                ],
+                "default": "All Other Fields",
+                "description": "Select which fields from the input to include in the output"
+              },
+              "fieldsToInclude": {
+                "type": "string",
+                "description": "Comma-separated list of fields (e.g. id, name)"
+              },
+              "continueIfEmpty": {
+                "type": "boolean",
+                "default": true,
+                "description": "Continue workflow even if array is empty"
+              },
+              "disableDotNotation": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to disable dot notation for the field to split"
+              },
+              "destinationFieldName": {
+                "type": "string",
+                "description": "The field name to put the split data into (if not set, data is merged)"
+              },
+              "includeBinary": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to include binary data in the output"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "xml-1783397414210",
+      "type": "action",
+      "position": {
+        "x": -465.94002231259014,
+        "y": 669.0745742236876
+      },
+      "data": {
+        "label": "XML Convertor",
+        "toolId": "xml",
+        "toolData": {
+          "id": "xml",
+          "displayName": "XML Convertor",
+          "category": "Data  Processing",
+          "icon": "FileCode",
+          "description": "Parse and Convert XML data",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "XML to JSON",
+                  "JSON to XML"
+                ],
+                "description": "Conversion mode: XML text to JSON object, or JSON object to XML text."
+              },
+              "propertyName": {
+                "type": "string",
+                "description": "The name of the property to get/set the XML/JSON data.",
+                "default": "data"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "attributeKey": {
+                    "type": "string"
+                  },
+                  "characterKey": {
+                    "type": "string"
+                  },
+                  "allowSurrogateChars": {
+                    "type": "boolean"
+                  },
+                  "cdata": {
+                    "type": "boolean"
+                  },
+                  "headless": {
+                    "type": "boolean"
+                  },
+                  "rootName": {
+                    "type": "string"
+                  },
+                  "explicitArray": {
+                    "type": "boolean"
+                  },
+                  "explicitRoot": {
+                    "type": "boolean"
+                  },
+                  "ignoreAttributes": {
+                    "type": "boolean"
+                  },
+                  "mergeAttributes": {
+                    "type": "boolean"
+                  },
+                  "normalize": {
+                    "type": "boolean"
+                  },
+                  "normalizeTags": {
+                    "type": "boolean"
+                  },
+                  "trim": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "attributeKey": {
+                "type": "string"
+              },
+              "characterKey": {
+                "type": "string"
+              },
+              "allowSurrogateChars": {
+                "type": "boolean"
+              },
+              "cdata": {
+                "type": "boolean"
+              },
+              "headless": {
+                "type": "boolean"
+              },
+              "rootName": {
+                "type": "string"
+              },
+              "explicitArray": {
+                "type": "boolean"
+              },
+              "explicitRoot": {
+                "type": "boolean"
+              },
+              "ignoreAttributes": {
+                "type": "boolean"
+              },
+              "mergeAttributes": {
+                "type": "boolean"
+              },
+              "normalize": {
+                "type": "boolean"
+              },
+              "normalizeTags": {
+                "type": "boolean"
+              },
+              "trim": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "mode"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "displayName": "Mode",
+              "name": "mode",
+              "type": "options",
+              "options": [
+                {
+                  "name": "XML to JSON",
+                  "value": "XML to JSON"
+                },
+                {
+                  "name": "JSON to XML",
+                  "value": "JSON to XML"
+                }
+              ],
+              "default": "XML to JSON",
+              "description": "Conversion mode: XML text to JSON object, or JSON object to XML text."
+            },
+            {
+              "displayName": "If your XML is inside a binary file, use the 'Extract from File' node to convert it to text first",
+              "name": "binaryNotice",
+              "type": "notice"
+            },
+            {
+              "displayName": "Property Name",
+              "name": "propertyName",
+              "type": "string",
+              "default": "data",
+              "description": "The name of the property to get/set the XML/JSON data."
+            },
+            {
+              "displayName": "Options",
+              "name": "options",
+              "type": "collection",
+              "placeholder": "Add option",
+              "fields": [
+                {
+                  "displayName": "Attribute Prefix",
+                  "name": "attributeKey",
+                  "type": "string",
+                  "default": "$",
+                  "description": "The prefix used to identify attributes in the JSON object."
+                },
+                {
+                  "displayName": "Text Content Key",
+                  "name": "characterKey",
+                  "type": "string",
+                  "default": "_",
+                  "description": "The key used for text content when an element has both attributes and text."
+                },
+                {
+                  "displayName": "Always Wrap in Array",
+                  "name": "explicitArray",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to always place child elements in an array, even if there is only one.",
+                  "displayOptions": {
+                    "show": {
+                      "/mode": [
+                        "XML to JSON"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "displayName": "Include Root Element",
+                  "name": "explicitRoot",
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Whether to include the root element in the output JSON object.",
+                  "displayOptions": {
+                    "show": {
+                      "/mode": [
+                        "XML to JSON"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "displayName": "Ignore Attributes",
+                  "name": "ignoreAttributes",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to ignore XML attributes and not include them in the output JSON.",
+                  "displayOptions": {
+                    "show": {
+                      "/mode": [
+                        "XML to JSON"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "displayName": "Merge Attributes into Parent",
+                  "name": "mergeAttributes",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to merge attributes directly into the parent object instead of grouping them.",
+                  "displayOptions": {
+                    "show": {
+                      "/mode": [
+                        "XML to JSON"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "displayName": "Normalize Whitespace",
+                  "name": "normalize",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to normalize whitespace (trim and collapse multiple spaces) in text content.",
+                  "displayOptions": {
+                    "show": {
+                      "/mode": [
+                        "XML to JSON"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "displayName": "Lowercase Tag Names",
+                  "name": "normalizeTags",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to convert all XML tag names to lowercase.",
+                  "displayOptions": {
+                    "show": {
+                      "/mode": [
+                        "XML to JSON"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "displayName": "Trim Whitespace",
+                  "name": "trim",
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Whether to remove whitespace at the beginning and end of text content."
+                },
+                {
+                  "displayName": "Root Element Name",
+                  "name": "rootName",
+                  "type": "string",
+                  "default": "root",
+                  "description": "The name of the root element for the generated XML.",
+                  "displayOptions": {
+                    "show": {
+                      "/mode": [
+                        "JSON to XML"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "displayName": "Omit XML Declaration",
+                  "name": "headless",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to omit the XML declaration (<?xml...?>) from the output.",
+                  "displayOptions": {
+                    "show": {
+                      "/mode": [
+                        "JSON to XML"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "displayName": "Wrap in CDATA",
+                  "name": "cdata",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to wrap text values containing special characters in CDATA sections.",
+                  "displayOptions": {
+                    "show": {
+                      "/mode": [
+                        "JSON to XML"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "displayName": "Allow Surrogate Characters",
+                  "name": "allowSurrogateChars",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to preserve surrogate pairs in JSON strings in the XML output.",
+                  "displayOptions": {
+                    "show": {
+                      "/mode": [
+                        "JSON to XML"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "code.execute-1783397446732",
+      "type": "action",
+      "position": {
+        "x": -820.6176988760234,
+        "y": 622.0873606618653
+      },
+      "data": {
+        "label": "Code",
+        "toolId": "code.execute",
+        "toolData": {
+          "id": "code.execute",
+          "displayName": "Code",
+          "category": "Data  Processing",
+          "provider": "code",
+          "operation": "execute",
+          "icon": "💻",
+          "description": "Execute custom JavaScript or Python code",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "language": {
+                "type": "string",
+                "enum": [
+                  "javascript",
+                  "python"
+                ],
+                "description": "Programming language to execute"
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "each"
+                ],
+                "default": "all",
+                "description": "Execution mode"
+              },
+              "code": {
+                "type": "string",
+                "description": "Code to execute"
+              },
+              "input": {
+                "description": "Input data available as \"input\" variable"
+              },
+              "context": {
+                "description": "Execution context including other node results"
+              }
+            },
+            "required": [
+              "language",
+              "code"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "core.variable-1783397448228",
+      "type": "action",
+      "position": {
+        "x": -1052.5223335521143,
+        "y": 555.3958317354077
+      },
+      "data": {
+        "label": "Get Variable",
+        "toolId": "core.variable",
+        "toolData": {
+          "id": "core.variable",
+          "displayName": "Variable",
+          "category": "Data  Processing",
+          "provider": "core",
+          "icon": "VariableIcon",
+          "description": "Manage temporary workflow variables (Get/Set)",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "get",
+                  "set",
+                  "getMultiple",
+                  "setMultiple"
+                ]
+              },
+              "variableName": {
+                "type": "string"
+              },
+              "variableValue": {},
+              "variables": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "variableName": {
+                      "type": "string"
+                    },
+                    "variableValue": {}
+                  },
+                  "required": [
+                    "variableName"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "includeInOutput": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Get Variable",
+                  "value": "get"
+                },
+                {
+                  "name": "Set Variable",
+                  "value": "set"
+                },
+                {
+                  "name": "Get Multiple Variables",
+                  "value": "getMultiple"
+                },
+                {
+                  "name": "Set Multiple Variables",
+                  "value": "setMultiple"
+                }
+              ],
+              "default": "get"
+            },
+            {
+              "name": "variableName",
+              "displayName": "Variable Name",
+              "type": "string",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "set"
+                  ]
+                }
+              },
+              "placeholder": "e.g. myVar"
+            },
+            {
+              "name": "variableValue",
+              "displayName": "Variable Value",
+              "type": "string",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "set"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "variables",
+              "displayName": "Variables",
+              "type": "array",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMultiple",
+                    "setMultiple"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "variableName",
+                  "displayName": "Variable Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "variableValue",
+                  "displayName": "Variable Value",
+                  "type": "string",
+                  "default": "",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "setMultiple"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "includeInOutput",
+              "displayName": "Include Input Fields",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "set",
+                    "setMultiple"
+                  ]
+                }
+              },
+              "description": "If enabled, the output will include all fields from the input item plus the variables set."
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "summarize-1783397455058",
+      "type": "action",
+      "position": {
+        "x": -1131.339595010655,
+        "y": 388.66700941926393
+      },
+      "data": {
+        "label": "Summarize",
+        "toolId": "summarize",
+        "toolData": {
+          "id": "summarize",
+          "displayName": "Summarize",
+          "category": "Data  Processing",
+          "provider": "summarize",
+          "operation": "summarize",
+          "icon": "sigma",
+          "description": "Summarize data using aggregation functions.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "items": {
+                "description": "Input items to summarize"
+              },
+              "fieldsToSummarize": {
+                "type": "object",
+                "properties": {
+                  "values": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "aggregation": {
+                          "type": "string",
+                          "enum": [
+                            "append",
+                            "average",
+                            "concatenate",
+                            "count",
+                            "countUnique",
+                            "max",
+                            "min",
+                            "sum"
+                          ]
+                        },
+                        "field": {
+                          "type": "string",
+                          "default": "",
+                          "description": "The field to summarize (optional for Count)"
+                        },
+                        "outputFieldName": {
+                          "type": "string",
+                          "description": "Custom name for the output field"
+                        },
+                        "includeEmpty": {
+                          "type": "boolean",
+                          "default": false,
+                          "description": "Include empty values (for append, concatenate)"
+                        },
+                        "separatorType": {
+                          "type": "string",
+                          "enum": [
+                            "comma",
+                            "commaSpace",
+                            "newline",
+                            "none",
+                            "space",
+                            "other"
+                          ],
+                          "description": "Predefined separator type"
+                        },
+                        "separator": {
+                          "type": "string",
+                          "default": ",",
+                          "description": "Custom separator when separatorType is \"other\""
+                        }
+                      },
+                      "required": [
+                        "aggregation"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "description": "List of fields to aggregate"
+                  }
+                },
+                "required": [
+                  "values"
+                ],
+                "additionalProperties": false
+              },
+              "fieldsToSplitBy": {
+                "type": "string",
+                "description": "Comma-separated list of fields to group by"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "disableDotNotation": {
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "outputFormat": {
+                    "type": "string",
+                    "enum": [
+                      "separateItem",
+                      "singleItem"
+                    ],
+                    "default": "separateItem"
+                  },
+                  "continueIfFieldNotFound": {
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "ignoreItemsWithoutSplitByFields": {
+                    "type": "boolean",
+                    "default": false
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "fieldsToSummarize"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "utility:edi-837-to-json-1783397457107",
+      "type": "action",
+      "position": {
+        "x": -1223.7983055677894,
+        "y": 215.8753208370785
+      },
+      "data": {
+        "label": "EDI 837 to JSON",
+        "toolId": "utility:edi-837-to-json",
+        "toolData": {
+          "id": "utility:edi-837-to-json",
+          "displayName": "EDI 837 to JSON",
+          "category": "Data  Processing",
+          "provider": "Utility",
+          "icon": "/tools/Convert_to_file_icon.svg",
+          "description": "Converts ANSI X12 837 to JSON format",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "string",
+                "description": "Raw EDI 837 text content"
+              }
+            },
+            "required": [
+              "content"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "id": "content",
+              "name": "EDI Content",
+              "displayName": "EDI Content",
+              "type": "string",
+              "description": "Raw EDI 837 text content",
+              "required": true
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

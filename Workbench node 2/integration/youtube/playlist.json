@@ -1,0 +1,92 @@
+{
+  "nodes": [
+    {
+      "id": "youtube_getPlaylistInfo-1783407423211",
+      "type": "action",
+      "position": {
+        "x": 381.3299192291705,
+        "y": -476.54784733999844
+      },
+      "data": {
+        "label": "YouTube Playlist Info",
+        "toolId": "youtube_getPlaylistInfo",
+        "toolData": {
+          "id": "youtube_getPlaylistInfo",
+          "displayName": "YouTube Playlist Info",
+          "category": "Integrations",
+          "provider": "youtube",
+          "operation": "getPlaylistInfo",
+          "icon": "youtube",
+          "description": "Get information about a YouTube playlist",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "playlistId": {
+                "type": "string",
+                "description": "The ID of the playlist"
+              }
+            },
+            "required": [
+              "playlistId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Playlist"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "youtube_getPlaylistItems-1783407424676",
+      "type": "action",
+      "position": {
+        "x": 877.4648936797788,
+        "y": -260.1485499732438
+      },
+      "data": {
+        "label": "YouTube Playlist Items",
+        "toolId": "youtube_getPlaylistItems",
+        "toolData": {
+          "id": "youtube_getPlaylistItems",
+          "displayName": "YouTube Playlist Items",
+          "category": "Integrations",
+          "provider": "youtube",
+          "operation": "getPlaylistItems",
+          "icon": "youtube",
+          "description": "Get videos in a YouTube playlist",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "playlistId": {
+                "type": "string",
+                "description": "The ID of the playlist"
+              },
+              "maxResults": {
+                "type": "number",
+                "default": 10,
+                "description": "Maximum number of results"
+              }
+            },
+            "required": [
+              "playlistId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Playlist"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

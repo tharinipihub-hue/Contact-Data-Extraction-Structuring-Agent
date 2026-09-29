@@ -1,0 +1,75 @@
+{
+  "nodes": [
+    {
+      "id": "stripe.balance.get-1783407842290",
+      "type": "action",
+      "position": {
+        "x": 746.8336105132623,
+        "y": -274.66313699174566
+      },
+      "data": {
+        "label": "Get Balance",
+        "toolId": "stripe.balance.get",
+        "toolData": {
+          "id": "stripe.balance.get",
+          "displayName": "Get Balance",
+          "category": "Integrations",
+          "provider": "stripe",
+          "operation": "Get",
+          "icon": "/tools/stripe.svg",
+          "description": "Retrieve your Stripe account balance.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Balance",
+                  "Charge",
+                  "Coupon",
+                  "Customer",
+                  "Customer Card",
+                  "Meter Event",
+                  "Source",
+                  "Token"
+                ],
+                "default": "Balance",
+                "description": "The resource to act on"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Update",
+                  "Add",
+                  "Remove"
+                ],
+                "default": "Get",
+                "description": "The operation to perform"
+              },
+              "credentialId": {
+                "type": "string",
+                "description": "Stripe account credential"
+              }
+            },
+            "required": [
+              "credentialId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Stripe"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

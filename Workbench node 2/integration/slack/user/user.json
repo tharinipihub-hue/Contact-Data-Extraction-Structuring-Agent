@@ -1,0 +1,174 @@
+{
+  "nodes": [
+    {
+      "id": "slack.user.get-1783408348742",
+      "type": "action",
+      "position": {
+        "x": 2703.6150251144354,
+        "y": -325.4199675635016
+      },
+      "data": {
+        "label": "Slack Get User",
+        "toolId": "slack.user.get",
+        "toolData": {
+          "id": "slack.user.get",
+          "displayName": "Slack Get User",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Get",
+          "icon": "slack",
+          "description": "Get information about a Slack user",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "User"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false
+    },
+    {
+      "id": "slack.user.getProfile-1783408349964",
+      "type": "action",
+      "position": {
+        "x": 3268.219446139558,
+        "y": -270.47524202749975
+      },
+      "data": {
+        "label": "Slack Get User Profile",
+        "toolId": "slack.user.getProfile",
+        "toolData": {
+          "id": "slack.user.getProfile",
+          "displayName": "Slack Get User Profile",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Get User's Profile",
+          "icon": "slack",
+          "description": "Retrieve user profile.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "User"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false
+    },
+    {
+      "id": "slack.user.getStatus-1783408351308",
+      "type": "action",
+      "position": {
+        "x": 2959.3921957130647,
+        "y": -37.43381992652647
+      },
+      "data": {
+        "label": "Slack Get User Status",
+        "toolId": "slack.user.getStatus",
+        "toolData": {
+          "id": "slack.user.getStatus",
+          "displayName": "Slack Get User Status",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Get User's Status",
+          "icon": "slack",
+          "description": "Retrieve user status.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "User"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false
+    },
+    {
+      "id": "slack.user.getMany-1783408353028",
+      "type": "action",
+      "position": {
+        "x": 3558.100239484671,
+        "y": -24.171299969560508
+      },
+      "data": {
+        "label": "Slack List Users",
+        "toolId": "slack.user.getMany",
+        "toolData": {
+          "id": "slack.user.getMany",
+          "displayName": "Slack List Users",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Get Many",
+          "icon": "slack",
+          "description": "List all users.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "User"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false
+    },
+    {
+      "id": "slack.user.updateProfile-1783408354013",
+      "type": "action",
+      "position": {
+        "x": 2989.7065270432727,
+        "y": 235.3951620453447
+      },
+      "data": {
+        "label": "Slack Update User Profile",
+        "toolId": "slack.user.updateProfile",
+        "toolData": {
+          "id": "slack.user.updateProfile",
+          "displayName": "Slack Update User Profile",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Update User's Profile",
+          "icon": "slack",
+          "description": "Update user profile details.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "User"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

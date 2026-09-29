@@ -1,0 +1,878 @@
+{
+  "nodes": [
+    {
+      "id": "ifnode-1783397148490",
+      "type": "action",
+      "position": {
+        "x": -1002.1717747570667,
+        "y": 118.07118765476577
+      },
+      "data": {
+        "label": "IF Condition",
+        "toolId": "ifnode",
+        "toolData": {
+          "id": "ifnode",
+          "displayName": "IF Condition",
+          "category": "Logic & Flow Control",
+          "icon": "shuffle",
+          "description": "Conditional workflow branching",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "conditions": {
+                "type": "object",
+                "properties": {
+                  "conditions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "leftValue": {
+                          "description": "The value to check (leftValue)"
+                        },
+                        "rightValue": {
+                          "description": "The value to compare against (rightValue)"
+                        },
+                        "operator": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string"
+                            },
+                            "operation": {
+                              "type": "string"
+                            },
+                            "singleValue": {
+                              "type": "boolean"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "operation"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "operator"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "combinator": {
+                    "type": "string",
+                    "enum": [
+                      "and",
+                      "or"
+                    ],
+                    "default": "and",
+                    "description": "How to combine multiple conditions"
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "caseSensitive": {
+                        "type": "boolean",
+                        "default": false
+                      },
+                      "leftValue": {
+                        "type": "string"
+                      },
+                      "typeValidation": {
+                        "type": "string"
+                      },
+                      "version": {
+                        "type": "number",
+                        "default": 3
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "conditions"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "conditions"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "core_loop-1783397150265",
+      "type": "loop",
+      "position": {
+        "x": -681.6717747570667,
+        "y": 153.07118765476577
+      },
+      "data": {
+        "label": "Loop Items",
+        "toolId": "core_loop",
+        "toolData": {
+          "id": "core_loop",
+          "displayName": "Loop Items",
+          "category": "Logic & Flow Control",
+          "icon": "Repeat",
+          "description": "Process items in loop",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "inputField": {
+                "type": "string",
+                "description": "Field name containing an array (e.g. \"dates\")"
+              },
+              "batchSize": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1000
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "default": 1,
+                "description": "Batch Size — Enter a number or an expression (e.g. {{ $json.size }})"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "doneBranchOutput": {
+                    "type": "string",
+                    "enum": [
+                      "separate",
+                      "bundled"
+                    ],
+                    "default": "separate",
+                    "description": "Done Branch Output — \"separate\" emits individual items, \"bundled\" emits one item with all results in an array"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 210
+    },
+    {
+      "id": "replace-me-1783397150266",
+      "type": "replace-me",
+      "position": {
+        "x": -331.6717747570667,
+        "y": 253.07118765476577
+      },
+      "data": {
+        "label": "Replace Me"
+      },
+      "width": 200,
+      "height": 130
+    },
+    {
+      "id": "merge-1783397155244",
+      "type": "merge",
+      "position": {
+        "x": -1094.9623974144056,
+        "y": 394.7298756853055
+      },
+      "data": {
+        "label": "Merge Data",
+        "toolId": "merge",
+        "toolData": {
+          "id": "merge",
+          "displayName": "Merge Data",
+          "category": "Logic & Flow Control",
+          "icon": "merge",
+          "description": "Combine multiple data streams",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "append",
+                  "combine",
+                  "sql_query",
+                  "choose_branch"
+                ],
+                "default": "append",
+                "description": "How to merge the inputs"
+              },
+              "numberOfInputs": {
+                "type": "number",
+                "minimum": 2,
+                "maximum": 10,
+                "default": 2,
+                "description": "Number of input streams to merge"
+              },
+              "combineBy": {
+                "type": "string",
+                "enum": [
+                  "position",
+                  "matching_fields",
+                  "all_possible_combinations"
+                ],
+                "description": "How to combine items from different inputs"
+              },
+              "fieldsToMatchHaveDifferentNames": {
+                "type": "boolean",
+                "description": "Whether matching fields have different names in each input"
+              },
+              "matchingFields": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Fields to match on"
+              },
+              "matchingFieldsDifferent": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "input0": {
+                      "type": "string"
+                    },
+                    "input1": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "input0",
+                    "input1"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "query": {
+                "type": "string",
+                "default": "SELECT * FROM input1 LEFT JOIN input2 ON input1.name = input2.id",
+                "description": "SQL query to execute. Use table names like input1, input2, etc."
+              },
+              "chooseBranchWaitStrategy": {
+                "type": "string",
+                "enum": [
+                  "wait_for_all"
+                ],
+                "default": "wait_for_all",
+                "description": "Wait strategy"
+              },
+              "chooseBranchOutput": {
+                "type": "string",
+                "enum": [
+                  "input_0",
+                  "input_1",
+                  "a_single_empty_item",
+                  "data_of_specified_input"
+                ],
+                "description": "Which input to use for the output"
+              },
+              "chooseBranchSelectedInput": {
+                "type": "number",
+                "default": 1,
+                "description": "Which input to use (1-based)"
+              },
+              "outputType": {
+                "type": "string",
+                "enum": [
+                  "all_items",
+                  "first_item",
+                  "enrich_input_1",
+                  "enrich_input_2",
+                  "keep_matches",
+                  "keep_everything",
+                  "keep_non_matches"
+                ],
+                "default": "keep_matches",
+                "description": "Output configuration"
+              },
+              "outputDataFrom": {
+                "type": "string",
+                "enum": [
+                  "both",
+                  "input_1",
+                  "input_2"
+                ],
+                "default": "both",
+                "description": "Which input to use for the output data when matching"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "clashHandling": {
+                    "type": "string",
+                    "enum": [
+                      "use_input_0",
+                      "use_input_1",
+                      "append_suffix"
+                    ],
+                    "default": "use_input_1"
+                  },
+                  "fuzzyComparison": {
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "ignoreCase": {
+                    "type": "boolean",
+                    "default": true
+                  },
+                  "disableDotNotation": {
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "multipleMatches": {
+                    "type": "string",
+                    "enum": [
+                      "first",
+                      "all"
+                    ],
+                    "default": "all"
+                  },
+                  "mergingNestedFields": {
+                    "type": "string",
+                    "enum": [
+                      "shallow",
+                      "deep"
+                    ],
+                    "default": "shallow"
+                  },
+                  "minimizeEmptyFields": {
+                    "type": "boolean",
+                    "default": false
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 200,
+      "height": 185
+    },
+    {
+      "id": "stopError-1783397157020",
+      "type": "action",
+      "position": {
+        "x": -1266.2383694300806,
+        "y": 276.5039834974944
+      },
+      "data": {
+        "label": "Stop Workflow",
+        "toolId": "stopError",
+        "toolData": {
+          "id": "stopError",
+          "displayName": "Stop Workflow",
+          "category": "Logic & Flow Control",
+          "icon": "OctagonAlert",
+          "description": "Stop workflow with error message.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "errorType": {
+                "type": "string",
+                "enum": [
+                  "errorMessage",
+                  "errorObject"
+                ],
+                "default": "errorMessage",
+                "description": "Error Type"
+              },
+              "errorMessage": {
+                "type": "string",
+                "default": "An error occurred!",
+                "description": "Error Message"
+              },
+              "errorObject": {
+                "description": "Error Object"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "core_switch-1783397161827",
+      "type": "switch",
+      "position": {
+        "x": -437.1414075488926,
+        "y": 547.8172489028558
+      },
+      "data": {
+        "label": "Switch",
+        "toolId": "core_switch",
+        "toolData": {
+          "id": "core_switch",
+          "displayName": "Switch",
+          "category": "Logic & Flow Control",
+          "icon": "switch",
+          "description": "Route workflow using conditions",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "rules",
+                  "expression"
+                ],
+                "default": "rules",
+                "description": "Switch mode"
+              },
+              "rules": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "value1": {
+                      "description": "First value to compare"
+                    },
+                    "operator": {
+                      "type": "string",
+                      "enum": [
+                        "equal",
+                        "notEqual",
+                        "contains",
+                        "notContains",
+                        "startsWith",
+                        "notStartsWith",
+                        "endsWith",
+                        "notEndsWith",
+                        "regex",
+                        "notRegex",
+                        "greaterThan",
+                        "greaterThanOrEqual",
+                        "lessThan",
+                        "lessThanOrEqual",
+                        "isEmpty",
+                        "isNotEmpty",
+                        "isTrue",
+                        "isFalse"
+                      ],
+                      "description": "Comparison operator"
+                    },
+                    "value2": {
+                      "description": "Second value to compare (if needed)"
+                    },
+                    "outputIndex": {
+                      "type": "number",
+                      "default": 0,
+                      "description": "Index of the output handle to route to (0, 1, 2...)"
+                    }
+                  },
+                  "required": [
+                    "operator"
+                  ],
+                  "additionalProperties": false
+                },
+                "default": []
+              },
+              "outputIndexExpression": {
+                "description": "Expression or value that resolves to output index in expression mode"
+              },
+              "sendToAllMatches": {
+                "type": "boolean",
+                "default": false,
+                "description": "When true, route to all matching rules; otherwise first matching rule only"
+              },
+              "ignoreCase": {
+                "type": "boolean",
+                "default": false,
+                "description": "Case-insensitive matching for string operations"
+              },
+              "fallbackOutput": {
+                "type": "number",
+                "description": "Output index for items that match no rules"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 240,
+      "height": 129
+    },
+    {
+      "id": "wait-1783397163420",
+      "type": "action",
+      "position": {
+        "x": -753.9261699495659,
+        "y": 614.5087778293133
+      },
+      "data": {
+        "label": "Wait",
+        "toolId": "wait",
+        "toolData": {
+          "id": "wait",
+          "displayName": "Wait",
+          "category": "Logic & Flow Control",
+          "icon": "Pause",
+          "description": "Pause workflow for duration",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resume": {
+                "type": "string",
+                "enum": [
+                  "after_time_interval",
+                  "on_form_submitted",
+                  "on_webhook_call",
+                  "at_specified_time"
+                ],
+                "default": "after_time_interval",
+                "description": "Resume"
+              },
+              "webhookAuthentication": {
+                "type": "string",
+                "enum": [
+                  "none"
+                ],
+                "default": "none",
+                "description": "Authentication"
+              },
+              "webhookMethod": {
+                "type": "string",
+                "enum": [
+                  "DELETE",
+                  "GET",
+                  "HEAD",
+                  "PATCH",
+                  "POST",
+                  "PUT"
+                ],
+                "default": "POST",
+                "description": "HTTP Method"
+              },
+              "webhookResponseCode": {
+                "type": "number",
+                "default": 200,
+                "description": "Response Code"
+              },
+              "webhookRespondMode": {
+                "type": "string",
+                "enum": [
+                  "respond_to_webhook_node",
+                  "last_node_finishes",
+                  "immediately"
+                ],
+                "default": "immediately",
+                "description": "Respond"
+              },
+              "webhookSuffix": {
+                "type": "string",
+                "description": "Webhook Suffix"
+              },
+              "waitAmount": {
+                "type": [
+                  "number",
+                  "string"
+                ],
+                "default": 5,
+                "description": "Wait Amount"
+              },
+              "waitUnit": {
+                "type": "string",
+                "enum": [
+                  "seconds",
+                  "minutes",
+                  "hours",
+                  "days"
+                ],
+                "default": "seconds",
+                "description": "Wait Unit"
+              },
+              "dateTime": {
+                "type": "string",
+                "description": "Date and Time"
+              },
+              "authentication": {
+                "type": "string",
+                "enum": [
+                  "none"
+                ],
+                "default": "none",
+                "description": "Authentication"
+              },
+              "formTitle": {
+                "type": "string",
+                "description": "Form Title"
+              },
+              "formDescription": {
+                "type": "string",
+                "description": "Form Description"
+              },
+              "formElements": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldName": {
+                      "type": "string",
+                      "description": "Field Name"
+                    },
+                    "elementType": {
+                      "type": "string",
+                      "enum": [
+                        "checkboxes",
+                        "custom_html",
+                        "date",
+                        "dropdown",
+                        "email",
+                        "file",
+                        "hidden",
+                        "number",
+                        "password",
+                        "radio",
+                        "text",
+                        "textarea"
+                      ],
+                      "default": "text",
+                      "description": "Element Type"
+                    },
+                    "placeholder": {
+                      "type": "string",
+                      "description": "Placeholder"
+                    },
+                    "defaultValue": {
+                      "description": "Default Value"
+                    },
+                    "required": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "Required Field"
+                    },
+                    "options": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string",
+                            "description": "Label"
+                          },
+                          "value": {
+                            "type": "string",
+                            "description": "Value"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "description": "Options"
+                    },
+                    "html": {
+                      "type": "string",
+                      "description": "HTML Content"
+                    }
+                  },
+                  "required": [
+                    "fieldName"
+                  ],
+                  "additionalProperties": false
+                },
+                "default": [],
+                "description": "Form Elements"
+              },
+              "respondWhen": {
+                "type": "string",
+                "enum": [
+                  "form_submitted",
+                  "respond_to_webhook_node",
+                  "workflow_finishes"
+                ],
+                "default": "form_submitted",
+                "description": "Respond When"
+              },
+              "limitWaitTime": {
+                "type": "boolean",
+                "default": false,
+                "description": "Limit Wait Time"
+              },
+              "limitType": {
+                "type": "string",
+                "enum": [
+                  "interval",
+                  "at_time"
+                ],
+                "default": "interval",
+                "description": "Limit Type"
+              },
+              "limitAmount": {
+                "type": "number",
+                "default": 1,
+                "description": "Amount"
+              },
+              "limitUnit": {
+                "$ref": "#/properties/waitUnit",
+                "description": "Unit"
+              },
+              "limitDateTime": {
+                "type": "string",
+                "description": "Max Date and Time"
+              }
+            },
+            "required": [
+              "formTitle"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "doNothing-1783397165980",
+      "type": "action",
+      "position": {
+        "x": -1160.1382097743526,
+        "y": 702.4203386869164
+      },
+      "data": {
+        "label": "Do Nothing",
+        "toolId": "doNothing",
+        "toolData": {
+          "id": "doNothing",
+          "displayName": "Do Nothing",
+          "category": "Logic & Flow Control",
+          "provider": "core",
+          "operation": "passthrough",
+          "description": "A node that does absolutely nothing. Useful for testing or organizing workflows.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "notes": {
+                "type": "string",
+                "description": "Optional notes for why this node exists"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "repeater-1783397168138",
+      "type": "action",
+      "position": {
+        "x": -132.48237768030253,
+        "y": 458.3899714787422
+      },
+      "data": {
+        "label": "Repeater",
+        "toolId": "repeater",
+        "toolData": {
+          "id": "repeater",
+          "displayName": "Repeater",
+          "category": "Logic & Flow Control",
+          "provider": "logic",
+          "description": "Generates a sequence of bundles based on numeric iteration logic.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "initialValue": {
+                "type": "number",
+                "description": "Initial Value",
+                "default": 1
+              },
+              "repeats": {
+                "type": "number",
+                "minimum": 1,
+                "maximum": 10000,
+                "description": "Repeats",
+                "default": 5
+              },
+              "step": {
+                "type": "number",
+                "description": "Step",
+                "default": 1
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-core_loop-1783397150265-loop",
+      "source": "core_loop-1783397150265",
+      "sourceHandle": "loop",
+      "target": "replace-me-1783397150266",
+      "type": "custom",
+      "data": {}
+    },
+    {
+      "id": "e-replace-me-1783397150266-feedback",
+      "source": "replace-me-1783397150266",
+      "target": "core_loop-1783397150265",
+      "type": "custom",
+      "data": {
+        "pathType": "step"
+      }
+    }
+  ]
+}

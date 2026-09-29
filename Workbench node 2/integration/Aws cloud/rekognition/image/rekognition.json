@@ -1,0 +1,201 @@
+{
+  "nodes": [
+    {
+      "id": "aws.rekognition.image.analyze-1783399026432",
+      "type": "action",
+      "position": {
+        "x": 607.1981200501668,
+        "y": 565.4236604161508
+      },
+      "data": {
+        "label": "Analyze",
+        "toolId": "aws.rekognition.image.analyze",
+        "toolData": {
+          "id": "aws.rekognition.image.analyze",
+          "displayName": "Analyze",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Analyze",
+          "icon": "/tools/aws.png",
+          "actionGroup": "Rekognition",
+          "description": "Analyze in Rekognition",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "analyze"
+                ],
+                "description": "Image Analysis Operation"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "detectFaces",
+                  "detectLabels",
+                  "detectModerationLabels",
+                  "detectText",
+                  "recognizeCelebrity"
+                ],
+                "description": "Analysis Type"
+              },
+              "isBinary": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to use a binary file from a previous node"
+              },
+              "inputDataFieldName": {
+                "type": "string",
+                "default": "data",
+                "description": "The name of the binary property containing the file"
+              },
+              "bucket": {
+                "type": "string",
+                "description": "S3 Bucket name"
+              },
+              "name": {
+                "type": "string",
+                "description": "S3 Object name (path to image)"
+              },
+              "credentials": {
+                "description": "AWS credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region (e.g., us-east-1)"
+              }
+            },
+            "required": [
+              "operation",
+              "type"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Image",
+                  "value": "image"
+                }
+              ],
+              "default": "image",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Analyze",
+                  "value": "analyze"
+                }
+              ],
+              "default": "analyze",
+              "required": true
+            },
+            {
+              "name": "type",
+              "displayName": "Type",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Detect Faces",
+                  "value": "detectFaces"
+                },
+                {
+                  "name": "Detect Labels",
+                  "value": "detectLabels"
+                },
+                {
+                  "name": "Detect Moderation Labels",
+                  "value": "detectModerationLabels"
+                },
+                {
+                  "name": "Detect Text",
+                  "value": "detectText"
+                },
+                {
+                  "name": "Recognize Celebrity",
+                  "value": "recognizeCelebrity"
+                }
+              ],
+              "default": "detectFaces",
+              "required": true,
+              "description": "The type of image analysis to perform."
+            },
+            {
+              "name": "isBinary",
+              "displayName": "Binary File",
+              "type": "boolean",
+              "default": false,
+              "description": "Whether to use a binary file from a previous node. AWS Rekognition Image.Bytes supports up to 5 MB."
+            },
+            {
+              "name": "inputDataFieldName",
+              "displayName": "Input Binary Field",
+              "type": "string",
+              "default": "data",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "isBinary": [
+                    true
+                  ]
+                }
+              },
+              "description": "The name of the input binary field containing the file."
+            },
+            {
+              "name": "bucket",
+              "displayName": "Bucket",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "isBinary": [
+                    false
+                  ]
+                }
+              },
+              "description": "The S3 bucket containing the image."
+            },
+            {
+              "name": "name",
+              "displayName": "Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "isBinary": [
+                    false
+                  ]
+                }
+              },
+              "description": "The S3 object name (e.g., path/to/image.jpg)."
+            }
+          ],
+          "initialData": {
+            "operation": "analyze"
+          },
+          "subCategory": "Rekognition",
+          "dynamicFields": []
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "analyze"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

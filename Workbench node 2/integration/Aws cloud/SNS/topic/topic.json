@@ -1,0 +1,551 @@
+{
+  "nodes": [
+    {
+      "id": "aws.sns.topic.createtopic-1783404986851",
+      "type": "action",
+      "position": {
+        "x": 752.8839951752354,
+        "y": 425.32650024982064
+      },
+      "data": {
+        "label": "Create Topic",
+        "toolId": "aws.sns.topic.createtopic",
+        "toolData": {
+          "id": "aws.sns.topic.createtopic",
+          "displayName": "Create Topic",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Create Topic",
+          "icon": "/tools/sns.png",
+          "actionGroup": "AWS SNS",
+          "description": "Create Topic in AWS SNS",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "publishMessage"
+                ],
+                "description": "SNS Operation"
+              },
+              "topicArn": {
+                "type": "string",
+                "description": "The ARN of the topic you want to publish to."
+              },
+              "subject": {
+                "type": "string",
+                "description": "The subject of the message."
+              },
+              "message": {
+                "type": "string",
+                "description": "The message you want to send."
+              },
+              "credentials": {
+                "description": "AWS credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region (e.g., us-east-1)"
+              }
+            },
+            "required": [
+              "operation",
+              "topicArn",
+              "message"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create Topic",
+                  "value": "createTopic"
+                },
+                {
+                  "name": "Delete Topic",
+                  "value": "deleteTopic"
+                },
+                {
+                  "name": "Publish Message",
+                  "value": "publishMessage"
+                }
+              ],
+              "default": "createTopic",
+              "required": true
+            },
+            {
+              "name": "name",
+              "displayName": "Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createTopic"
+                  ]
+                }
+              },
+              "description": "The name of the topic you want to create."
+            },
+            {
+              "name": "displayName",
+              "displayName": "Display Name",
+              "type": "string",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createTopic"
+                  ]
+                }
+              },
+              "description": "The display name for the topic."
+            },
+            {
+              "name": "isFifo",
+              "displayName": "Fifo Topic",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createTopic"
+                  ]
+                }
+              },
+              "description": "Whether to create a FIFO topic (.fifo will be appended automatically if missing)."
+            },
+            {
+              "name": "topicArn",
+              "displayName": "Topic",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/sns/list-topics",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "deleteTopic",
+                    "publishMessage"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "subject",
+              "displayName": "Subject",
+              "type": "string",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "publishMessage"
+                  ]
+                }
+              },
+              "description": "The subject of the message."
+            },
+            {
+              "name": "message",
+              "displayName": "Message",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "publishMessage"
+                  ]
+                }
+              },
+              "description": "The message body you want to send."
+            }
+          ],
+          "initialData": {
+            "operation": "createTopic"
+          },
+          "subCategory": "AWS SNS",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "createTopic"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.sns.topic.deletetopic-1783404987939",
+      "type": "action",
+      "position": {
+        "x": 824.2691413655175,
+        "y": 595.9544106558609
+      },
+      "data": {
+        "label": "Delete Topic",
+        "toolId": "aws.sns.topic.deletetopic",
+        "toolData": {
+          "id": "aws.sns.topic.deletetopic",
+          "displayName": "Delete Topic",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Delete Topic",
+          "icon": "/tools/sns.png",
+          "actionGroup": "AWS SNS",
+          "description": "Delete Topic in AWS SNS",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "publishMessage"
+                ],
+                "description": "SNS Operation"
+              },
+              "topicArn": {
+                "type": "string",
+                "description": "The ARN of the topic you want to publish to."
+              },
+              "subject": {
+                "type": "string",
+                "description": "The subject of the message."
+              },
+              "message": {
+                "type": "string",
+                "description": "The message you want to send."
+              },
+              "credentials": {
+                "description": "AWS credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region (e.g., us-east-1)"
+              }
+            },
+            "required": [
+              "operation",
+              "topicArn",
+              "message"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create Topic",
+                  "value": "createTopic"
+                },
+                {
+                  "name": "Delete Topic",
+                  "value": "deleteTopic"
+                },
+                {
+                  "name": "Publish Message",
+                  "value": "publishMessage"
+                }
+              ],
+              "default": "deleteTopic",
+              "required": true
+            },
+            {
+              "name": "name",
+              "displayName": "Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createTopic"
+                  ]
+                }
+              },
+              "description": "The name of the topic you want to create."
+            },
+            {
+              "name": "displayName",
+              "displayName": "Display Name",
+              "type": "string",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createTopic"
+                  ]
+                }
+              },
+              "description": "The display name for the topic."
+            },
+            {
+              "name": "isFifo",
+              "displayName": "Fifo Topic",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createTopic"
+                  ]
+                }
+              },
+              "description": "Whether to create a FIFO topic (.fifo will be appended automatically if missing)."
+            },
+            {
+              "name": "topicArn",
+              "displayName": "Topic",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/sns/list-topics",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "deleteTopic",
+                    "publishMessage"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "subject",
+              "displayName": "Subject",
+              "type": "string",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "publishMessage"
+                  ]
+                }
+              },
+              "description": "The subject of the message."
+            },
+            {
+              "name": "message",
+              "displayName": "Message",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "publishMessage"
+                  ]
+                }
+              },
+              "description": "The message body you want to send."
+            }
+          ],
+          "initialData": {
+            "operation": "deleteTopic"
+          },
+          "subCategory": "AWS SNS",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "deleteTopic"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.sns.topic.publishmessage-1783404989451",
+      "type": "action",
+      "position": {
+        "x": 946.146220226975,
+        "y": 811.8509503532995
+      },
+      "data": {
+        "label": "Publish Message",
+        "toolId": "aws.sns.topic.publishmessage",
+        "toolData": {
+          "id": "aws.sns.topic.publishmessage",
+          "displayName": "Publish Message",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Publish Message",
+          "icon": "/tools/sns.png",
+          "actionGroup": "AWS SNS",
+          "description": "Publish Message in AWS SNS",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "publishMessage"
+                ],
+                "description": "SNS Operation"
+              },
+              "topicArn": {
+                "type": "string",
+                "description": "The ARN of the topic you want to publish to."
+              },
+              "subject": {
+                "type": "string",
+                "description": "The subject of the message."
+              },
+              "message": {
+                "type": "string",
+                "description": "The message you want to send."
+              },
+              "credentials": {
+                "description": "AWS credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region (e.g., us-east-1)"
+              }
+            },
+            "required": [
+              "operation",
+              "topicArn",
+              "message"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create Topic",
+                  "value": "createTopic"
+                },
+                {
+                  "name": "Delete Topic",
+                  "value": "deleteTopic"
+                },
+                {
+                  "name": "Publish Message",
+                  "value": "publishMessage"
+                }
+              ],
+              "default": "publishMessage",
+              "required": true
+            },
+            {
+              "name": "name",
+              "displayName": "Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createTopic"
+                  ]
+                }
+              },
+              "description": "The name of the topic you want to create."
+            },
+            {
+              "name": "displayName",
+              "displayName": "Display Name",
+              "type": "string",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createTopic"
+                  ]
+                }
+              },
+              "description": "The display name for the topic."
+            },
+            {
+              "name": "isFifo",
+              "displayName": "Fifo Topic",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "createTopic"
+                  ]
+                }
+              },
+              "description": "Whether to create a FIFO topic (.fifo will be appended automatically if missing)."
+            },
+            {
+              "name": "topicArn",
+              "displayName": "Topic",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/sns/list-topics",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "deleteTopic",
+                    "publishMessage"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "subject",
+              "displayName": "Subject",
+              "type": "string",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "publishMessage"
+                  ]
+                }
+              },
+              "description": "The subject of the message."
+            },
+            {
+              "name": "message",
+              "displayName": "Message",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "publishMessage"
+                  ]
+                }
+              },
+              "description": "The message body you want to send."
+            }
+          ],
+          "initialData": {
+            "operation": "publishMessage"
+          },
+          "subCategory": "AWS SNS",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "publishMessage"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

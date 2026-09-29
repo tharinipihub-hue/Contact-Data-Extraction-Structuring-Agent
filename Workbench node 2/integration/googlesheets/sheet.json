@@ -1,0 +1,273 @@
+{
+  "nodes": [
+    {
+      "id": "google.sheets.clear_sheet-1783408261224",
+      "type": "action",
+      "position": {
+        "x": 487.7837793315582,
+        "y": -218.15303303925484
+      },
+      "data": {
+        "label": "Clear Sheet or Range",
+        "toolId": "google.sheets.clear_sheet",
+        "toolData": {
+          "id": "google.sheets.clear_sheet",
+          "displayName": "Clear Sheet or Range",
+          "category": "Integrations",
+          "provider": "sheets",
+          "operation": "sheetsClearSheet",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg",
+          "description": "Clear values from a specific sheet or range",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "spreadsheetId": {
+                "type": "string",
+                "description": "Document"
+              },
+              "sheetName": {
+                "type": "string",
+                "description": "Sheet"
+              },
+              "clearMode": {
+                "type": "string",
+                "enum": [
+                  "wholeSheet",
+                  "specificRows",
+                  "specificColumns",
+                  "specificRange"
+                ],
+                "default": "wholeSheet",
+                "description": "Clear"
+              },
+              "startRow": {
+                "type": [
+                  "number",
+                  "string"
+                ],
+                "description": "Start Row Number (e.g. 2 = second row)"
+              },
+              "rowCount": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 1,
+                "description": "Number of Rows to Clear"
+              },
+              "startColumn": {
+                "type": [
+                  "number",
+                  "string"
+                ],
+                "description": "Start Column (e.g. \"A\" or 1)"
+              },
+              "columnCount": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 1,
+                "description": "Number of Columns to Clear"
+              },
+              "range": {
+                "type": "string",
+                "description": "Range (e.g. A1:D10)"
+              },
+              "credentials": {
+                "description": "Google Sheets credentials"
+              }
+            },
+            "required": [
+              "spreadsheetId",
+              "sheetName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Sheet",
+          "dynamicFields": [
+            {
+              "fieldName": "spreadsheetId",
+              "label": "Document (Spreadsheet)",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/list-spreadsheets",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "sheetName",
+              "label": "Sheet (Tab)",
+              "dependsOn": [
+                "credentials",
+                "spreadsheetId"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/list-sheets",
+              "labelKey": "title",
+              "valueKey": "title"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "google.sheets.create_sheet-1783408262247",
+      "type": "action",
+      "position": {
+        "x": 990.9619836290865,
+        "y": -106.72256565156691
+      },
+      "data": {
+        "label": "Create Sheet (Tab)",
+        "toolId": "google.sheets.create_sheet",
+        "toolData": {
+          "id": "google.sheets.create_sheet",
+          "displayName": "Create Sheet (Tab)",
+          "category": "Integrations",
+          "provider": "sheets",
+          "operation": "sheetsCreateSheet",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg",
+          "description": "Add a new sheet (tab) to an existing spreadsheet",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "spreadsheetId": {
+                "type": "string",
+                "description": "Document"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Sheet Title"
+              },
+              "hidden": {
+                "type": "boolean",
+                "description": "Hide the sheet tab from view"
+              },
+              "rightToLeft": {
+                "type": "boolean",
+                "description": "Right-to-left sheet direction"
+              },
+              "sheetId": {
+                "type": "integer",
+                "description": "Custom numeric Sheet ID"
+              },
+              "sheetIndex": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Zero-based tab position"
+              },
+              "tabColor": {
+                "type": "string",
+                "description": "Tab color (hex e.g. #FF0000)"
+              },
+              "credentials": {
+                "description": "Google Sheets credentials"
+              }
+            },
+            "required": [
+              "spreadsheetId",
+              "title"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Sheet",
+          "dynamicFields": [
+            {
+              "fieldName": "spreadsheetId",
+              "label": "Document (Spreadsheet)",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/list-spreadsheets",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "google.sheets.delete_sheet-1783408263313",
+      "type": "action",
+      "position": {
+        "x": 836.003989918083,
+        "y": 124.84387438847209
+      },
+      "data": {
+        "label": "Delete Sheet (Tab)",
+        "toolId": "google.sheets.delete_sheet",
+        "toolData": {
+          "id": "google.sheets.delete_sheet",
+          "displayName": "Delete Sheet (Tab)",
+          "category": "Integrations",
+          "provider": "sheets",
+          "operation": "sheetsDeleteSheet",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg",
+          "description": "Delete a sheet (tab) from a spreadsheet",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "spreadsheetId": {
+                "type": "string",
+                "description": "Document"
+              },
+              "sheetId": {
+                "type": "integer",
+                "description": "Sheet ID"
+              },
+              "credentials": {
+                "description": "Google Sheets credentials"
+              }
+            },
+            "required": [
+              "spreadsheetId",
+              "sheetId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Sheet",
+          "dynamicFields": [
+            {
+              "fieldName": "spreadsheetId",
+              "label": "Document (Spreadsheet)",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/list-spreadsheets",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "sheetId",
+              "label": "Sheet (Tab)",
+              "dependsOn": [
+                "credentials",
+                "spreadsheetId"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/list-sheets",
+              "labelKey": "title",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

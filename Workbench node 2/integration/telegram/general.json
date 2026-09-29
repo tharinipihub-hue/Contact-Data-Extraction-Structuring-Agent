@@ -1,0 +1,60 @@
+{
+  "nodes": [
+    {
+      "id": "trigger:telegram-1783407744316",
+      "type": "manual-trigger",
+      "position": {
+        "x": 698.0118178146653,
+        "y": -289.8374779656339
+      },
+      "data": {
+        "label": "Telegram Trigger",
+        "toolId": "trigger:telegram",
+        "toolData": {
+          "id": "trigger:telegram",
+          "displayName": "Telegram Trigger",
+          "category": "Integrations",
+          "provider": "telegram",
+          "operation": "trigger",
+          "icon": "telegram.png",
+          "description": "Trigger a workflow on Telegram updates",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string"
+              },
+              "triggerEvents": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": [
+                  "*"
+                ]
+              },
+              "download": {
+                "type": "boolean"
+              },
+              "restrictChatIds": {
+                "type": "string"
+              },
+              "restrictUserIds": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "featured": true
+        },
+        "isTrigger": true,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 100
+    }
+  ],
+  "edges": []
+}

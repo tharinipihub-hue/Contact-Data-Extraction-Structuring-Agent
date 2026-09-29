@@ -1,0 +1,728 @@
+{
+  "nodes": [
+    {
+      "id": "zoho.crm.account.create-1783406782780",
+      "type": "action",
+      "position": {
+        "x": 1081.6006799691218,
+        "y": -31.309377840591416
+      },
+      "data": {
+        "label": "Create Account",
+        "toolId": "zoho.crm.account.create",
+        "toolData": {
+          "id": "zoho.crm.account.create",
+          "displayName": "Create Account",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoAccountCreate",
+          "icon": "zoho",
+          "description": "Create a new account in Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "Account_Name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Account Name"
+              },
+              "Account_Number": {
+                "type": "integer",
+                "description": "Account Number"
+              },
+              "Account_Site": {
+                "type": "string",
+                "description": "Account Site"
+              },
+              "Account_Type": {
+                "type": "string",
+                "enum": [
+                  "Analyst",
+                  "Competitor",
+                  "Customer",
+                  "Distributor",
+                  "Integrator",
+                  "Investor",
+                  "Other",
+                  "Partner",
+                  "Press",
+                  "Prospect",
+                  "Reseller",
+                  "Supplier",
+                  "Vendor"
+                ],
+                "description": "Account Type Name or ID"
+              },
+              "Annual_Revenue": {
+                "type": "number",
+                "description": "Annual Revenue"
+              },
+              "billingAddress": {
+                "type": "object",
+                "properties": {
+                  "Billing_Street": {
+                    "type": "string",
+                    "description": "Billing Street"
+                  },
+                  "Billing_City": {
+                    "type": "string",
+                    "description": "Billing City"
+                  },
+                  "Billing_State": {
+                    "type": "string",
+                    "description": "Billing State"
+                  },
+                  "Billing_Country": {
+                    "type": "string",
+                    "description": "Billing Country"
+                  },
+                  "Billing_Code": {
+                    "type": "string",
+                    "description": "Billing Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Billing Address"
+              },
+              "shippingAddress": {
+                "type": "object",
+                "properties": {
+                  "Shipping_Street": {
+                    "type": "string",
+                    "description": "Shipping Street"
+                  },
+                  "Shipping_City": {
+                    "type": "string",
+                    "description": "Shipping City"
+                  },
+                  "Shipping_State": {
+                    "type": "string",
+                    "description": "Shipping State"
+                  },
+                  "Shipping_Country": {
+                    "type": "string",
+                    "description": "Shipping Country"
+                  },
+                  "Shipping_Code": {
+                    "type": "string",
+                    "description": "Shipping Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Shipping Address"
+              },
+              "Contact_Details": {
+                "description": "Contact Details"
+              },
+              "Employees": {
+                "type": "integer",
+                "description": "Number of Employees"
+              },
+              "Exchange_Rate": {
+                "type": "number",
+                "description": "Exchange Rate"
+              },
+              "Fax": {
+                "type": "string",
+                "description": "Fax"
+              },
+              "Industry": {
+                "type": "string",
+                "description": "Industry"
+              },
+              "Phone": {
+                "type": "string",
+                "description": "Phone"
+              },
+              "Ticker_Symbol": {
+                "type": "string",
+                "description": "Ticker Symbol"
+              },
+              "Website": {
+                "type": "string",
+                "description": "Website"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "Account_Name"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.account.upsert-1783406783905",
+      "type": "action",
+      "position": {
+        "x": 1442.3412227985966,
+        "y": -276.855461615276
+      },
+      "data": {
+        "label": "Create or Update Account",
+        "toolId": "zoho.crm.account.upsert",
+        "toolData": {
+          "id": "zoho.crm.account.upsert",
+          "displayName": "Create or Update Account",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoAccountUpsert",
+          "icon": "zoho",
+          "description": "Create a new account, or update an existing one if it already exists (upsert)",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "Account_Name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Account Name"
+              },
+              "Account_Number": {
+                "type": "integer",
+                "description": "Account Number"
+              },
+              "Account_Site": {
+                "type": "string",
+                "description": "Account Site"
+              },
+              "Account_Type": {
+                "type": "string",
+                "enum": [
+                  "Analyst",
+                  "Competitor",
+                  "Customer",
+                  "Distributor",
+                  "Integrator",
+                  "Investor",
+                  "Other",
+                  "Partner",
+                  "Press",
+                  "Prospect",
+                  "Reseller",
+                  "Supplier",
+                  "Vendor"
+                ],
+                "description": "Account Type Name or ID"
+              },
+              "Annual_Revenue": {
+                "type": "number",
+                "description": "Annual Revenue"
+              },
+              "billingAddress": {
+                "type": "object",
+                "properties": {
+                  "Billing_Street": {
+                    "type": "string",
+                    "description": "Billing Street"
+                  },
+                  "Billing_City": {
+                    "type": "string",
+                    "description": "Billing City"
+                  },
+                  "Billing_State": {
+                    "type": "string",
+                    "description": "Billing State"
+                  },
+                  "Billing_Country": {
+                    "type": "string",
+                    "description": "Billing Country"
+                  },
+                  "Billing_Code": {
+                    "type": "string",
+                    "description": "Billing Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Billing Address"
+              },
+              "shippingAddress": {
+                "type": "object",
+                "properties": {
+                  "Shipping_Street": {
+                    "type": "string",
+                    "description": "Shipping Street"
+                  },
+                  "Shipping_City": {
+                    "type": "string",
+                    "description": "Shipping City"
+                  },
+                  "Shipping_State": {
+                    "type": "string",
+                    "description": "Shipping State"
+                  },
+                  "Shipping_Country": {
+                    "type": "string",
+                    "description": "Shipping Country"
+                  },
+                  "Shipping_Code": {
+                    "type": "string",
+                    "description": "Shipping Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Shipping Address"
+              },
+              "Contact_Details": {
+                "description": "Contact Details"
+              },
+              "Employees": {
+                "type": "integer",
+                "description": "Number of Employees"
+              },
+              "Exchange_Rate": {
+                "type": "number",
+                "description": "Exchange Rate"
+              },
+              "Fax": {
+                "type": "string",
+                "description": "Fax"
+              },
+              "Industry": {
+                "type": "string",
+                "description": "Industry"
+              },
+              "Phone": {
+                "type": "string",
+                "description": "Phone"
+              },
+              "Ticker_Symbol": {
+                "type": "string",
+                "description": "Ticker Symbol"
+              },
+              "Website": {
+                "type": "string",
+                "description": "Website"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "Account_Name"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.account.delete-1783406784989",
+      "type": "action",
+      "position": {
+        "x": 1281.6752667484943,
+        "y": 438.56275777763216
+      },
+      "data": {
+        "label": "Delete Account",
+        "toolId": "zoho.crm.account.delete",
+        "toolData": {
+          "id": "zoho.crm.account.delete",
+          "displayName": "Delete Account",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoAccountDelete",
+          "icon": "zoho",
+          "description": "Delete an account from Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "accountId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Account ID"
+              }
+            },
+            "required": [
+              "accountId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.account.get-1783406786211",
+      "type": "action",
+      "position": {
+        "x": 933.0604564511026,
+        "y": 180.8909414708644
+      },
+      "data": {
+        "label": "Get Account",
+        "toolId": "zoho.crm.account.get",
+        "toolData": {
+          "id": "zoho.crm.account.get",
+          "displayName": "Get Account",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoAccountGet",
+          "icon": "zoho",
+          "description": "Retrieve a specific account by its ID from Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "accountId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Account ID"
+              }
+            },
+            "required": [
+              "accountId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.account.getMany-1783406787635",
+      "type": "action",
+      "position": {
+        "x": 432.873989502671,
+        "y": -110.12663929913215
+      },
+      "data": {
+        "label": "Get Many Accounts",
+        "toolId": "zoho.crm.account.getMany",
+        "toolData": {
+          "id": "zoho.crm.account.getMany",
+          "displayName": "Get Many Accounts",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoAccountGetMany",
+          "icon": "zoho",
+          "description": "Retrieve multiple accounts from Zoho CRM with filtering and pagination",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all results or limit"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 50,
+                "description": "Maximum number of records to return"
+              },
+              "approved": {
+                "type": "boolean",
+                "description": "Filter by approved status"
+              },
+              "converted": {
+                "type": "boolean",
+                "description": "Filter by converted status"
+              },
+              "includeChild": {
+                "type": "boolean",
+                "description": "Include child records"
+              },
+              "territoryId": {
+                "type": "string",
+                "description": "Territory ID filter"
+              },
+              "fields": {
+                "type": "string",
+                "description": "Comma-separated list of fields to return"
+              },
+              "sortBy": {
+                "type": "string",
+                "description": "Field to sort by"
+              },
+              "sortOrder": {
+                "type": "string",
+                "enum": [
+                  "asc",
+                  "desc"
+                ],
+                "description": "Sort Order (Ascending / Descending)"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.account.update-1783406789163",
+      "type": "action",
+      "position": {
+        "x": 375.27675997527587,
+        "y": 426.43702524554897
+      },
+      "data": {
+        "label": "Update Account",
+        "toolId": "zoho.crm.account.update",
+        "toolData": {
+          "id": "zoho.crm.account.update",
+          "displayName": "Update Account",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoAccountUpdate",
+          "icon": "zoho",
+          "description": "Update an existing account in Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "accountId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Account ID"
+              },
+              "Account_Name": {
+                "type": "string",
+                "description": "Account Name"
+              },
+              "Account_Number": {
+                "type": "integer",
+                "description": "Account Number"
+              },
+              "Account_Site": {
+                "type": "string",
+                "description": "Account Site"
+              },
+              "Account_Type": {
+                "type": "string",
+                "enum": [
+                  "Analyst",
+                  "Competitor",
+                  "Customer",
+                  "Distributor",
+                  "Integrator",
+                  "Investor",
+                  "Other",
+                  "Partner",
+                  "Press",
+                  "Prospect",
+                  "Reseller",
+                  "Supplier",
+                  "Vendor"
+                ],
+                "description": "Account Type Name or ID"
+              },
+              "Annual_Revenue": {
+                "type": "number",
+                "description": "Annual Revenue"
+              },
+              "billingAddress": {
+                "type": "object",
+                "properties": {
+                  "Billing_Street": {
+                    "type": "string",
+                    "description": "Billing Street"
+                  },
+                  "Billing_City": {
+                    "type": "string",
+                    "description": "Billing City"
+                  },
+                  "Billing_State": {
+                    "type": "string",
+                    "description": "Billing State"
+                  },
+                  "Billing_Country": {
+                    "type": "string",
+                    "description": "Billing Country"
+                  },
+                  "Billing_Code": {
+                    "type": "string",
+                    "description": "Billing Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Billing Address"
+              },
+              "shippingAddress": {
+                "type": "object",
+                "properties": {
+                  "Shipping_Street": {
+                    "type": "string",
+                    "description": "Shipping Street"
+                  },
+                  "Shipping_City": {
+                    "type": "string",
+                    "description": "Shipping City"
+                  },
+                  "Shipping_State": {
+                    "type": "string",
+                    "description": "Shipping State"
+                  },
+                  "Shipping_Country": {
+                    "type": "string",
+                    "description": "Shipping Country"
+                  },
+                  "Shipping_Code": {
+                    "type": "string",
+                    "description": "Shipping Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Shipping Address"
+              },
+              "Contact_Details": {
+                "description": "Contact Details"
+              },
+              "Employees": {
+                "type": "integer",
+                "description": "Number of Employees"
+              },
+              "Exchange_Rate": {
+                "type": "number",
+                "description": "Exchange Rate"
+              },
+              "Fax": {
+                "type": "string",
+                "description": "Fax"
+              },
+              "Industry": {
+                "type": "string",
+                "description": "Industry"
+              },
+              "Phone": {
+                "type": "string",
+                "description": "Phone"
+              },
+              "Ticker_Symbol": {
+                "type": "string",
+                "description": "Ticker Symbol"
+              },
+              "Website": {
+                "type": "string",
+                "description": "Website"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "accountId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

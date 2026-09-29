@@ -1,0 +1,563 @@
+{
+  "nodes": [
+    {
+      "id": "google.gmail.delete-1783407616270",
+      "type": "action",
+      "position": {
+        "x": 534.6585881408593,
+        "y": 119.56807571890107
+      },
+      "data": {
+        "label": "Delete a message",
+        "toolId": "google.gmail.delete",
+        "toolData": {
+          "id": "google.gmail.delete",
+          "displayName": "Delete a message",
+          "category": "Integrations",
+          "provider": "gmail",
+          "operation": "delete",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          "description": "Permanently delete an email from Gmail",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "messageId": {
+                "type": "string",
+                "description": "Gmail message ID to permanently delete (e.g., 172ce2c4a72cc243)"
+              }
+            },
+            "required": [
+              "credentials",
+              "messageId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 92,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 534.6585881408593,
+        "y": 119.56807571890107
+      },
+      "dragging": false
+    },
+    {
+      "id": "google.gmail.read-1783407617604",
+      "type": "action",
+      "position": {
+        "x": 781.4388535005049,
+        "y": 125.9320367167143
+      },
+      "data": {
+        "label": "Get a message",
+        "toolId": "google.gmail.read",
+        "toolData": {
+          "id": "google.gmail.read",
+          "displayName": "Get a message",
+          "category": "Integrations",
+          "provider": "gmail",
+          "operation": "read",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          "description": "Fetch a specific email by ID",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "messageId": {
+                "type": "string",
+                "description": "Message ID or email address"
+              },
+              "query": {
+                "type": "string",
+                "description": "Optional Gmail search query to resolve the message. If provided, the first matching message will be read."
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "full",
+                  "metadata",
+                  "minimal"
+                ],
+                "default": "full",
+                "description": "The format of the email to return (defaults to full if invalid/empty)."
+              }
+            },
+            "required": [
+              "credentials",
+              "messageId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 92,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 781.4388535005049,
+        "y": 125.9320367167143
+      },
+      "dragging": false
+    },
+    {
+      "id": "google.gmail.list-1783407618886",
+      "type": "action",
+      "position": {
+        "x": 1057.9176035166124,
+        "y": 135.12442482466668
+      },
+      "data": {
+        "label": "Get many messages",
+        "toolId": "google.gmail.list",
+        "toolData": {
+          "id": "google.gmail.list",
+          "displayName": "Get many messages",
+          "category": "Integrations",
+          "provider": "gmail",
+          "operation": "list",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          "description": "List emails from Gmail filtered by label IDs",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "labelIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Label IDs to filter (e.g., INBOX, SENT, STARRED)"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return all messages (if false, uses Limit)"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 100,
+                "description": "Number of messages to return (default 100)"
+              }
+            },
+            "required": [
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 92,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 1057.9176035166124,
+        "y": 135.12442482466668
+      },
+      "dragging": false
+    },
+    {
+      "id": "google.gmail.mark-read-1783407620608",
+      "type": "action",
+      "position": {
+        "x": 527.5875203655113,
+        "y": 256.0396837831177
+      },
+      "data": {
+        "label": "Mark a message as read",
+        "toolId": "google.gmail.mark-read",
+        "toolData": {
+          "id": "google.gmail.mark-read",
+          "displayName": "Mark a message as read",
+          "category": "Integrations",
+          "provider": "gmail",
+          "operation": "mark-read",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          "description": "Mark selected emails as read",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "messageIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Array of message IDs to mark as read"
+              }
+            },
+            "required": [
+              "credentials",
+              "messageIds"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 92,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 527.5875203655113,
+        "y": 256.0396837831177
+      },
+      "dragging": false
+    },
+    {
+      "id": "google.gmail.mark-unread-1783407631351",
+      "type": "action",
+      "position": {
+        "x": 782.1459602780396,
+        "y": 258.1610041157221
+      },
+      "data": {
+        "label": "Mark a message as unread",
+        "toolId": "google.gmail.mark-unread",
+        "toolData": {
+          "id": "google.gmail.mark-unread",
+          "displayName": "Mark a message as unread",
+          "category": "Integrations",
+          "provider": "gmail",
+          "operation": "mark-unread",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          "description": "Mark selected emails as unread",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "messageIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Array of message IDs to mark as unread"
+              }
+            },
+            "required": [
+              "credentials",
+              "messageIds"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 92,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 782.1459602780396,
+        "y": 258.1610041157221
+      },
+      "dragging": false
+    },
+    {
+      "id": "google.gmail.search-1783407634630",
+      "type": "action",
+      "position": {
+        "x": 1180.9541828076678,
+        "y": 308.365585320693
+      },
+      "data": {
+        "label": "Search messages",
+        "toolId": "google.gmail.search",
+        "toolData": {
+          "id": "google.gmail.search",
+          "displayName": "Search messages",
+          "category": "Integrations",
+          "provider": "gmail",
+          "operation": "search",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          "description": "Advanced search with Gmail query syntax",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "query": {
+                "type": "string",
+                "description": "Gmail search query (e.g., \"from:sender@example.com subject:test\", \"is:unread\", \"after:2025-01-01\")"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return all results (if false, uses Limit)"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 50,
+                "description": "Number of results to return (default 50)"
+              },
+              "pageToken": {
+                "type": "string",
+                "description": "Pagination token from previous response"
+              }
+            },
+            "required": [
+              "credentials",
+              "query"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 92,
+      "selected": true
+    },
+    {
+      "id": "google.gmail.send-1783407636502",
+      "type": "action",
+      "position": {
+        "x": 581.3276354581561,
+        "y": 424.3310968364005
+      },
+      "data": {
+        "label": "Send a message",
+        "toolId": "google.gmail.send",
+        "toolData": {
+          "id": "google.gmail.send",
+          "displayName": "Send a message",
+          "category": "Integrations",
+          "provider": "gmail",
+          "operation": "send",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          "description": "Send an email using Gmail API",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "to": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Recipient email address (e.g., info@example.com)."
+              },
+              "cc": {
+                "type": "string",
+                "description": "CC recipients (comma-separated)."
+              },
+              "bcc": {
+                "type": "string",
+                "description": "BCC recipients (comma-separated)."
+              },
+              "subject": {
+                "type": "string",
+                "description": "Email subject"
+              },
+              "emailType": {
+                "type": "string",
+                "enum": [
+                  "text",
+                  "html"
+                ],
+                "description": "Email body format - Text or HTML"
+              },
+              "message": {
+                "type": "string",
+                "description": "Email message content (plain text or HTML depending on emailType)"
+              },
+              "attachments": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string",
+                      "description": "Base64 encoded file content"
+                    },
+                    "mimeType": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "content"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Email attachments"
+              },
+              "appendAttribution": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether to append \"Sent via Agent Builder\" to the email"
+              }
+            },
+            "required": [
+              "credentials",
+              "to",
+              "emailType",
+              "message"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 92,
+      "selected": true
+    }
+  ],
+  "edges": []
+}

@@ -1,0 +1,939 @@
+{
+  "nodes": [
+    {
+      "id": "zoho.crm.salesOrder.upsert-1783406953025",
+      "type": "action",
+      "position": {
+        "x": -69.94178625515933,
+        "y": -281.2606765456101
+      },
+      "data": {
+        "label": "Create or Update Sales Order",
+        "toolId": "zoho.crm.salesOrder.upsert",
+        "toolData": {
+          "id": "zoho.crm.salesOrder.upsert",
+          "displayName": "Create or Update Sales Order",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoSalesOrderUpsert",
+          "icon": "zoho",
+          "description": "Create or update a sales order (upsert)",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "Subject": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Sales Order Subject"
+              },
+              "Account_Name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Account Name or ID"
+              },
+              "Product_Details": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "product": {
+                      "type": "string",
+                      "description": "Product Name or ID"
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "description": "Quantity"
+                    },
+                    "unit_price": {
+                      "type": "number",
+                      "description": "Unit Price"
+                    },
+                    "list_price": {
+                      "type": "number",
+                      "description": "List Price"
+                    },
+                    "product_description": {
+                      "type": "string",
+                      "description": "Product Description"
+                    },
+                    "Tax": {
+                      "type": "number",
+                      "description": "Tax"
+                    },
+                    "total": {
+                      "type": "number",
+                      "description": "Total"
+                    },
+                    "discount": {
+                      "type": "number",
+                      "description": "Discount"
+                    },
+                    "total_after_discount": {
+                      "type": "number",
+                      "description": "Total After Discount"
+                    },
+                    "net_total": {
+                      "type": "number",
+                      "description": "Total (Net)"
+                    },
+                    "quantity_in_stock": {
+                      "type": "number",
+                      "description": "Quantity in Stock"
+                    }
+                  },
+                  "required": [
+                    "product"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 1,
+                "description": "Products (Line Items)"
+              },
+              "Contact_Name": {
+                "type": "string",
+                "description": "Contact Name or ID"
+              },
+              "Deal_Name": {
+                "type": "string",
+                "description": "Deal Name or ID"
+              },
+              "Discount": {
+                "type": "number",
+                "description": "Discount"
+              },
+              "Tax": {
+                "type": "number",
+                "description": "Tax"
+              },
+              "Adjustment": {
+                "type": "number",
+                "description": "Adjustment"
+              },
+              "Sub_Total": {
+                "type": "number",
+                "description": "Sub Total"
+              },
+              "Grand_Total": {
+                "type": "number",
+                "description": "Grand Total"
+              },
+              "Due_Date": {
+                "type": "string",
+                "description": "Due Date (YYYY-MM-DD)"
+              },
+              "Carrier": {
+                "type": "string",
+                "description": "Carrier"
+              },
+              "Tracking_Number": {
+                "type": "string",
+                "description": "Tracking Number"
+              },
+              "Billing_Address": {
+                "type": "object",
+                "properties": {
+                  "Billing_Street": {
+                    "type": "string",
+                    "description": "Billing Street"
+                  },
+                  "Billing_City": {
+                    "type": "string",
+                    "description": "Billing City"
+                  },
+                  "Billing_State": {
+                    "type": "string",
+                    "description": "Billing State"
+                  },
+                  "Billing_Country": {
+                    "type": "string",
+                    "description": "Billing Country"
+                  },
+                  "Billing_Code": {
+                    "type": "string",
+                    "description": "Billing Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Billing Address"
+              },
+              "Shipping_Address": {
+                "type": "object",
+                "properties": {
+                  "Shipping_Street": {
+                    "type": "string",
+                    "description": "Shipping Street"
+                  },
+                  "Shipping_City": {
+                    "type": "string",
+                    "description": "Shipping City"
+                  },
+                  "Shipping_State": {
+                    "type": "string",
+                    "description": "Shipping State"
+                  },
+                  "Shipping_Country": {
+                    "type": "string",
+                    "description": "Shipping Country"
+                  },
+                  "Shipping_Code": {
+                    "type": "string",
+                    "description": "Shipping Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Shipping Address"
+              },
+              "Currency": {
+                "type": "string",
+                "description": "Currency Code"
+              },
+              "Exchange_Rate": {
+                "type": "number",
+                "description": "Exchange Rate"
+              },
+              "Status": {
+                "type": "string",
+                "description": "Status Name or ID"
+              },
+              "Sales_Commission": {
+                "type": "number",
+                "description": "Sales Commission"
+              },
+              "Sales_Order_Number": {
+                "type": "string",
+                "description": "Sales Order Number"
+              },
+              "Terms_and_Conditions": {
+                "type": "string",
+                "description": "Terms and Conditions"
+              },
+              "Description": {
+                "type": "string",
+                "description": "Description"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "Subject",
+              "Account_Name",
+              "Product_Details"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.salesOrder.create-1783406954234",
+      "type": "action",
+      "position": {
+        "x": 283.68633383197636,
+        "y": -239.03642340087748
+      },
+      "data": {
+        "label": "Create Sales Order",
+        "toolId": "zoho.crm.salesOrder.create",
+        "toolData": {
+          "id": "zoho.crm.salesOrder.create",
+          "displayName": "Create Sales Order",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoSalesOrderCreate",
+          "icon": "zoho",
+          "description": "Create a new sales order in Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "Subject": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Sales Order Subject"
+              },
+              "Account_Name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Account Name or ID"
+              },
+              "Product_Details": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "product": {
+                      "type": "string",
+                      "description": "Product Name or ID"
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "description": "Quantity"
+                    },
+                    "unit_price": {
+                      "type": "number",
+                      "description": "Unit Price"
+                    },
+                    "list_price": {
+                      "type": "number",
+                      "description": "List Price"
+                    },
+                    "product_description": {
+                      "type": "string",
+                      "description": "Product Description"
+                    },
+                    "Tax": {
+                      "type": "number",
+                      "description": "Tax"
+                    },
+                    "total": {
+                      "type": "number",
+                      "description": "Total"
+                    },
+                    "discount": {
+                      "type": "number",
+                      "description": "Discount"
+                    },
+                    "total_after_discount": {
+                      "type": "number",
+                      "description": "Total After Discount"
+                    },
+                    "net_total": {
+                      "type": "number",
+                      "description": "Total (Net)"
+                    },
+                    "quantity_in_stock": {
+                      "type": "number",
+                      "description": "Quantity in Stock"
+                    }
+                  },
+                  "required": [
+                    "product"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 1,
+                "description": "Products (Line Items)"
+              },
+              "Contact_Name": {
+                "type": "string",
+                "description": "Contact Name or ID"
+              },
+              "Deal_Name": {
+                "type": "string",
+                "description": "Deal Name or ID"
+              },
+              "Discount": {
+                "type": "number",
+                "description": "Discount"
+              },
+              "Tax": {
+                "type": "number",
+                "description": "Tax"
+              },
+              "Adjustment": {
+                "type": "number",
+                "description": "Adjustment"
+              },
+              "Sub_Total": {
+                "type": "number",
+                "description": "Sub Total"
+              },
+              "Grand_Total": {
+                "type": "number",
+                "description": "Grand Total"
+              },
+              "Due_Date": {
+                "type": "string",
+                "description": "Due Date (YYYY-MM-DD)"
+              },
+              "Carrier": {
+                "type": "string",
+                "description": "Carrier"
+              },
+              "Tracking_Number": {
+                "type": "string",
+                "description": "Tracking Number"
+              },
+              "Billing_Address": {
+                "type": "object",
+                "properties": {
+                  "Billing_Street": {
+                    "type": "string",
+                    "description": "Billing Street"
+                  },
+                  "Billing_City": {
+                    "type": "string",
+                    "description": "Billing City"
+                  },
+                  "Billing_State": {
+                    "type": "string",
+                    "description": "Billing State"
+                  },
+                  "Billing_Country": {
+                    "type": "string",
+                    "description": "Billing Country"
+                  },
+                  "Billing_Code": {
+                    "type": "string",
+                    "description": "Billing Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Billing Address"
+              },
+              "Shipping_Address": {
+                "type": "object",
+                "properties": {
+                  "Shipping_Street": {
+                    "type": "string",
+                    "description": "Shipping Street"
+                  },
+                  "Shipping_City": {
+                    "type": "string",
+                    "description": "Shipping City"
+                  },
+                  "Shipping_State": {
+                    "type": "string",
+                    "description": "Shipping State"
+                  },
+                  "Shipping_Country": {
+                    "type": "string",
+                    "description": "Shipping Country"
+                  },
+                  "Shipping_Code": {
+                    "type": "string",
+                    "description": "Shipping Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Shipping Address"
+              },
+              "Currency": {
+                "type": "string",
+                "description": "Currency Code"
+              },
+              "Exchange_Rate": {
+                "type": "number",
+                "description": "Exchange Rate"
+              },
+              "Status": {
+                "type": "string",
+                "description": "Status Name or ID"
+              },
+              "Sales_Commission": {
+                "type": "number",
+                "description": "Sales Commission"
+              },
+              "Sales_Order_Number": {
+                "type": "string",
+                "description": "Sales Order Number"
+              },
+              "Terms_and_Conditions": {
+                "type": "string",
+                "description": "Terms and Conditions"
+              },
+              "Description": {
+                "type": "string",
+                "description": "Description"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "Subject",
+              "Account_Name",
+              "Product_Details"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.salesOrder.delete-1783406955596",
+      "type": "action",
+      "position": {
+        "x": 819.4065456057715,
+        "y": -191.5341386130533
+      },
+      "data": {
+        "label": "Delete Sales Order",
+        "toolId": "zoho.crm.salesOrder.delete",
+        "toolData": {
+          "id": "zoho.crm.salesOrder.delete",
+          "displayName": "Delete Sales Order",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoSalesOrderDelete",
+          "icon": "zoho",
+          "description": "Delete a sales order from Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "salesOrderId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Sales Order ID"
+              }
+            },
+            "required": [
+              "salesOrderId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.salesOrder.getMany-1783406956506",
+      "type": "action",
+      "position": {
+        "x": 193.95979589941953,
+        "y": -35.83220514185175
+      },
+      "data": {
+        "label": "Get Many Sales Orders",
+        "toolId": "zoho.crm.salesOrder.getMany",
+        "toolData": {
+          "id": "zoho.crm.salesOrder.getMany",
+          "displayName": "Get Many Sales Orders",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoSalesOrderGetMany",
+          "icon": "zoho",
+          "description": "Retrieve multiple sales orders with filtering",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all results or limit"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 50,
+                "description": "Maximum number of records to return"
+              },
+              "approved": {
+                "type": "boolean",
+                "description": "Filter by approved status"
+              },
+              "converted": {
+                "type": "boolean",
+                "description": "Filter by converted status"
+              },
+              "includeChild": {
+                "type": "boolean",
+                "description": "Include child records"
+              },
+              "territoryId": {
+                "type": "string",
+                "description": "Territory ID filter"
+              },
+              "fields": {
+                "type": "string",
+                "description": "Comma-separated list of fields to return"
+              },
+              "sortBy": {
+                "type": "string",
+                "description": "Field to sort by"
+              },
+              "sortOrder": {
+                "type": "string",
+                "enum": [
+                  "asc",
+                  "desc"
+                ],
+                "description": "Sort Order (Ascending / Descending)"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.salesOrder.get-1783406957483",
+      "type": "action",
+      "position": {
+        "x": 822.0455614273172,
+        "y": -80.69547410813016
+      },
+      "data": {
+        "label": "Get Sales Order",
+        "toolId": "zoho.crm.salesOrder.get",
+        "toolData": {
+          "id": "zoho.crm.salesOrder.get",
+          "displayName": "Get Sales Order",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoSalesOrderGet",
+          "icon": "zoho",
+          "description": "Retrieve a specific sales order by ID",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "salesOrderId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Sales Order ID"
+              }
+            },
+            "required": [
+              "salesOrderId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.salesOrder.update-1783406958867",
+      "type": "action",
+      "position": {
+        "x": 690.0947703500278,
+        "y": 32.78220621833875
+      },
+      "data": {
+        "label": "Update Sales Order",
+        "toolId": "zoho.crm.salesOrder.update",
+        "toolData": {
+          "id": "zoho.crm.salesOrder.update",
+          "displayName": "Update Sales Order",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoSalesOrderUpdate",
+          "icon": "zoho",
+          "description": "Update an existing sales order in Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "salesOrderId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Sales Order ID"
+              },
+              "Subject": {
+                "type": "string",
+                "description": "Sales Order Subject"
+              },
+              "Account_Name": {
+                "type": "string",
+                "description": "Account Name or ID"
+              },
+              "Product_Details": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "product": {
+                      "type": "string",
+                      "description": "Product Name or ID"
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "description": "Quantity"
+                    },
+                    "unit_price": {
+                      "type": "number",
+                      "description": "Unit Price"
+                    },
+                    "list_price": {
+                      "type": "number",
+                      "description": "List Price"
+                    },
+                    "product_description": {
+                      "type": "string",
+                      "description": "Product Description"
+                    },
+                    "Tax": {
+                      "type": "number",
+                      "description": "Tax"
+                    },
+                    "total": {
+                      "type": "number",
+                      "description": "Total"
+                    },
+                    "discount": {
+                      "type": "number",
+                      "description": "Discount"
+                    },
+                    "total_after_discount": {
+                      "type": "number",
+                      "description": "Total After Discount"
+                    },
+                    "net_total": {
+                      "type": "number",
+                      "description": "Total (Net)"
+                    },
+                    "quantity_in_stock": {
+                      "type": "number",
+                      "description": "Quantity in Stock"
+                    }
+                  },
+                  "required": [
+                    "product"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 1,
+                "description": "Products (Line Items)"
+              },
+              "Contact_Name": {
+                "type": "string",
+                "description": "Contact Name or ID"
+              },
+              "Deal_Name": {
+                "type": "string",
+                "description": "Deal Name or ID"
+              },
+              "Discount": {
+                "type": "number",
+                "description": "Discount"
+              },
+              "Tax": {
+                "type": "number",
+                "description": "Tax"
+              },
+              "Adjustment": {
+                "type": "number",
+                "description": "Adjustment"
+              },
+              "Sub_Total": {
+                "type": "number",
+                "description": "Sub Total"
+              },
+              "Grand_Total": {
+                "type": "number",
+                "description": "Grand Total"
+              },
+              "Due_Date": {
+                "type": "string",
+                "description": "Due Date (YYYY-MM-DD)"
+              },
+              "Carrier": {
+                "type": "string",
+                "description": "Carrier"
+              },
+              "Tracking_Number": {
+                "type": "string",
+                "description": "Tracking Number"
+              },
+              "Billing_Address": {
+                "type": "object",
+                "properties": {
+                  "Billing_Street": {
+                    "type": "string",
+                    "description": "Billing Street"
+                  },
+                  "Billing_City": {
+                    "type": "string",
+                    "description": "Billing City"
+                  },
+                  "Billing_State": {
+                    "type": "string",
+                    "description": "Billing State"
+                  },
+                  "Billing_Country": {
+                    "type": "string",
+                    "description": "Billing Country"
+                  },
+                  "Billing_Code": {
+                    "type": "string",
+                    "description": "Billing Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Billing Address"
+              },
+              "Shipping_Address": {
+                "type": "object",
+                "properties": {
+                  "Shipping_Street": {
+                    "type": "string",
+                    "description": "Shipping Street"
+                  },
+                  "Shipping_City": {
+                    "type": "string",
+                    "description": "Shipping City"
+                  },
+                  "Shipping_State": {
+                    "type": "string",
+                    "description": "Shipping State"
+                  },
+                  "Shipping_Country": {
+                    "type": "string",
+                    "description": "Shipping Country"
+                  },
+                  "Shipping_Code": {
+                    "type": "string",
+                    "description": "Shipping Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Shipping Address"
+              },
+              "Currency": {
+                "type": "string",
+                "description": "Currency Code"
+              },
+              "Exchange_Rate": {
+                "type": "number",
+                "description": "Exchange Rate"
+              },
+              "Status": {
+                "type": "string",
+                "description": "Status Name or ID"
+              },
+              "Sales_Commission": {
+                "type": "number",
+                "description": "Sales Commission"
+              },
+              "Sales_Order_Number": {
+                "type": "string",
+                "description": "Sales Order Number"
+              },
+              "Terms_and_Conditions": {
+                "type": "string",
+                "description": "Terms and Conditions"
+              },
+              "Description": {
+                "type": "string",
+                "description": "Description"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "salesOrderId",
+              "Product_Details"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

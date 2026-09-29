@@ -1,0 +1,412 @@
+{
+  "nodes": [
+    {
+      "id": "chatAction-1783399226948",
+      "type": "action",
+      "position": {
+        "x": 1478.4955360732345,
+        "y": 385.6389277740369
+      },
+      "data": {
+        "label": "Send and Wait for Response",
+        "toolId": "chatAction",
+        "toolData": {
+          "id": "chatAction",
+          "displayName": "Chat Action",
+          "category": "Human Review",
+          "provider": "core",
+          "icon": "MessageSquare",
+          "description": "Send response in chat.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Send Message",
+                  "Send and Wait for Response"
+                ],
+                "default": "Send Message",
+                "description": "Operation"
+              },
+              "message": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Message"
+              },
+              "responseType": {
+                "type": "string",
+                "enum": [
+                  "Free Text",
+                  "Approval"
+                ],
+                "description": "Response Type"
+              },
+              "blockUserInput": {
+                "type": "boolean",
+                "default": false,
+                "description": "Block User Input"
+              },
+              "typeOfApproval": {
+                "type": "string",
+                "enum": [
+                  "Approve Only",
+                  "Approve and Disapprove"
+                ],
+                "default": "Approve and Disapprove",
+                "description": "Type of Approval"
+              },
+              "approveButtonLabel": {
+                "type": "string",
+                "default": "Approve",
+                "description": "Approve Button Label"
+              },
+              "approveButtonStyle": {
+                "type": "string",
+                "enum": [
+                  "Primary",
+                  "Secondary"
+                ],
+                "default": "Primary",
+                "description": "Approve Button Style"
+              },
+              "disapproveButtonLabel": {
+                "type": "string",
+                "default": "Disapprove",
+                "description": "Disapprove Button Label"
+              },
+              "disapproveButtonStyle": {
+                "type": "string",
+                "enum": [
+                  "Primary",
+                  "Secondary"
+                ],
+                "default": "Secondary",
+                "description": "Disapprove Button Style"
+              },
+              "limitWaitTime": {
+                "type": "boolean",
+                "default": false,
+                "description": "Limit Wait Time"
+              },
+              "limitType": {
+                "type": "string",
+                "enum": [
+                  "After Time Interval"
+                ],
+                "description": "Limit Type"
+              },
+              "amount": {
+                "type": "number",
+                "description": "Amount"
+              },
+              "unit": {
+                "type": "string",
+                "enum": [
+                  "Seconds",
+                  "Minutes",
+                  "Hours",
+                  "Days"
+                ],
+                "description": "Unit"
+              }
+            },
+            "required": [
+              "message"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "required": true,
+              "default": "Send Message",
+              "options": [
+                {
+                  "name": "Send Message",
+                  "value": "Send Message"
+                },
+                {
+                  "name": "Send and Wait for Response",
+                  "value": "Send and Wait for Response"
+                }
+              ]
+            },
+            {
+              "name": "message",
+              "displayName": "Message",
+              "type": "string",
+              "format": "text",
+              "required": true,
+              "default": "",
+              "description": "Text or markdown to display to the user"
+            },
+            {
+              "name": "responseType",
+              "displayName": "Response Type",
+              "type": "options",
+              "required": true,
+              "options": [
+                {
+                  "name": "Free Text",
+                  "value": "Free Text"
+                },
+                {
+                  "name": "Approval",
+                  "value": "Approval"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "Send and Wait for Response"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "typeOfApproval",
+              "displayName": "Type of Approval",
+              "type": "options",
+              "required": true,
+              "default": "Approve and Disapprove",
+              "options": [
+                {
+                  "name": "Approve Only",
+                  "value": "Approve Only"
+                },
+                {
+                  "name": "Approve and Disapprove",
+                  "value": "Approve and Disapprove"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "Send and Wait for Response"
+                  ],
+                  "responseType": [
+                    "Approval"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "approveButtonLabel",
+              "displayName": "Approve Button Label",
+              "type": "string",
+              "default": "Approve",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "Send and Wait for Response"
+                  ],
+                  "responseType": [
+                    "Approval"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "approveButtonStyle",
+              "displayName": "Approve Button Style",
+              "type": "options",
+              "advanced": true,
+              "default": "Primary",
+              "options": [
+                {
+                  "name": "Primary",
+                  "value": "Primary"
+                },
+                {
+                  "name": "Secondary",
+                  "value": "Secondary"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "Send and Wait for Response"
+                  ],
+                  "responseType": [
+                    "Approval"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "disapproveButtonLabel",
+              "displayName": "Disapprove Button Label",
+              "type": "string",
+              "default": "Disapprove",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "Send and Wait for Response"
+                  ],
+                  "responseType": [
+                    "Approval"
+                  ],
+                  "typeOfApproval": [
+                    "Approve and Disapprove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "disapproveButtonStyle",
+              "displayName": "Disapprove Button Style",
+              "type": "options",
+              "advanced": true,
+              "default": "Secondary",
+              "options": [
+                {
+                  "name": "Primary",
+                  "value": "Primary"
+                },
+                {
+                  "name": "Secondary",
+                  "value": "Secondary"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "Send and Wait for Response"
+                  ],
+                  "responseType": [
+                    "Approval"
+                  ],
+                  "typeOfApproval": [
+                    "Approve and Disapprove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "blockUserInput",
+              "displayName": "Block User Input",
+              "type": "boolean",
+              "description": "If true, user can only click buttons and cannot type custom responses",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "Send and Wait for Response"
+                  ],
+                  "responseType": [
+                    "Approval"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limitWaitTime",
+              "displayName": "Limit Wait Time",
+              "type": "boolean",
+              "advanced": true,
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "Send and Wait for Response"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limitType",
+              "displayName": "Limit Type",
+              "type": "options",
+              "advanced": true,
+              "default": "After Time Interval",
+              "options": [
+                {
+                  "name": "After Time Interval",
+                  "value": "After Time Interval"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "Send and Wait for Response"
+                  ],
+                  "limitWaitTime": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "amount",
+              "displayName": "Amount",
+              "type": "number",
+              "advanced": true,
+              "default": 1,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "Send and Wait for Response"
+                  ],
+                  "limitWaitTime": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "unit",
+              "displayName": "Unit",
+              "type": "options",
+              "advanced": true,
+              "default": "Seconds",
+              "options": [
+                {
+                  "name": "Seconds",
+                  "value": "Seconds"
+                },
+                {
+                  "name": "Minutes",
+                  "value": "Minutes"
+                },
+                {
+                  "name": "Hours",
+                  "value": "Hours"
+                },
+                {
+                  "name": "Days",
+                  "value": "Days"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "Send and Wait for Response"
+                  ],
+                  "limitWaitTime": [
+                    true
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "Send and Wait for Response"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "Send and Wait for Response"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false
+    }
+  ],
+  "edges": []
+}

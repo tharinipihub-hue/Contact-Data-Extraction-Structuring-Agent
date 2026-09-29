@@ -1,0 +1,1831 @@
+{
+  "nodes": [
+    {
+      "id": "aws.elb.loadbalancer.create-1783398701608",
+      "type": "action",
+      "position": {
+        "x": 442.2214471700373,
+        "y": 510.34842116556115
+      },
+      "data": {
+        "label": "Create",
+        "toolId": "aws.elb.loadbalancer.create",
+        "toolData": {
+          "id": "aws.elb.loadbalancer.create",
+          "displayName": "Create",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Create",
+          "icon": "/tools/elb.png",
+          "actionGroup": "AWS ELB Load Balancer",
+          "description": "Create Load Balancer in AWS ELB",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "loadBalancer",
+                  "listenerCertificate"
+                ],
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "add",
+                  "remove"
+                ],
+                "description": "Operation"
+              },
+              "loadBalancerArn": {
+                "type": "string",
+                "description": "Load Balancer ARN Name or ID"
+              },
+              "certificateLoadBalancerArn": {
+                "type": "string",
+                "description": "Load Balancer ARN for Certificates"
+              },
+              "listenerArn": {
+                "type": "string",
+                "description": "Listener ARN Name or ID"
+              },
+              "certificateArn": {
+                "type": "string",
+                "description": "Certificate ARN"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "credentials": {
+                "description": "AWS ELB credentials"
+              }
+            },
+            "required": [
+              "resource",
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Load Balancer",
+                  "value": "loadBalancer"
+                },
+                {
+                  "name": "Listener Certificate",
+                  "value": "listenerCertificate"
+                }
+              ],
+              "default": "loadBalancer",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                }
+              ],
+              "default": "create",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Add",
+                  "value": "add"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Remove",
+                  "value": "remove"
+                }
+              ],
+              "default": "getMany",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "listenerCertificate"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "loadBalancerArn",
+              "displayName": "Load Balancer ARN Name or ID",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/elb/load-balancers",
+              "dependsOn": [
+                "credentials"
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "delete",
+                    "get"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "name",
+              "displayName": "Name",
+              "type": "string",
+              "required": true,
+              "default": "",
+              "placeholder": "e.g. my-load-balancer",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "ipAddressType",
+              "displayName": "IP Address Type",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Ipv4",
+                  "value": "ipv4"
+                },
+                {
+                  "name": "Dualstack",
+                  "value": "dualstack"
+                }
+              ],
+              "default": "ipv4",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "scheme",
+              "displayName": "Schema",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Internal",
+                  "value": "internal"
+                },
+                {
+                  "name": "Internet Facing",
+                  "value": "internet-facing"
+                }
+              ],
+              "default": "internet-facing",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "type",
+              "displayName": "Type",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Application",
+                  "value": "application"
+                },
+                {
+                  "name": "Network",
+                  "value": "network"
+                }
+              ],
+              "default": "application",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "subnets",
+              "displayName": "Subnet ID Names or IDs",
+              "type": "options",
+              "options": [],
+              "multiple": true,
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/elb/subnets",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "securityGroups",
+              "displayName": "Security Group IDs",
+              "type": "options",
+              "options": [],
+              "multiple": true,
+              "advanced": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/elb/security-groups",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "tags",
+              "displayName": "Tags",
+              "type": "array",
+              "advanced": true,
+              "placeholder": "Add Tag",
+              "fields": [
+                {
+                  "name": "Key",
+                  "displayName": "Key",
+                  "type": "string",
+                  "placeholder": "e.g. Department"
+                },
+                {
+                  "name": "Value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "placeholder": "e.g. Engineering"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "certificateLoadBalancerArn",
+              "displayName": "Load Balancer ARN Name or ID",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/elb/load-balancers",
+              "dependsOn": [
+                "credentials"
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "listenerCertificate"
+                  ],
+                  "operation": [
+                    "add",
+                    "getMany",
+                    "remove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "listenerArn",
+              "displayName": "Listener ARN Name or ID",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/elb/listeners",
+              "dependsOn": [
+                "certificateLoadBalancerArn",
+                "credentials"
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "listenerCertificate"
+                  ],
+                  "operation": [
+                    "add",
+                    "getMany",
+                    "remove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "certificateArn",
+              "displayName": "Certificate ARN",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "listenerCertificate"
+                  ],
+                  "operation": [
+                    "add",
+                    "remove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 100,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                },
+                "hide": {
+                  "returnAll": [
+                    true
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "resource": "loadBalancer",
+            "operation": "create"
+          },
+          "subCategory": "AWS ELB"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "loadBalancer",
+          "operation": "create"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.elb.loadbalancer.delete-1783398702704",
+      "type": "action",
+      "position": {
+        "x": 505.39985669487425,
+        "y": 696.4375546750808
+      },
+      "data": {
+        "label": "Delete",
+        "toolId": "aws.elb.loadbalancer.delete",
+        "toolData": {
+          "id": "aws.elb.loadbalancer.delete",
+          "displayName": "Delete",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Delete",
+          "icon": "/tools/elb.png",
+          "actionGroup": "AWS ELB Load Balancer",
+          "description": "Delete Load Balancer in AWS ELB",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "loadBalancer",
+                  "listenerCertificate"
+                ],
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "add",
+                  "remove"
+                ],
+                "description": "Operation"
+              },
+              "loadBalancerArn": {
+                "type": "string",
+                "description": "Load Balancer ARN Name or ID"
+              },
+              "certificateLoadBalancerArn": {
+                "type": "string",
+                "description": "Load Balancer ARN for Certificates"
+              },
+              "listenerArn": {
+                "type": "string",
+                "description": "Listener ARN Name or ID"
+              },
+              "certificateArn": {
+                "type": "string",
+                "description": "Certificate ARN"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "credentials": {
+                "description": "AWS ELB credentials"
+              }
+            },
+            "required": [
+              "resource",
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Load Balancer",
+                  "value": "loadBalancer"
+                },
+                {
+                  "name": "Listener Certificate",
+                  "value": "listenerCertificate"
+                }
+              ],
+              "default": "loadBalancer",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                }
+              ],
+              "default": "delete",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Add",
+                  "value": "add"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Remove",
+                  "value": "remove"
+                }
+              ],
+              "default": "getMany",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "listenerCertificate"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "loadBalancerArn",
+              "displayName": "Load Balancer ARN Name or ID",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/elb/load-balancers",
+              "dependsOn": [
+                "credentials"
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "delete",
+                    "get"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "name",
+              "displayName": "Name",
+              "type": "string",
+              "required": true,
+              "default": "",
+              "placeholder": "e.g. my-load-balancer",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "ipAddressType",
+              "displayName": "IP Address Type",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Ipv4",
+                  "value": "ipv4"
+                },
+                {
+                  "name": "Dualstack",
+                  "value": "dualstack"
+                }
+              ],
+              "default": "ipv4",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "scheme",
+              "displayName": "Schema",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Internal",
+                  "value": "internal"
+                },
+                {
+                  "name": "Internet Facing",
+                  "value": "internet-facing"
+                }
+              ],
+              "default": "internet-facing",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "type",
+              "displayName": "Type",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Application",
+                  "value": "application"
+                },
+                {
+                  "name": "Network",
+                  "value": "network"
+                }
+              ],
+              "default": "application",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "subnets",
+              "displayName": "Subnet ID Names or IDs",
+              "type": "options",
+              "options": [],
+              "multiple": true,
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/elb/subnets",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "securityGroups",
+              "displayName": "Security Group IDs",
+              "type": "options",
+              "options": [],
+              "multiple": true,
+              "advanced": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/elb/security-groups",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "tags",
+              "displayName": "Tags",
+              "type": "array",
+              "advanced": true,
+              "placeholder": "Add Tag",
+              "fields": [
+                {
+                  "name": "Key",
+                  "displayName": "Key",
+                  "type": "string",
+                  "placeholder": "e.g. Department"
+                },
+                {
+                  "name": "Value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "placeholder": "e.g. Engineering"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "certificateLoadBalancerArn",
+              "displayName": "Load Balancer ARN Name or ID",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/elb/load-balancers",
+              "dependsOn": [
+                "credentials"
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "listenerCertificate"
+                  ],
+                  "operation": [
+                    "add",
+                    "getMany",
+                    "remove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "listenerArn",
+              "displayName": "Listener ARN Name or ID",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/elb/listeners",
+              "dependsOn": [
+                "certificateLoadBalancerArn",
+                "credentials"
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "listenerCertificate"
+                  ],
+                  "operation": [
+                    "add",
+                    "getMany",
+                    "remove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "certificateArn",
+              "displayName": "Certificate ARN",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "listenerCertificate"
+                  ],
+                  "operation": [
+                    "add",
+                    "remove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 100,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                },
+                "hide": {
+                  "returnAll": [
+                    true
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "resource": "loadBalancer",
+            "operation": "delete"
+          },
+          "subCategory": "AWS ELB"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "loadBalancer",
+          "operation": "delete"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.elb.loadbalancer.get-1783398703960",
+      "type": "action",
+      "position": {
+        "x": 219.3739663006125,
+        "y": 713.6680300000364
+      },
+      "data": {
+        "label": "Get",
+        "toolId": "aws.elb.loadbalancer.get",
+        "toolData": {
+          "id": "aws.elb.loadbalancer.get",
+          "displayName": "Get",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Get",
+          "icon": "/tools/elb.png",
+          "actionGroup": "AWS ELB Load Balancer",
+          "description": "Get Load Balancer in AWS ELB",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "loadBalancer",
+                  "listenerCertificate"
+                ],
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "add",
+                  "remove"
+                ],
+                "description": "Operation"
+              },
+              "loadBalancerArn": {
+                "type": "string",
+                "description": "Load Balancer ARN Name or ID"
+              },
+              "certificateLoadBalancerArn": {
+                "type": "string",
+                "description": "Load Balancer ARN for Certificates"
+              },
+              "listenerArn": {
+                "type": "string",
+                "description": "Listener ARN Name or ID"
+              },
+              "certificateArn": {
+                "type": "string",
+                "description": "Certificate ARN"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "credentials": {
+                "description": "AWS ELB credentials"
+              }
+            },
+            "required": [
+              "resource",
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Load Balancer",
+                  "value": "loadBalancer"
+                },
+                {
+                  "name": "Listener Certificate",
+                  "value": "listenerCertificate"
+                }
+              ],
+              "default": "loadBalancer",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                }
+              ],
+              "default": "get",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Add",
+                  "value": "add"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Remove",
+                  "value": "remove"
+                }
+              ],
+              "default": "getMany",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "listenerCertificate"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "loadBalancerArn",
+              "displayName": "Load Balancer ARN Name or ID",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/elb/load-balancers",
+              "dependsOn": [
+                "credentials"
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "delete",
+                    "get"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "name",
+              "displayName": "Name",
+              "type": "string",
+              "required": true,
+              "default": "",
+              "placeholder": "e.g. my-load-balancer",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "ipAddressType",
+              "displayName": "IP Address Type",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Ipv4",
+                  "value": "ipv4"
+                },
+                {
+                  "name": "Dualstack",
+                  "value": "dualstack"
+                }
+              ],
+              "default": "ipv4",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "scheme",
+              "displayName": "Schema",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Internal",
+                  "value": "internal"
+                },
+                {
+                  "name": "Internet Facing",
+                  "value": "internet-facing"
+                }
+              ],
+              "default": "internet-facing",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "type",
+              "displayName": "Type",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Application",
+                  "value": "application"
+                },
+                {
+                  "name": "Network",
+                  "value": "network"
+                }
+              ],
+              "default": "application",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "subnets",
+              "displayName": "Subnet ID Names or IDs",
+              "type": "options",
+              "options": [],
+              "multiple": true,
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/elb/subnets",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "securityGroups",
+              "displayName": "Security Group IDs",
+              "type": "options",
+              "options": [],
+              "multiple": true,
+              "advanced": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/elb/security-groups",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "tags",
+              "displayName": "Tags",
+              "type": "array",
+              "advanced": true,
+              "placeholder": "Add Tag",
+              "fields": [
+                {
+                  "name": "Key",
+                  "displayName": "Key",
+                  "type": "string",
+                  "placeholder": "e.g. Department"
+                },
+                {
+                  "name": "Value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "placeholder": "e.g. Engineering"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "certificateLoadBalancerArn",
+              "displayName": "Load Balancer ARN Name or ID",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/elb/load-balancers",
+              "dependsOn": [
+                "credentials"
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "listenerCertificate"
+                  ],
+                  "operation": [
+                    "add",
+                    "getMany",
+                    "remove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "listenerArn",
+              "displayName": "Listener ARN Name or ID",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/elb/listeners",
+              "dependsOn": [
+                "certificateLoadBalancerArn",
+                "credentials"
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "listenerCertificate"
+                  ],
+                  "operation": [
+                    "add",
+                    "getMany",
+                    "remove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "certificateArn",
+              "displayName": "Certificate ARN",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "listenerCertificate"
+                  ],
+                  "operation": [
+                    "add",
+                    "remove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 100,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                },
+                "hide": {
+                  "returnAll": [
+                    true
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "resource": "loadBalancer",
+            "operation": "get"
+          },
+          "subCategory": "AWS ELB"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "loadBalancer",
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.elb.loadbalancer.getmany-1783398705080",
+      "type": "action",
+      "position": {
+        "x": 152.7494617107845,
+        "y": 581.5677191753773
+      },
+      "data": {
+        "label": "Get Many",
+        "toolId": "aws.elb.loadbalancer.getmany",
+        "toolData": {
+          "id": "aws.elb.loadbalancer.getmany",
+          "displayName": "Get Many",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Get Many",
+          "icon": "/tools/elb.png",
+          "actionGroup": "AWS ELB Load Balancer",
+          "description": "Get Many Load Balancer in AWS ELB",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "loadBalancer",
+                  "listenerCertificate"
+                ],
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "add",
+                  "remove"
+                ],
+                "description": "Operation"
+              },
+              "loadBalancerArn": {
+                "type": "string",
+                "description": "Load Balancer ARN Name or ID"
+              },
+              "certificateLoadBalancerArn": {
+                "type": "string",
+                "description": "Load Balancer ARN for Certificates"
+              },
+              "listenerArn": {
+                "type": "string",
+                "description": "Listener ARN Name or ID"
+              },
+              "certificateArn": {
+                "type": "string",
+                "description": "Certificate ARN"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "credentials": {
+                "description": "AWS ELB credentials"
+              }
+            },
+            "required": [
+              "resource",
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Load Balancer",
+                  "value": "loadBalancer"
+                },
+                {
+                  "name": "Listener Certificate",
+                  "value": "listenerCertificate"
+                }
+              ],
+              "default": "loadBalancer",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                }
+              ],
+              "default": "getMany",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Add",
+                  "value": "add"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Remove",
+                  "value": "remove"
+                }
+              ],
+              "default": "getMany",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "listenerCertificate"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "loadBalancerArn",
+              "displayName": "Load Balancer ARN Name or ID",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/elb/load-balancers",
+              "dependsOn": [
+                "credentials"
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "delete",
+                    "get"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "name",
+              "displayName": "Name",
+              "type": "string",
+              "required": true,
+              "default": "",
+              "placeholder": "e.g. my-load-balancer",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "ipAddressType",
+              "displayName": "IP Address Type",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Ipv4",
+                  "value": "ipv4"
+                },
+                {
+                  "name": "Dualstack",
+                  "value": "dualstack"
+                }
+              ],
+              "default": "ipv4",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "scheme",
+              "displayName": "Schema",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Internal",
+                  "value": "internal"
+                },
+                {
+                  "name": "Internet Facing",
+                  "value": "internet-facing"
+                }
+              ],
+              "default": "internet-facing",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "type",
+              "displayName": "Type",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Application",
+                  "value": "application"
+                },
+                {
+                  "name": "Network",
+                  "value": "network"
+                }
+              ],
+              "default": "application",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "subnets",
+              "displayName": "Subnet ID Names or IDs",
+              "type": "options",
+              "options": [],
+              "multiple": true,
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/elb/subnets",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "securityGroups",
+              "displayName": "Security Group IDs",
+              "type": "options",
+              "options": [],
+              "multiple": true,
+              "advanced": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/elb/security-groups",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "tags",
+              "displayName": "Tags",
+              "type": "array",
+              "advanced": true,
+              "placeholder": "Add Tag",
+              "fields": [
+                {
+                  "name": "Key",
+                  "displayName": "Key",
+                  "type": "string",
+                  "placeholder": "e.g. Department"
+                },
+                {
+                  "name": "Value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "placeholder": "e.g. Engineering"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "loadBalancer"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "certificateLoadBalancerArn",
+              "displayName": "Load Balancer ARN Name or ID",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/elb/load-balancers",
+              "dependsOn": [
+                "credentials"
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "listenerCertificate"
+                  ],
+                  "operation": [
+                    "add",
+                    "getMany",
+                    "remove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "listenerArn",
+              "displayName": "Listener ARN Name or ID",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/elb/listeners",
+              "dependsOn": [
+                "certificateLoadBalancerArn",
+                "credentials"
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "listenerCertificate"
+                  ],
+                  "operation": [
+                    "add",
+                    "getMany",
+                    "remove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "certificateArn",
+              "displayName": "Certificate ARN",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "listenerCertificate"
+                  ],
+                  "operation": [
+                    "add",
+                    "remove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 100,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                },
+                "hide": {
+                  "returnAll": [
+                    true
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "resource": "loadBalancer",
+            "operation": "getMany"
+          },
+          "subCategory": "AWS ELB"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "loadBalancer",
+          "operation": "getMany"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 152.7494617107845,
+        "y": 581.5677191753773
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

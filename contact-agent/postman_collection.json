@@ -1,0 +1,253 @@
+{
+  "info": {
+    "name": "Contact Data Extraction Agent API",
+    "_postman_id": "contact-agent-collection-v1",
+    "description": "API collection for testing the Contact Data Extraction & Structuring Agent backend (Node.js/Express on port 4000)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:4000", "type": "string" },
+    { "key": "batch_id", "value": "", "type": "string" },
+    { "key": "file_id", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "1. Upload Files",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const res = pm.response.json();",
+              "if (res.batch_id) { pm.collectionVariables.set('batch_id', res.batch_id); }",
+              "if (res.files && res.files.length > 0) { pm.collectionVariables.set('file_id', res.files[0].file_id); }",
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Has batch_id', () => pm.expect(res.batch_id).to.be.a('string'));",
+              "pm.test('Has files array', () => pm.expect(res.files).to.be.an('array'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "files",
+              "type": "file",
+              "src": "/path/to/your/business_card.jpg",
+              "description": "Replace with actual file path — supports JPG, PNG, PDF, CSV"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/upload",
+          "host": ["{{base_url}}"],
+          "path": ["upload"]
+        },
+        "description": "Upload one or more files (images, PDFs, CSVs). Returns batch_id and per-file file_ids. Processing begins immediately via Workbench webhook."
+      },
+      "response": [
+        {
+          "name": "Success",
+          "status": "OK",
+          "code": 200,
+          "body": "{\"batch_id\": \"550e8400-e29b-41d4-a716-446655440000\", \"total_files\": 1, \"files\": [{\"file_id\": \"6ba7b810-9dad-11d1-80b4-00c04fd430c8\", \"file_name\": \"business_card.jpg\", \"status\": \"queued\"}]}"
+        }
+      ]
+    },
+    {
+      "name": "2. Get Batch Status",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "const res = pm.response.json();",
+              "pm.test('Has batch_id', () => pm.expect(res.batch_id).to.be.a('string'));",
+              "pm.test('Has files array', () => pm.expect(res.files).to.be.an('array'));",
+              "console.log('Batch status:', JSON.stringify(res, null, 2));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/status/{{batch_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["status", "{{batch_id}}"]
+        },
+        "description": "Poll batch processing status. Returns per-file status: queued | processing | done | failed"
+      },
+      "response": [
+        {
+          "name": "Success",
+          "status": "OK",
+          "code": 200,
+          "body": "{\"batch_id\": \"550e8400-e29b-41d4-a716-446655440000\", \"total_files\": 1, \"done_count\": 1, \"failed_count\": 0, \"processing_count\": 0, \"queued_count\": 0, \"files\": [{\"file_id\": \"6ba7b810-9dad-11d1-80b4-00c04fd430c8\", \"file_name\": \"business_card.jpg\", \"status\": \"done\", \"error\": null}]}"
+        }
+      ]
+    },
+    {
+      "name": "3. Retry Failed File",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "const res = pm.response.json();",
+              "pm.test('Status is queued', () => pm.expect(res.status).to.equal('queued'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/retry/{{file_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["retry", "{{file_id}}"]
+        },
+        "description": "Retry processing a failed file. Only works on files with status=failed."
+      },
+      "response": [
+        {
+          "name": "Success",
+          "status": "OK",
+          "code": 200,
+          "body": "{\"file_id\": \"6ba7b810-9dad-11d1-80b4-00c04fd430c8\", \"status\": \"queued\", \"message\": \"Retry triggered\"}"
+        },
+        {
+          "name": "Not Failed",
+          "status": "Bad Request",
+          "code": 400,
+          "body": "{\"error\": \"Only failed files can be retried\"}"
+        }
+      ]
+    },
+    {
+      "name": "4. Get All Contacts",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "const res = pm.response.json();",
+              "pm.test('Has contacts array', () => pm.expect(res.contacts).to.be.an('array'));",
+              "pm.test('Has total', () => pm.expect(res.total).to.be.a('number'));",
+              "console.log('Total contacts:', res.total);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/contacts",
+          "host": ["{{base_url}}"],
+          "path": ["contacts"]
+        },
+        "description": "Get all extracted contacts across all batches."
+      },
+      "response": [
+        {
+          "name": "Success",
+          "status": "OK",
+          "code": 200,
+          "body": "{\"total\": 3, \"contacts\": [{\"full_name\": \"Jane Smith\", \"designation\": \"VP Sales\", \"company\": \"Acme Corp\", \"email\": \"jane@acme.com\", \"phone\": \"+1-555-0100\", \"city\": \"Austin\", \"state\": \"TX\", \"country\": \"USA\", \"sector_industry\": \"Technology\", \"linkedin_url\": null, \"website\": \"https://acme.com\", \"source\": \"business_card.jpg\", \"validation_status\": \"valid\", \"duplicate_status\": \"unique\"}]}"
+        }
+      ]
+    },
+    {
+      "name": "5. Get Contacts by Batch",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "const res = pm.response.json();",
+              "pm.test('Has contacts array', () => pm.expect(res.contacts).to.be.an('array'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/contacts?batch_id={{batch_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["contacts"],
+          "query": [{ "key": "batch_id", "value": "{{batch_id}}" }]
+        },
+        "description": "Get contacts for a specific batch only."
+      }
+    },
+    {
+      "name": "6. Simulate Workbench Callback (TEST ONLY)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "const res = pm.response.json();",
+              "pm.test('OK true', () => pm.expect(res.ok).to.be.true);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"file_id\": \"{{file_id}}\",\n  \"batch_id\": \"{{batch_id}}\",\n  \"status\": \"done\",\n  \"contacts\": [\n    {\n      \"full_name\": \"Jane Smith\",\n      \"first_name\": \"Jane\",\n      \"last_name\": \"Smith\",\n      \"designation\": \"VP Sales\",\n      \"company\": \"Acme Corp\",\n      \"email\": \"jane@acme.com\",\n      \"phone\": \"+1-555-0100\",\n      \"address\": \"123 Main St\",\n      \"city\": \"Austin\",\n      \"state\": \"TX\",\n      \"country\": \"USA\",\n      \"sector_industry\": \"Technology\",\n      \"linkedin_url\": null,\n      \"website\": \"https://acme.com\",\n      \"source\": \"business_card.jpg\",\n      \"validation_status\": \"valid\",\n      \"duplicate_status\": \"unique\"\n    }\n  ],\n  \"error\": null\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/webhook/workbench-callback",
+          "host": ["{{base_url}}"],
+          "path": ["webhook", "workbench-callback"]
+        },
+        "description": "⚠️ For TESTING ONLY. Simulates the callback that SNS Square Agent Workbench sends after processing a file. Use this to test the backend callback handler WITHOUT a live Workbench connection."
+      }
+    },
+    {
+      "name": "7. Health Check (Upload Multiple Files)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "files", "type": "file", "src": "/path/to/contacts.csv" },
+            { "key": "files", "type": "file", "src": "/path/to/business_card.pdf" },
+            { "key": "files", "type": "file", "src": "/path/to/card_photo.jpg" }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/upload",
+          "host": ["{{base_url}}"],
+          "path": ["upload"]
+        },
+        "description": "Upload multiple files in a single batch. All files share the same batch_id."
+      }
+    }
+  ]
+}

@@ -1,0 +1,882 @@
+{
+  "_platform": "agentbuilder",
+  "_version": 1,
+  "_exportedAt": "2026-09-26T03:00:00.000Z",
+  "_description": "Contact Data Extraction Agent - Single File, Short Prompts, llama-3.1-8b-instant",
+  "_notes": [
+    "Model: llama-3.1-8b-instant (free tier, 1M TPM, 128k context - no 413 errors).",
+    "Set Groq credential on all 4 Groq nodes.",
+    "Set Mistral credential on mistral-ocr node.",
+    "Set Google Sheets credential on all 4 Append Row nodes.",
+    "Google Sheet tab must be named 'Contacts' with headers in Row 1.",
+    "For each Loop node: manually connect LLM output -> Loop input, Loop LOOP output -> Sheets, Loop DONE output -> Collect Results, Sheets output -> Loop input.",
+    "Toggle workflow Active (ON) after import."
+  ],
+  "workflow": {
+    "nodes": [
+      {
+        "id": "webhook-trigger-contact-extraction",
+        "type": "webhook",
+        "position": { "x": 50, "y": 380 },
+        "data": {
+          "label": "Contact Extraction Webhook",
+          "toolId": "webhook",
+          "toolData": {
+            "id": "webhook",
+            "displayName": "Webhook Trigger",
+            "category": "Input / Output",
+            "icon": "webhook",
+            "description": "Trigger workflow via webhook"
+          },
+          "isTrigger": true,
+          "isPrimaryTrigger": true,
+          "inputs": {
+            "path": "contact-extraction",
+            "method": "POST",
+            "responseMode": "respondWithNode",
+            "authentication": "none",
+            "sessionSource": "none",
+            "options": { "allowedOrigins": "*" }
+          }
+        },
+        "width": 220,
+        "height": 100
+      },
+      {
+        "id": "set-passthrough-fields",
+        "type": "action",
+        "position": { "x": 350, "y": 380 },
+        "data": {
+          "label": "Preserve file_id & batch_id",
+          "toolId": "core.set",
+          "toolData": {
+            "id": "core.set",
+            "displayName": "Set Fields",
+            "category": "Core  Utilities",
+            "provider": "core",
+            "operation": "set",
+            "description": "Set or update fields"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "mode": "manual",
+            "assignments": [
+              { "name": "file_id",      "value": "{{ $json.body.file_id }}",                   "valueType": "expression" },
+              { "name": "batch_id",     "value": "{{ $json.body.batch_id }}",                  "valueType": "expression" },
+              { "name": "file_name",    "value": "{{ $json.body.file_name }}",                 "valueType": "expression" },
+              { "name": "file_type",    "value": "{{ $json.body.file_type }}",                 "valueType": "expression" },
+              { "name": "file_content", "value": "{{ $json.body.file_content }}",              "valueType": "expression" },
+              { "name": "callback_url", "value": "{{ $json.body.callback_url }}",              "valueType": "expression" },
+              { "name": "source_label", "value": "{{ $json.body.source_label || 'upload' }}", "valueType": "expression" }
+            ],
+            "includeOtherInputFields": false
+          }
+        },
+        "width": 220,
+        "height": 94
+      },
+      {
+        "id": "switch-file-type",
+        "type": "switch",
+        "position": { "x": 650, "y": 380 },
+        "data": {
+          "label": "Route by File Type",
+          "toolId": "core_switch",
+          "toolData": {
+            "id": "core_switch",
+            "displayName": "Switch",
+            "category": "Logic & Flow Control",
+            "icon": "switch",
+            "description": "Route workflow using conditions"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "mode": "rules",
+            "rules": [
+              { "value1": "{{ $json.file_type }}", "operator": "contains", "value2": "pdf",   "outputIndex": 0 },
+              { "value1": "{{ $json.file_type }}", "operator": "contains", "value2": "csv",   "outputIndex": 1 },
+              { "value1": "{{ $json.file_type }}", "operator": "contains", "value2": "image", "outputIndex": 2 }
+            ],
+            "sendToAllMatches": false,
+            "ignoreCase": true,
+            "fallbackOutput": "fallback"
+          }
+        },
+        "width": 240,
+        "height": 129
+      },
+
+      {
+        "id": "extract-pdf",
+        "type": "action",
+        "position": { "x": 980, "y": 80 },
+        "data": {
+          "label": "Extract From PDF",
+          "toolId": "extract-from-file.extract-from-pdf",
+          "toolData": {
+            "id": "extract-from-file.extract-from-pdf",
+            "displayName": "Extract From PDF",
+            "category": "Knowledge / Context",
+            "provider": "extractFromFile",
+            "operation": "extract-from-pdf",
+            "description": "Parse PDF content into JSON text"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": { "pdfData": "{{ $json.file_content }}" }
+        },
+        "width": 220,
+        "height": 94
+      },
+      {
+        "id": "groq-pdf-extractor",
+        "type": "action",
+        "position": { "x": 1260, "y": 80 },
+        "data": {
+          "label": "Groq: Extract Contacts from PDF",
+          "toolId": "groq",
+          "toolData": {
+            "id": "groq",
+            "displayName": "Groq",
+            "type": "chat model",
+            "category": "AI / LLM",
+            "provider": "LLM Models",
+            "operation": "execute",
+            "description": "Run ultra-fast LLM inference with Groq-hosted open-source models."
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "resource": "Text",
+            "operation": "Chat",
+            "model": "llama-3.1-8b-instant",
+            "credentialId": "",
+            "prompt": "Extract all contacts from this text. Return ONLY valid JSON: {\"contacts\":[{\"full_name\":null,\"first_name\":null,\"last_name\":null,\"designation\":null,\"company\":null,\"email\":null,\"phone\":null,\"address\":null,\"city\":null,\"state\":null,\"country\":null,\"sector_industry\":null,\"linkedin_url\":null,\"website\":null,\"source\":\"{{ $json.file_name }}\",\"validation_status\":\"valid\",\"duplicate_status\":\"unknown\"}]}. Use null for missing fields. No markdown.\n\nText:\n{{ ($json.text || $json.markdown || $json.content || '').slice(0, 6000) }}",
+            "simplify": true,
+            "outputContentAsJson": true,
+            "options": {
+              "systemMessage": "You are a contact extraction AI. Output only valid JSON. No prose, no markdown fences.",
+              "maxTokens": 4096,
+              "temperature": 0.05
+            }
+          }
+        },
+        "width": 220,
+        "height": 94
+      },
+      {
+        "id": "loop-pdf-contacts",
+        "type": "loop",
+        "position": { "x": 1560, "y": 80 },
+        "data": {
+          "label": "Loop PDF Contacts",
+          "toolId": "core_loop",
+          "toolData": {
+            "id": "core_loop",
+            "displayName": "Loop Items",
+            "category": "Logic & Flow Control",
+            "icon": "Repeat",
+            "description": "Process items in loop"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "inputField": "contacts",
+            "batchSize": 1,
+            "options": { "doneBranchOutput": "bundled" }
+          }
+        },
+        "width": 220,
+        "height": 210
+      },
+      {
+        "id": "sheets-pdf",
+        "type": "action",
+        "position": { "x": 1880, "y": 80 },
+        "data": {
+          "label": "Append to Google Sheets (PDF)",
+          "toolId": "google.sheets.append_row",
+          "toolData": {
+            "id": "google.sheets.append_row",
+            "displayName": "Append Row",
+            "category": "Integrations",
+            "provider": "sheets",
+            "operation": "sheetsAppendRow",
+            "description": "Append a row of data to a sheet"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "credentialId": "",
+            "spreadsheetId": "1AZqaSfoyhcjQOLif1xZfeGi9rfMWHwKDRJUaYuArJVE",
+            "sheetName": "Contacts",
+            "values": {
+              "Full Name":         "{{ $json.full_name }}",
+              "First Name":        "{{ $json.first_name }}",
+              "Last Name":         "{{ $json.last_name }}",
+              "Designation":       "{{ $json.designation }}",
+              "Company":           "{{ $json.company }}",
+              "Email":             "{{ $json.email }}",
+              "Phone":             "{{ $json.phone }}",
+              "Address":           "{{ $json.address }}",
+              "City":              "{{ $json.city }}",
+              "State":             "{{ $json.state }}",
+              "Country":           "{{ $json.country }}",
+              "Sector/Industry":   "{{ $json.sector_industry }}",
+              "LinkedIn URL":      "{{ $json.linkedin_url }}",
+              "Website":           "{{ $json.website }}",
+              "Source":            "{{ $json.source }}",
+              "Validation Status": "{{ $json.validation_status }}",
+              "Duplicate Status":  "{{ $json.duplicate_status }}",
+              "Extracted At":      "{{ new Date().toISOString() }}"
+            },
+            "valueInputOption": "USER_ENTERED"
+          }
+        },
+        "width": 220,
+        "height": 94
+      },
+      {
+        "id": "collect-results-pdf",
+        "type": "action",
+        "position": { "x": 2180, "y": 80 },
+        "data": {
+          "label": "Collect PDF Results",
+          "toolId": "core.set",
+          "toolData": {
+            "id": "core.set",
+            "displayName": "Set Fields",
+            "category": "Core  Utilities",
+            "provider": "core",
+            "operation": "set",
+            "description": "Set or update fields"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "mode": "manual",
+            "assignments": [
+              { "name": "file_id",  "value": "={{ $node['set-passthrough-fields'].json.file_id }}",  "valueType": "expression" },
+              { "name": "batch_id", "value": "={{ $node['set-passthrough-fields'].json.batch_id }}", "valueType": "expression" },
+              { "name": "status",   "value": "done",                                                  "valueType": "string" },
+              { "name": "contacts", "value": "={{ $node['groq-pdf-extractor'].json.contacts || (Array.isArray($json.contacts) ? $json.contacts : []) }}", "valueType": "expression" }
+            ],
+            "includeOtherInputFields": false
+          }
+        },
+        "width": 220,
+        "height": 94
+      },
+      {
+        "id": "respond-pdf",
+        "type": "action",
+        "position": { "x": 2480, "y": 80 },
+        "data": {
+          "label": "Callback to Backend (PDF)",
+          "toolId": "respondToWebhook",
+          "toolData": {
+            "id": "respondToWebhook",
+            "displayName": "Webhook Response",
+            "category": "Input / Output",
+            "icon": "reply",
+            "description": "Send response to webhook"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "respondWith": "JSON",
+            "responseBody": "{{ JSON.stringify($json) }}",
+            "responseCode": 200
+          }
+        },
+        "width": 220,
+        "height": 94
+      },
+
+      {
+        "id": "extract-csv",
+        "type": "action",
+        "position": { "x": 980, "y": 280 },
+        "data": {
+          "label": "Extract From CSV",
+          "toolId": "extract-from-file.extract-from-csv",
+          "toolData": {
+            "id": "extract-from-file.extract-from-csv",
+            "displayName": "Extract From CSV",
+            "category": "Knowledge / Context",
+            "provider": "extractFromFile",
+            "operation": "extract-from-csv",
+            "description": "Parse CSV content into JSON"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "csvData": "{{ $json.file_content }}",
+            "delimiter": ",",
+            "headers": true,
+            "trim": true
+          }
+        },
+        "width": 220,
+        "height": 94
+      },
+      {
+        "id": "groq-csv-extractor",
+        "type": "action",
+        "position": { "x": 1260, "y": 280 },
+        "data": {
+          "label": "Groq: Normalize CSV Contacts",
+          "toolId": "groq",
+          "toolData": {
+            "id": "groq",
+            "displayName": "Groq",
+            "type": "chat model",
+            "category": "AI / LLM",
+            "provider": "LLM Models",
+            "operation": "execute",
+            "description": "Run ultra-fast LLM inference with Groq-hosted open-source models."
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "resource": "Text",
+            "operation": "Chat",
+            "model": "llama-3.1-8b-instant",
+            "credentialId": "",
+            "prompt": "Normalize these CSV rows into contact records. Return ONLY valid JSON: {\"contacts\":[{\"full_name\":null,\"first_name\":null,\"last_name\":null,\"designation\":null,\"company\":null,\"email\":null,\"phone\":null,\"address\":null,\"city\":null,\"state\":null,\"country\":null,\"sector_industry\":null,\"linkedin_url\":null,\"website\":null,\"source\":\"{{ $json.file_name }}\",\"validation_status\":\"valid\",\"duplicate_status\":\"unknown\"}]}. Map columns intelligently. Use null for missing. No markdown.\n\nCSV rows:\n{{ JSON.stringify($json).slice(0, 6000) }}",
+            "simplify": true,
+            "outputContentAsJson": true,
+            "options": {
+              "systemMessage": "You are a contact normalization AI. Output only valid JSON. No prose, no markdown fences.",
+              "maxTokens": 4096,
+              "temperature": 0.05
+            }
+          }
+        },
+        "width": 220,
+        "height": 94
+      },
+      {
+        "id": "loop-csv-contacts",
+        "type": "loop",
+        "position": { "x": 1560, "y": 280 },
+        "data": {
+          "label": "Loop CSV Contacts",
+          "toolId": "core_loop",
+          "toolData": {
+            "id": "core_loop",
+            "displayName": "Loop Items",
+            "category": "Logic & Flow Control",
+            "icon": "Repeat",
+            "description": "Process items in loop"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "inputField": "contacts",
+            "batchSize": 1,
+            "options": { "doneBranchOutput": "bundled" }
+          }
+        },
+        "width": 220,
+        "height": 210
+      },
+      {
+        "id": "sheets-csv",
+        "type": "action",
+        "position": { "x": 1880, "y": 280 },
+        "data": {
+          "label": "Append to Google Sheets (CSV)",
+          "toolId": "google.sheets.append_row",
+          "toolData": {
+            "id": "google.sheets.append_row",
+            "displayName": "Append Row",
+            "category": "Integrations",
+            "provider": "sheets",
+            "operation": "sheetsAppendRow",
+            "description": "Append a row of data to a sheet"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "credentialId": "",
+            "spreadsheetId": "1AZqaSfoyhcjQOLif1xZfeGi9rfMWHwKDRJUaYuArJVE",
+            "sheetName": "Contacts",
+            "values": {
+              "Full Name":         "{{ $json.full_name }}",
+              "First Name":        "{{ $json.first_name }}",
+              "Last Name":         "{{ $json.last_name }}",
+              "Designation":       "{{ $json.designation }}",
+              "Company":           "{{ $json.company }}",
+              "Email":             "{{ $json.email }}",
+              "Phone":             "{{ $json.phone }}",
+              "Address":           "{{ $json.address }}",
+              "City":              "{{ $json.city }}",
+              "State":             "{{ $json.state }}",
+              "Country":           "{{ $json.country }}",
+              "Sector/Industry":   "{{ $json.sector_industry }}",
+              "LinkedIn URL":      "{{ $json.linkedin_url }}",
+              "Website":           "{{ $json.website }}",
+              "Source":            "{{ $json.source }}",
+              "Validation Status": "{{ $json.validation_status }}",
+              "Duplicate Status":  "{{ $json.duplicate_status }}",
+              "Extracted At":      "{{ new Date().toISOString() }}"
+            },
+            "valueInputOption": "USER_ENTERED"
+          }
+        },
+        "width": 220,
+        "height": 94
+      },
+      {
+        "id": "collect-results-csv",
+        "type": "action",
+        "position": { "x": 2180, "y": 280 },
+        "data": {
+          "label": "Collect CSV Results",
+          "toolId": "core.set",
+          "toolData": {
+            "id": "core.set",
+            "displayName": "Set Fields",
+            "category": "Core  Utilities",
+            "provider": "core",
+            "operation": "set",
+            "description": "Set or update fields"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "mode": "manual",
+            "assignments": [
+              { "name": "file_id",  "value": "={{ $node['set-passthrough-fields'].json.file_id }}",  "valueType": "expression" },
+              { "name": "batch_id", "value": "={{ $node['set-passthrough-fields'].json.batch_id }}", "valueType": "expression" },
+              { "name": "status",   "value": "done",                                                  "valueType": "string" },
+              { "name": "contacts", "value": "={{ $node['groq-csv-extractor'].json.contacts || (Array.isArray($json.contacts) ? $json.contacts : []) }}", "valueType": "expression" }
+            ],
+            "includeOtherInputFields": false
+          }
+        },
+        "width": 220,
+        "height": 94
+      },
+      {
+        "id": "respond-csv",
+        "type": "action",
+        "position": { "x": 2480, "y": 280 },
+        "data": {
+          "label": "Callback to Backend (CSV)",
+          "toolId": "respondToWebhook",
+          "toolData": {
+            "id": "respondToWebhook",
+            "displayName": "Webhook Response",
+            "category": "Input / Output",
+            "icon": "reply",
+            "description": "Send response to webhook"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "respondWith": "JSON",
+            "responseBody": "{{ JSON.stringify($json) }}",
+            "responseCode": 200
+          }
+        },
+        "width": 220,
+        "height": 94
+      },
+
+      {
+        "id": "mistral-ocr",
+        "type": "action",
+        "position": { "x": 980, "y": 480 },
+        "data": {
+          "label": "Mistral OCR: Extract Text from Image",
+          "toolId": "mistral",
+          "toolData": {
+            "id": "mistral",
+            "displayName": "Mistral OCR",
+            "category": "AI / LLM",
+            "provider": "mistral",
+            "description": "Extract text from images using Mistral OCR"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "resource": "Document",
+            "operation": "Extract Text",
+            "model": "mistral-ocr-latest",
+            "documentType": "Image",
+            "inputType": "Binary Data",
+            "inputDataFieldName": "file_content",
+            "simplify": true,
+            "credentialId": ""
+          }
+        },
+        "width": 220,
+        "height": 94
+      },
+      {
+        "id": "groq-ocr-extractor",
+        "type": "action",
+        "position": { "x": 1260, "y": 480 },
+        "data": {
+          "label": "Groq: Extract Contacts from Image Text",
+          "toolId": "groq",
+          "toolData": {
+            "id": "groq",
+            "displayName": "Groq",
+            "type": "chat model",
+            "category": "AI / LLM",
+            "provider": "LLM Models",
+            "operation": "execute",
+            "description": "Run ultra-fast LLM inference with Groq-hosted open-source models."
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "resource": "Text",
+            "operation": "Chat",
+            "model": "llama-3.1-8b-instant",
+            "credentialId": "",
+            "prompt": "Extract contacts from this OCR text. Return ONLY valid JSON: {\"contacts\":[{\"full_name\":null,\"first_name\":null,\"last_name\":null,\"designation\":null,\"company\":null,\"email\":null,\"phone\":null,\"address\":null,\"city\":null,\"state\":null,\"country\":null,\"sector_industry\":null,\"linkedin_url\":null,\"website\":null,\"source\":\"{{ $json.file_name }}\",\"validation_status\":\"valid\",\"duplicate_status\":\"unknown\"}]}. No markdown.\n\nOCR Text:\n{{ ($json.text || $json.markdown || $json.content || $json.pages?.[0]?.text || '').slice(0, 4000) }}",
+            "simplify": true,
+            "outputContentAsJson": true,
+            "options": {
+              "systemMessage": "You extract contacts from OCR text. Output only valid JSON. No prose, no markdown.",
+              "maxTokens": 2048,
+              "temperature": 0.05
+            }
+          }
+        },
+        "width": 220,
+        "height": 94
+      },
+      {
+        "id": "loop-ocr-contacts",
+        "type": "loop",
+        "position": { "x": 1560, "y": 480 },
+        "data": {
+          "label": "Loop Image/OCR Contacts",
+          "toolId": "core_loop",
+          "toolData": {
+            "id": "core_loop",
+            "displayName": "Loop Items",
+            "category": "Logic & Flow Control",
+            "icon": "Repeat",
+            "description": "Process items in loop"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "inputField": "contacts",
+            "batchSize": 1,
+            "options": { "doneBranchOutput": "bundled" }
+          }
+        },
+        "width": 220,
+        "height": 210
+      },
+      {
+        "id": "sheets-ocr",
+        "type": "action",
+        "position": { "x": 1880, "y": 480 },
+        "data": {
+          "label": "Append to Google Sheets (Image/OCR)",
+          "toolId": "google.sheets.append_row",
+          "toolData": {
+            "id": "google.sheets.append_row",
+            "displayName": "Append Row",
+            "category": "Integrations",
+            "provider": "sheets",
+            "operation": "sheetsAppendRow",
+            "description": "Append a row of data to a sheet"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "credentialId": "",
+            "spreadsheetId": "1AZqaSfoyhcjQOLif1xZfeGi9rfMWHwKDRJUaYuArJVE",
+            "sheetName": "Contacts",
+            "values": {
+              "Full Name":         "{{ $json.full_name }}",
+              "First Name":        "{{ $json.first_name }}",
+              "Last Name":         "{{ $json.last_name }}",
+              "Designation":       "{{ $json.designation }}",
+              "Company":           "{{ $json.company }}",
+              "Email":             "{{ $json.email }}",
+              "Phone":             "{{ $json.phone }}",
+              "Address":           "{{ $json.address }}",
+              "City":              "{{ $json.city }}",
+              "State":             "{{ $json.state }}",
+              "Country":           "{{ $json.country }}",
+              "Sector/Industry":   "{{ $json.sector_industry }}",
+              "LinkedIn URL":      "{{ $json.linkedin_url }}",
+              "Website":           "{{ $json.website }}",
+              "Source":            "{{ $json.source }}",
+              "Validation Status": "{{ $json.validation_status }}",
+              "Duplicate Status":  "{{ $json.duplicate_status }}",
+              "Extracted At":      "{{ new Date().toISOString() }}"
+            },
+            "valueInputOption": "USER_ENTERED"
+          }
+        },
+        "width": 220,
+        "height": 94
+      },
+      {
+        "id": "collect-results-ocr",
+        "type": "action",
+        "position": { "x": 2180, "y": 480 },
+        "data": {
+          "label": "Collect OCR Results",
+          "toolId": "core.set",
+          "toolData": {
+            "id": "core.set",
+            "displayName": "Set Fields",
+            "category": "Core  Utilities",
+            "provider": "core",
+            "operation": "set",
+            "description": "Set or update fields"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "mode": "manual",
+            "assignments": [
+              { "name": "file_id",  "value": "={{ $node['set-passthrough-fields'].json.file_id }}",  "valueType": "expression" },
+              { "name": "batch_id", "value": "={{ $node['set-passthrough-fields'].json.batch_id }}", "valueType": "expression" },
+              { "name": "status",   "value": "done",                                                  "valueType": "string" },
+              { "name": "contacts", "value": "={{ $node['groq-ocr-extractor'].json.contacts || (Array.isArray($json.contacts) ? $json.contacts : []) }}", "valueType": "expression" }
+            ],
+            "includeOtherInputFields": false
+          }
+        },
+        "width": 220,
+        "height": 94
+      },
+      {
+        "id": "respond-ocr",
+        "type": "action",
+        "position": { "x": 2480, "y": 480 },
+        "data": {
+          "label": "Callback to Backend (OCR)",
+          "toolId": "respondToWebhook",
+          "toolData": {
+            "id": "respondToWebhook",
+            "displayName": "Webhook Response",
+            "category": "Input / Output",
+            "icon": "reply",
+            "description": "Send response to webhook"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "respondWith": "JSON",
+            "responseBody": "{{ JSON.stringify($json) }}",
+            "responseCode": 200
+          }
+        },
+        "width": 220,
+        "height": 94
+      },
+
+      {
+        "id": "groq-text-extractor",
+        "type": "action",
+        "position": { "x": 980, "y": 680 },
+        "data": {
+          "label": "Groq: Extract Contacts from Plain Text",
+          "toolId": "groq",
+          "toolData": {
+            "id": "groq",
+            "displayName": "Groq",
+            "type": "chat model",
+            "category": "AI / LLM",
+            "provider": "LLM Models",
+            "operation": "execute",
+            "description": "Run ultra-fast LLM inference with Groq-hosted open-source models."
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "resource": "Text",
+            "operation": "Chat",
+            "model": "llama-3.1-8b-instant",
+            "credentialId": "",
+            "prompt": "Extract contacts from this text. Return ONLY valid JSON: {\"contacts\":[{\"full_name\":null,\"first_name\":null,\"last_name\":null,\"designation\":null,\"company\":null,\"email\":null,\"phone\":null,\"address\":null,\"city\":null,\"state\":null,\"country\":null,\"sector_industry\":null,\"linkedin_url\":null,\"website\":null,\"source\":\"{{ $json.file_name }}\",\"validation_status\":\"valid\",\"duplicate_status\":\"unknown\"}]}. No markdown.\n\nText:\n{{ ($json.file_content || $json.text || '').slice(0, 6000) }}",
+            "simplify": true,
+            "outputContentAsJson": true,
+            "options": {
+              "systemMessage": "You extract and structure contact information. Output only valid JSON. No prose, no markdown.",
+              "maxTokens": 4096,
+              "temperature": 0.05
+            }
+          }
+        },
+        "width": 220,
+        "height": 94
+      },
+      {
+        "id": "loop-text-contacts",
+        "type": "loop",
+        "position": { "x": 1260, "y": 680 },
+        "data": {
+          "label": "Loop Text Contacts",
+          "toolId": "core_loop",
+          "toolData": {
+            "id": "core_loop",
+            "displayName": "Loop Items",
+            "category": "Logic & Flow Control",
+            "icon": "Repeat",
+            "description": "Process items in loop"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "inputField": "contacts",
+            "batchSize": 1,
+            "options": { "doneBranchOutput": "bundled" }
+          }
+        },
+        "width": 220,
+        "height": 210
+      },
+      {
+        "id": "sheets-text",
+        "type": "action",
+        "position": { "x": 1560, "y": 680 },
+        "data": {
+          "label": "Append to Google Sheets (Text)",
+          "toolId": "google.sheets.append_row",
+          "toolData": {
+            "id": "google.sheets.append_row",
+            "displayName": "Append Row",
+            "category": "Integrations",
+            "provider": "sheets",
+            "operation": "sheetsAppendRow",
+            "description": "Append a row of data to a sheet"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "credentialId": "",
+            "spreadsheetId": "1AZqaSfoyhcjQOLif1xZfeGi9rfMWHwKDRJUaYuArJVE",
+            "sheetName": "Contacts",
+            "values": {
+              "Full Name":         "{{ $json.full_name }}",
+              "First Name":        "{{ $json.first_name }}",
+              "Last Name":         "{{ $json.last_name }}",
+              "Designation":       "{{ $json.designation }}",
+              "Company":           "{{ $json.company }}",
+              "Email":             "{{ $json.email }}",
+              "Phone":             "{{ $json.phone }}",
+              "Address":           "{{ $json.address }}",
+              "City":              "{{ $json.city }}",
+              "State":             "{{ $json.state }}",
+              "Country":           "{{ $json.country }}",
+              "Sector/Industry":   "{{ $json.sector_industry }}",
+              "LinkedIn URL":      "{{ $json.linkedin_url }}",
+              "Website":           "{{ $json.website }}",
+              "Source":            "{{ $json.source }}",
+              "Validation Status": "{{ $json.validation_status }}",
+              "Duplicate Status":  "{{ $json.duplicate_status }}",
+              "Extracted At":      "{{ new Date().toISOString() }}"
+            },
+            "valueInputOption": "USER_ENTERED"
+          }
+        },
+        "width": 220,
+        "height": 94
+      },
+      {
+        "id": "collect-results-text",
+        "type": "action",
+        "position": { "x": 1880, "y": 680 },
+        "data": {
+          "label": "Collect Text Results",
+          "toolId": "core.set",
+          "toolData": {
+            "id": "core.set",
+            "displayName": "Set Fields",
+            "category": "Core  Utilities",
+            "provider": "core",
+            "operation": "set",
+            "description": "Set or update fields"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "mode": "manual",
+            "assignments": [
+              { "name": "file_id",  "value": "={{ $node['set-passthrough-fields'].json.file_id }}",  "valueType": "expression" },
+              { "name": "batch_id", "value": "={{ $node['set-passthrough-fields'].json.batch_id }}", "valueType": "expression" },
+              { "name": "status",   "value": "done",                                                  "valueType": "string" },
+              { "name": "contacts", "value": "={{ $node['groq-text-extractor'].json.contacts || (Array.isArray($json.contacts) ? $json.contacts : []) }}", "valueType": "expression" }
+            ],
+            "includeOtherInputFields": false
+          }
+        },
+        "width": 220,
+        "height": 94
+      },
+      {
+        "id": "respond-text",
+        "type": "action",
+        "position": { "x": 2180, "y": 680 },
+        "data": {
+          "label": "Callback to Backend (Text)",
+          "toolId": "respondToWebhook",
+          "toolData": {
+            "id": "respondToWebhook",
+            "displayName": "Webhook Response",
+            "category": "Input / Output",
+            "icon": "reply",
+            "description": "Send response to webhook"
+          },
+          "isTrigger": false,
+          "isPrimaryTrigger": false,
+          "inputs": {
+            "respondWith": "JSON",
+            "responseBody": "{{ JSON.stringify($json) }}",
+            "responseCode": 200
+          }
+        },
+        "width": 220,
+        "height": 94
+      }
+    ],
+    "edges": [
+      { "id": "e1",   "source": "webhook-trigger-contact-extraction", "target": "set-passthrough-fields",  "type": "default", "data": {} },
+      { "id": "e2",   "source": "set-passthrough-fields",             "target": "switch-file-type",         "type": "default", "data": {} },
+      { "id": "e3",   "source": "switch-file-type", "sourceHandle": "output-0",       "target": "extract-pdf",           "type": "default", "data": {} },
+      { "id": "e4",   "source": "switch-file-type", "sourceHandle": "output-1",       "target": "extract-csv",           "type": "default", "data": {} },
+      { "id": "e5",   "source": "switch-file-type", "sourceHandle": "output-2",       "target": "mistral-ocr",           "type": "default", "data": {} },
+      { "id": "e6",   "source": "switch-file-type", "sourceHandle": "output-fallback","target": "groq-text-extractor",   "type": "default", "data": {} },
+      { "id": "e7",   "source": "extract-pdf",        "target": "groq-pdf-extractor",  "type": "default", "data": {} },
+      { "id": "e8",   "source": "groq-pdf-extractor", "target": "loop-pdf-contacts",   "type": "default", "data": {} },
+      { "id": "e9",   "source": "loop-pdf-contacts",  "sourceHandle": "output-1",      "target": "sheets-pdf",           "type": "default", "data": {} },
+      { "id": "e10",  "source": "loop-pdf-contacts",  "sourceHandle": "output-0",      "target": "collect-results-pdf",  "type": "default", "data": {} },
+      { "id": "e10b", "source": "sheets-pdf",          "target": "loop-pdf-contacts",   "type": "default", "data": {} },
+      { "id": "e11",  "source": "collect-results-pdf", "target": "respond-pdf",         "type": "default", "data": {} },
+      { "id": "e12",  "source": "extract-csv",         "target": "groq-csv-extractor",  "type": "default", "data": {} },
+      { "id": "e13",  "source": "groq-csv-extractor",  "target": "loop-csv-contacts",   "type": "default", "data": {} },
+      { "id": "e14",  "source": "loop-csv-contacts",   "sourceHandle": "output-1",      "target": "sheets-csv",           "type": "default", "data": {} },
+      { "id": "e15",  "source": "loop-csv-contacts",   "sourceHandle": "output-0",      "target": "collect-results-csv",  "type": "default", "data": {} },
+      { "id": "e15b", "source": "sheets-csv",          "target": "loop-csv-contacts",   "type": "default", "data": {} },
+      { "id": "e16",  "source": "collect-results-csv", "target": "respond-csv",          "type": "default", "data": {} },
+      { "id": "e17",  "source": "mistral-ocr",          "target": "groq-ocr-extractor",  "type": "default", "data": {} },
+      { "id": "e18",  "source": "groq-ocr-extractor",   "target": "loop-ocr-contacts",   "type": "default", "data": {} },
+      { "id": "e19",  "source": "loop-ocr-contacts",    "sourceHandle": "output-1",      "target": "sheets-ocr",           "type": "default", "data": {} },
+      { "id": "e20",  "source": "loop-ocr-contacts",    "sourceHandle": "output-0",      "target": "collect-results-ocr",  "type": "default", "data": {} },
+      { "id": "e20b", "source": "sheets-ocr",           "target": "loop-ocr-contacts",   "type": "default", "data": {} },
+      { "id": "e21",  "source": "collect-results-ocr",  "target": "respond-ocr",          "type": "default", "data": {} },
+      { "id": "e22",  "source": "groq-text-extractor",  "target": "loop-text-contacts",   "type": "default", "data": {} },
+      { "id": "e23",  "source": "loop-text-contacts",   "sourceHandle": "output-1",      "target": "sheets-text",          "type": "default", "data": {} },
+      { "id": "e24",  "source": "loop-text-contacts",   "sourceHandle": "output-0",      "target": "collect-results-text", "type": "default", "data": {} },
+      { "id": "e24b", "source": "sheets-text",          "target": "loop-text-contacts",   "type": "default", "data": {} },
+      { "id": "e25",  "source": "collect-results-text", "target": "respond-text",         "type": "default", "data": {} }
+    ]
+  }
+}

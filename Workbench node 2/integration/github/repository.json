@@ -1,0 +1,1088 @@
+{
+  "nodes": [
+    {
+      "id": "github.repository.get-1783407164168",
+      "type": "action",
+      "position": {
+        "x": 1306.5163188257611,
+        "y": 496.30198301338885
+      },
+      "data": {
+        "label": "Get a repository",
+        "toolId": "github.repository.get",
+        "toolData": {
+          "id": "github.repository.get",
+          "displayName": "Get a repository",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "get",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Get basic details of a repository",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            }
+          ],
+          "initialData": {
+            "resource": "repository",
+            "operation": "get"
+          },
+          "subCategory": "Repository",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "repository",
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "github.repository.getIssues-1783407165936",
+      "type": "action",
+      "position": {
+        "x": 1789.066063923067,
+        "y": 525.2801661393368
+      },
+      "data": {
+        "label": "Get issues of a repository",
+        "toolId": "github.repository.getIssues",
+        "toolData": {
+          "id": "github.repository.getIssues",
+          "displayName": "Get issues of a repository",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "getIssues",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "List all issues in a repository",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false
+              },
+              "limit": {
+                "type": "number",
+                "default": 50
+              },
+              "filters": {
+                "type": "object",
+                "properties": {
+                  "assignee": {
+                    "type": "string"
+                  },
+                  "creator": {
+                    "type": "string"
+                  },
+                  "mentioned": {
+                    "type": "string"
+                  },
+                  "labels": {
+                    "type": "string"
+                  },
+                  "since": {
+                    "type": "string"
+                  },
+                  "state": {
+                    "type": "string",
+                    "enum": [
+                      "all",
+                      "closed",
+                      "open"
+                    ]
+                  },
+                  "sort": {
+                    "type": "string",
+                    "enum": [
+                      "comments",
+                      "created",
+                      "updated"
+                    ]
+                  },
+                  "direction": {
+                    "type": "string",
+                    "enum": [
+                      "asc",
+                      "desc"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "toggle",
+              "default": false,
+              "description": "Whether to return all results or only up to a limit"
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "description": "How many results to return",
+              "displayOptions": {
+                "show": {
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "filters",
+              "displayName": "Filters",
+              "type": "collection",
+              "placeholder": "Add Filter",
+              "default": {},
+              "fields": [
+                {
+                  "name": "assignee",
+                  "displayName": "Assignee",
+                  "type": "string",
+                  "default": "",
+                  "description": "Assignee username"
+                },
+                {
+                  "name": "creator",
+                  "displayName": "Creator",
+                  "type": "string",
+                  "default": "",
+                  "description": "Creator username"
+                },
+                {
+                  "name": "mentioned",
+                  "displayName": "Mentioned",
+                  "type": "string",
+                  "default": "",
+                  "description": "Mentioned username"
+                },
+                {
+                  "name": "labels",
+                  "displayName": "Labels",
+                  "type": "string",
+                  "default": "",
+                  "description": "Labels (comma-separated)"
+                },
+                {
+                  "name": "since",
+                  "displayName": "Updated Since",
+                  "type": "string",
+                  "default": "",
+                  "description": "Only issues updated after this date (ISO 8601 format)"
+                },
+                {
+                  "name": "state",
+                  "displayName": "State",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "All",
+                      "value": "all"
+                    },
+                    {
+                      "name": "Closed",
+                      "value": "closed"
+                    },
+                    {
+                      "name": "Open",
+                      "value": "open"
+                    }
+                  ],
+                  "default": "open",
+                  "description": "State of the issues to return"
+                },
+                {
+                  "name": "sort",
+                  "displayName": "Sort By",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Comments",
+                      "value": "comments"
+                    },
+                    {
+                      "name": "Created",
+                      "value": "created"
+                    },
+                    {
+                      "name": "Updated",
+                      "value": "updated"
+                    }
+                  ],
+                  "default": "created",
+                  "description": "How to sort the results"
+                },
+                {
+                  "name": "direction",
+                  "displayName": "Direction",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Ascending",
+                      "value": "asc"
+                    },
+                    {
+                      "name": "Descending",
+                      "value": "desc"
+                    }
+                  ],
+                  "default": "desc",
+                  "description": "The direction of the sort"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "repository",
+            "operation": "getIssues"
+          },
+          "subCategory": "Repository"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "repository",
+          "operation": "getIssues"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "github.repository.getPullRequests-1783407168049",
+      "type": "action",
+      "position": {
+        "x": 1382.111579154321,
+        "y": 702.9290279114518
+      },
+      "data": {
+        "label": "Get pull requests of a repository",
+        "toolId": "github.repository.getPullRequests",
+        "toolData": {
+          "id": "github.repository.getPullRequests",
+          "displayName": "Get pull requests of a repository",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "getPullRequests",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "List pull requests in a repository",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false
+              },
+              "limit": {
+                "type": "number",
+                "default": 50
+              },
+              "filters": {
+                "type": "object",
+                "properties": {
+                  "state": {
+                    "type": "string",
+                    "enum": [
+                      "all",
+                      "closed",
+                      "open"
+                    ]
+                  },
+                  "sort": {
+                    "type": "string",
+                    "enum": [
+                      "created",
+                      "popularity",
+                      "updated"
+                    ]
+                  },
+                  "direction": {
+                    "type": "string",
+                    "enum": [
+                      "asc",
+                      "desc"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "toggle",
+              "default": false,
+              "description": "Whether to return all results or only up to a limit"
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "description": "How many results to return",
+              "displayOptions": {
+                "show": {
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "filters",
+              "displayName": "Filters",
+              "type": "collection",
+              "placeholder": "Add Filter",
+              "default": {},
+              "fields": [
+                {
+                  "name": "state",
+                  "displayName": "State",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "All",
+                      "value": "all"
+                    },
+                    {
+                      "name": "Closed",
+                      "value": "closed"
+                    },
+                    {
+                      "name": "Open",
+                      "value": "open"
+                    }
+                  ],
+                  "default": "open",
+                  "description": "State of the pull requests to return"
+                },
+                {
+                  "name": "sort",
+                  "displayName": "Sort By",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Created",
+                      "value": "created"
+                    },
+                    {
+                      "name": "Popularity",
+                      "value": "popularity"
+                    },
+                    {
+                      "name": "Updated",
+                      "value": "updated"
+                    }
+                  ],
+                  "default": "created",
+                  "description": "How to sort the results"
+                },
+                {
+                  "name": "direction",
+                  "displayName": "Direction",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Ascending",
+                      "value": "asc"
+                    },
+                    {
+                      "name": "Descending",
+                      "value": "desc"
+                    }
+                  ],
+                  "default": "desc",
+                  "description": "The direction of the sort"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "repository",
+            "operation": "getPullRequests"
+          },
+          "subCategory": "Repository"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "repository",
+          "operation": "getPullRequests"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "github.repository.getLicense-1783407169455",
+      "type": "action",
+      "position": {
+        "x": 1805.445036994255,
+        "y": 758.3655521523956
+      },
+      "data": {
+        "label": "Get the license of a repository",
+        "toolId": "github.repository.getLicense",
+        "toolData": {
+          "id": "github.repository.getLicense",
+          "displayName": "Get the license of a repository",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "getLicense",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Fetch repository license details",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            }
+          ],
+          "initialData": {
+            "resource": "repository",
+            "operation": "getLicense"
+          },
+          "subCategory": "Repository"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "repository",
+          "operation": "getLicense"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "github.repository.listPopularPaths-1783407170791",
+      "type": "action",
+      "position": {
+        "x": 1544.6413888607242,
+        "y": 936.0144139245109
+      },
+      "data": {
+        "label": "List popular paths in a repository",
+        "toolId": "github.repository.listPopularPaths",
+        "toolData": {
+          "id": "github.repository.listPopularPaths",
+          "displayName": "List popular paths in a repository",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "listPopularPaths",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Identify most visited files or paths",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            }
+          ],
+          "initialData": {
+            "resource": "repository",
+            "operation": "listPopularPaths"
+          },
+          "subCategory": "Repository"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "repository",
+          "operation": "listPopularPaths"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "github.repository.listTopReferrers-1783407172328",
+      "type": "action",
+      "position": {
+        "x": 1907.4986384378105,
+        "y": 929.714808897131
+      },
+      "data": {
+        "label": "List Top Referrers",
+        "toolId": "github.repository.listTopReferrers",
+        "toolData": {
+          "id": "github.repository.listTopReferrers",
+          "displayName": "List Top Referrers",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "listTopReferrers",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "See which external sources drive traffic",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            }
+          ],
+          "initialData": {
+            "resource": "repository",
+            "operation": "listTopReferrers"
+          },
+          "subCategory": "Repository"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "repository",
+          "operation": "listTopReferrers"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

@@ -1,0 +1,921 @@
+{
+  "nodes": [
+    {
+      "id": "jira.attachment.add-1783407434036",
+      "type": "action",
+      "position": {
+        "x": 2835.466551384925,
+        "y": 313.27365726858113
+      },
+      "data": {
+        "label": "Add",
+        "toolId": "jira.attachment.add",
+        "toolData": {
+          "id": "jira.attachment.add",
+          "displayName": "Add",
+          "category": "Integrations",
+          "provider": "jira",
+          "operation": "Add",
+          "icon": "/tools/jira.png",
+          "actionGroup": "Issue Attachment",
+          "description": "Add in Issue Attachment",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "add",
+                  "get",
+                  "getMany",
+                  "remove"
+                ],
+                "description": "Operation"
+              },
+              "issueKey": {
+                "type": "string",
+                "description": "Issue Key"
+              },
+              "attachmentId": {
+                "type": "string",
+                "description": "Attachment ID"
+              },
+              "inputBinaryField": {
+                "type": "string",
+                "description": "Input Binary Field"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit"
+              },
+              "download": {
+                "type": "boolean",
+                "description": "Download"
+              },
+              "outputBinaryField": {
+                "type": "string",
+                "description": "Output Binary Field"
+              },
+              "credentials": {
+                "description": "Jira credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Issue Attachment",
+                  "value": "attachment"
+                }
+              ],
+              "default": "attachment",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Add",
+                  "value": "add"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Remove",
+                  "value": "remove"
+                }
+              ],
+              "default": "add",
+              "required": true
+            },
+            {
+              "name": "issueKey",
+              "displayName": "Issue Key",
+              "type": "string",
+              "required": true,
+              "placeholder": "SCRUM-5",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add",
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "attachmentId",
+              "displayName": "Attachment ID",
+              "type": "string",
+              "required": true,
+              "placeholder": "10002",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "remove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputBinaryField",
+              "displayName": "Input Binary Field",
+              "type": "string",
+              "default": "data",
+              "description": "The name of the input binary field containing the file to be written",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "toggle",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 10,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "download",
+              "displayName": "Download",
+              "type": "toggle",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "outputBinaryField",
+              "displayName": "Put Output File in Field",
+              "type": "string",
+              "default": "data",
+              "description": "The name of the output binary field to put the file in",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ],
+                  "download": [
+                    true
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "add"
+          },
+          "subCategory": "Issue Attachment"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "add"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "jira.attachment.get-1783407435292",
+      "type": "action",
+      "position": {
+        "x": 3330.2820179247597,
+        "y": 488.1084554459894
+      },
+      "data": {
+        "label": "Get",
+        "toolId": "jira.attachment.get",
+        "toolData": {
+          "id": "jira.attachment.get",
+          "displayName": "Get",
+          "category": "Integrations",
+          "provider": "jira",
+          "operation": "Get",
+          "icon": "/tools/jira.png",
+          "actionGroup": "Issue Attachment",
+          "description": "Get in Issue Attachment",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "add",
+                  "get",
+                  "getMany",
+                  "remove"
+                ],
+                "description": "Operation"
+              },
+              "issueKey": {
+                "type": "string",
+                "description": "Issue Key"
+              },
+              "attachmentId": {
+                "type": "string",
+                "description": "Attachment ID"
+              },
+              "inputBinaryField": {
+                "type": "string",
+                "description": "Input Binary Field"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit"
+              },
+              "download": {
+                "type": "boolean",
+                "description": "Download"
+              },
+              "outputBinaryField": {
+                "type": "string",
+                "description": "Output Binary Field"
+              },
+              "credentials": {
+                "description": "Jira credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Issue Attachment",
+                  "value": "attachment"
+                }
+              ],
+              "default": "attachment",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Add",
+                  "value": "add"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Remove",
+                  "value": "remove"
+                }
+              ],
+              "default": "get",
+              "required": true
+            },
+            {
+              "name": "issueKey",
+              "displayName": "Issue Key",
+              "type": "string",
+              "required": true,
+              "placeholder": "SCRUM-5",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add",
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "attachmentId",
+              "displayName": "Attachment ID",
+              "type": "string",
+              "required": true,
+              "placeholder": "10002",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "remove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputBinaryField",
+              "displayName": "Input Binary Field",
+              "type": "string",
+              "default": "data",
+              "description": "The name of the input binary field containing the file to be written",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "toggle",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 10,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "download",
+              "displayName": "Download",
+              "type": "toggle",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "outputBinaryField",
+              "displayName": "Put Output File in Field",
+              "type": "string",
+              "default": "data",
+              "description": "The name of the output binary field to put the file in",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ],
+                  "download": [
+                    true
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "get"
+          },
+          "subCategory": "Issue Attachment"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "jira.attachment.getmany-1783407440348",
+      "type": "action",
+      "position": {
+        "x": 2687.0219114229744,
+        "y": 715.7235700543134
+      },
+      "data": {
+        "label": "Get Many",
+        "toolId": "jira.attachment.getmany",
+        "toolData": {
+          "id": "jira.attachment.getmany",
+          "displayName": "Get Many",
+          "category": "Integrations",
+          "provider": "jira",
+          "operation": "Get Many",
+          "icon": "/tools/jira.png",
+          "actionGroup": "Issue Attachment",
+          "description": "Get Many in Issue Attachment",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "add",
+                  "get",
+                  "getMany",
+                  "remove"
+                ],
+                "description": "Operation"
+              },
+              "issueKey": {
+                "type": "string",
+                "description": "Issue Key"
+              },
+              "attachmentId": {
+                "type": "string",
+                "description": "Attachment ID"
+              },
+              "inputBinaryField": {
+                "type": "string",
+                "description": "Input Binary Field"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit"
+              },
+              "download": {
+                "type": "boolean",
+                "description": "Download"
+              },
+              "outputBinaryField": {
+                "type": "string",
+                "description": "Output Binary Field"
+              },
+              "credentials": {
+                "description": "Jira credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Issue Attachment",
+                  "value": "attachment"
+                }
+              ],
+              "default": "attachment",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Add",
+                  "value": "add"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Remove",
+                  "value": "remove"
+                }
+              ],
+              "default": "getMany",
+              "required": true
+            },
+            {
+              "name": "issueKey",
+              "displayName": "Issue Key",
+              "type": "string",
+              "required": true,
+              "placeholder": "SCRUM-5",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add",
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "attachmentId",
+              "displayName": "Attachment ID",
+              "type": "string",
+              "required": true,
+              "placeholder": "10002",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "remove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputBinaryField",
+              "displayName": "Input Binary Field",
+              "type": "string",
+              "default": "data",
+              "description": "The name of the input binary field containing the file to be written",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "toggle",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 10,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "download",
+              "displayName": "Download",
+              "type": "toggle",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "outputBinaryField",
+              "displayName": "Put Output File in Field",
+              "type": "string",
+              "default": "data",
+              "description": "The name of the output binary field to put the file in",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ],
+                  "download": [
+                    true
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "getMany"
+          },
+          "subCategory": "Issue Attachment"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "getMany"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "jira.attachment.remove-1783407443101",
+      "type": "action",
+      "position": {
+        "x": 3392.9586436864715,
+        "y": 824.5829726930771
+      },
+      "data": {
+        "label": "Remove",
+        "toolId": "jira.attachment.remove",
+        "toolData": {
+          "id": "jira.attachment.remove",
+          "displayName": "Remove",
+          "category": "Integrations",
+          "provider": "jira",
+          "operation": "Remove",
+          "icon": "/tools/jira.png",
+          "actionGroup": "Issue Attachment",
+          "description": "Remove in Issue Attachment",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "add",
+                  "get",
+                  "getMany",
+                  "remove"
+                ],
+                "description": "Operation"
+              },
+              "issueKey": {
+                "type": "string",
+                "description": "Issue Key"
+              },
+              "attachmentId": {
+                "type": "string",
+                "description": "Attachment ID"
+              },
+              "inputBinaryField": {
+                "type": "string",
+                "description": "Input Binary Field"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit"
+              },
+              "download": {
+                "type": "boolean",
+                "description": "Download"
+              },
+              "outputBinaryField": {
+                "type": "string",
+                "description": "Output Binary Field"
+              },
+              "credentials": {
+                "description": "Jira credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Issue Attachment",
+                  "value": "attachment"
+                }
+              ],
+              "default": "attachment",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Add",
+                  "value": "add"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Remove",
+                  "value": "remove"
+                }
+              ],
+              "default": "remove",
+              "required": true
+            },
+            {
+              "name": "issueKey",
+              "displayName": "Issue Key",
+              "type": "string",
+              "required": true,
+              "placeholder": "SCRUM-5",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add",
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "attachmentId",
+              "displayName": "Attachment ID",
+              "type": "string",
+              "required": true,
+              "placeholder": "10002",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "remove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputBinaryField",
+              "displayName": "Input Binary Field",
+              "type": "string",
+              "default": "data",
+              "description": "The name of the input binary field containing the file to be written",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "toggle",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 10,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "download",
+              "displayName": "Download",
+              "type": "toggle",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "outputBinaryField",
+              "displayName": "Put Output File in Field",
+              "type": "string",
+              "default": "data",
+              "description": "The name of the output binary field to put the file in",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ],
+                  "download": [
+                    true
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "remove"
+          },
+          "subCategory": "Issue Attachment"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "remove"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

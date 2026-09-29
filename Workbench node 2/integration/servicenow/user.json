@@ -1,0 +1,3295 @@
+{
+  "nodes": [
+    {
+      "id": "servicenow.user.create-1783408055312",
+      "type": "action",
+      "position": {
+        "x": 885.9270446124785,
+        "y": -529.3827501187454
+      },
+      "data": {
+        "label": "Create",
+        "toolId": "servicenow.user.create",
+        "toolData": {
+          "id": "servicenow.user.create",
+          "displayName": "Create",
+          "category": "Integrations",
+          "provider": "servicenow",
+          "operation": "Create",
+          "icon": "/tools/servicenow.png",
+          "actionGroup": "User",
+          "description": "Create in User",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ]
+              },
+              "userId": {
+                "type": "string",
+                "description": "User sys_id (for Get/Delete/Update)"
+              },
+              "shortDescription": {
+                "type": "string",
+                "description": "Short Description (for Create)"
+              },
+              "retrieveIdentifier": {
+                "type": "string",
+                "enum": [
+                  "id"
+                ],
+                "description": "Retrieve Identifier (for Get)"
+              },
+              "additionalFields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Additional Fields (for Create)"
+              },
+              "updateFields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Update Fields (for Update)"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "excludeReferenceLink": {
+                    "type": "boolean"
+                  },
+                  "fieldNamesOrIds": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "returnValues": {
+                    "type": "string",
+                    "enum": [
+                      "false",
+                      "true",
+                      "all"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "ServiceNow credentials"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "User",
+                  "value": "user"
+                }
+              ],
+              "default": "user",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "create",
+              "required": true
+            },
+            {
+              "name": "shortDescription",
+              "displayName": "Short Description",
+              "type": "string",
+              "default": "",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "Short description for the user"
+            },
+            {
+              "name": "retrieveIdentifier",
+              "displayName": "Retrieve Identifier",
+              "type": "options",
+              "options": [
+                {
+                  "name": "ID",
+                  "value": "id"
+                }
+              ],
+              "default": "id",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              },
+              "description": "The identifier used to retrieve the user"
+            },
+            {
+              "name": "userId",
+              "displayName": "User ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              },
+              "description": "The sys_id of the user record"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "active",
+                  "displayName": "Active",
+                  "type": "boolean",
+                  "default": true
+                },
+                {
+                  "name": "building",
+                  "displayName": "Building",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "city",
+                  "displayName": "City",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "company",
+                  "displayName": "Company",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "country",
+                  "displayName": "Country",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "department",
+                  "displayName": "Department",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "email",
+                  "displayName": "Email",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "firstName",
+                  "displayName": "First Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "gender",
+                  "displayName": "Gender",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Male",
+                      "value": "Male"
+                    },
+                    {
+                      "name": "Female",
+                      "value": "Female"
+                    }
+                  ],
+                  "default": "Male"
+                },
+                {
+                  "name": "homePhone",
+                  "displayName": "Home Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "lastName",
+                  "displayName": "Last Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "location",
+                  "displayName": "Location",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "manager",
+                  "displayName": "Manager",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "middleName",
+                  "displayName": "Middle Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "mobilePhone",
+                  "displayName": "Mobile Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "password",
+                  "displayName": "Password",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "passwordNeedsReset",
+                  "displayName": "Password Needs Reset",
+                  "type": "boolean",
+                  "default": false
+                },
+                {
+                  "name": "phone",
+                  "displayName": "Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "roleNamesOrIds",
+                  "displayName": "Role Names or IDs",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "source",
+                  "displayName": "Source",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "state",
+                  "displayName": "State",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "street",
+                  "displayName": "Street",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "username",
+                  "displayName": "Username",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "zipCode",
+                  "displayName": "Zip Code",
+                  "type": "string",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "name": "updateFields",
+              "displayName": "Update Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "update"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "shortDescription",
+                  "displayName": "Short Description",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "active",
+                  "displayName": "Active",
+                  "type": "boolean",
+                  "default": true
+                },
+                {
+                  "name": "building",
+                  "displayName": "Building",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "city",
+                  "displayName": "City",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "company",
+                  "displayName": "Company",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "country",
+                  "displayName": "Country",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "department",
+                  "displayName": "Department",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "email",
+                  "displayName": "Email",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "firstName",
+                  "displayName": "First Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "gender",
+                  "displayName": "Gender",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Male",
+                      "value": "Male"
+                    },
+                    {
+                      "name": "Female",
+                      "value": "Female"
+                    }
+                  ],
+                  "default": "Male"
+                },
+                {
+                  "name": "homePhone",
+                  "displayName": "Home Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "lastName",
+                  "displayName": "Last Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "location",
+                  "displayName": "Location",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "manager",
+                  "displayName": "Manager",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "middleName",
+                  "displayName": "Middle Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "mobilePhone",
+                  "displayName": "Mobile Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "password",
+                  "displayName": "Password",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "passwordNeedsReset",
+                  "displayName": "Password Needs Reset",
+                  "type": "boolean",
+                  "default": false
+                },
+                {
+                  "name": "phone",
+                  "displayName": "Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "roleNamesOrIds",
+                  "displayName": "Role Names or IDs",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "source",
+                  "displayName": "Source",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "state",
+                  "displayName": "State",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "street",
+                  "displayName": "Street",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "username",
+                  "displayName": "Username",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "zipCode",
+                  "displayName": "Zip Code",
+                  "type": "string",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "placeholder": "Add Field",
+              "options": [
+                {
+                  "name": "excludeReferenceLink",
+                  "displayName": "Exclude Reference Link",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to exclude reference links (sysparm_exclude_reference_link)"
+                },
+                {
+                  "name": "fieldNamesOrIds",
+                  "displayName": "Field Names or IDs",
+                  "type": "multiOptions",
+                  "description": "A list of fields to return (sysparm_fields)",
+                  "fetchEndpoint": "/api/tools/serviceNow/columns?tableName=sys_user"
+                },
+                {
+                  "name": "filter",
+                  "displayName": "Filter",
+                  "type": "string",
+                  "description": "ServiceNow query (sysparm_query)",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "returnValues",
+                  "displayName": "Return Values",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Actual Values",
+                      "value": "false"
+                    },
+                    {
+                      "name": "Display Values",
+                      "value": "true"
+                    },
+                    {
+                      "name": "Both",
+                      "value": "all"
+                    }
+                  ],
+                  "default": "false",
+                  "description": "What values to return (sysparm_display_value)"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "create"
+          },
+          "subCategory": "User"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "create"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 885.9270446124785,
+        "y": -529.3827501187454
+      },
+      "dragging": false
+    },
+    {
+      "id": "servicenow.user.delete-1783408060592",
+      "type": "action",
+      "position": {
+        "x": 1112.7128255981575,
+        "y": -326.5354682371102
+      },
+      "data": {
+        "label": "Delete",
+        "toolId": "servicenow.user.delete",
+        "toolData": {
+          "id": "servicenow.user.delete",
+          "displayName": "Delete",
+          "category": "Integrations",
+          "provider": "servicenow",
+          "operation": "Delete",
+          "icon": "/tools/servicenow.png",
+          "actionGroup": "User",
+          "description": "Delete in User",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ]
+              },
+              "userId": {
+                "type": "string",
+                "description": "User sys_id (for Get/Delete/Update)"
+              },
+              "shortDescription": {
+                "type": "string",
+                "description": "Short Description (for Create)"
+              },
+              "retrieveIdentifier": {
+                "type": "string",
+                "enum": [
+                  "id"
+                ],
+                "description": "Retrieve Identifier (for Get)"
+              },
+              "additionalFields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Additional Fields (for Create)"
+              },
+              "updateFields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Update Fields (for Update)"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "excludeReferenceLink": {
+                    "type": "boolean"
+                  },
+                  "fieldNamesOrIds": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "returnValues": {
+                    "type": "string",
+                    "enum": [
+                      "false",
+                      "true",
+                      "all"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "ServiceNow credentials"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "User",
+                  "value": "user"
+                }
+              ],
+              "default": "user",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "delete",
+              "required": true
+            },
+            {
+              "name": "shortDescription",
+              "displayName": "Short Description",
+              "type": "string",
+              "default": "",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "Short description for the user"
+            },
+            {
+              "name": "retrieveIdentifier",
+              "displayName": "Retrieve Identifier",
+              "type": "options",
+              "options": [
+                {
+                  "name": "ID",
+                  "value": "id"
+                }
+              ],
+              "default": "id",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              },
+              "description": "The identifier used to retrieve the user"
+            },
+            {
+              "name": "userId",
+              "displayName": "User ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              },
+              "description": "The sys_id of the user record"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "active",
+                  "displayName": "Active",
+                  "type": "boolean",
+                  "default": true
+                },
+                {
+                  "name": "building",
+                  "displayName": "Building",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "city",
+                  "displayName": "City",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "company",
+                  "displayName": "Company",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "country",
+                  "displayName": "Country",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "department",
+                  "displayName": "Department",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "email",
+                  "displayName": "Email",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "firstName",
+                  "displayName": "First Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "gender",
+                  "displayName": "Gender",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Male",
+                      "value": "Male"
+                    },
+                    {
+                      "name": "Female",
+                      "value": "Female"
+                    }
+                  ],
+                  "default": "Male"
+                },
+                {
+                  "name": "homePhone",
+                  "displayName": "Home Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "lastName",
+                  "displayName": "Last Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "location",
+                  "displayName": "Location",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "manager",
+                  "displayName": "Manager",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "middleName",
+                  "displayName": "Middle Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "mobilePhone",
+                  "displayName": "Mobile Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "password",
+                  "displayName": "Password",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "passwordNeedsReset",
+                  "displayName": "Password Needs Reset",
+                  "type": "boolean",
+                  "default": false
+                },
+                {
+                  "name": "phone",
+                  "displayName": "Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "roleNamesOrIds",
+                  "displayName": "Role Names or IDs",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "source",
+                  "displayName": "Source",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "state",
+                  "displayName": "State",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "street",
+                  "displayName": "Street",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "username",
+                  "displayName": "Username",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "zipCode",
+                  "displayName": "Zip Code",
+                  "type": "string",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "name": "updateFields",
+              "displayName": "Update Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "update"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "shortDescription",
+                  "displayName": "Short Description",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "active",
+                  "displayName": "Active",
+                  "type": "boolean",
+                  "default": true
+                },
+                {
+                  "name": "building",
+                  "displayName": "Building",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "city",
+                  "displayName": "City",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "company",
+                  "displayName": "Company",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "country",
+                  "displayName": "Country",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "department",
+                  "displayName": "Department",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "email",
+                  "displayName": "Email",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "firstName",
+                  "displayName": "First Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "gender",
+                  "displayName": "Gender",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Male",
+                      "value": "Male"
+                    },
+                    {
+                      "name": "Female",
+                      "value": "Female"
+                    }
+                  ],
+                  "default": "Male"
+                },
+                {
+                  "name": "homePhone",
+                  "displayName": "Home Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "lastName",
+                  "displayName": "Last Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "location",
+                  "displayName": "Location",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "manager",
+                  "displayName": "Manager",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "middleName",
+                  "displayName": "Middle Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "mobilePhone",
+                  "displayName": "Mobile Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "password",
+                  "displayName": "Password",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "passwordNeedsReset",
+                  "displayName": "Password Needs Reset",
+                  "type": "boolean",
+                  "default": false
+                },
+                {
+                  "name": "phone",
+                  "displayName": "Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "roleNamesOrIds",
+                  "displayName": "Role Names or IDs",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "source",
+                  "displayName": "Source",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "state",
+                  "displayName": "State",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "street",
+                  "displayName": "Street",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "username",
+                  "displayName": "Username",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "zipCode",
+                  "displayName": "Zip Code",
+                  "type": "string",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "placeholder": "Add Field",
+              "options": [
+                {
+                  "name": "excludeReferenceLink",
+                  "displayName": "Exclude Reference Link",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to exclude reference links (sysparm_exclude_reference_link)"
+                },
+                {
+                  "name": "fieldNamesOrIds",
+                  "displayName": "Field Names or IDs",
+                  "type": "multiOptions",
+                  "description": "A list of fields to return (sysparm_fields)",
+                  "fetchEndpoint": "/api/tools/serviceNow/columns?tableName=sys_user"
+                },
+                {
+                  "name": "filter",
+                  "displayName": "Filter",
+                  "type": "string",
+                  "description": "ServiceNow query (sysparm_query)",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "returnValues",
+                  "displayName": "Return Values",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Actual Values",
+                      "value": "false"
+                    },
+                    {
+                      "name": "Display Values",
+                      "value": "true"
+                    },
+                    {
+                      "name": "Both",
+                      "value": "all"
+                    }
+                  ],
+                  "default": "false",
+                  "description": "What values to return (sysparm_display_value)"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "delete"
+          },
+          "subCategory": "User"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "delete"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1112.7128255981575,
+        "y": -326.5354682371102
+      },
+      "dragging": false
+    },
+    {
+      "id": "servicenow.user.get-1783408062880",
+      "type": "action",
+      "position": {
+        "x": 736.6264054635731,
+        "y": -223.8519062908167
+      },
+      "data": {
+        "label": "Get",
+        "toolId": "servicenow.user.get",
+        "toolData": {
+          "id": "servicenow.user.get",
+          "displayName": "Get",
+          "category": "Integrations",
+          "provider": "servicenow",
+          "operation": "Get",
+          "icon": "/tools/servicenow.png",
+          "actionGroup": "User",
+          "description": "Get in User",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ]
+              },
+              "userId": {
+                "type": "string",
+                "description": "User sys_id (for Get/Delete/Update)"
+              },
+              "shortDescription": {
+                "type": "string",
+                "description": "Short Description (for Create)"
+              },
+              "retrieveIdentifier": {
+                "type": "string",
+                "enum": [
+                  "id"
+                ],
+                "description": "Retrieve Identifier (for Get)"
+              },
+              "additionalFields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Additional Fields (for Create)"
+              },
+              "updateFields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Update Fields (for Update)"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "excludeReferenceLink": {
+                    "type": "boolean"
+                  },
+                  "fieldNamesOrIds": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "returnValues": {
+                    "type": "string",
+                    "enum": [
+                      "false",
+                      "true",
+                      "all"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "ServiceNow credentials"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "User",
+                  "value": "user"
+                }
+              ],
+              "default": "user",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "get",
+              "required": true
+            },
+            {
+              "name": "shortDescription",
+              "displayName": "Short Description",
+              "type": "string",
+              "default": "",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "Short description for the user"
+            },
+            {
+              "name": "retrieveIdentifier",
+              "displayName": "Retrieve Identifier",
+              "type": "options",
+              "options": [
+                {
+                  "name": "ID",
+                  "value": "id"
+                }
+              ],
+              "default": "id",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              },
+              "description": "The identifier used to retrieve the user"
+            },
+            {
+              "name": "userId",
+              "displayName": "User ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              },
+              "description": "The sys_id of the user record"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "active",
+                  "displayName": "Active",
+                  "type": "boolean",
+                  "default": true
+                },
+                {
+                  "name": "building",
+                  "displayName": "Building",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "city",
+                  "displayName": "City",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "company",
+                  "displayName": "Company",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "country",
+                  "displayName": "Country",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "department",
+                  "displayName": "Department",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "email",
+                  "displayName": "Email",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "firstName",
+                  "displayName": "First Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "gender",
+                  "displayName": "Gender",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Male",
+                      "value": "Male"
+                    },
+                    {
+                      "name": "Female",
+                      "value": "Female"
+                    }
+                  ],
+                  "default": "Male"
+                },
+                {
+                  "name": "homePhone",
+                  "displayName": "Home Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "lastName",
+                  "displayName": "Last Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "location",
+                  "displayName": "Location",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "manager",
+                  "displayName": "Manager",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "middleName",
+                  "displayName": "Middle Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "mobilePhone",
+                  "displayName": "Mobile Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "password",
+                  "displayName": "Password",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "passwordNeedsReset",
+                  "displayName": "Password Needs Reset",
+                  "type": "boolean",
+                  "default": false
+                },
+                {
+                  "name": "phone",
+                  "displayName": "Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "roleNamesOrIds",
+                  "displayName": "Role Names or IDs",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "source",
+                  "displayName": "Source",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "state",
+                  "displayName": "State",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "street",
+                  "displayName": "Street",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "username",
+                  "displayName": "Username",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "zipCode",
+                  "displayName": "Zip Code",
+                  "type": "string",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "name": "updateFields",
+              "displayName": "Update Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "update"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "shortDescription",
+                  "displayName": "Short Description",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "active",
+                  "displayName": "Active",
+                  "type": "boolean",
+                  "default": true
+                },
+                {
+                  "name": "building",
+                  "displayName": "Building",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "city",
+                  "displayName": "City",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "company",
+                  "displayName": "Company",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "country",
+                  "displayName": "Country",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "department",
+                  "displayName": "Department",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "email",
+                  "displayName": "Email",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "firstName",
+                  "displayName": "First Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "gender",
+                  "displayName": "Gender",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Male",
+                      "value": "Male"
+                    },
+                    {
+                      "name": "Female",
+                      "value": "Female"
+                    }
+                  ],
+                  "default": "Male"
+                },
+                {
+                  "name": "homePhone",
+                  "displayName": "Home Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "lastName",
+                  "displayName": "Last Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "location",
+                  "displayName": "Location",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "manager",
+                  "displayName": "Manager",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "middleName",
+                  "displayName": "Middle Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "mobilePhone",
+                  "displayName": "Mobile Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "password",
+                  "displayName": "Password",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "passwordNeedsReset",
+                  "displayName": "Password Needs Reset",
+                  "type": "boolean",
+                  "default": false
+                },
+                {
+                  "name": "phone",
+                  "displayName": "Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "roleNamesOrIds",
+                  "displayName": "Role Names or IDs",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "source",
+                  "displayName": "Source",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "state",
+                  "displayName": "State",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "street",
+                  "displayName": "Street",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "username",
+                  "displayName": "Username",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "zipCode",
+                  "displayName": "Zip Code",
+                  "type": "string",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "placeholder": "Add Field",
+              "options": [
+                {
+                  "name": "excludeReferenceLink",
+                  "displayName": "Exclude Reference Link",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to exclude reference links (sysparm_exclude_reference_link)"
+                },
+                {
+                  "name": "fieldNamesOrIds",
+                  "displayName": "Field Names or IDs",
+                  "type": "multiOptions",
+                  "description": "A list of fields to return (sysparm_fields)",
+                  "fetchEndpoint": "/api/tools/serviceNow/columns?tableName=sys_user"
+                },
+                {
+                  "name": "filter",
+                  "displayName": "Filter",
+                  "type": "string",
+                  "description": "ServiceNow query (sysparm_query)",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "returnValues",
+                  "displayName": "Return Values",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Actual Values",
+                      "value": "false"
+                    },
+                    {
+                      "name": "Display Values",
+                      "value": "true"
+                    },
+                    {
+                      "name": "Both",
+                      "value": "all"
+                    }
+                  ],
+                  "default": "false",
+                  "description": "What values to return (sysparm_display_value)"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "get"
+          },
+          "subCategory": "User"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 736.6264054635731,
+        "y": -223.8519062908167
+      },
+      "dragging": false
+    },
+    {
+      "id": "servicenow.user.getmany-1783408068263",
+      "type": "action",
+      "position": {
+        "x": 508.580703472418,
+        "y": -398.9809260519799
+      },
+      "data": {
+        "label": "Get Many",
+        "toolId": "servicenow.user.getmany",
+        "toolData": {
+          "id": "servicenow.user.getmany",
+          "displayName": "Get Many",
+          "category": "Integrations",
+          "provider": "servicenow",
+          "operation": "Get Many",
+          "icon": "/tools/servicenow.png",
+          "actionGroup": "User",
+          "description": "Get Many in User",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ]
+              },
+              "userId": {
+                "type": "string",
+                "description": "User sys_id (for Get/Delete/Update)"
+              },
+              "shortDescription": {
+                "type": "string",
+                "description": "Short Description (for Create)"
+              },
+              "retrieveIdentifier": {
+                "type": "string",
+                "enum": [
+                  "id"
+                ],
+                "description": "Retrieve Identifier (for Get)"
+              },
+              "additionalFields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Additional Fields (for Create)"
+              },
+              "updateFields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Update Fields (for Update)"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "excludeReferenceLink": {
+                    "type": "boolean"
+                  },
+                  "fieldNamesOrIds": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "returnValues": {
+                    "type": "string",
+                    "enum": [
+                      "false",
+                      "true",
+                      "all"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "ServiceNow credentials"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "User",
+                  "value": "user"
+                }
+              ],
+              "default": "user",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "getMany",
+              "required": true
+            },
+            {
+              "name": "shortDescription",
+              "displayName": "Short Description",
+              "type": "string",
+              "default": "",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "Short description for the user"
+            },
+            {
+              "name": "retrieveIdentifier",
+              "displayName": "Retrieve Identifier",
+              "type": "options",
+              "options": [
+                {
+                  "name": "ID",
+                  "value": "id"
+                }
+              ],
+              "default": "id",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              },
+              "description": "The identifier used to retrieve the user"
+            },
+            {
+              "name": "userId",
+              "displayName": "User ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              },
+              "description": "The sys_id of the user record"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "active",
+                  "displayName": "Active",
+                  "type": "boolean",
+                  "default": true
+                },
+                {
+                  "name": "building",
+                  "displayName": "Building",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "city",
+                  "displayName": "City",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "company",
+                  "displayName": "Company",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "country",
+                  "displayName": "Country",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "department",
+                  "displayName": "Department",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "email",
+                  "displayName": "Email",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "firstName",
+                  "displayName": "First Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "gender",
+                  "displayName": "Gender",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Male",
+                      "value": "Male"
+                    },
+                    {
+                      "name": "Female",
+                      "value": "Female"
+                    }
+                  ],
+                  "default": "Male"
+                },
+                {
+                  "name": "homePhone",
+                  "displayName": "Home Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "lastName",
+                  "displayName": "Last Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "location",
+                  "displayName": "Location",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "manager",
+                  "displayName": "Manager",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "middleName",
+                  "displayName": "Middle Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "mobilePhone",
+                  "displayName": "Mobile Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "password",
+                  "displayName": "Password",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "passwordNeedsReset",
+                  "displayName": "Password Needs Reset",
+                  "type": "boolean",
+                  "default": false
+                },
+                {
+                  "name": "phone",
+                  "displayName": "Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "roleNamesOrIds",
+                  "displayName": "Role Names or IDs",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "source",
+                  "displayName": "Source",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "state",
+                  "displayName": "State",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "street",
+                  "displayName": "Street",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "username",
+                  "displayName": "Username",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "zipCode",
+                  "displayName": "Zip Code",
+                  "type": "string",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "name": "updateFields",
+              "displayName": "Update Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "update"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "shortDescription",
+                  "displayName": "Short Description",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "active",
+                  "displayName": "Active",
+                  "type": "boolean",
+                  "default": true
+                },
+                {
+                  "name": "building",
+                  "displayName": "Building",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "city",
+                  "displayName": "City",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "company",
+                  "displayName": "Company",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "country",
+                  "displayName": "Country",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "department",
+                  "displayName": "Department",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "email",
+                  "displayName": "Email",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "firstName",
+                  "displayName": "First Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "gender",
+                  "displayName": "Gender",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Male",
+                      "value": "Male"
+                    },
+                    {
+                      "name": "Female",
+                      "value": "Female"
+                    }
+                  ],
+                  "default": "Male"
+                },
+                {
+                  "name": "homePhone",
+                  "displayName": "Home Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "lastName",
+                  "displayName": "Last Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "location",
+                  "displayName": "Location",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "manager",
+                  "displayName": "Manager",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "middleName",
+                  "displayName": "Middle Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "mobilePhone",
+                  "displayName": "Mobile Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "password",
+                  "displayName": "Password",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "passwordNeedsReset",
+                  "displayName": "Password Needs Reset",
+                  "type": "boolean",
+                  "default": false
+                },
+                {
+                  "name": "phone",
+                  "displayName": "Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "roleNamesOrIds",
+                  "displayName": "Role Names or IDs",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "source",
+                  "displayName": "Source",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "state",
+                  "displayName": "State",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "street",
+                  "displayName": "Street",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "username",
+                  "displayName": "Username",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "zipCode",
+                  "displayName": "Zip Code",
+                  "type": "string",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "placeholder": "Add Field",
+              "options": [
+                {
+                  "name": "excludeReferenceLink",
+                  "displayName": "Exclude Reference Link",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to exclude reference links (sysparm_exclude_reference_link)"
+                },
+                {
+                  "name": "fieldNamesOrIds",
+                  "displayName": "Field Names or IDs",
+                  "type": "multiOptions",
+                  "description": "A list of fields to return (sysparm_fields)",
+                  "fetchEndpoint": "/api/tools/serviceNow/columns?tableName=sys_user"
+                },
+                {
+                  "name": "filter",
+                  "displayName": "Filter",
+                  "type": "string",
+                  "description": "ServiceNow query (sysparm_query)",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "returnValues",
+                  "displayName": "Return Values",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Actual Values",
+                      "value": "false"
+                    },
+                    {
+                      "name": "Display Values",
+                      "value": "true"
+                    },
+                    {
+                      "name": "Both",
+                      "value": "all"
+                    }
+                  ],
+                  "default": "false",
+                  "description": "What values to return (sysparm_display_value)"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "getMany"
+          },
+          "subCategory": "User"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "getMany"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 508.580703472418,
+        "y": -398.9809260519799
+      },
+      "dragging": false
+    },
+    {
+      "id": "servicenow.user.update-1783408070175",
+      "type": "action",
+      "position": {
+        "x": 818.5212708195128,
+        "y": -368.7428219205561
+      },
+      "data": {
+        "label": "Update",
+        "toolId": "servicenow.user.update",
+        "toolData": {
+          "id": "servicenow.user.update",
+          "displayName": "Update",
+          "category": "Integrations",
+          "provider": "servicenow",
+          "operation": "Update",
+          "icon": "/tools/servicenow.png",
+          "actionGroup": "User",
+          "description": "Update in User",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ]
+              },
+              "userId": {
+                "type": "string",
+                "description": "User sys_id (for Get/Delete/Update)"
+              },
+              "shortDescription": {
+                "type": "string",
+                "description": "Short Description (for Create)"
+              },
+              "retrieveIdentifier": {
+                "type": "string",
+                "enum": [
+                  "id"
+                ],
+                "description": "Retrieve Identifier (for Get)"
+              },
+              "additionalFields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Additional Fields (for Create)"
+              },
+              "updateFields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Update Fields (for Update)"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "excludeReferenceLink": {
+                    "type": "boolean"
+                  },
+                  "fieldNamesOrIds": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "returnValues": {
+                    "type": "string",
+                    "enum": [
+                      "false",
+                      "true",
+                      "all"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "ServiceNow credentials"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "User",
+                  "value": "user"
+                }
+              ],
+              "default": "user",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "update",
+              "required": true
+            },
+            {
+              "name": "shortDescription",
+              "displayName": "Short Description",
+              "type": "string",
+              "default": "",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "Short description for the user"
+            },
+            {
+              "name": "retrieveIdentifier",
+              "displayName": "Retrieve Identifier",
+              "type": "options",
+              "options": [
+                {
+                  "name": "ID",
+                  "value": "id"
+                }
+              ],
+              "default": "id",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              },
+              "description": "The identifier used to retrieve the user"
+            },
+            {
+              "name": "userId",
+              "displayName": "User ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              },
+              "description": "The sys_id of the user record"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "active",
+                  "displayName": "Active",
+                  "type": "boolean",
+                  "default": true
+                },
+                {
+                  "name": "building",
+                  "displayName": "Building",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "city",
+                  "displayName": "City",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "company",
+                  "displayName": "Company",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "country",
+                  "displayName": "Country",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "department",
+                  "displayName": "Department",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "email",
+                  "displayName": "Email",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "firstName",
+                  "displayName": "First Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "gender",
+                  "displayName": "Gender",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Male",
+                      "value": "Male"
+                    },
+                    {
+                      "name": "Female",
+                      "value": "Female"
+                    }
+                  ],
+                  "default": "Male"
+                },
+                {
+                  "name": "homePhone",
+                  "displayName": "Home Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "lastName",
+                  "displayName": "Last Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "location",
+                  "displayName": "Location",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "manager",
+                  "displayName": "Manager",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "middleName",
+                  "displayName": "Middle Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "mobilePhone",
+                  "displayName": "Mobile Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "password",
+                  "displayName": "Password",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "passwordNeedsReset",
+                  "displayName": "Password Needs Reset",
+                  "type": "boolean",
+                  "default": false
+                },
+                {
+                  "name": "phone",
+                  "displayName": "Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "roleNamesOrIds",
+                  "displayName": "Role Names or IDs",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "source",
+                  "displayName": "Source",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "state",
+                  "displayName": "State",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "street",
+                  "displayName": "Street",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "username",
+                  "displayName": "Username",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "zipCode",
+                  "displayName": "Zip Code",
+                  "type": "string",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "name": "updateFields",
+              "displayName": "Update Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "update"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "shortDescription",
+                  "displayName": "Short Description",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "active",
+                  "displayName": "Active",
+                  "type": "boolean",
+                  "default": true
+                },
+                {
+                  "name": "building",
+                  "displayName": "Building",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "city",
+                  "displayName": "City",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "company",
+                  "displayName": "Company",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "country",
+                  "displayName": "Country",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "department",
+                  "displayName": "Department",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "email",
+                  "displayName": "Email",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "firstName",
+                  "displayName": "First Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "gender",
+                  "displayName": "Gender",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Male",
+                      "value": "Male"
+                    },
+                    {
+                      "name": "Female",
+                      "value": "Female"
+                    }
+                  ],
+                  "default": "Male"
+                },
+                {
+                  "name": "homePhone",
+                  "displayName": "Home Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "lastName",
+                  "displayName": "Last Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "location",
+                  "displayName": "Location",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "manager",
+                  "displayName": "Manager",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "middleName",
+                  "displayName": "Middle Name",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "mobilePhone",
+                  "displayName": "Mobile Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "password",
+                  "displayName": "Password",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "passwordNeedsReset",
+                  "displayName": "Password Needs Reset",
+                  "type": "boolean",
+                  "default": false
+                },
+                {
+                  "name": "phone",
+                  "displayName": "Phone",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "roleNamesOrIds",
+                  "displayName": "Role Names or IDs",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "source",
+                  "displayName": "Source",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "state",
+                  "displayName": "State",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "street",
+                  "displayName": "Street",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "username",
+                  "displayName": "Username",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "zipCode",
+                  "displayName": "Zip Code",
+                  "type": "string",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              },
+              "placeholder": "Add Field",
+              "options": [
+                {
+                  "name": "excludeReferenceLink",
+                  "displayName": "Exclude Reference Link",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to exclude reference links (sysparm_exclude_reference_link)"
+                },
+                {
+                  "name": "fieldNamesOrIds",
+                  "displayName": "Field Names or IDs",
+                  "type": "multiOptions",
+                  "description": "A list of fields to return (sysparm_fields)",
+                  "fetchEndpoint": "/api/tools/serviceNow/columns?tableName=sys_user"
+                },
+                {
+                  "name": "filter",
+                  "displayName": "Filter",
+                  "type": "string",
+                  "description": "ServiceNow query (sysparm_query)",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "returnValues",
+                  "displayName": "Return Values",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Actual Values",
+                      "value": "false"
+                    },
+                    {
+                      "name": "Display Values",
+                      "value": "true"
+                    },
+                    {
+                      "name": "Both",
+                      "value": "all"
+                    }
+                  ],
+                  "default": "false",
+                  "description": "What values to return (sysparm_display_value)"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "update"
+          },
+          "subCategory": "User"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "update"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 818.5212708195128,
+        "y": -368.7428219205561
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

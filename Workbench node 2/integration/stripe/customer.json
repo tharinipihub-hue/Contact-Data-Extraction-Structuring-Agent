@@ -1,0 +1,584 @@
+{
+  "nodes": [
+    {
+      "id": "stripe.customer.create-1783407885052",
+      "type": "action",
+      "position": {
+        "x": 650.5095330268412,
+        "y": -294.45575565333905
+      },
+      "data": {
+        "label": "Create Customer",
+        "toolId": "stripe.customer.create",
+        "toolData": {
+          "id": "stripe.customer.create",
+          "displayName": "Create Customer",
+          "category": "Integrations",
+          "provider": "stripe",
+          "operation": "Create",
+          "icon": "/tools/stripe.svg",
+          "description": "Creates a new customer in Stripe",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Balance",
+                  "Charge",
+                  "Coupon",
+                  "Customer",
+                  "Customer Card",
+                  "Meter Event",
+                  "Source",
+                  "Token"
+                ],
+                "default": "Customer",
+                "description": "The resource to act on"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Update",
+                  "Add",
+                  "Remove"
+                ],
+                "default": "Create",
+                "description": "The operation to perform"
+              },
+              "name": {
+                "type": "string",
+                "description": "Customer name"
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "description": "Customer email"
+              },
+              "description": {
+                "type": "string",
+                "description": "Customer description"
+              },
+              "phone": {
+                "type": "string",
+                "description": "Customer phone number"
+              },
+              "address": {
+                "type": "object",
+                "properties": {
+                  "line1": {
+                    "type": "string"
+                  },
+                  "line2": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  },
+                  "state": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  },
+                  "postal_code": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Customer address"
+              },
+              "shipping": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Recipient name"
+                    },
+                    "phone": {
+                      "type": "string",
+                      "description": "Recipient phone number"
+                    },
+                    "address": {
+                      "type": "object",
+                      "properties": {
+                        "line1": {
+                          "type": "string"
+                        },
+                        "line2": {
+                          "type": "string"
+                        },
+                        "city": {
+                          "type": "string"
+                        },
+                        "state": {
+                          "type": "string"
+                        },
+                        "country": {
+                          "type": "string"
+                        },
+                        "postal_code": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "line1"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Shipping information"
+              },
+              "metadata": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Set of key-value pairs that you can attach to an object."
+              },
+              "credentialId": {
+                "type": "string",
+                "description": "Stripe account credential"
+              }
+            },
+            "required": [
+              "name",
+              "credentialId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Stripe"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "stripe.customer.delete-1783407886044",
+      "type": "action",
+      "position": {
+        "x": 899.896528162918,
+        "y": -285.87895423331526
+      },
+      "data": {
+        "label": "Delete Customer",
+        "toolId": "stripe.customer.delete",
+        "toolData": {
+          "id": "stripe.customer.delete",
+          "displayName": "Delete Customer",
+          "category": "Integrations",
+          "provider": "stripe",
+          "operation": "Delete a customer",
+          "icon": "/tools/stripe.svg",
+          "description": "Delete a Stripe customer",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Balance",
+                  "Charge",
+                  "Coupon",
+                  "Customer",
+                  "Customer Card",
+                  "Meter Event",
+                  "Source",
+                  "Token"
+                ],
+                "default": "Customer",
+                "description": "The resource to act on"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Update",
+                  "Add",
+                  "Remove"
+                ],
+                "default": "Delete a customer",
+                "description": "The operation to perform"
+              },
+              "customerId": {
+                "type": "string",
+                "description": "The ID of the customer to delete"
+              },
+              "credentialId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "operation",
+              "customerId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Stripe"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "stripe.customer.get_many-1783407886851",
+      "type": "action",
+      "position": {
+        "x": 802.2529427657239,
+        "y": -235.07789966855884
+      },
+      "data": {
+        "label": "Get All Customers",
+        "toolId": "stripe.customer.get_many",
+        "toolData": {
+          "id": "stripe.customer.get_many",
+          "displayName": "Get All Customers",
+          "category": "Integrations",
+          "provider": "stripe",
+          "operation": "Get many customers",
+          "icon": "/tools/stripe.svg",
+          "description": "Retrieve multiple Stripe customers with filters",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Balance",
+                  "Charge",
+                  "Coupon",
+                  "Customer",
+                  "Customer Card",
+                  "Meter Event",
+                  "Source",
+                  "Token"
+                ],
+                "default": "Customer",
+                "description": "The resource to act on"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Update",
+                  "Add",
+                  "Remove"
+                ],
+                "default": "Get many customers",
+                "description": "The operation to perform"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all customers"
+              },
+              "limit": {
+                "type": "number",
+                "default": 100,
+                "description": "Max number of customers to return"
+              },
+              "filter": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to enable filters"
+              },
+              "filterCategory": {
+                "type": "string",
+                "enum": [
+                  "email",
+                  "name",
+                  "created date",
+                  "location"
+                ]
+              },
+              "filterValue": {
+                "type": "string",
+                "description": "Value to filter by"
+              },
+              "credentialId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Stripe"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "stripe.customer.get-1783407887828",
+      "type": "action",
+      "position": {
+        "x": 790.3773715687678,
+        "y": -217.92429682851125
+      },
+      "data": {
+        "label": "Get Customer",
+        "toolId": "stripe.customer.get",
+        "toolData": {
+          "id": "stripe.customer.get",
+          "displayName": "Get Customer",
+          "category": "Integrations",
+          "provider": "stripe",
+          "operation": "Get a customer",
+          "icon": "/tools/stripe.svg",
+          "description": "Retrieve a Stripe customer by ID",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Balance",
+                  "Charge",
+                  "Coupon",
+                  "Customer",
+                  "Customer Card",
+                  "Meter Event",
+                  "Source",
+                  "Token"
+                ],
+                "default": "Customer",
+                "description": "The resource to act on"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Update",
+                  "Add",
+                  "Remove"
+                ],
+                "default": "Get a customer",
+                "description": "The operation to perform"
+              },
+              "customerId": {
+                "type": "string",
+                "description": "The ID of the customer to retrieve"
+              },
+              "credentialId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "operation",
+              "customerId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Stripe"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "stripe.customer.update-1783407888859",
+      "type": "action",
+      "position": {
+        "x": 789.0578636579949,
+        "y": -189.55487674689402
+      },
+      "data": {
+        "label": "Update Customer",
+        "toolId": "stripe.customer.update",
+        "toolData": {
+          "id": "stripe.customer.update",
+          "displayName": "Update Customer",
+          "category": "Integrations",
+          "provider": "stripe",
+          "operation": "Update a customer",
+          "icon": "/tools/stripe.svg",
+          "description": "Update an existing Stripe customer",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Balance",
+                  "Charge",
+                  "Coupon",
+                  "Customer",
+                  "Customer Card",
+                  "Meter Event",
+                  "Source",
+                  "Token"
+                ],
+                "default": "Customer",
+                "description": "The resource to act on"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Update",
+                  "Add",
+                  "Remove"
+                ],
+                "default": "Update a customer",
+                "description": "The operation to perform"
+              },
+              "customerId": {
+                "type": "string",
+                "description": "The ID of the customer to update"
+              },
+              "name": {
+                "type": "string",
+                "description": "Customer full name"
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "description": "Customer email address"
+              },
+              "description": {
+                "type": "string",
+                "description": "Customer description"
+              },
+              "phone": {
+                "type": "string",
+                "description": "Customer phone number"
+              },
+              "address": {
+                "type": "object",
+                "properties": {
+                  "line1": {
+                    "type": "string"
+                  },
+                  "line2": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  },
+                  "state": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  },
+                  "postal_code": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Customer address"
+              },
+              "shipping": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "phone": {
+                      "type": "string"
+                    },
+                    "address": {
+                      "type": "object",
+                      "properties": {
+                        "line1": {
+                          "type": "string"
+                        },
+                        "line2": {
+                          "type": "string"
+                        },
+                        "city": {
+                          "type": "string"
+                        },
+                        "state": {
+                          "type": "string"
+                        },
+                        "country": {
+                          "type": "string"
+                        },
+                        "postal_code": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Customer shipping information"
+              },
+              "metadata": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Custom metadata"
+              },
+              "credentialId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "operation",
+              "customerId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Stripe"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

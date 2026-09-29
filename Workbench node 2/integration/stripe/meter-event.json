@@ -1,0 +1,68 @@
+{
+  "nodes": [
+    {
+      "id": "stripe.meter_event.create-1783407911772",
+      "type": "action",
+      "position": {
+        "x": 772.5640147733337,
+        "y": -261.46805788401673
+      },
+      "data": {
+        "label": "Create Meter Event",
+        "toolId": "stripe.meter_event.create",
+        "toolData": {
+          "id": "stripe.meter_event.create",
+          "displayName": "Create Meter Event",
+          "category": "Integrations",
+          "provider": "stripe",
+          "operation": "Create",
+          "icon": "/tools/stripe.svg",
+          "description": "Create a new meter event",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Balance",
+                  "Charge",
+                  "Coupon",
+                  "Customer",
+                  "Customer Card",
+                  "Meter Event",
+                  "Source",
+                  "Token"
+                ],
+                "default": "Meter Event",
+                "description": "The resource to act on"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Update",
+                  "Add",
+                  "Remove"
+                ],
+                "default": "Create",
+                "description": "The operation to perform"
+              }
+            },
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Stripe"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

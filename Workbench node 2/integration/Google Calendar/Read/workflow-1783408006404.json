@@ -1,0 +1,316 @@
+{
+  "nodes": [
+    {
+      "id": "google.calendar.availability-1783408003965",
+      "type": "action",
+      "position": {
+        "x": 790.5723160155649,
+        "y": 260.51526457165505
+      },
+      "data": {
+        "label": "Availability",
+        "toolId": "google.calendar.availability",
+        "toolData": {
+          "id": "google.calendar.availability",
+          "displayName": "Availability",
+          "category": "Integrations",
+          "provider": "googleCalendar",
+          "operation": "calendarAvailability",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg",
+          "description": "Check calendar availability and free/busy status",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "client_email": {
+                    "type": "string"
+                  },
+                  "private_key": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Google Calendar Credentials"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Event",
+                  "Calendar",
+                  "Custom API Call"
+                ],
+                "default": "Event",
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Update",
+                  "Availability",
+                  "Custom API Call"
+                ],
+                "default": "Availability",
+                "description": "Operation"
+              },
+              "calendarId": {
+                "type": "string",
+                "description": "Calendar"
+              },
+              "calendarMode": {
+                "type": "string"
+              },
+              "start": {
+                "type": "string",
+                "description": "Start (ISO 8601)"
+              },
+              "end": {
+                "type": "string",
+                "description": "End (ISO 8601)"
+              },
+              "timeZone": {
+                "type": "string",
+                "description": "Timezone"
+              },
+              "useDefaultReminders": {
+                "type": "boolean",
+                "description": "Use Default Reminders"
+              },
+              "eventId": {
+                "type": "string",
+                "description": "Event ID"
+              },
+              "allDay": {
+                "type": "boolean",
+                "description": "All Day"
+              },
+              "attendees": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "description": "Attendees"
+              },
+              "colorId": {
+                "type": "string",
+                "description": "Color Name or ID"
+              },
+              "conferenceData": {
+                "type": "boolean",
+                "description": "Conference Data"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description"
+              },
+              "guestsCanInviteOthers": {
+                "type": "boolean",
+                "description": "Guests Can Invite Others"
+              },
+              "guestsCanModify": {
+                "type": "boolean",
+                "description": "Guests Can Modify"
+              },
+              "guestsCanSeeOtherGuests": {
+                "type": "boolean",
+                "description": "Guests Can See Other Guests"
+              },
+              "location": {
+                "type": "string",
+                "description": "Location"
+              },
+              "repeatFrequency": {
+                "type": "string",
+                "enum": [
+                  "daily",
+                  "weekly",
+                  "monthly",
+                  "yearly"
+                ],
+                "description": "Repeat Frequency"
+              },
+              "repeatCount": {
+                "type": "number",
+                "description": "Repeat How Many Times?"
+              },
+              "repeatUntil": {
+                "type": "string",
+                "description": "Repeat Until"
+              },
+              "rrule": {
+                "type": "string",
+                "description": "RRULE"
+              },
+              "showMeAs": {
+                "type": "string",
+                "enum": [
+                  "busy",
+                  "free"
+                ],
+                "description": "Show Me As"
+              },
+              "eventTitle": {
+                "type": "string",
+                "description": "Event Title"
+              },
+              "visibility": {
+                "type": "string",
+                "enum": [
+                  "default",
+                  "public",
+                  "private"
+                ],
+                "description": "Visibility"
+              },
+              "sendUpdates": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "externalOnly",
+                  "none"
+                ],
+                "description": "Send Updates"
+              },
+              "maxAttendees": {
+                "type": "number",
+                "description": "Max Attendees"
+              },
+              "returnNextInstance": {
+                "type": "boolean",
+                "description": "Return Next Instance of Recurring Event"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": true,
+                "description": "Return All"
+              },
+              "timeMin": {
+                "type": "string",
+                "description": "After (Time Min)"
+              },
+              "timeMax": {
+                "type": "string",
+                "description": "Before (Time Max)"
+              },
+              "limit": {
+                "type": "number",
+                "default": 10,
+                "description": "Limit (if not returning all)"
+              },
+              "reminders": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "method": {
+                      "type": "string",
+                      "enum": [
+                        "email",
+                        "popup"
+                      ]
+                    },
+                    "minutes": {
+                      "type": [
+                        "number",
+                        "string"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "method",
+                    "minutes"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Reminders"
+              },
+              "iCalUID": {
+                "type": "string",
+                "description": "iCalUID"
+              },
+              "orderBy": {
+                "type": "string",
+                "enum": [
+                  "startTime",
+                  "updated"
+                ],
+                "description": "Order By"
+              },
+              "singleEvents": {
+                "type": "boolean",
+                "description": "Recurring Event Handling"
+              },
+              "showDeleted": {
+                "type": "boolean",
+                "description": "Show Deleted"
+              },
+              "showHiddenInvitations": {
+                "type": "boolean",
+                "description": "Show Hidden Invitations"
+              },
+              "updatedMin": {
+                "type": "string",
+                "description": "Updated Min"
+              },
+              "fields": {
+                "type": "string",
+                "description": "Fields"
+              },
+              "outputFormat": {
+                "type": "string",
+                "enum": [
+                  "availability",
+                  "booked-slots",
+                  "raw"
+                ],
+                "description": "Output Format"
+              }
+            },
+            "required": [
+              "calendarId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Read",
+          "dynamicFields": [
+            {
+              "fieldName": "calendarId",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/googleCalendar/list-calendars",
+              "labelKey": "title",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true
+    }
+  ],
+  "edges": []
+}

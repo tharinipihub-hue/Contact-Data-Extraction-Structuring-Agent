@@ -1,0 +1,735 @@
+{
+  "nodes": [
+    {
+      "id": "zoho.crm.contact.create-1783406807364",
+      "type": "action",
+      "position": {
+        "x": -203.72696843169643,
+        "y": -419.3328188672535
+      },
+      "data": {
+        "label": "Create Contact",
+        "toolId": "zoho.crm.contact.create",
+        "toolData": {
+          "id": "zoho.crm.contact.create",
+          "displayName": "Create Contact",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoContactCreate",
+          "icon": "zoho",
+          "description": "Create a new contact in Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "Last_Name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Last Name"
+              },
+              "First_Name": {
+                "type": "string",
+                "description": "First Name"
+              },
+              "Full_Name": {
+                "type": "string",
+                "description": "Full Name"
+              },
+              "Email": {
+                "type": "string",
+                "description": "Primary Email"
+              },
+              "Secondary_Email": {
+                "type": "string",
+                "description": "Secondary Email"
+              },
+              "Phone": {
+                "type": "string",
+                "description": "Phone"
+              },
+              "Assistant_Phone": {
+                "type": "string",
+                "description": "Assistant Phone"
+              },
+              "Home_Phone": {
+                "type": "string",
+                "description": "Home Phone"
+              },
+              "Other_Phone": {
+                "type": "string",
+                "description": "Other Phone"
+              },
+              "Mobile": {
+                "type": "string",
+                "description": "Mobile"
+              },
+              "Mailing_Address": {
+                "type": "object",
+                "properties": {
+                  "Mailing_Street": {
+                    "type": "string",
+                    "description": "Mailing Street"
+                  },
+                  "Mailing_City": {
+                    "type": "string",
+                    "description": "Mailing City"
+                  },
+                  "Mailing_State": {
+                    "type": "string",
+                    "description": "Mailing State"
+                  },
+                  "Mailing_Country": {
+                    "type": "string",
+                    "description": "Mailing Country"
+                  },
+                  "Mailing_Zip": {
+                    "type": "string",
+                    "description": "Mailing Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Mailing Address"
+              },
+              "Other_Address": {
+                "type": "object",
+                "properties": {
+                  "Other_Street": {
+                    "type": "string",
+                    "description": "Other Street"
+                  },
+                  "Other_City": {
+                    "type": "string",
+                    "description": "Other City"
+                  },
+                  "Other_State": {
+                    "type": "string",
+                    "description": "Other State"
+                  },
+                  "Other_Country": {
+                    "type": "string",
+                    "description": "Other Country"
+                  },
+                  "Other_Zip": {
+                    "type": "string",
+                    "description": "Other Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Other Address"
+              },
+              "Description": {
+                "type": "string",
+                "description": "Description"
+              },
+              "Date_of_Birth": {
+                "type": "string",
+                "description": "Date of Birth (YYYY-MM-DD)"
+              },
+              "Fax": {
+                "type": "string",
+                "description": "Fax"
+              },
+              "Skype_ID": {
+                "type": "string",
+                "description": "Skype ID"
+              },
+              "Title": {
+                "type": "string",
+                "description": "Title"
+              },
+              "Salutation": {
+                "type": "string",
+                "description": "Salutation"
+              },
+              "Twitter": {
+                "type": "string",
+                "description": "Twitter"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "Last_Name"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.contact.upsert-1783406808596",
+      "type": "action",
+      "position": {
+        "x": 681.4515064103764,
+        "y": -401.14422006912866
+      },
+      "data": {
+        "label": "Create or Update Contact",
+        "toolId": "zoho.crm.contact.upsert",
+        "toolData": {
+          "id": "zoho.crm.contact.upsert",
+          "displayName": "Create or Update Contact",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoContactUpsert",
+          "icon": "zoho",
+          "description": "Create or update a contact (upsert)",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "Last_Name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Last Name"
+              },
+              "First_Name": {
+                "type": "string",
+                "description": "First Name"
+              },
+              "Full_Name": {
+                "type": "string",
+                "description": "Full Name"
+              },
+              "Email": {
+                "type": "string",
+                "description": "Primary Email"
+              },
+              "Secondary_Email": {
+                "type": "string",
+                "description": "Secondary Email"
+              },
+              "Phone": {
+                "type": "string",
+                "description": "Phone"
+              },
+              "Assistant_Phone": {
+                "type": "string",
+                "description": "Assistant Phone"
+              },
+              "Home_Phone": {
+                "type": "string",
+                "description": "Home Phone"
+              },
+              "Other_Phone": {
+                "type": "string",
+                "description": "Other Phone"
+              },
+              "Mobile": {
+                "type": "string",
+                "description": "Mobile"
+              },
+              "Mailing_Address": {
+                "type": "object",
+                "properties": {
+                  "Mailing_Street": {
+                    "type": "string",
+                    "description": "Mailing Street"
+                  },
+                  "Mailing_City": {
+                    "type": "string",
+                    "description": "Mailing City"
+                  },
+                  "Mailing_State": {
+                    "type": "string",
+                    "description": "Mailing State"
+                  },
+                  "Mailing_Country": {
+                    "type": "string",
+                    "description": "Mailing Country"
+                  },
+                  "Mailing_Zip": {
+                    "type": "string",
+                    "description": "Mailing Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Mailing Address"
+              },
+              "Other_Address": {
+                "type": "object",
+                "properties": {
+                  "Other_Street": {
+                    "type": "string",
+                    "description": "Other Street"
+                  },
+                  "Other_City": {
+                    "type": "string",
+                    "description": "Other City"
+                  },
+                  "Other_State": {
+                    "type": "string",
+                    "description": "Other State"
+                  },
+                  "Other_Country": {
+                    "type": "string",
+                    "description": "Other Country"
+                  },
+                  "Other_Zip": {
+                    "type": "string",
+                    "description": "Other Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Other Address"
+              },
+              "Description": {
+                "type": "string",
+                "description": "Description"
+              },
+              "Date_of_Birth": {
+                "type": "string",
+                "description": "Date of Birth (YYYY-MM-DD)"
+              },
+              "Fax": {
+                "type": "string",
+                "description": "Fax"
+              },
+              "Skype_ID": {
+                "type": "string",
+                "description": "Skype ID"
+              },
+              "Title": {
+                "type": "string",
+                "description": "Title"
+              },
+              "Salutation": {
+                "type": "string",
+                "description": "Salutation"
+              },
+              "Twitter": {
+                "type": "string",
+                "description": "Twitter"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "Last_Name"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.contact.delete-1783406809969",
+      "type": "action",
+      "position": {
+        "x": 469.2511870989206,
+        "y": 20.22498542076214
+      },
+      "data": {
+        "label": "Delete Contact",
+        "toolId": "zoho.crm.contact.delete",
+        "toolData": {
+          "id": "zoho.crm.contact.delete",
+          "displayName": "Delete Contact",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoContactDelete",
+          "icon": "zoho",
+          "description": "Delete a contact from Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "contactId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Contact ID"
+              }
+            },
+            "required": [
+              "contactId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.contact.get-1783406811035",
+      "type": "action",
+      "position": {
+        "x": 1196.795139023912,
+        "y": 511.3171529701313
+      },
+      "data": {
+        "label": "Get Contact",
+        "toolId": "zoho.crm.contact.get",
+        "toolData": {
+          "id": "zoho.crm.contact.get",
+          "displayName": "Get Contact",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoContactGet",
+          "icon": "zoho",
+          "description": "Retrieve a specific contact by ID",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "contactId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Contact ID"
+              }
+            },
+            "required": [
+              "contactId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.contact.getMany-1783406812161",
+      "type": "action",
+      "position": {
+        "x": 1548.4413824543244,
+        "y": -113.15807243215295
+      },
+      "data": {
+        "label": "Get Many Contacts",
+        "toolId": "zoho.crm.contact.getMany",
+        "toolData": {
+          "id": "zoho.crm.contact.getMany",
+          "displayName": "Get Many Contacts",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoContactGetMany",
+          "icon": "zoho",
+          "description": "Retrieve multiple contacts with filtering",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all results or limit"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 50,
+                "description": "Maximum number of records to return"
+              },
+              "approved": {
+                "type": "boolean",
+                "description": "Filter by approved status"
+              },
+              "converted": {
+                "type": "boolean",
+                "description": "Filter by converted status"
+              },
+              "includeChild": {
+                "type": "boolean",
+                "description": "Include child records"
+              },
+              "territoryId": {
+                "type": "string",
+                "description": "Territory ID filter"
+              },
+              "fields": {
+                "type": "string",
+                "description": "Comma-separated list of fields to return"
+              },
+              "sortBy": {
+                "type": "string",
+                "description": "Field to sort by"
+              },
+              "sortOrder": {
+                "type": "string",
+                "enum": [
+                  "asc",
+                  "desc"
+                ],
+                "description": "Sort Order (Ascending / Descending)"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.contact.update-1783406813613",
+      "type": "action",
+      "position": {
+        "x": 1178.606540225787,
+        "y": 147.54517700763563
+      },
+      "data": {
+        "label": "Update Contact",
+        "toolId": "zoho.crm.contact.update",
+        "toolData": {
+          "id": "zoho.crm.contact.update",
+          "displayName": "Update Contact",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoContactUpdate",
+          "icon": "zoho",
+          "description": "Update an existing contact in Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "contactId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Contact ID"
+              },
+              "Last_Name": {
+                "type": "string",
+                "description": "Last Name"
+              },
+              "First_Name": {
+                "type": "string",
+                "description": "First Name"
+              },
+              "Full_Name": {
+                "type": "string",
+                "description": "Full Name"
+              },
+              "Email": {
+                "type": "string",
+                "description": "Primary Email"
+              },
+              "Secondary_Email": {
+                "type": "string",
+                "description": "Secondary Email"
+              },
+              "Phone": {
+                "type": "string",
+                "description": "Phone"
+              },
+              "Assistant_Phone": {
+                "type": "string",
+                "description": "Assistant Phone"
+              },
+              "Home_Phone": {
+                "type": "string",
+                "description": "Home Phone"
+              },
+              "Other_Phone": {
+                "type": "string",
+                "description": "Other Phone"
+              },
+              "Mobile": {
+                "type": "string",
+                "description": "Mobile"
+              },
+              "Mailing_Address": {
+                "type": "object",
+                "properties": {
+                  "Mailing_Street": {
+                    "type": "string",
+                    "description": "Mailing Street"
+                  },
+                  "Mailing_City": {
+                    "type": "string",
+                    "description": "Mailing City"
+                  },
+                  "Mailing_State": {
+                    "type": "string",
+                    "description": "Mailing State"
+                  },
+                  "Mailing_Country": {
+                    "type": "string",
+                    "description": "Mailing Country"
+                  },
+                  "Mailing_Zip": {
+                    "type": "string",
+                    "description": "Mailing Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Mailing Address"
+              },
+              "Other_Address": {
+                "type": "object",
+                "properties": {
+                  "Other_Street": {
+                    "type": "string",
+                    "description": "Other Street"
+                  },
+                  "Other_City": {
+                    "type": "string",
+                    "description": "Other City"
+                  },
+                  "Other_State": {
+                    "type": "string",
+                    "description": "Other State"
+                  },
+                  "Other_Country": {
+                    "type": "string",
+                    "description": "Other Country"
+                  },
+                  "Other_Zip": {
+                    "type": "string",
+                    "description": "Other Zip Code"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Other Address"
+              },
+              "Description": {
+                "type": "string",
+                "description": "Description"
+              },
+              "Date_of_Birth": {
+                "type": "string",
+                "description": "Date of Birth (YYYY-MM-DD)"
+              },
+              "Fax": {
+                "type": "string",
+                "description": "Fax"
+              },
+              "Skype_ID": {
+                "type": "string",
+                "description": "Skype ID"
+              },
+              "Title": {
+                "type": "string",
+                "description": "Title"
+              },
+              "Salutation": {
+                "type": "string",
+                "description": "Salutation"
+              },
+              "Twitter": {
+                "type": "string",
+                "description": "Twitter"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "contactId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

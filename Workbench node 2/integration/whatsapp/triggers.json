@@ -1,0 +1,157 @@
+{
+  "nodes": [
+    {
+      "id": "whatsapp.trigger-1783407509315",
+      "type": "manual-trigger",
+      "position": {
+        "x": 679.5387070638446,
+        "y": -347.23607208425483
+      },
+      "data": {
+        "label": "WhatsApp Trigger",
+        "toolId": "whatsapp.trigger",
+        "toolData": {
+          "id": "whatsapp.trigger",
+          "displayName": "WhatsApp Trigger",
+          "category": "Integrations",
+          "provider": "whatsapp",
+          "operation": "webhook",
+          "icon": "/tools/whatsapp.png",
+          "description": "Triggers on various WhatsApp events",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentialId"
+            ],
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "notice",
+              "displayName": "Due to Facebook API limitations, you can use just one WhatsApp trigger for each Facebook App",
+              "type": "notice",
+              "default": ""
+            },
+            {
+              "name": "triggerOn",
+              "displayName": "Trigger On",
+              "type": "options",
+              "required": true,
+              "multiple": true,
+              "default": [
+                "messages"
+              ],
+              "options": [
+                {
+                  "name": "Account Review Update",
+                  "value": "account_review_update"
+                },
+                {
+                  "name": "Account Update",
+                  "value": "account_update"
+                },
+                {
+                  "name": "Business Capability Update",
+                  "value": "business_capability_update"
+                },
+                {
+                  "name": "Message Template Quality Update",
+                  "value": "message_template_quality_update"
+                },
+                {
+                  "name": "Message Template Status Update",
+                  "value": "message_template_status_update"
+                },
+                {
+                  "name": "Messages",
+                  "value": "messages"
+                },
+                {
+                  "name": "Phone Number Name Update",
+                  "value": "phone_number_name_update"
+                },
+                {
+                  "name": "Phone Number Quality Update",
+                  "value": "phone_number_quality_update"
+                },
+                {
+                  "name": "Security",
+                  "value": "security"
+                },
+                {
+                  "name": "Template Category Update",
+                  "value": "template_category_update"
+                }
+              ]
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "placeholder": "Add option",
+              "default": {},
+              "fields": [
+                {
+                  "name": "messageStatusUpdates",
+                  "displayName": "Receive Message Status Updates",
+                  "type": "options",
+                  "multiple": true,
+                  "default": [
+                    "all"
+                  ],
+                  "options": [
+                    {
+                      "name": "All",
+                      "value": "all"
+                    },
+                    {
+                      "name": "Deleted",
+                      "value": "deleted"
+                    },
+                    {
+                      "name": "Delivered",
+                      "value": "delivered"
+                    },
+                    {
+                      "name": "Failed",
+                      "value": "failed"
+                    },
+                    {
+                      "name": "Read",
+                      "value": "read"
+                    },
+                    {
+                      "name": "Sent",
+                      "value": "sent"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "trigger",
+            "operation": "webhook"
+          },
+          "subCategory": "TRIGGERS",
+          "featured": true
+        },
+        "isTrigger": true,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "trigger",
+          "operation": "webhook"
+        }
+      },
+      "width": 220,
+      "height": 100
+    }
+  ],
+  "edges": []
+}

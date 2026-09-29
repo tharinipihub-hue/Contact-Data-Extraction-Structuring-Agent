@@ -1,0 +1,3627 @@
+{
+  "nodes": [
+    {
+      "id": "aws.iam.group.create-1783398769400",
+      "type": "action",
+      "position": {
+        "x": 385.9352277751826,
+        "y": 580.4190208203803
+      },
+      "data": {
+        "label": "Create",
+        "toolId": "aws.iam.group.create",
+        "toolData": {
+          "id": "aws.iam.group.create",
+          "displayName": "Create",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Create",
+          "icon": "/tools/iam.png",
+          "actionGroup": "AWS IAM Group",
+          "description": "Create Group in AWS IAM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "user",
+                  "group"
+                ],
+                "default": "user"
+              },
+              "operation": {
+                "type": "string"
+              },
+              "userOperation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update",
+                  "addUserToGroup",
+                  "removeUserFromGroup"
+                ],
+                "default": "getMany"
+              },
+              "groupOperation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ],
+                "default": "getMany"
+              },
+              "userMode": {
+                "type": "string",
+                "enum": [
+                  "fromList",
+                  "manual"
+                ],
+                "default": "fromList"
+              },
+              "userId": {
+                "type": "string"
+              },
+              "groupMode": {
+                "type": "string",
+                "enum": [
+                  "fromList",
+                  "manual"
+                ],
+                "default": "fromList"
+              },
+              "groupId": {
+                "type": "string"
+              },
+              "credentials": {
+                "description": "AWS IAM credentials"
+              },
+              "userName": {
+                "type": "string"
+              },
+              "groupName": {
+                "type": "string"
+              },
+              "targetGroupName": {
+                "type": "string"
+              },
+              "targetGroupMode": {
+                "type": "string",
+                "enum": [
+                  "fromList",
+                  "manual"
+                ],
+                "default": "fromList"
+              },
+              "targetGroupId": {
+                "type": "string"
+              },
+              "newUserName": {
+                "type": "string"
+              },
+              "newGroupName": {
+                "type": "string"
+              },
+              "newPath": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "permissionsBoundary": {
+                "type": "string"
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "Key": {
+                      "type": "string"
+                    },
+                    "Value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "Key",
+                    "Value"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "pathPrefix": {
+                "type": "string"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "includeUsers": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "User",
+                  "value": "user"
+                },
+                {
+                  "name": "Group",
+                  "value": "group"
+                }
+              ],
+              "default": "group",
+              "required": true
+            },
+            {
+              "name": "userOperation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                },
+                {
+                  "name": "Add user to group",
+                  "value": "addUserToGroup"
+                },
+                {
+                  "name": "Remove user from group",
+                  "value": "removeUserFromGroup"
+                }
+              ],
+              "default": "getMany",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupOperation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "create",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "userMode",
+              "displayName": "User",
+              "type": "options",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "fromList"
+                },
+                {
+                  "name": "By Name",
+                  "value": "manual"
+                }
+              ],
+              "default": "fromList",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "delete",
+                    "get",
+                    "update",
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "userId",
+              "displayName": "User Name",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/iam/users",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userMode": [
+                    "fromList"
+                  ],
+                  "userOperation": [
+                    "delete",
+                    "get",
+                    "update",
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "userName",
+              "displayName": "User Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. UserName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "userName",
+              "displayName": "User Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. UserName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "delete",
+                    "get",
+                    "update",
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ],
+                  "userMode": [
+                    "manual"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupMode",
+              "displayName": "Group",
+              "type": "options",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "fromList"
+                },
+                {
+                  "name": "By Name",
+                  "value": "manual"
+                }
+              ],
+              "default": "fromList",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupId",
+              "displayName": "Group Name",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/iam/groups",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupMode": [
+                    "fromList"
+                  ],
+                  "groupOperation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupName",
+              "displayName": "Group Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. GroupName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupName",
+              "displayName": "Group Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. GroupName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ],
+                  "groupMode": [
+                    "manual"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "targetGroupMode",
+              "displayName": "Group",
+              "type": "options",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "fromList"
+                },
+                {
+                  "name": "Manual",
+                  "value": "manual"
+                }
+              ],
+              "default": "fromList",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "targetGroupId",
+              "displayName": "Group Name",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/iam/groups",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ],
+                  "targetGroupMode": [
+                    "fromList"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "targetGroupName",
+              "displayName": "Group Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ],
+                  "targetGroupMode": [
+                    "manual"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "newUserName",
+              "displayName": "New User Name",
+              "type": "string",
+              "required": false,
+              "placeholder": "e.g. NewUserName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "newGroupName",
+              "displayName": "New Group Name",
+              "type": "string",
+              "required": false,
+              "placeholder": "e.g. NewGroupName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "newPath",
+              "displayName": "New Path",
+              "type": "string",
+              "required": false,
+              "placeholder": "e.g. /new/path/",
+              "displayOptions": {
+                "show": {
+                  "userOperation": [
+                    "update"
+                  ],
+                  "groupOperation": [
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "path",
+              "displayName": "Path",
+              "type": "string",
+              "default": "/",
+              "required": false,
+              "placeholder": "e.g. /division_abc/subdivision_xyz/",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "permissionsBoundary",
+              "displayName": "Permissions Boundary",
+              "type": "string",
+              "required": false,
+              "placeholder": "e.g. arn:aws:iam::123456789012:policy/ExampleBoundary",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "tags",
+              "displayName": "Tags",
+              "type": "array",
+              "required": false,
+              "placeholder": "Add Tag",
+              "fields": [
+                {
+                  "name": "Key",
+                  "displayName": "Key",
+                  "type": "string",
+                  "placeholder": "e.g. Department"
+                },
+                {
+                  "name": "Value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "placeholder": "e.g. Engineering"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "userOperation": [
+                    "getMany"
+                  ],
+                  "groupOperation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 100,
+              "displayOptions": {
+                "show": {
+                  "userOperation": [
+                    "getMany"
+                  ],
+                  "groupOperation": [
+                    "getMany"
+                  ]
+                },
+                "hide": {
+                  "returnAll": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "pathPrefix",
+              "displayName": "Path Prefix",
+              "type": "string",
+              "default": "/",
+              "required": false,
+              "displayOptions": {
+                "show": {
+                  "userOperation": [
+                    "getMany"
+                  ],
+                  "groupOperation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "includeUsers",
+              "displayName": "Include Users",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "resource": "group",
+            "groupOperation": "create"
+          },
+          "subCategory": "AWS IAM"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "group",
+          "groupOperation": "create"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.iam.group.delete-1783398770712",
+      "type": "action",
+      "position": {
+        "x": 478.97979452994247,
+        "y": 728.6011086149979
+      },
+      "data": {
+        "label": "Delete",
+        "toolId": "aws.iam.group.delete",
+        "toolData": {
+          "id": "aws.iam.group.delete",
+          "displayName": "Delete",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Delete",
+          "icon": "/tools/iam.png",
+          "actionGroup": "AWS IAM Group",
+          "description": "Delete Group in AWS IAM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "user",
+                  "group"
+                ],
+                "default": "user"
+              },
+              "operation": {
+                "type": "string"
+              },
+              "userOperation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update",
+                  "addUserToGroup",
+                  "removeUserFromGroup"
+                ],
+                "default": "getMany"
+              },
+              "groupOperation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ],
+                "default": "getMany"
+              },
+              "userMode": {
+                "type": "string",
+                "enum": [
+                  "fromList",
+                  "manual"
+                ],
+                "default": "fromList"
+              },
+              "userId": {
+                "type": "string"
+              },
+              "groupMode": {
+                "type": "string",
+                "enum": [
+                  "fromList",
+                  "manual"
+                ],
+                "default": "fromList"
+              },
+              "groupId": {
+                "type": "string"
+              },
+              "credentials": {
+                "description": "AWS IAM credentials"
+              },
+              "userName": {
+                "type": "string"
+              },
+              "groupName": {
+                "type": "string"
+              },
+              "targetGroupName": {
+                "type": "string"
+              },
+              "targetGroupMode": {
+                "type": "string",
+                "enum": [
+                  "fromList",
+                  "manual"
+                ],
+                "default": "fromList"
+              },
+              "targetGroupId": {
+                "type": "string"
+              },
+              "newUserName": {
+                "type": "string"
+              },
+              "newGroupName": {
+                "type": "string"
+              },
+              "newPath": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "permissionsBoundary": {
+                "type": "string"
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "Key": {
+                      "type": "string"
+                    },
+                    "Value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "Key",
+                    "Value"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "pathPrefix": {
+                "type": "string"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "includeUsers": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "User",
+                  "value": "user"
+                },
+                {
+                  "name": "Group",
+                  "value": "group"
+                }
+              ],
+              "default": "group",
+              "required": true
+            },
+            {
+              "name": "userOperation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                },
+                {
+                  "name": "Add user to group",
+                  "value": "addUserToGroup"
+                },
+                {
+                  "name": "Remove user from group",
+                  "value": "removeUserFromGroup"
+                }
+              ],
+              "default": "getMany",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupOperation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "delete",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "userMode",
+              "displayName": "User",
+              "type": "options",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "fromList"
+                },
+                {
+                  "name": "By Name",
+                  "value": "manual"
+                }
+              ],
+              "default": "fromList",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "delete",
+                    "get",
+                    "update",
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "userId",
+              "displayName": "User Name",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/iam/users",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userMode": [
+                    "fromList"
+                  ],
+                  "userOperation": [
+                    "delete",
+                    "get",
+                    "update",
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "userName",
+              "displayName": "User Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. UserName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "userName",
+              "displayName": "User Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. UserName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "delete",
+                    "get",
+                    "update",
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ],
+                  "userMode": [
+                    "manual"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupMode",
+              "displayName": "Group",
+              "type": "options",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "fromList"
+                },
+                {
+                  "name": "By Name",
+                  "value": "manual"
+                }
+              ],
+              "default": "fromList",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupId",
+              "displayName": "Group Name",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/iam/groups",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupMode": [
+                    "fromList"
+                  ],
+                  "groupOperation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupName",
+              "displayName": "Group Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. GroupName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupName",
+              "displayName": "Group Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. GroupName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ],
+                  "groupMode": [
+                    "manual"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "targetGroupMode",
+              "displayName": "Group",
+              "type": "options",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "fromList"
+                },
+                {
+                  "name": "Manual",
+                  "value": "manual"
+                }
+              ],
+              "default": "fromList",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "targetGroupId",
+              "displayName": "Group Name",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/iam/groups",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ],
+                  "targetGroupMode": [
+                    "fromList"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "targetGroupName",
+              "displayName": "Group Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ],
+                  "targetGroupMode": [
+                    "manual"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "newUserName",
+              "displayName": "New User Name",
+              "type": "string",
+              "required": false,
+              "placeholder": "e.g. NewUserName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "newGroupName",
+              "displayName": "New Group Name",
+              "type": "string",
+              "required": false,
+              "placeholder": "e.g. NewGroupName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "newPath",
+              "displayName": "New Path",
+              "type": "string",
+              "required": false,
+              "placeholder": "e.g. /new/path/",
+              "displayOptions": {
+                "show": {
+                  "userOperation": [
+                    "update"
+                  ],
+                  "groupOperation": [
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "path",
+              "displayName": "Path",
+              "type": "string",
+              "default": "/",
+              "required": false,
+              "placeholder": "e.g. /division_abc/subdivision_xyz/",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "permissionsBoundary",
+              "displayName": "Permissions Boundary",
+              "type": "string",
+              "required": false,
+              "placeholder": "e.g. arn:aws:iam::123456789012:policy/ExampleBoundary",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "tags",
+              "displayName": "Tags",
+              "type": "array",
+              "required": false,
+              "placeholder": "Add Tag",
+              "fields": [
+                {
+                  "name": "Key",
+                  "displayName": "Key",
+                  "type": "string",
+                  "placeholder": "e.g. Department"
+                },
+                {
+                  "name": "Value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "placeholder": "e.g. Engineering"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "userOperation": [
+                    "getMany"
+                  ],
+                  "groupOperation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 100,
+              "displayOptions": {
+                "show": {
+                  "userOperation": [
+                    "getMany"
+                  ],
+                  "groupOperation": [
+                    "getMany"
+                  ]
+                },
+                "hide": {
+                  "returnAll": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "pathPrefix",
+              "displayName": "Path Prefix",
+              "type": "string",
+              "default": "/",
+              "required": false,
+              "displayOptions": {
+                "show": {
+                  "userOperation": [
+                    "getMany"
+                  ],
+                  "groupOperation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "includeUsers",
+              "displayName": "Include Users",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "resource": "group",
+            "groupOperation": "delete"
+          },
+          "subCategory": "AWS IAM"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "group",
+          "groupOperation": "delete"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.iam.group.get-1783398772144",
+      "type": "action",
+      "position": {
+        "x": 248.09142517553838,
+        "y": 814.7534852397755
+      },
+      "data": {
+        "label": "Get",
+        "toolId": "aws.iam.group.get",
+        "toolData": {
+          "id": "aws.iam.group.get",
+          "displayName": "Get",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Get",
+          "icon": "/tools/iam.png",
+          "actionGroup": "AWS IAM Group",
+          "description": "Get Group in AWS IAM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "user",
+                  "group"
+                ],
+                "default": "user"
+              },
+              "operation": {
+                "type": "string"
+              },
+              "userOperation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update",
+                  "addUserToGroup",
+                  "removeUserFromGroup"
+                ],
+                "default": "getMany"
+              },
+              "groupOperation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ],
+                "default": "getMany"
+              },
+              "userMode": {
+                "type": "string",
+                "enum": [
+                  "fromList",
+                  "manual"
+                ],
+                "default": "fromList"
+              },
+              "userId": {
+                "type": "string"
+              },
+              "groupMode": {
+                "type": "string",
+                "enum": [
+                  "fromList",
+                  "manual"
+                ],
+                "default": "fromList"
+              },
+              "groupId": {
+                "type": "string"
+              },
+              "credentials": {
+                "description": "AWS IAM credentials"
+              },
+              "userName": {
+                "type": "string"
+              },
+              "groupName": {
+                "type": "string"
+              },
+              "targetGroupName": {
+                "type": "string"
+              },
+              "targetGroupMode": {
+                "type": "string",
+                "enum": [
+                  "fromList",
+                  "manual"
+                ],
+                "default": "fromList"
+              },
+              "targetGroupId": {
+                "type": "string"
+              },
+              "newUserName": {
+                "type": "string"
+              },
+              "newGroupName": {
+                "type": "string"
+              },
+              "newPath": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "permissionsBoundary": {
+                "type": "string"
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "Key": {
+                      "type": "string"
+                    },
+                    "Value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "Key",
+                    "Value"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "pathPrefix": {
+                "type": "string"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "includeUsers": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "User",
+                  "value": "user"
+                },
+                {
+                  "name": "Group",
+                  "value": "group"
+                }
+              ],
+              "default": "group",
+              "required": true
+            },
+            {
+              "name": "userOperation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                },
+                {
+                  "name": "Add user to group",
+                  "value": "addUserToGroup"
+                },
+                {
+                  "name": "Remove user from group",
+                  "value": "removeUserFromGroup"
+                }
+              ],
+              "default": "getMany",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupOperation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "get",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "userMode",
+              "displayName": "User",
+              "type": "options",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "fromList"
+                },
+                {
+                  "name": "By Name",
+                  "value": "manual"
+                }
+              ],
+              "default": "fromList",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "delete",
+                    "get",
+                    "update",
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "userId",
+              "displayName": "User Name",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/iam/users",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userMode": [
+                    "fromList"
+                  ],
+                  "userOperation": [
+                    "delete",
+                    "get",
+                    "update",
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "userName",
+              "displayName": "User Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. UserName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "userName",
+              "displayName": "User Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. UserName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "delete",
+                    "get",
+                    "update",
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ],
+                  "userMode": [
+                    "manual"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupMode",
+              "displayName": "Group",
+              "type": "options",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "fromList"
+                },
+                {
+                  "name": "By Name",
+                  "value": "manual"
+                }
+              ],
+              "default": "fromList",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupId",
+              "displayName": "Group Name",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/iam/groups",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupMode": [
+                    "fromList"
+                  ],
+                  "groupOperation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupName",
+              "displayName": "Group Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. GroupName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupName",
+              "displayName": "Group Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. GroupName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ],
+                  "groupMode": [
+                    "manual"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "targetGroupMode",
+              "displayName": "Group",
+              "type": "options",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "fromList"
+                },
+                {
+                  "name": "Manual",
+                  "value": "manual"
+                }
+              ],
+              "default": "fromList",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "targetGroupId",
+              "displayName": "Group Name",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/iam/groups",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ],
+                  "targetGroupMode": [
+                    "fromList"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "targetGroupName",
+              "displayName": "Group Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ],
+                  "targetGroupMode": [
+                    "manual"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "newUserName",
+              "displayName": "New User Name",
+              "type": "string",
+              "required": false,
+              "placeholder": "e.g. NewUserName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "newGroupName",
+              "displayName": "New Group Name",
+              "type": "string",
+              "required": false,
+              "placeholder": "e.g. NewGroupName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "newPath",
+              "displayName": "New Path",
+              "type": "string",
+              "required": false,
+              "placeholder": "e.g. /new/path/",
+              "displayOptions": {
+                "show": {
+                  "userOperation": [
+                    "update"
+                  ],
+                  "groupOperation": [
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "path",
+              "displayName": "Path",
+              "type": "string",
+              "default": "/",
+              "required": false,
+              "placeholder": "e.g. /division_abc/subdivision_xyz/",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "permissionsBoundary",
+              "displayName": "Permissions Boundary",
+              "type": "string",
+              "required": false,
+              "placeholder": "e.g. arn:aws:iam::123456789012:policy/ExampleBoundary",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "tags",
+              "displayName": "Tags",
+              "type": "array",
+              "required": false,
+              "placeholder": "Add Tag",
+              "fields": [
+                {
+                  "name": "Key",
+                  "displayName": "Key",
+                  "type": "string",
+                  "placeholder": "e.g. Department"
+                },
+                {
+                  "name": "Value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "placeholder": "e.g. Engineering"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "userOperation": [
+                    "getMany"
+                  ],
+                  "groupOperation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 100,
+              "displayOptions": {
+                "show": {
+                  "userOperation": [
+                    "getMany"
+                  ],
+                  "groupOperation": [
+                    "getMany"
+                  ]
+                },
+                "hide": {
+                  "returnAll": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "pathPrefix",
+              "displayName": "Path Prefix",
+              "type": "string",
+              "default": "/",
+              "required": false,
+              "displayOptions": {
+                "show": {
+                  "userOperation": [
+                    "getMany"
+                  ],
+                  "groupOperation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "includeUsers",
+              "displayName": "Include Users",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "resource": "group",
+            "groupOperation": "get"
+          },
+          "subCategory": "AWS IAM"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "group",
+          "groupOperation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.iam.group.getmany-1783398773578",
+      "type": "action",
+      "position": {
+        "x": 71.19187850599496,
+        "y": 657.3818106051816
+      },
+      "data": {
+        "label": "Get Many",
+        "toolId": "aws.iam.group.getmany",
+        "toolData": {
+          "id": "aws.iam.group.getmany",
+          "displayName": "Get Many",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Get Many",
+          "icon": "/tools/iam.png",
+          "actionGroup": "AWS IAM Group",
+          "description": "Get Many Group in AWS IAM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "user",
+                  "group"
+                ],
+                "default": "user"
+              },
+              "operation": {
+                "type": "string"
+              },
+              "userOperation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update",
+                  "addUserToGroup",
+                  "removeUserFromGroup"
+                ],
+                "default": "getMany"
+              },
+              "groupOperation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ],
+                "default": "getMany"
+              },
+              "userMode": {
+                "type": "string",
+                "enum": [
+                  "fromList",
+                  "manual"
+                ],
+                "default": "fromList"
+              },
+              "userId": {
+                "type": "string"
+              },
+              "groupMode": {
+                "type": "string",
+                "enum": [
+                  "fromList",
+                  "manual"
+                ],
+                "default": "fromList"
+              },
+              "groupId": {
+                "type": "string"
+              },
+              "credentials": {
+                "description": "AWS IAM credentials"
+              },
+              "userName": {
+                "type": "string"
+              },
+              "groupName": {
+                "type": "string"
+              },
+              "targetGroupName": {
+                "type": "string"
+              },
+              "targetGroupMode": {
+                "type": "string",
+                "enum": [
+                  "fromList",
+                  "manual"
+                ],
+                "default": "fromList"
+              },
+              "targetGroupId": {
+                "type": "string"
+              },
+              "newUserName": {
+                "type": "string"
+              },
+              "newGroupName": {
+                "type": "string"
+              },
+              "newPath": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "permissionsBoundary": {
+                "type": "string"
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "Key": {
+                      "type": "string"
+                    },
+                    "Value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "Key",
+                    "Value"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "pathPrefix": {
+                "type": "string"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "includeUsers": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "User",
+                  "value": "user"
+                },
+                {
+                  "name": "Group",
+                  "value": "group"
+                }
+              ],
+              "default": "group",
+              "required": true
+            },
+            {
+              "name": "userOperation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                },
+                {
+                  "name": "Add user to group",
+                  "value": "addUserToGroup"
+                },
+                {
+                  "name": "Remove user from group",
+                  "value": "removeUserFromGroup"
+                }
+              ],
+              "default": "getMany",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupOperation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "getMany",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "userMode",
+              "displayName": "User",
+              "type": "options",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "fromList"
+                },
+                {
+                  "name": "By Name",
+                  "value": "manual"
+                }
+              ],
+              "default": "fromList",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "delete",
+                    "get",
+                    "update",
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "userId",
+              "displayName": "User Name",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/iam/users",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userMode": [
+                    "fromList"
+                  ],
+                  "userOperation": [
+                    "delete",
+                    "get",
+                    "update",
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "userName",
+              "displayName": "User Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. UserName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "userName",
+              "displayName": "User Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. UserName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "delete",
+                    "get",
+                    "update",
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ],
+                  "userMode": [
+                    "manual"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupMode",
+              "displayName": "Group",
+              "type": "options",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "fromList"
+                },
+                {
+                  "name": "By Name",
+                  "value": "manual"
+                }
+              ],
+              "default": "fromList",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupId",
+              "displayName": "Group Name",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/iam/groups",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupMode": [
+                    "fromList"
+                  ],
+                  "groupOperation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupName",
+              "displayName": "Group Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. GroupName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupName",
+              "displayName": "Group Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. GroupName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ],
+                  "groupMode": [
+                    "manual"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "targetGroupMode",
+              "displayName": "Group",
+              "type": "options",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "fromList"
+                },
+                {
+                  "name": "Manual",
+                  "value": "manual"
+                }
+              ],
+              "default": "fromList",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "targetGroupId",
+              "displayName": "Group Name",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/iam/groups",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ],
+                  "targetGroupMode": [
+                    "fromList"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "targetGroupName",
+              "displayName": "Group Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ],
+                  "targetGroupMode": [
+                    "manual"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "newUserName",
+              "displayName": "New User Name",
+              "type": "string",
+              "required": false,
+              "placeholder": "e.g. NewUserName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "newGroupName",
+              "displayName": "New Group Name",
+              "type": "string",
+              "required": false,
+              "placeholder": "e.g. NewGroupName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "newPath",
+              "displayName": "New Path",
+              "type": "string",
+              "required": false,
+              "placeholder": "e.g. /new/path/",
+              "displayOptions": {
+                "show": {
+                  "userOperation": [
+                    "update"
+                  ],
+                  "groupOperation": [
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "path",
+              "displayName": "Path",
+              "type": "string",
+              "default": "/",
+              "required": false,
+              "placeholder": "e.g. /division_abc/subdivision_xyz/",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "permissionsBoundary",
+              "displayName": "Permissions Boundary",
+              "type": "string",
+              "required": false,
+              "placeholder": "e.g. arn:aws:iam::123456789012:policy/ExampleBoundary",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "tags",
+              "displayName": "Tags",
+              "type": "array",
+              "required": false,
+              "placeholder": "Add Tag",
+              "fields": [
+                {
+                  "name": "Key",
+                  "displayName": "Key",
+                  "type": "string",
+                  "placeholder": "e.g. Department"
+                },
+                {
+                  "name": "Value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "placeholder": "e.g. Engineering"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "userOperation": [
+                    "getMany"
+                  ],
+                  "groupOperation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 100,
+              "displayOptions": {
+                "show": {
+                  "userOperation": [
+                    "getMany"
+                  ],
+                  "groupOperation": [
+                    "getMany"
+                  ]
+                },
+                "hide": {
+                  "returnAll": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "pathPrefix",
+              "displayName": "Path Prefix",
+              "type": "string",
+              "default": "/",
+              "required": false,
+              "displayOptions": {
+                "show": {
+                  "userOperation": [
+                    "getMany"
+                  ],
+                  "groupOperation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "includeUsers",
+              "displayName": "Include Users",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "resource": "group",
+            "groupOperation": "getMany"
+          },
+          "subCategory": "AWS IAM"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "group",
+          "groupOperation": "getMany"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 71.19187850599496,
+        "y": 657.3818106051816
+      },
+      "dragging": false
+    },
+    {
+      "id": "aws.iam.group.update-1783398778496",
+      "type": "action",
+      "position": {
+        "x": 296.3367560854138,
+        "y": 455.21090012570346
+      },
+      "data": {
+        "label": "Update",
+        "toolId": "aws.iam.group.update",
+        "toolData": {
+          "id": "aws.iam.group.update",
+          "displayName": "Update",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Update",
+          "icon": "/tools/iam.png",
+          "actionGroup": "AWS IAM Group",
+          "description": "Update Group in AWS IAM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "user",
+                  "group"
+                ],
+                "default": "user"
+              },
+              "operation": {
+                "type": "string"
+              },
+              "userOperation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update",
+                  "addUserToGroup",
+                  "removeUserFromGroup"
+                ],
+                "default": "getMany"
+              },
+              "groupOperation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ],
+                "default": "getMany"
+              },
+              "userMode": {
+                "type": "string",
+                "enum": [
+                  "fromList",
+                  "manual"
+                ],
+                "default": "fromList"
+              },
+              "userId": {
+                "type": "string"
+              },
+              "groupMode": {
+                "type": "string",
+                "enum": [
+                  "fromList",
+                  "manual"
+                ],
+                "default": "fromList"
+              },
+              "groupId": {
+                "type": "string"
+              },
+              "credentials": {
+                "description": "AWS IAM credentials"
+              },
+              "userName": {
+                "type": "string"
+              },
+              "groupName": {
+                "type": "string"
+              },
+              "targetGroupName": {
+                "type": "string"
+              },
+              "targetGroupMode": {
+                "type": "string",
+                "enum": [
+                  "fromList",
+                  "manual"
+                ],
+                "default": "fromList"
+              },
+              "targetGroupId": {
+                "type": "string"
+              },
+              "newUserName": {
+                "type": "string"
+              },
+              "newGroupName": {
+                "type": "string"
+              },
+              "newPath": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "permissionsBoundary": {
+                "type": "string"
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "Key": {
+                      "type": "string"
+                    },
+                    "Value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "Key",
+                    "Value"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "pathPrefix": {
+                "type": "string"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "includeUsers": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "User",
+                  "value": "user"
+                },
+                {
+                  "name": "Group",
+                  "value": "group"
+                }
+              ],
+              "default": "group",
+              "required": true
+            },
+            {
+              "name": "userOperation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                },
+                {
+                  "name": "Add user to group",
+                  "value": "addUserToGroup"
+                },
+                {
+                  "name": "Remove user from group",
+                  "value": "removeUserFromGroup"
+                }
+              ],
+              "default": "getMany",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupOperation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "update",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "userMode",
+              "displayName": "User",
+              "type": "options",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "fromList"
+                },
+                {
+                  "name": "By Name",
+                  "value": "manual"
+                }
+              ],
+              "default": "fromList",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "delete",
+                    "get",
+                    "update",
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "userId",
+              "displayName": "User Name",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/iam/users",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userMode": [
+                    "fromList"
+                  ],
+                  "userOperation": [
+                    "delete",
+                    "get",
+                    "update",
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "userName",
+              "displayName": "User Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. UserName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "userName",
+              "displayName": "User Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. UserName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "delete",
+                    "get",
+                    "update",
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ],
+                  "userMode": [
+                    "manual"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupMode",
+              "displayName": "Group",
+              "type": "options",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "fromList"
+                },
+                {
+                  "name": "By Name",
+                  "value": "manual"
+                }
+              ],
+              "default": "fromList",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupId",
+              "displayName": "Group Name",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/iam/groups",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupMode": [
+                    "fromList"
+                  ],
+                  "groupOperation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupName",
+              "displayName": "Group Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. GroupName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "groupName",
+              "displayName": "Group Name",
+              "type": "string",
+              "required": true,
+              "placeholder": "e.g. GroupName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ],
+                  "groupMode": [
+                    "manual"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "targetGroupMode",
+              "displayName": "Group",
+              "type": "options",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "fromList"
+                },
+                {
+                  "name": "Manual",
+                  "value": "manual"
+                }
+              ],
+              "default": "fromList",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "targetGroupId",
+              "displayName": "Group Name",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/iam/groups",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ],
+                  "targetGroupMode": [
+                    "fromList"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "targetGroupName",
+              "displayName": "Group Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "addUserToGroup",
+                    "removeUserFromGroup"
+                  ],
+                  "targetGroupMode": [
+                    "manual"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "newUserName",
+              "displayName": "New User Name",
+              "type": "string",
+              "required": false,
+              "placeholder": "e.g. NewUserName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "newGroupName",
+              "displayName": "New Group Name",
+              "type": "string",
+              "required": false,
+              "placeholder": "e.g. NewGroupName",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "newPath",
+              "displayName": "New Path",
+              "type": "string",
+              "required": false,
+              "placeholder": "e.g. /new/path/",
+              "displayOptions": {
+                "show": {
+                  "userOperation": [
+                    "update"
+                  ],
+                  "groupOperation": [
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "path",
+              "displayName": "Path",
+              "type": "string",
+              "default": "/",
+              "required": false,
+              "placeholder": "e.g. /division_abc/subdivision_xyz/",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "permissionsBoundary",
+              "displayName": "Permissions Boundary",
+              "type": "string",
+              "required": false,
+              "placeholder": "e.g. arn:aws:iam::123456789012:policy/ExampleBoundary",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "tags",
+              "displayName": "Tags",
+              "type": "array",
+              "required": false,
+              "placeholder": "Add Tag",
+              "fields": [
+                {
+                  "name": "Key",
+                  "displayName": "Key",
+                  "type": "string",
+                  "placeholder": "e.g. Department"
+                },
+                {
+                  "name": "Value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "placeholder": "e.g. Engineering"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "user"
+                  ],
+                  "userOperation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "userOperation": [
+                    "getMany"
+                  ],
+                  "groupOperation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 100,
+              "displayOptions": {
+                "show": {
+                  "userOperation": [
+                    "getMany"
+                  ],
+                  "groupOperation": [
+                    "getMany"
+                  ]
+                },
+                "hide": {
+                  "returnAll": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "pathPrefix",
+              "displayName": "Path Prefix",
+              "type": "string",
+              "default": "/",
+              "required": false,
+              "displayOptions": {
+                "show": {
+                  "userOperation": [
+                    "getMany"
+                  ],
+                  "groupOperation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "includeUsers",
+              "displayName": "Include Users",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "group"
+                  ],
+                  "groupOperation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "resource": "group",
+            "groupOperation": "update"
+          },
+          "subCategory": "AWS IAM"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "group",
+          "groupOperation": "update"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 296.3367560854138,
+        "y": 455.21090012570346
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

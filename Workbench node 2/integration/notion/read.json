@@ -1,0 +1,618 @@
+{
+  "nodes": [
+    {
+      "id": "notion.database.get-1783407563903",
+      "type": "action",
+      "position": {
+        "x": 975.8128329917254,
+        "y": 609.3653381477657
+      },
+      "data": {
+        "label": "Get a database",
+        "toolId": "notion.database.get",
+        "toolData": {
+          "id": "notion.database.get",
+          "displayName": "Get a database",
+          "category": "Integrations",
+          "provider": "notion",
+          "operation": "get",
+          "icon": "notion",
+          "description": "Retrieves details of a specific database",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "databaseIdMode": {
+                "type": "string",
+                "enum": [
+                  "url",
+                  "id",
+                  "list"
+                ],
+                "default": "list"
+              },
+              "databaseId": {
+                "type": "string"
+              },
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "databaseId",
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "databaseIdMode",
+              "displayName": "Database",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "grid": "col-span-4",
+              "options": [
+                {
+                  "name": "From List",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By ID",
+                  "value": "id"
+                }
+              ]
+            },
+            {
+              "name": "databaseId",
+              "displayName": "Database",
+              "hideLabel": true,
+              "type": "options",
+              "required": true,
+              "grid": "col-span-8",
+              "placeholder": "Select a Database...",
+              "fetchEndpoint": "/api/tools/notion/list-databases",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "title",
+              "valueKey": "id",
+              "displayOptions": {
+                "show": {
+                  "databaseIdMode": [
+                    "list"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "databaseId",
+              "displayName": "Database",
+              "hideLabel": true,
+              "type": "string",
+              "required": true,
+              "grid": "col-span-8",
+              "placeholder": "e.g. https://www.notion.so/...",
+              "displayOptions": {
+                "show": {
+                  "databaseIdMode": [
+                    "url",
+                    "id"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "toggle",
+              "default": true
+            }
+          ],
+          "initialData": {
+            "resource": "database",
+            "operation": "get"
+          },
+          "subCategory": "Read"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "database",
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "notion.database.getAll-1783407566033",
+      "type": "action",
+      "position": {
+        "x": 1332.7385488429134,
+        "y": 668.5627739474749
+      },
+      "data": {
+        "label": "Get many databases",
+        "toolId": "notion.database.getAll",
+        "toolData": {
+          "id": "notion.database.getAll",
+          "displayName": "Get many databases",
+          "category": "Integrations",
+          "provider": "notion",
+          "operation": "getAll",
+          "icon": "notion",
+          "description": "Get all accessible databases",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false
+              },
+              "limit": {
+                "type": "number",
+                "default": 50
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true
+              }
+            },
+            "required": [
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "toggle",
+              "default": false,
+              "description": "Whether to return all databases"
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "description": "Maximum number of databases to return",
+              "displayOptions": {
+                "show": {
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify Output",
+              "type": "toggle",
+              "default": true,
+              "description": "Whether to return a simplified version of the response"
+            }
+          ],
+          "initialData": {
+            "resource": "database",
+            "operation": "getAll"
+          },
+          "subCategory": "Read"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "database",
+          "operation": "getAll"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "notion.database.search-1783407567312",
+      "type": "action",
+      "position": {
+        "x": 1599.1270099416047,
+        "y": 764.3233318587692
+      },
+      "data": {
+        "label": "Search a database",
+        "toolId": "notion.database.search",
+        "toolData": {
+          "id": "notion.database.search",
+          "displayName": "Search a database",
+          "category": "Integrations",
+          "provider": "notion",
+          "operation": "search",
+          "icon": "notion",
+          "description": "Searches for databases using a text query",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "query": {
+                "type": "string",
+                "default": ""
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false
+              },
+              "limit": {
+                "type": "number",
+                "default": 50
+              },
+              "sort": {
+                "type": "string",
+                "default": "last_edited_time_descending"
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true
+              }
+            },
+            "required": [
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "query",
+              "displayName": "Search Text",
+              "type": "string",
+              "default": "",
+              "description": "The text to search for in database titles",
+              "placeholder": "Enter database name..."
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "toggle",
+              "default": false,
+              "description": "Whether to return all search results"
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "description": "Maximum number of search results to return",
+              "displayOptions": {
+                "show": {
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify Output",
+              "type": "toggle",
+              "default": true,
+              "description": "Whether to return a simplified version of the response"
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "placeholder": "Add option",
+              "default": {},
+              "fields": [
+                {
+                  "name": "sort",
+                  "displayName": "Sort",
+                  "type": "collection",
+                  "default": {},
+                  "fields": [
+                    {
+                      "name": "direction",
+                      "displayName": "Direction",
+                      "type": "options",
+                      "required": true,
+                      "default": "descending",
+                      "options": [
+                        {
+                          "name": "Ascending",
+                          "value": "ascending"
+                        },
+                        {
+                          "name": "Descending",
+                          "value": "descending"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "timestamp",
+                      "displayName": "Timestamp",
+                      "type": "options",
+                      "required": true,
+                      "default": "last_edited_time",
+                      "options": [
+                        {
+                          "name": "Last Edited Time",
+                          "value": "last_edited_time"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "database",
+            "operation": "search"
+          },
+          "subCategory": "Read"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "database",
+          "operation": "search"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 1599.1270099416047,
+        "y": 764.3233318587692
+      },
+      "dragging": false
+    },
+    {
+      "id": "notion.page.search-1783407569128",
+      "type": "action",
+      "position": {
+        "x": 1778.4604183936651,
+        "y": 625.0352476241593
+      },
+      "data": {
+        "label": "Search a page",
+        "toolId": "notion.page.search",
+        "toolData": {
+          "id": "notion.page.search",
+          "displayName": "Search a page",
+          "category": "Integrations",
+          "provider": "notion",
+          "operation": "search",
+          "icon": "notion",
+          "description": "Searches for pages by title",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "query": {
+                "type": "string",
+                "default": ""
+              },
+              "limit": {
+                "type": "number",
+                "default": 50
+              }
+            },
+            "required": [
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "query",
+              "displayName": "Search Text",
+              "type": "string",
+              "default": "",
+              "placeholder": "Search term",
+              "description": "The text to search for in page titles"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "toggle",
+              "default": false,
+              "description": "Whether to return all search results"
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "toggle",
+              "default": true,
+              "description": "Whether to return a simplified version of the response"
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "placeholder": "Add option",
+              "default": {},
+              "fields": [
+                {
+                  "name": "filters",
+                  "displayName": "Filters",
+                  "type": "collection",
+                  "default": {},
+                  "fields": [
+                    {
+                      "name": "property",
+                      "displayName": "Property",
+                      "type": "options",
+                      "required": true,
+                      "default": "object",
+                      "options": [
+                        {
+                          "name": "Object",
+                          "value": "object"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "value",
+                      "displayName": "Value",
+                      "type": "options",
+                      "required": true,
+                      "default": "page",
+                      "options": [
+                        {
+                          "name": "Database",
+                          "value": "database"
+                        },
+                        {
+                          "name": "Page",
+                          "value": "page"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "sort",
+                  "displayName": "Sort",
+                  "type": "collection",
+                  "default": {},
+                  "fields": [
+                    {
+                      "name": "direction",
+                      "displayName": "Direction",
+                      "type": "options",
+                      "required": true,
+                      "default": "descending",
+                      "options": [
+                        {
+                          "name": "Ascending",
+                          "value": "ascending"
+                        },
+                        {
+                          "name": "Descending",
+                          "value": "descending"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "timestamp",
+                      "displayName": "Timestamp",
+                      "type": "options",
+                      "required": true,
+                      "default": "last_edited_time",
+                      "options": [
+                        {
+                          "name": "Last Edited Time",
+                          "value": "last_edited_time"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "page",
+            "operation": "search"
+          },
+          "subCategory": "Read"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "page",
+          "operation": "search"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

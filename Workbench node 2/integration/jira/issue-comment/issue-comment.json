@@ -1,0 +1,1525 @@
+{
+  "nodes": [
+    {
+      "id": "jira.comment.add-1783407912324",
+      "type": "action",
+      "position": {
+        "x": 2205.4015239908686,
+        "y": 115.34747065264723
+      },
+      "data": {
+        "label": "Add",
+        "toolId": "jira.comment.add",
+        "toolData": {
+          "id": "jira.comment.add",
+          "displayName": "Add",
+          "category": "Integrations",
+          "provider": "jira",
+          "operation": "Add",
+          "icon": "/tools/jira.png",
+          "actionGroup": "Issue Comment",
+          "description": "Add in Issue Comment",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "add",
+                  "update",
+                  "get",
+                  "getMany",
+                  "remove"
+                ],
+                "description": "Operation"
+              },
+              "issueKey": {
+                "type": "string",
+                "description": "Issue Key"
+              },
+              "commentId": {
+                "type": "string",
+                "description": "Comment ID"
+              },
+              "jsonParameters": {
+                "type": "boolean",
+                "description": "JSON Parameters"
+              },
+              "body": {
+                "type": "string",
+                "description": "Body"
+              },
+              "bodyJson": {
+                "type": "string",
+                "description": "Body JSON"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "expand": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Expand"
+                  },
+                  "orderBy": {
+                    "type": "string",
+                    "description": "Order By"
+                  },
+                  "useWikiMarkup": {
+                    "type": "boolean",
+                    "description": "Use Wiki Markup"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "Jira credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Issue Comment",
+                  "value": "comment"
+                }
+              ],
+              "default": "comment",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Add",
+                  "value": "add"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Remove",
+                  "value": "remove"
+                }
+              ],
+              "default": "add",
+              "required": true
+            },
+            {
+              "name": "issueKey",
+              "displayName": "Issue Key",
+              "type": "string",
+              "required": true,
+              "placeholder": "SCRUM-5"
+            },
+            {
+              "name": "commentId",
+              "displayName": "Comment ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "update",
+                    "remove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "jsonParameters",
+              "displayName": "JSON Parameters",
+              "type": "toggle",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "comment",
+              "displayName": "Comment",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add",
+                    "update"
+                  ],
+                  "jsonParameters": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "bodyJson",
+              "displayName": "Document Format (JSON)",
+              "type": "string",
+              "format": "json",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add",
+                    "update"
+                  ],
+                  "jsonParameters": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "toggle",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Options",
+              "type": "collection",
+              "options": [
+                {
+                  "name": "expand",
+                  "displayName": "Expand",
+                  "type": "options",
+                  "multiple": true,
+                  "options": [
+                    {
+                      "name": "Rendered Body",
+                      "value": "renderedBody"
+                    }
+                  ]
+                },
+                {
+                  "name": "orderBy",
+                  "displayName": "Order By",
+                  "type": "options",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  },
+                  "options": [
+                    {
+                      "name": "Created Ascending",
+                      "value": "created"
+                    },
+                    {
+                      "name": "Created Descending",
+                      "value": "-created"
+                    }
+                  ]
+                },
+                {
+                  "name": "useWikiMarkup",
+                  "displayName": "Use Wiki Markup",
+                  "type": "boolean",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "add",
+                        "update"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "add"
+          },
+          "subCategory": "Issue Comment"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "add"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "jira.comment.get-1783407913836",
+      "type": "action",
+      "position": {
+        "x": 2960.8198029083496,
+        "y": 191.21917552208856
+      },
+      "data": {
+        "label": "Get",
+        "toolId": "jira.comment.get",
+        "toolData": {
+          "id": "jira.comment.get",
+          "displayName": "Get",
+          "category": "Integrations",
+          "provider": "jira",
+          "operation": "Get",
+          "icon": "/tools/jira.png",
+          "actionGroup": "Issue Comment",
+          "description": "Get in Issue Comment",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "add",
+                  "update",
+                  "get",
+                  "getMany",
+                  "remove"
+                ],
+                "description": "Operation"
+              },
+              "issueKey": {
+                "type": "string",
+                "description": "Issue Key"
+              },
+              "commentId": {
+                "type": "string",
+                "description": "Comment ID"
+              },
+              "jsonParameters": {
+                "type": "boolean",
+                "description": "JSON Parameters"
+              },
+              "body": {
+                "type": "string",
+                "description": "Body"
+              },
+              "bodyJson": {
+                "type": "string",
+                "description": "Body JSON"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "expand": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Expand"
+                  },
+                  "orderBy": {
+                    "type": "string",
+                    "description": "Order By"
+                  },
+                  "useWikiMarkup": {
+                    "type": "boolean",
+                    "description": "Use Wiki Markup"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "Jira credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Issue Comment",
+                  "value": "comment"
+                }
+              ],
+              "default": "comment",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Add",
+                  "value": "add"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Remove",
+                  "value": "remove"
+                }
+              ],
+              "default": "get",
+              "required": true
+            },
+            {
+              "name": "issueKey",
+              "displayName": "Issue Key",
+              "type": "string",
+              "required": true,
+              "placeholder": "SCRUM-5"
+            },
+            {
+              "name": "commentId",
+              "displayName": "Comment ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "update",
+                    "remove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "jsonParameters",
+              "displayName": "JSON Parameters",
+              "type": "toggle",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "comment",
+              "displayName": "Comment",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add",
+                    "update"
+                  ],
+                  "jsonParameters": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "bodyJson",
+              "displayName": "Document Format (JSON)",
+              "type": "string",
+              "format": "json",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add",
+                    "update"
+                  ],
+                  "jsonParameters": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "toggle",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Options",
+              "type": "collection",
+              "options": [
+                {
+                  "name": "expand",
+                  "displayName": "Expand",
+                  "type": "options",
+                  "multiple": true,
+                  "options": [
+                    {
+                      "name": "Rendered Body",
+                      "value": "renderedBody"
+                    }
+                  ]
+                },
+                {
+                  "name": "orderBy",
+                  "displayName": "Order By",
+                  "type": "options",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  },
+                  "options": [
+                    {
+                      "name": "Created Ascending",
+                      "value": "created"
+                    },
+                    {
+                      "name": "Created Descending",
+                      "value": "-created"
+                    }
+                  ]
+                },
+                {
+                  "name": "useWikiMarkup",
+                  "displayName": "Use Wiki Markup",
+                  "type": "boolean",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "add",
+                        "update"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "get"
+          },
+          "subCategory": "Issue Comment"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "jira.comment.getmany-1783407915301",
+      "type": "action",
+      "position": {
+        "x": 2795.881314061738,
+        "y": 415.5355203534803
+      },
+      "data": {
+        "label": "Get Many",
+        "toolId": "jira.comment.getmany",
+        "toolData": {
+          "id": "jira.comment.getmany",
+          "displayName": "Get Many",
+          "category": "Integrations",
+          "provider": "jira",
+          "operation": "Get Many",
+          "icon": "/tools/jira.png",
+          "actionGroup": "Issue Comment",
+          "description": "Get Many in Issue Comment",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "add",
+                  "update",
+                  "get",
+                  "getMany",
+                  "remove"
+                ],
+                "description": "Operation"
+              },
+              "issueKey": {
+                "type": "string",
+                "description": "Issue Key"
+              },
+              "commentId": {
+                "type": "string",
+                "description": "Comment ID"
+              },
+              "jsonParameters": {
+                "type": "boolean",
+                "description": "JSON Parameters"
+              },
+              "body": {
+                "type": "string",
+                "description": "Body"
+              },
+              "bodyJson": {
+                "type": "string",
+                "description": "Body JSON"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "expand": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Expand"
+                  },
+                  "orderBy": {
+                    "type": "string",
+                    "description": "Order By"
+                  },
+                  "useWikiMarkup": {
+                    "type": "boolean",
+                    "description": "Use Wiki Markup"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "Jira credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Issue Comment",
+                  "value": "comment"
+                }
+              ],
+              "default": "comment",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Add",
+                  "value": "add"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Remove",
+                  "value": "remove"
+                }
+              ],
+              "default": "getMany",
+              "required": true
+            },
+            {
+              "name": "issueKey",
+              "displayName": "Issue Key",
+              "type": "string",
+              "required": true,
+              "placeholder": "SCRUM-5"
+            },
+            {
+              "name": "commentId",
+              "displayName": "Comment ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "update",
+                    "remove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "jsonParameters",
+              "displayName": "JSON Parameters",
+              "type": "toggle",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "comment",
+              "displayName": "Comment",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add",
+                    "update"
+                  ],
+                  "jsonParameters": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "bodyJson",
+              "displayName": "Document Format (JSON)",
+              "type": "string",
+              "format": "json",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add",
+                    "update"
+                  ],
+                  "jsonParameters": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "toggle",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Options",
+              "type": "collection",
+              "options": [
+                {
+                  "name": "expand",
+                  "displayName": "Expand",
+                  "type": "options",
+                  "multiple": true,
+                  "options": [
+                    {
+                      "name": "Rendered Body",
+                      "value": "renderedBody"
+                    }
+                  ]
+                },
+                {
+                  "name": "orderBy",
+                  "displayName": "Order By",
+                  "type": "options",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  },
+                  "options": [
+                    {
+                      "name": "Created Ascending",
+                      "value": "created"
+                    },
+                    {
+                      "name": "Created Descending",
+                      "value": "-created"
+                    }
+                  ]
+                },
+                {
+                  "name": "useWikiMarkup",
+                  "displayName": "Use Wiki Markup",
+                  "type": "boolean",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "add",
+                        "update"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "getMany"
+          },
+          "subCategory": "Issue Comment"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "getMany"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "jira.comment.remove-1783407916588",
+      "type": "action",
+      "position": {
+        "x": 2983.9111913468755,
+        "y": 649.7481745156688
+      },
+      "data": {
+        "label": "Remove",
+        "toolId": "jira.comment.remove",
+        "toolData": {
+          "id": "jira.comment.remove",
+          "displayName": "Remove",
+          "category": "Integrations",
+          "provider": "jira",
+          "operation": "Remove",
+          "icon": "/tools/jira.png",
+          "actionGroup": "Issue Comment",
+          "description": "Remove in Issue Comment",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "add",
+                  "update",
+                  "get",
+                  "getMany",
+                  "remove"
+                ],
+                "description": "Operation"
+              },
+              "issueKey": {
+                "type": "string",
+                "description": "Issue Key"
+              },
+              "commentId": {
+                "type": "string",
+                "description": "Comment ID"
+              },
+              "jsonParameters": {
+                "type": "boolean",
+                "description": "JSON Parameters"
+              },
+              "body": {
+                "type": "string",
+                "description": "Body"
+              },
+              "bodyJson": {
+                "type": "string",
+                "description": "Body JSON"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "expand": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Expand"
+                  },
+                  "orderBy": {
+                    "type": "string",
+                    "description": "Order By"
+                  },
+                  "useWikiMarkup": {
+                    "type": "boolean",
+                    "description": "Use Wiki Markup"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "Jira credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Issue Comment",
+                  "value": "comment"
+                }
+              ],
+              "default": "comment",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Add",
+                  "value": "add"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Remove",
+                  "value": "remove"
+                }
+              ],
+              "default": "remove",
+              "required": true
+            },
+            {
+              "name": "issueKey",
+              "displayName": "Issue Key",
+              "type": "string",
+              "required": true,
+              "placeholder": "SCRUM-5"
+            },
+            {
+              "name": "commentId",
+              "displayName": "Comment ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "update",
+                    "remove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "jsonParameters",
+              "displayName": "JSON Parameters",
+              "type": "toggle",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "comment",
+              "displayName": "Comment",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add",
+                    "update"
+                  ],
+                  "jsonParameters": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "bodyJson",
+              "displayName": "Document Format (JSON)",
+              "type": "string",
+              "format": "json",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add",
+                    "update"
+                  ],
+                  "jsonParameters": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "toggle",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Options",
+              "type": "collection",
+              "options": [
+                {
+                  "name": "expand",
+                  "displayName": "Expand",
+                  "type": "options",
+                  "multiple": true,
+                  "options": [
+                    {
+                      "name": "Rendered Body",
+                      "value": "renderedBody"
+                    }
+                  ]
+                },
+                {
+                  "name": "orderBy",
+                  "displayName": "Order By",
+                  "type": "options",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  },
+                  "options": [
+                    {
+                      "name": "Created Ascending",
+                      "value": "created"
+                    },
+                    {
+                      "name": "Created Descending",
+                      "value": "-created"
+                    }
+                  ]
+                },
+                {
+                  "name": "useWikiMarkup",
+                  "displayName": "Use Wiki Markup",
+                  "type": "boolean",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "add",
+                        "update"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "remove"
+          },
+          "subCategory": "Issue Comment"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "remove"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "jira.comment.update-1783407919253",
+      "type": "action",
+      "position": {
+        "x": 2838.765321161857,
+        "y": 893.8571380086539
+      },
+      "data": {
+        "label": "Update",
+        "toolId": "jira.comment.update",
+        "toolData": {
+          "id": "jira.comment.update",
+          "displayName": "Update",
+          "category": "Integrations",
+          "provider": "jira",
+          "operation": "Update",
+          "icon": "/tools/jira.png",
+          "actionGroup": "Issue Comment",
+          "description": "Update in Issue Comment",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "add",
+                  "update",
+                  "get",
+                  "getMany",
+                  "remove"
+                ],
+                "description": "Operation"
+              },
+              "issueKey": {
+                "type": "string",
+                "description": "Issue Key"
+              },
+              "commentId": {
+                "type": "string",
+                "description": "Comment ID"
+              },
+              "jsonParameters": {
+                "type": "boolean",
+                "description": "JSON Parameters"
+              },
+              "body": {
+                "type": "string",
+                "description": "Body"
+              },
+              "bodyJson": {
+                "type": "string",
+                "description": "Body JSON"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "expand": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Expand"
+                  },
+                  "orderBy": {
+                    "type": "string",
+                    "description": "Order By"
+                  },
+                  "useWikiMarkup": {
+                    "type": "boolean",
+                    "description": "Use Wiki Markup"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "Jira credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Issue Comment",
+                  "value": "comment"
+                }
+              ],
+              "default": "comment",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Add",
+                  "value": "add"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Remove",
+                  "value": "remove"
+                }
+              ],
+              "default": "update",
+              "required": true
+            },
+            {
+              "name": "issueKey",
+              "displayName": "Issue Key",
+              "type": "string",
+              "required": true,
+              "placeholder": "SCRUM-5"
+            },
+            {
+              "name": "commentId",
+              "displayName": "Comment ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "update",
+                    "remove"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "jsonParameters",
+              "displayName": "JSON Parameters",
+              "type": "toggle",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "comment",
+              "displayName": "Comment",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add",
+                    "update"
+                  ],
+                  "jsonParameters": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "bodyJson",
+              "displayName": "Document Format (JSON)",
+              "type": "string",
+              "format": "json",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "add",
+                    "update"
+                  ],
+                  "jsonParameters": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "toggle",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Options",
+              "type": "collection",
+              "options": [
+                {
+                  "name": "expand",
+                  "displayName": "Expand",
+                  "type": "options",
+                  "multiple": true,
+                  "options": [
+                    {
+                      "name": "Rendered Body",
+                      "value": "renderedBody"
+                    }
+                  ]
+                },
+                {
+                  "name": "orderBy",
+                  "displayName": "Order By",
+                  "type": "options",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "getMany"
+                      ]
+                    }
+                  },
+                  "options": [
+                    {
+                      "name": "Created Ascending",
+                      "value": "created"
+                    },
+                    {
+                      "name": "Created Descending",
+                      "value": "-created"
+                    }
+                  ]
+                },
+                {
+                  "name": "useWikiMarkup",
+                  "displayName": "Use Wiki Markup",
+                  "type": "boolean",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "add",
+                        "update"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "update"
+          },
+          "subCategory": "Issue Comment"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "update"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

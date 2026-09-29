@@ -1,0 +1,142 @@
+{
+  "nodes": [
+    {
+      "id": "github.organization.getRepos-1783407101606",
+      "type": "action",
+      "position": {
+        "x": 1343.054027984565,
+        "y": 676.470686796456
+      },
+      "data": {
+        "label": "Get Organization Repos",
+        "toolId": "github.organization.getRepos",
+        "toolData": {
+          "id": "github.organization.getRepos",
+          "displayName": "Get Organization Repos",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "getRepos",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "List all repositories under an organization",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "ownerMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "name"
+                ]
+              },
+              "owner": {
+                "type": "string"
+              },
+              "org": {
+                "type": "string"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false
+              },
+              "limit": {
+                "type": "number",
+                "default": 50
+              }
+            },
+            "required": [
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "toggle",
+              "default": false,
+              "description": "Whether to return all results or only up to a limit"
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "description": "How many results to return",
+              "displayOptions": {
+                "show": {
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "resource": "organization",
+            "operation": "getRepos"
+          },
+          "subCategory": "Organization"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "organization",
+          "operation": "getRepos"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

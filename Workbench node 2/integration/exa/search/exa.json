@@ -1,0 +1,179 @@
+{
+  "nodes": [
+    {
+      "id": "get_code_context_exa-1783407048972",
+      "type": "action",
+      "position": {
+        "x": 2830.6861099573402,
+        "y": 697.107184914682
+      },
+      "data": {
+        "label": "Exa Code Context",
+        "toolId": "get_code_context_exa",
+        "toolData": {
+          "id": "get_code_context_exa",
+          "displayName": "Exa Code Context",
+          "category": "Integrations",
+          "provider": "exa",
+          "operation": "getCodeContext",
+          "icon": "exa",
+          "description": "Search and get relevant context for any programming task using Exa-code.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "query": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Search query for APIs, Libraries, and SDKs"
+              },
+              "tokensNum": {
+                "type": "integer",
+                "minimum": 1000,
+                "maximum": 50000,
+                "default": 5000,
+                "description": "Number of tokens to return (1000-50000)"
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Search"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "company_research_exa-1783407050148",
+      "type": "action",
+      "position": {
+        "x": 2905.6861099573402,
+        "y": 967.1071849146817
+      },
+      "data": {
+        "label": "Exa Company Research",
+        "toolId": "company_research_exa",
+        "toolData": {
+          "id": "company_research_exa",
+          "displayName": "Exa Company Research",
+          "category": "Integrations",
+          "provider": "exa",
+          "operation": "companyResearch",
+          "icon": "exa",
+          "description": "Research companies using Exa AI - finds comprehensive information about businesses, organizations, and corporations.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "companyName": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Name of the company to research"
+              },
+              "numResults": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50,
+                "default": 5,
+                "description": "Number of search results to return (1-50)"
+              }
+            },
+            "required": [
+              "companyName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Search"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "web_search_exa-1783407051269",
+      "type": "action",
+      "position": {
+        "x": 2800.6861099573402,
+        "y": 1179.6071849146815
+      },
+      "data": {
+        "label": "Exa Web Search",
+        "toolId": "web_search_exa",
+        "toolData": {
+          "id": "web_search_exa",
+          "displayName": "Exa Web Search",
+          "category": "Integrations",
+          "provider": "exa",
+          "operation": "webSearch",
+          "icon": "exa",
+          "description": "Search the web using Exa AI - performs real-time web searches and can scrape content from specific URLs.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "query": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Websearch query"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "auto",
+                  "fast",
+                  "deep"
+                ],
+                "default": "auto",
+                "description": "Search type"
+              },
+              "livecrawl": {
+                "type": "string",
+                "enum": [
+                  "fallback",
+                  "preferred"
+                ],
+                "default": "fallback",
+                "description": "Live crawl mode"
+              },
+              "numResults": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100,
+                "default": 8,
+                "description": "Number of search results to return (1-100)"
+              },
+              "contextMaxCharacters": {
+                "type": "integer",
+                "minimum": 100,
+                "maximum": 1000000,
+                "default": 10000,
+                "description": "Maximum characters for context (100-1000000)"
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Search",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

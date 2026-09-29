@@ -1,0 +1,542 @@
+{
+  "nodes": [
+    {
+      "id": "2chat.trigger-1783397847896",
+      "type": "manual-trigger",
+      "position": {
+        "x": 347.94307929567253,
+        "y": 1114.8805366507777
+      },
+      "data": {
+        "label": "2Chat Trigger",
+        "toolId": "2chat.trigger",
+        "toolData": {
+          "id": "2chat.trigger",
+          "displayName": "2Chat Trigger",
+          "category": "Integrations",
+          "provider": "2chat",
+          "operation": "trigger",
+          "icon": "/tools/chat.svg",
+          "description": "Trigger a workflow on WhatsApp events via 2Chat (messages, group events, etc.)",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "2Chat credential ID to use"
+              },
+              "phoneNumber": {
+                "type": "string",
+                "description": "WhatsApp phone number to monitor"
+              },
+              "events": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": [
+                  "message.sent"
+                ],
+                "description": "Events to trigger on"
+              },
+              "userId": {
+                "type": "string",
+                "description": "User ID for isolation"
+              },
+              "executionId": {
+                "type": "string",
+                "description": "Execution ID"
+              },
+              "workflowId": {
+                "type": "string",
+                "description": "Workflow ID"
+              },
+              "nodeId": {
+                "type": "string",
+                "description": "Node ID"
+              },
+              "accessToken": {
+                "type": "string",
+                "description": "Access token"
+              },
+              "groupId": {
+                "type": "string",
+                "description": "Filter by WhatsApp group ID"
+              },
+              "groupName": {
+                "type": "string",
+                "description": "WhatsApp group name"
+              },
+              "autoReply": {
+                "type": "boolean",
+                "description": "Whether to auto-reply"
+              },
+              "autoReplyMessage": {
+                "type": "string",
+                "description": "Message to send as auto-reply"
+              },
+              "$inputItem": {
+                "description": "Input item"
+              }
+            },
+            "required": [
+              "credentialId",
+              "userId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "2Chat",
+          "dynamicFields": [
+            {
+              "fieldName": "credentialId",
+              "label": "Credential to connect with",
+              "type": "options",
+              "dependsOn": [],
+              "fetchEndpoint": "/api/tools/2chat/credentials",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "phoneNumber",
+              "label": "Phone Number",
+              "type": "options",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/2chat/numbers",
+              "labelKey": "friendly_name",
+              "valueKey": "phone_number"
+            },
+            {
+              "fieldName": "events",
+              "label": "Events to Trigger On",
+              "type": "collection",
+              "dependsOn": [],
+              "options": [
+                {
+                  "label": "Message Sent",
+                  "value": "whatsapp.message.sent"
+                },
+                {
+                  "label": "Message Received",
+                  "value": "whatsapp.message.received"
+                },
+                {
+                  "label": "Message Sent or Received",
+                  "value": "whatsapp.message.sent_or_received"
+                },
+                {
+                  "label": "Group Message Received",
+                  "value": "whatsapp.group.message.received"
+                },
+                {
+                  "label": "New Participant Joined Group",
+                  "value": "whatsapp.group.join"
+                },
+                {
+                  "label": "Participant Left Group",
+                  "value": "whatsapp.group.leave"
+                },
+                {
+                  "label": "New Conversation Started",
+                  "value": "whatsapp.conversation.started"
+                }
+              ]
+            }
+          ],
+          "featured": true
+        },
+        "isTrigger": true,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 100
+    },
+    {
+      "id": "2chat.sendGroupMessage-1783397854873",
+      "type": "action",
+      "position": {
+        "x": 505.6242746330334,
+        "y": 1293.6738585605049
+      },
+      "data": {
+        "label": "Send Group Message",
+        "toolId": "2chat.sendGroupMessage",
+        "toolData": {
+          "id": "2chat.sendGroupMessage",
+          "displayName": "Send Group Message",
+          "category": "Integrations",
+          "provider": "2chat",
+          "operation": "sendGroupMessage",
+          "icon": "/tools/chat.svg",
+          "description": "Send a WhatsApp group message through 2Chat.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "ID of the 2Chat credential to use"
+              },
+              "userId": {
+                "type": "string",
+                "description": "User ID for credential isolation"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "message",
+                  "phoneNumber"
+                ],
+                "description": "Resource type to use"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "sendMessage",
+                  "sendGroupMessage",
+                  "checkNumber"
+                ],
+                "description": "Operation to perform"
+              },
+              "whatsappNumberId": {
+                "type": "string",
+                "description": "WhatsApp number ID to send from"
+              },
+              "toNumber": {
+                "type": "string",
+                "description": "Recipient phone number"
+              },
+              "messageText": {
+                "type": "string",
+                "description": "Message text to send"
+              },
+              "whatsappNumberName": {
+                "type": "string",
+                "description": "WhatsApp number name or ID"
+              },
+              "phoneToCheck": {
+                "type": "string",
+                "description": "Phone number to check"
+              },
+              "pinLocation": {
+                "type": "boolean",
+                "description": "Whether to pin location"
+              },
+              "toGroupUuid": {
+                "type": "string",
+                "description": "WhatsApp group UUID for group messages"
+              }
+            },
+            "required": [
+              "credentialId",
+              "userId",
+              "resource",
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Messaging",
+          "dynamicFields": [
+            {
+              "fieldName": "credentialId",
+              "label": "Credential to connect with",
+              "dependsOn": [],
+              "fetchEndpoint": "/api/tools/2chat/credentials",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "whatsappNumberId",
+              "label": "WhatsApp Number",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/2chat/numbers",
+              "labelKey": "friendly_name",
+              "valueKey": "phone_number"
+            },
+            {
+              "fieldName": "toGroupUuid",
+              "label": "WhatsApp Group",
+              "dependsOn": [
+                "credentialId",
+                "whatsappNumberId"
+              ],
+              "fetchEndpoint": "/api/tools/2chat/groups",
+              "labelKey": "name",
+              "valueKey": "uuid"
+            },
+            {
+              "fieldName": "messageText",
+              "label": "Message",
+              "type": "string",
+              "dependsOn": [
+                "toGroupUuid"
+              ],
+              "placeholder": "Type your message",
+              "description": "Text content to send to the selected group."
+            }
+          ],
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "2chat.sendMessage-1783397858280",
+      "type": "action",
+      "position": {
+        "x": 743.7954525275409,
+        "y": 1208.5655983156532
+      },
+      "data": {
+        "label": "Send Message",
+        "toolId": "2chat.sendMessage",
+        "toolData": {
+          "id": "2chat.sendMessage",
+          "displayName": "Send Message",
+          "category": "Integrations",
+          "provider": "2chat",
+          "operation": "sendMessage",
+          "icon": "/tools/chat.svg",
+          "description": "Send a WhatsApp message through 2Chat.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "ID of the 2Chat credential to use"
+              },
+              "userId": {
+                "type": "string",
+                "description": "User ID for credential isolation"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "message",
+                  "phoneNumber"
+                ],
+                "description": "Resource type to use"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "sendMessage",
+                  "sendGroupMessage",
+                  "checkNumber"
+                ],
+                "description": "Operation to perform"
+              },
+              "whatsappNumberId": {
+                "type": "string",
+                "description": "WhatsApp number ID to send from"
+              },
+              "toNumber": {
+                "type": "string",
+                "description": "Recipient phone number"
+              },
+              "messageText": {
+                "type": "string",
+                "description": "Message text to send"
+              },
+              "whatsappNumberName": {
+                "type": "string",
+                "description": "WhatsApp number name or ID"
+              },
+              "phoneToCheck": {
+                "type": "string",
+                "description": "Phone number to check"
+              },
+              "pinLocation": {
+                "type": "boolean",
+                "description": "Whether to pin location"
+              },
+              "toGroupUuid": {
+                "type": "string",
+                "description": "WhatsApp group UUID for group messages"
+              }
+            },
+            "required": [
+              "credentialId",
+              "userId",
+              "resource",
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Messaging",
+          "dynamicFields": [
+            {
+              "fieldName": "credentialId",
+              "label": "Credential to connect with",
+              "dependsOn": [],
+              "fetchEndpoint": "/api/tools/2chat/credentials",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "whatsappNumberId",
+              "label": "WhatsApp Number",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/2chat/numbers",
+              "labelKey": "friendly_name",
+              "valueKey": "phone_number"
+            },
+            {
+              "fieldName": "toNumber",
+              "label": "Recipient Number",
+              "type": "string",
+              "dependsOn": [
+                "whatsappNumberId"
+              ],
+              "placeholder": "+919876543210",
+              "description": "Phone number to receive the message."
+            },
+            {
+              "fieldName": "messageText",
+              "label": "Message",
+              "type": "string",
+              "dependsOn": [
+                "toNumber"
+              ],
+              "placeholder": "Type your message",
+              "description": "Text content to send."
+            }
+          ],
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "2chat.checkNumber-1783397861919",
+      "type": "action",
+      "position": {
+        "x": 643.5128513088009,
+        "y": 1092.4489021676384
+      },
+      "data": {
+        "label": "Check Number",
+        "toolId": "2chat.checkNumber",
+        "toolData": {
+          "id": "2chat.checkNumber",
+          "displayName": "Check Number",
+          "category": "Integrations",
+          "provider": "2chat",
+          "operation": "checkNumber",
+          "icon": "/tools/chat.svg",
+          "description": "Check whether a phone number is valid and on WhatsApp.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "ID of the 2Chat credential to use"
+              },
+              "userId": {
+                "type": "string",
+                "description": "User ID for credential isolation"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "message",
+                  "phoneNumber"
+                ],
+                "description": "Resource type to use"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "sendMessage",
+                  "sendGroupMessage",
+                  "checkNumber"
+                ],
+                "description": "Operation to perform"
+              },
+              "whatsappNumberId": {
+                "type": "string",
+                "description": "WhatsApp number ID to send from"
+              },
+              "toNumber": {
+                "type": "string",
+                "description": "Recipient phone number"
+              },
+              "messageText": {
+                "type": "string",
+                "description": "Message text to send"
+              },
+              "whatsappNumberName": {
+                "type": "string",
+                "description": "WhatsApp number name or ID"
+              },
+              "phoneToCheck": {
+                "type": "string",
+                "description": "Phone number to check"
+              },
+              "pinLocation": {
+                "type": "boolean",
+                "description": "Whether to pin location"
+              },
+              "toGroupUuid": {
+                "type": "string",
+                "description": "WhatsApp group UUID for group messages"
+              }
+            },
+            "required": [
+              "credentialId",
+              "userId",
+              "resource",
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Utilities",
+          "dynamicFields": [
+            {
+              "fieldName": "credentialId",
+              "label": "Credential to connect with",
+              "dependsOn": [],
+              "fetchEndpoint": "/api/tools/2chat/credentials",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "phoneToCheck",
+              "label": "Phone Number",
+              "type": "string",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "placeholder": "+919876543210",
+              "description": "Phone number to validate in E.164 format."
+            }
+          ],
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

@@ -1,0 +1,278 @@
+{
+  "nodes": [
+    {
+      "id": "core.convert_to_csv-1783399050853",
+      "type": "action",
+      "position": {
+        "x": 1253.1873755331367,
+        "y": 292.4118955563912
+      },
+      "data": {
+        "label": "Convert to CSV",
+        "toolId": "core.convert_to_csv",
+        "toolData": {
+          "id": "core.convert_to_csv",
+          "displayName": "Convert to CSV",
+          "category": "Data Transformation",
+          "provider": "convertToFiles",
+          "operation": "convert_csv",
+          "icon": "/tools/Convert_to_file_icon.svg",
+          "description": "Export structured data as CSV",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "data": {
+                "description": "Array of items to convert. If empty, will use the input from the previous node automatically"
+              },
+              "outputFileName": {
+                "type": "string",
+                "description": "Output file name (with or without extension)"
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "all_items",
+                  "each_item"
+                ],
+                "default": "all_items",
+                "description": "How to handle multiple data items:\n- all_items: Combine all data into a single file\n- each_item: Create separate files for each data item"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "core.convert_to_html-1783399052333",
+      "type": "action",
+      "position": {
+        "x": 1508.4696651293968,
+        "y": 290.5884506307036
+      },
+      "data": {
+        "label": "Convert to HTML",
+        "toolId": "core.convert_to_html",
+        "toolData": {
+          "id": "core.convert_to_html",
+          "displayName": "Convert to HTML",
+          "category": "Data Transformation",
+          "provider": "convertToFiles",
+          "operation": "convert_html",
+          "icon": "/tools/Convert_to_file_icon.svg",
+          "description": "Convert data into HTML document",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "data": {
+                "description": "Array of items to convert. If empty, will use the input from the previous node automatically"
+              },
+              "outputFileName": {
+                "type": "string",
+                "description": "Output file name (with or without extension)"
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "all_items",
+                  "each_item"
+                ],
+                "default": "all_items",
+                "description": "How to handle multiple data items:\n- all_items: Combine all data into a single file\n- each_item: Create separate files for each data item"
+              },
+              "headerRow": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether to include a header row in the HTML table"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1508.4696651293968,
+        "y": 290.5884506307036
+      },
+      "dragging": false
+    },
+    {
+      "id": "core.convert_to_json-1783399054894",
+      "type": "action",
+      "position": {
+        "x": 1764.6636771885005,
+        "y": 285.1181158536409
+      },
+      "data": {
+        "label": "Convert to JSON",
+        "toolId": "core.convert_to_json",
+        "toolData": {
+          "id": "core.convert_to_json",
+          "displayName": "Convert to JSON",
+          "category": "Data Transformation",
+          "provider": "convertToFiles",
+          "operation": "convert_json",
+          "icon": "/tools/Convert_to_file_icon.svg",
+          "description": "Convert structured data into JSON",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "data": {
+                "description": "Array of items to convert. If empty, will use the input from the previous node automatically"
+              },
+              "outputFileName": {
+                "type": "string",
+                "description": "Output file name (with or without extension)"
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "all_items",
+                  "each_item"
+                ],
+                "default": "all_items",
+                "description": "How to handle multiple data items:\n- all_items: Combine all data into a single file\n- each_item: Create separate files for each data item"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1764.6636771885005,
+        "y": 285.1181158536409
+      },
+      "dragging": false
+    },
+    {
+      "id": "core.convert_to_txt-1783399057819",
+      "type": "action",
+      "position": {
+        "x": 1480.2062687812395,
+        "y": 469.28605334808566
+      },
+      "data": {
+        "label": "Convert to TXT",
+        "toolId": "core.convert_to_txt",
+        "toolData": {
+          "id": "core.convert_to_txt",
+          "displayName": "Convert to TXT",
+          "category": "Data Transformation",
+          "provider": "convertToFiles",
+          "operation": "convert_txt",
+          "icon": "/tools/Convert_to_file_icon.svg",
+          "description": "Convert data into plain text",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "data": {
+                "description": "Array of items to convert. If empty, will use the input from the previous node automatically"
+              },
+              "outputFileName": {
+                "type": "string",
+                "description": "Output file name (with or without extension)"
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "all_items",
+                  "each_item"
+                ],
+                "default": "all_items",
+                "description": "How to handle multiple data items:\n- all_items: Combine all data into a single file\n- each_item: Create separate files for each data item"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "core.convert_to_xlsx-1783399059072",
+      "type": "action",
+      "position": {
+        "x": 1735.4885583774994,
+        "y": 467.46260842239803
+      },
+      "data": {
+        "label": "Convert to XLSX",
+        "toolId": "core.convert_to_xlsx",
+        "toolData": {
+          "id": "core.convert_to_xlsx",
+          "displayName": "Convert to XLSX",
+          "category": "Data Transformation",
+          "provider": "convertToFiles",
+          "operation": "convert_xlsx",
+          "icon": "/tools/Convert_to_file_icon.svg",
+          "description": "Convert data into Excel spreadsheet",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "data": {
+                "description": "Array of items to convert. If empty, will use the input from the previous node automatically"
+              },
+              "outputFileName": {
+                "type": "string",
+                "description": "Output file name (with or without extension)"
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "all_items",
+                  "each_item"
+                ],
+                "default": "all_items",
+                "description": "How to handle multiple data items:\n- all_items: Combine all data into a single file\n- each_item: Create separate files for each data item"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 1735.4885583774994,
+        "y": 467.46260842239803
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

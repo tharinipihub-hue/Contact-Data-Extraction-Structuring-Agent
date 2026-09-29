@@ -1,0 +1,203 @@
+{
+  "nodes": [
+    {
+      "id": "openweathermap.forecast-1783398174900",
+      "type": "action",
+      "position": {
+        "x": 334.5129307721006,
+        "y": 114.19737259811879
+      },
+      "data": {
+        "label": "Get 5-Day Forecast",
+        "toolId": "openweathermap.forecast",
+        "toolData": {
+          "id": "openweathermap.forecast",
+          "displayName": "Get 5-Day Forecast",
+          "category": "API & HTTP",
+          "provider": "openweathermap",
+          "operation": "forecast",
+          "icon": "/tools/openweathermap.png",
+          "description": "Get the 5-day weather forecast.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "API Credential"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Current Weather",
+                  "5 Day Forecast"
+                ],
+                "default": "Current Weather",
+                "description": "Operation"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "Metric",
+                  "Imperial",
+                  "Scientific"
+                ],
+                "default": "Metric",
+                "description": "Format"
+              },
+              "locationMode": {
+                "type": "string",
+                "enum": [
+                  "City Name",
+                  "City ID",
+                  "Coordinates",
+                  "Zip Code"
+                ],
+                "default": "City Name",
+                "description": "Location Selection"
+              },
+              "cityName": {
+                "type": "string",
+                "description": "City"
+              },
+              "cityId": {
+                "type": "string",
+                "description": "City ID"
+              },
+              "latitude": {
+                "type": "number",
+                "description": "Latitude"
+              },
+              "longitude": {
+                "type": "number",
+                "description": "Longitude"
+              },
+              "zipCode": {
+                "type": "string",
+                "description": "Zip Code"
+              },
+              "countryCode": {
+                "type": "string",
+                "description": "Country Code (Optional)"
+              },
+              "language": {
+                "type": "string",
+                "default": "en",
+                "description": "Language"
+              }
+            },
+            "required": [
+              "credentialId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "openweathermap.current_weather-1783398176339",
+      "type": "action",
+      "position": {
+        "x": 1075.9770923066137,
+        "y": 140.7969837742448
+      },
+      "data": {
+        "label": "Get Current Weather",
+        "toolId": "openweathermap.current_weather",
+        "toolData": {
+          "id": "openweathermap.current_weather",
+          "displayName": "Get Current Weather",
+          "category": "API & HTTP",
+          "provider": "openweathermap",
+          "operation": "current_weather",
+          "icon": "/tools/openweathermap.png",
+          "description": "Retrieves current weather for a location.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "API Credential"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Current Weather",
+                  "5 Day Forecast"
+                ],
+                "default": "Current Weather",
+                "description": "Operation"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "Metric",
+                  "Imperial",
+                  "Scientific"
+                ],
+                "default": "Metric",
+                "description": "Format"
+              },
+              "locationMode": {
+                "type": "string",
+                "enum": [
+                  "City Name",
+                  "City ID",
+                  "Coordinates",
+                  "Zip Code"
+                ],
+                "default": "City Name",
+                "description": "Location Selection"
+              },
+              "cityName": {
+                "type": "string",
+                "description": "City"
+              },
+              "cityId": {
+                "type": "string",
+                "description": "City ID"
+              },
+              "latitude": {
+                "type": "number",
+                "description": "Latitude"
+              },
+              "longitude": {
+                "type": "number",
+                "description": "Longitude"
+              },
+              "zipCode": {
+                "type": "string",
+                "description": "Zip Code"
+              },
+              "countryCode": {
+                "type": "string",
+                "description": "Country Code (Optional)"
+              },
+              "language": {
+                "type": "string",
+                "default": "en",
+                "description": "Language"
+              }
+            },
+            "required": [
+              "credentialId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

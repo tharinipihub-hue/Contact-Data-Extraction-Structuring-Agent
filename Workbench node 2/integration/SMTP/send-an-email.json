@@ -1,0 +1,102 @@
+{
+  "nodes": [
+    {
+      "id": "smtp-1783408096448",
+      "type": "action",
+      "position": {
+        "x": 719.4538213647248,
+        "y": -212.97614216311288
+      },
+      "data": {
+        "label": "Send an Email",
+        "toolId": "smtp",
+        "toolData": {
+          "id": "smtp",
+          "displayName": "Send an Email",
+          "category": "Integrations",
+          "provider": "smtp",
+          "icon": "/tools/smpt.svg",
+          "description": "Send emails via SMTP",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "const": "Send",
+                "default": "Send",
+                "description": "Operation"
+              },
+              "fromEmail": {
+                "type": "string",
+                "format": "email",
+                "description": "From Email"
+              },
+              "toEmail": {
+                "type": "string",
+                "description": "To Email(s)"
+              },
+              "subject": {
+                "type": "string",
+                "description": "Subject"
+              },
+              "emailFormat": {
+                "type": "string",
+                "enum": [
+                  "text",
+                  "html",
+                  "both"
+                ],
+                "default": "text",
+                "description": "Email Format"
+              },
+              "text": {
+                "type": "string",
+                "description": "Text"
+              },
+              "html": {
+                "type": "string",
+                "description": "HTML"
+              },
+              "ccEmail": {
+                "type": "string",
+                "description": "CC Email(s)"
+              },
+              "bccEmail": {
+                "type": "string",
+                "description": "BCC Email(s)"
+              },
+              "replyTo": {
+                "type": "string",
+                "description": "Reply To"
+              },
+              "ignoreSSL": {
+                "type": "boolean",
+                "default": false,
+                "description": "Ignore SSL Issues"
+              },
+              "attachments": {
+                "description": "Attachments"
+              },
+              "credentialId": {
+                "type": "string",
+                "description": "Credential ID"
+              }
+            },
+            "required": [
+              "fromEmail",
+              "toEmail"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

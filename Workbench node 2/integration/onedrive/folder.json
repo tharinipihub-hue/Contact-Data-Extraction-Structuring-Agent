@@ -1,0 +1,380 @@
+{
+  "nodes": [
+    {
+      "id": "microsoft.onedrive.createFolder-1783407725792",
+      "type": "action",
+      "position": {
+        "x": 220.9225351882937,
+        "y": -138.53631406337394
+      },
+      "data": {
+        "label": "Create Folder",
+        "toolId": "microsoft.onedrive.createFolder",
+        "toolData": {
+          "id": "microsoft.onedrive.createFolder",
+          "displayName": "Create Folder",
+          "category": "Integrations",
+          "provider": "onedrive",
+          "operation": "createFolder",
+          "icon": "FolderPlus",
+          "description": "Creates a new folder (or nested path) in OneDrive",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Microsoft OneDrive credential"
+              },
+              "folderName": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Name of the new folder (Supports nested paths like 'Folder/Subfolder')"
+              },
+              "parentFolderId": {
+                "type": "string",
+                "description": "ID of the parent folder (Leave empty for Root)"
+              }
+            },
+            "required": [
+              "credentialId",
+              "folderName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Folder",
+          "dynamicFields": [
+            {
+              "fieldName": "parentFolderId",
+              "label": "Parent Folder",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/onedrive/list-folders",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "microsoft.onedrive.deleteFolder-1783407727368",
+      "type": "action",
+      "position": {
+        "x": 669.7909737854205,
+        "y": -58.73748053499583
+      },
+      "data": {
+        "label": "Delete Folder",
+        "toolId": "microsoft.onedrive.deleteFolder",
+        "toolData": {
+          "id": "microsoft.onedrive.deleteFolder",
+          "displayName": "Delete Folder",
+          "category": "Integrations",
+          "provider": "onedrive",
+          "operation": "deleteFolder",
+          "icon": "FolderMinus",
+          "description": "Deletes a folder in Microsoft OneDrive by its ID",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Microsoft OneDrive credential"
+              },
+              "folderId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "ID of the folder to delete"
+              }
+            },
+            "required": [
+              "credentialId",
+              "folderId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Folder",
+          "dynamicFields": [
+            {
+              "fieldName": "folderId",
+              "label": "Folder",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/onedrive/list-folders",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "microsoft.onedrive.getFolderItems-1783407729656",
+      "type": "action",
+      "position": {
+        "x": 1161.8837805437522,
+        "y": 4.436596008303508
+      },
+      "data": {
+        "label": "Get Folder Items",
+        "toolId": "microsoft.onedrive.getFolderItems",
+        "toolData": {
+          "id": "microsoft.onedrive.getFolderItems",
+          "displayName": "Get Folder Items",
+          "category": "Integrations",
+          "provider": "onedrive",
+          "operation": "getFolderItems",
+          "icon": "FolderSearch",
+          "description": "Retrieves a list of files and folders inside a specific OneDrive folder",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Microsoft OneDrive credential"
+              },
+              "folderId": {
+                "type": "string",
+                "description": "ID of the folder (Leave empty to get all the folder)"
+              }
+            },
+            "required": [
+              "credentialId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Folder",
+          "dynamicFields": [
+            {
+              "fieldName": "folderId",
+              "label": "Folder",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/onedrive/list-folders",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "microsoft.onedrive.renameFolder-1783407732800",
+      "type": "action",
+      "position": {
+        "x": 1850.1487197260135,
+        "y": 64.2857211545871
+      },
+      "data": {
+        "label": "Rename Folder",
+        "toolId": "microsoft.onedrive.renameFolder",
+        "toolData": {
+          "id": "microsoft.onedrive.renameFolder",
+          "displayName": "Rename Folder",
+          "category": "Integrations",
+          "provider": "onedrive",
+          "operation": "renameFolder",
+          "icon": "PenSquare",
+          "description": "Renames a specific folder in Microsoft OneDrive",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Microsoft OneDrive credential"
+              },
+              "folderId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "ID of the folder to rename"
+              },
+              "newName": {
+                "type": "string",
+                "minLength": 1,
+                "description": "New name for the folder"
+              }
+            },
+            "required": [
+              "credentialId",
+              "folderId",
+              "newName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Folder",
+          "dynamicFields": [
+            {
+              "fieldName": "folderId",
+              "label": "Folder",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/onedrive/list-folders",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "microsoft.onedrive.searchFolder-1783407734743",
+      "type": "action",
+      "position": {
+        "x": 516.8432095226958,
+        "y": 320.3069787248002
+      },
+      "data": {
+        "label": "Search Folder",
+        "toolId": "microsoft.onedrive.searchFolder",
+        "toolData": {
+          "id": "microsoft.onedrive.searchFolder",
+          "displayName": "Search Folder",
+          "category": "Integrations",
+          "provider": "onedrive",
+          "operation": "searchFolder",
+          "icon": "FolderSearch",
+          "description": "Searches for a specific folder inside OneDrive by name",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Microsoft OneDrive credential"
+              },
+              "query": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The name or keyword of the folder to search for"
+              }
+            },
+            "required": [
+              "credentialId",
+              "query"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Folder",
+          "dynamicFields": []
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "microsoft.onedrive.shareFolder-1783407736680",
+      "type": "action",
+      "position": {
+        "x": 995.6362106929645,
+        "y": 316.98202732778446
+      },
+      "data": {
+        "label": "Share Folder",
+        "toolId": "microsoft.onedrive.shareFolder",
+        "toolData": {
+          "id": "microsoft.onedrive.shareFolder",
+          "displayName": "Share Folder",
+          "category": "Integrations",
+          "provider": "onedrive",
+          "operation": "shareFolder",
+          "icon": "Share2",
+          "description": "Creates a sharing link for a folder in OneDrive",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Microsoft OneDrive credential"
+              },
+              "folderId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "ID of the folder to share"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "view",
+                  "edit"
+                ],
+                "description": "Type of access to grant (View or Edit)",
+                "default": "view"
+              },
+              "scope": {
+                "type": "string",
+                "enum": [
+                  "anonymous",
+                  "organization"
+                ],
+                "description": "Who can access the link (Anonymous or Organization)",
+                "default": "anonymous"
+              }
+            },
+            "required": [
+              "credentialId",
+              "folderId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Folder",
+          "dynamicFields": [
+            {
+              "fieldName": "folderId",
+              "label": "Folder",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/onedrive/list-folders",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

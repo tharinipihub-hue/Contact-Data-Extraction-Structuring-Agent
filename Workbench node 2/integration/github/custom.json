@@ -1,0 +1,162 @@
+{
+  "nodes": [
+    {
+      "id": "github.customApiCall-1783406998760",
+      "type": "action",
+      "position": {
+        "x": 1374.5520531214647,
+        "y": 655.052029703364
+      },
+      "data": {
+        "label": "Custom API Call",
+        "toolId": "github.customApiCall",
+        "toolData": {
+          "id": "github.customApiCall",
+          "displayName": "Custom API Call",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "customApiCall",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Perform a custom GitHub API call",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "method": {
+                "type": "string",
+                "enum": [
+                  "GET",
+                  "POST",
+                  "PUT",
+                  "DELETE",
+                  "PATCH"
+                ]
+              },
+              "endpoint": {
+                "type": "string"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "body": {
+                    "type": "string"
+                  },
+                  "headers": {
+                    "type": "string"
+                  },
+                  "queryParameters": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "credentials",
+              "method",
+              "endpoint"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "method",
+              "displayName": "Method",
+              "type": "options",
+              "required": true,
+              "default": "GET",
+              "options": [
+                {
+                  "name": "GET",
+                  "value": "GET"
+                },
+                {
+                  "name": "POST",
+                  "value": "POST"
+                },
+                {
+                  "name": "PUT",
+                  "value": "PUT"
+                },
+                {
+                  "name": "DELETE",
+                  "value": "DELETE"
+                },
+                {
+                  "name": "PATCH",
+                  "value": "PATCH"
+                }
+              ]
+            },
+            {
+              "name": "endpoint",
+              "displayName": "Endpoint",
+              "type": "string",
+              "required": true,
+              "placeholder": "/repos/{owner}/{repo}/issues",
+              "description": "The API endpoint to call"
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "default": {},
+              "fields": [
+                {
+                  "name": "body",
+                  "displayName": "Body",
+                  "type": "string",
+                  "description": "Request body (JSON string)"
+                },
+                {
+                  "name": "headers",
+                  "displayName": "Headers",
+                  "type": "string",
+                  "description": "Custom headers (JSON string)"
+                },
+                {
+                  "name": "queryParameters",
+                  "displayName": "Query Parameters",
+                  "type": "string",
+                  "description": "Query parameters (JSON string)"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "customApiCall",
+            "operation": "customApiCall"
+          },
+          "subCategory": "Custom"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "customApiCall",
+          "operation": "customApiCall"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

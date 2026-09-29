@@ -1,0 +1,1291 @@
+{
+  "nodes": [
+    {
+      "id": "github.workflow.disable-1783407281608",
+      "type": "action",
+      "position": {
+        "x": 916.6153971920162,
+        "y": 471.81835496608835
+      },
+      "data": {
+        "label": "Disable",
+        "toolId": "github.workflow.disable",
+        "toolData": {
+          "id": "github.workflow.disable",
+          "displayName": "Disable",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "disable",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Turn off a GitHub Actions workflow",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "workflowMode": {
+                "type": "string"
+              },
+              "workflowId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "workflowId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "workflowMode",
+              "displayName": "Workflow",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ]
+            },
+            {
+              "name": "workflowId",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "description": "Workflow ID or filename"
+            }
+          ],
+          "initialData": {
+            "resource": "workflow",
+            "operation": "disable"
+          },
+          "subCategory": "Workflow"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "workflow",
+          "operation": "disable"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "github.workflow.dispatch-1783407283305",
+      "type": "action",
+      "position": {
+        "x": 1216.0847782964277,
+        "y": 464.8539507543579
+      },
+      "data": {
+        "label": "Dispatch",
+        "toolId": "github.workflow.dispatch",
+        "toolData": {
+          "id": "github.workflow.dispatch",
+          "displayName": "Dispatch",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "dispatch",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Manually trigger a GitHub Actions workflow",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "workflowMode": {
+                "type": "string"
+              },
+              "workflowId": {
+                "type": "string"
+              },
+              "referenceMode": {
+                "type": "string"
+              },
+              "reference": {
+                "type": "string"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "inputs": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "workflowId",
+              "reference"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "workflowMode",
+              "displayName": "Workflow",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ]
+            },
+            {
+              "name": "workflowId",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "description": "Workflow ID or filename"
+            },
+            {
+              "name": "referenceMode",
+              "displayName": "Ref",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ]
+            },
+            {
+              "name": "reference",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "description": "Git reference (branch/tag)"
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "default": {},
+              "fields": [
+                {
+                  "name": "inputs",
+                  "displayName": "Inputs",
+                  "type": "string",
+                  "description": "Workflow inputs (JSON string)"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "workflow",
+            "operation": "dispatch"
+          },
+          "subCategory": "Workflow"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "workflow",
+          "operation": "dispatch"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1216.0847782964277,
+        "y": 464.8539507543579
+      },
+      "dragging": false
+    },
+    {
+      "id": "github.workflow.dispatchAndWait-1783407285952",
+      "type": "action",
+      "position": {
+        "x": 1489.4376436068494,
+        "y": 471.8183549660883
+      },
+      "data": {
+        "label": "Dispatch and Wait",
+        "toolId": "github.workflow.dispatchAndWait",
+        "toolData": {
+          "id": "github.workflow.dispatchAndWait",
+          "displayName": "Dispatch and Wait",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "dispatchAndWait",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Trigger a workflow and wait for result",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "workflowMode": {
+                "type": "string"
+              },
+              "workflowId": {
+                "type": "string"
+              },
+              "referenceMode": {
+                "type": "string"
+              },
+              "reference": {
+                "type": "string"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "inputs": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "workflowId",
+              "reference"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "workflowMode",
+              "displayName": "Workflow",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ]
+            },
+            {
+              "name": "workflowId",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "description": "Workflow ID or filename"
+            },
+            {
+              "name": "referenceMode",
+              "displayName": "Ref",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ]
+            },
+            {
+              "name": "reference",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "description": "Git reference (branch/tag)"
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "default": {},
+              "fields": [
+                {
+                  "name": "inputs",
+                  "displayName": "Inputs",
+                  "type": "string",
+                  "description": "Workflow inputs (JSON string)"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "workflow",
+            "operation": "dispatchAndWait"
+          },
+          "subCategory": "Workflow"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "workflow",
+          "operation": "dispatchAndWait"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1489.4376436068494,
+        "y": 471.8183549660883
+      },
+      "dragging": false
+    },
+    {
+      "id": "github.workflow.enable-1783407289360",
+      "type": "action",
+      "position": {
+        "x": 1774.9782162877998,
+        "y": 471.81835496608846
+      },
+      "data": {
+        "label": "Enable",
+        "toolId": "github.workflow.enable",
+        "toolData": {
+          "id": "github.workflow.enable",
+          "displayName": "Enable",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "enable",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Turn on a disabled GitHub Actions workflow",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "workflowMode": {
+                "type": "string"
+              },
+              "workflowId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "workflowId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "workflowMode",
+              "displayName": "Workflow",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ]
+            },
+            {
+              "name": "workflowId",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "description": "Workflow ID or filename"
+            }
+          ],
+          "initialData": {
+            "resource": "workflow",
+            "operation": "enable"
+          },
+          "subCategory": "Workflow"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "workflow",
+          "operation": "enable"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1774.9782162877998,
+        "y": 471.81835496608846
+      },
+      "dragging": false
+    },
+    {
+      "id": "github.workflow.get-1783407292199",
+      "type": "action",
+      "position": {
+        "x": 928.8031045625446,
+        "y": 647.6695613122833
+      },
+      "data": {
+        "label": "Get",
+        "toolId": "github.workflow.get",
+        "toolData": {
+          "id": "github.workflow.get",
+          "displayName": "Get",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "get",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Fetch details of a specific workflow",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "workflowMode": {
+                "type": "string"
+              },
+              "workflowId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "workflowId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "workflowMode",
+              "displayName": "Workflow",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ]
+            },
+            {
+              "name": "workflowId",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "description": "Workflow ID"
+            }
+          ],
+          "initialData": {
+            "resource": "workflow",
+            "operation": "get"
+          },
+          "subCategory": "Workflow"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "workflow",
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 928.8031045625446,
+        "y": 647.6695613122833
+      },
+      "dragging": false
+    },
+    {
+      "id": "github.workflow.getUsage-1783407293624",
+      "type": "action",
+      "position": {
+        "x": 1224.7902835610905,
+        "y": 644.1873592064181
+      },
+      "data": {
+        "label": "Get Usage",
+        "toolId": "github.workflow.getUsage",
+        "toolData": {
+          "id": "github.workflow.getUsage",
+          "displayName": "Get Usage",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "getUsage",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "View workflow run time and usage stats",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "workflowMode": {
+                "type": "string"
+              },
+              "workflowId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "workflowId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "workflowMode",
+              "displayName": "Workflow",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ]
+            },
+            {
+              "name": "workflowId",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "description": "Workflow ID"
+            }
+          ],
+          "initialData": {
+            "resource": "workflow",
+            "operation": "getUsage"
+          },
+          "subCategory": "Workflow"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "workflow",
+          "operation": "getUsage"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1224.7902835610905,
+        "y": 644.1873592064181
+      },
+      "dragging": false
+    },
+    {
+      "id": "github.workflow.list-1783407295055",
+      "type": "action",
+      "position": {
+        "x": 1503.3664520303105,
+        "y": 640.7051571005528
+      },
+      "data": {
+        "label": "List",
+        "toolId": "github.workflow.list",
+        "toolData": {
+          "id": "github.workflow.list",
+          "displayName": "List",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "list",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "List all workflows in a repository",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            }
+          ],
+          "initialData": {
+            "resource": "workflow",
+            "operation": "list"
+          },
+          "subCategory": "Workflow"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "workflow",
+          "operation": "list"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 1503.3664520303105,
+        "y": 640.7051571005528
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

@@ -1,0 +1,1856 @@
+{
+  "nodes": [
+    {
+      "id": "google.docs.create-1783408121463",
+      "type": "action",
+      "position": {
+        "x": 646.3225333984655,
+        "y": 299.6418395952474
+      },
+      "data": {
+        "label": "Create a document",
+        "toolId": "google.docs.create",
+        "toolData": {
+          "id": "google.docs.create",
+          "displayName": "Create a document",
+          "category": "Integrations",
+          "provider": "googleDocs",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/0/01/Google_Docs_logo_%282014-2020%29.svg",
+          "description": "Create a new Google document",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "default": "document"
+              },
+              "operation": {
+                "type": "string",
+                "default": "create"
+              },
+              "driveId": {
+                "type": "string",
+                "description": "The ID of the drive to use",
+                "default": "myDrive"
+              },
+              "folderId": {
+                "type": "string",
+                "description": "The ID of the folder to use"
+              },
+              "title": {
+                "type": "string",
+                "description": "The title of the new document"
+              },
+              "documentId": {
+                "type": "string",
+                "description": "The ID or URL of the document"
+              },
+              "simplify": {
+                "type": "boolean",
+                "description": "Whether to return simplified output",
+                "default": false
+              },
+              "text": {
+                "type": "string",
+                "description": "The text to append to the document (deprecated, use actions)"
+              },
+              "actions": {
+                "description": "List of actions to perform (Update only)"
+              },
+              "updateFields": {
+                "description": "Additional update settings (Update only)"
+              },
+              "credentialId": {
+                "type": "string",
+                "description": "The ID of the credentials to use"
+              }
+            },
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "displayName": "Resource",
+              "name": "resource",
+              "type": "options",
+              "hidden": true,
+              "options": [
+                {
+                  "name": "Document",
+                  "value": "document"
+                }
+              ],
+              "default": "document",
+              "noDataExpression": true
+            },
+            {
+              "displayName": "Operation",
+              "name": "operation",
+              "type": "options",
+              "hidden": true,
+              "options": [
+                {
+                  "name": "Create a document",
+                  "value": "create"
+                },
+                {
+                  "name": "Get a document",
+                  "value": "get"
+                },
+                {
+                  "name": "Update a document",
+                  "value": "update"
+                }
+              ],
+              "default": "create",
+              "noDataExpression": true
+            },
+            {
+              "displayName": "Document ID or URL",
+              "name": "documentId",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "document"
+                  ],
+                  "operation": [
+                    "get",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Title",
+              "name": "title",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "document"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Simplify Output",
+              "name": "simplify",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Actions",
+              "name": "actions",
+              "type": "fixedCollection",
+              "typeOptions": {
+                "multipleValues": true
+              },
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "update"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "displayName": "Action",
+                  "name": "actionProperties",
+                  "values": [
+                    {
+                      "displayName": "Object",
+                      "name": "object",
+                      "type": "options",
+                      "placeholder": "Select Object",
+                      "options": [
+                        {
+                          "name": "Text",
+                          "value": "text"
+                        },
+                        {
+                          "name": "Header",
+                          "value": "header"
+                        },
+                        {
+                          "name": "Footer",
+                          "value": "footer"
+                        },
+                        {
+                          "name": "Named Range",
+                          "value": "namedRange"
+                        },
+                        {
+                          "name": "Page Break",
+                          "value": "pageBreak"
+                        },
+                        {
+                          "name": "Paragraph Bullets",
+                          "value": "paragraphBullets"
+                        },
+                        {
+                          "name": "Positioned Object",
+                          "value": "positionedObject"
+                        },
+                        {
+                          "name": "Table",
+                          "value": "table"
+                        },
+                        {
+                          "name": "Table Column",
+                          "value": "tableColumn"
+                        },
+                        {
+                          "name": "Table Row",
+                          "value": "tableRow"
+                        }
+                      ],
+                      "default": "",
+                      "required": true
+                    },
+                    {
+                      "displayName": "Action",
+                      "name": "action",
+                      "type": "options",
+                      "placeholder": "Select Action",
+                      "options": [
+                        {
+                          "name": "Insert",
+                          "value": "insert",
+                          "displayOptions": {
+                            "show": {
+                              "object": [
+                                "text",
+                                "pageBreak",
+                                "table",
+                                "tableColumn",
+                                "tableRow"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "name": "Create",
+                          "value": "create",
+                          "displayOptions": {
+                            "show": {
+                              "object": [
+                                "header",
+                                "footer",
+                                "namedRange",
+                                "paragraphBullets"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "name": "Delete",
+                          "value": "delete",
+                          "displayOptions": {
+                            "show": {
+                              "object": [
+                                "header",
+                                "footer",
+                                "namedRange",
+                                "paragraphBullets",
+                                "positionedObject",
+                                "tableColumn",
+                                "tableRow"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "name": "Find and Replace Text",
+                          "value": "findReplace",
+                          "displayOptions": {
+                            "show": {
+                              "object": [
+                                "text"
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "default": "",
+                      "required": true
+                    },
+                    {
+                      "displayName": "Segment",
+                      "name": "segment",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Body",
+                          "value": "body"
+                        },
+                        {
+                          "name": "Header",
+                          "value": "header"
+                        },
+                        {
+                          "name": "Footer",
+                          "value": "footer"
+                        }
+                      ],
+                      "default": "body",
+                      "displayOptions": {
+                        "show": {
+                          "action": [
+                            "insert",
+                            "create"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Segment ID",
+                      "name": "segmentId",
+                      "type": "string",
+                      "displayOptions": {
+                        "show": {
+                          "action": [
+                            "insert",
+                            "create"
+                          ],
+                          "segment": [
+                            "header",
+                            "footer"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Position Type",
+                      "name": "positionType",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "At End",
+                          "value": "atEnd"
+                        },
+                        {
+                          "name": "At Index",
+                          "value": "atIndex"
+                        },
+                        {
+                          "name": "Before Index",
+                          "value": "beforeIndex"
+                        },
+                        {
+                          "name": "After Index",
+                          "value": "afterIndex"
+                        }
+                      ],
+                      "default": "atEnd",
+                      "displayOptions": {
+                        "show": {
+                          "action": [
+                            "insert"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Index",
+                      "name": "index",
+                      "type": "number",
+                      "displayOptions": {
+                        "show": {
+                          "action": [
+                            "insert"
+                          ],
+                          "positionType": [
+                            "atIndex",
+                            "beforeIndex",
+                            "afterIndex"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Row Index",
+                      "name": "rowIndex",
+                      "type": "number",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "tableRow",
+                            "tableColumn"
+                          ],
+                          "action": [
+                            "insert",
+                            "delete"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Column Index",
+                      "name": "columnIndex",
+                      "type": "number",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "tableRow",
+                            "tableColumn"
+                          ],
+                          "action": [
+                            "insert",
+                            "delete"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Text",
+                      "name": "text",
+                      "type": "string",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "text"
+                          ],
+                          "action": [
+                            "insert"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Old Text",
+                      "name": "oldText",
+                      "type": "string",
+                      "displayOptions": {
+                        "show": {
+                          "action": [
+                            "findReplace"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "New Text",
+                      "name": "newText",
+                      "type": "string",
+                      "displayOptions": {
+                        "show": {
+                          "action": [
+                            "findReplace"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Match Case",
+                      "name": "matchCase",
+                      "type": "boolean",
+                      "default": false,
+                      "displayOptions": {
+                        "show": {
+                          "action": [
+                            "findReplace"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Rows",
+                      "name": "rows",
+                      "type": "number",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "table"
+                          ],
+                          "action": [
+                            "insert"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Columns",
+                      "name": "columns",
+                      "type": "number",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "table"
+                          ],
+                          "action": [
+                            "insert"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Range Name",
+                      "name": "rangeName",
+                      "type": "string",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "namedRange"
+                          ],
+                          "action": [
+                            "create"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Start Index",
+                      "name": "startIndex",
+                      "type": "number",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "namedRange",
+                            "paragraphBullets"
+                          ],
+                          "action": [
+                            "create"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "End Index",
+                      "name": "endIndex",
+                      "type": "number",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "namedRange",
+                            "paragraphBullets"
+                          ],
+                          "action": [
+                            "create"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Object ID",
+                      "name": "objectId",
+                      "type": "string",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "positionedObject"
+                          ],
+                          "action": [
+                            "delete"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "displayName": "Update Fields",
+              "name": "updateFields",
+              "type": "fixedCollection",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "update"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "displayName": "Revision Properties",
+                  "name": "revision",
+                  "values": [
+                    {
+                      "displayName": "Revision Mode",
+                      "name": "revisionMode",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Required",
+                          "value": "required"
+                        },
+                        {
+                          "name": "Target",
+                          "value": "target"
+                        }
+                      ],
+                      "default": "required"
+                    },
+                    {
+                      "displayName": "Revision ID",
+                      "name": "revisionId",
+                      "type": "string"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "subCategory": "Document",
+          "dynamicFields": [],
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true
+    },
+    {
+      "id": "google.docs.get-1783408122439",
+      "type": "action",
+      "position": {
+        "x": 889.5672648704372,
+        "y": 281.2570633793426
+      },
+      "data": {
+        "label": "Get a document",
+        "toolId": "google.docs.get",
+        "toolData": {
+          "id": "google.docs.get",
+          "displayName": "Get a document",
+          "category": "Integrations",
+          "provider": "googleDocs",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/0/01/Google_Docs_logo_%282014-2020%29.svg",
+          "description": "Retrieve Google document content",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "default": "document"
+              },
+              "operation": {
+                "type": "string",
+                "default": "get"
+              },
+              "driveId": {
+                "type": "string",
+                "description": "The ID of the drive to use",
+                "default": "myDrive"
+              },
+              "folderId": {
+                "type": "string",
+                "description": "The ID of the folder to use"
+              },
+              "title": {
+                "type": "string",
+                "description": "The title of the new document"
+              },
+              "documentId": {
+                "type": "string",
+                "description": "The ID or URL of the document"
+              },
+              "simplify": {
+                "type": "boolean",
+                "description": "Whether to return simplified output",
+                "default": false
+              },
+              "text": {
+                "type": "string",
+                "description": "The text to append to the document (deprecated, use actions)"
+              },
+              "actions": {
+                "description": "List of actions to perform (Update only)"
+              },
+              "updateFields": {
+                "description": "Additional update settings (Update only)"
+              },
+              "credentialId": {
+                "type": "string",
+                "description": "The ID of the credentials to use"
+              }
+            },
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "displayName": "Resource",
+              "name": "resource",
+              "type": "options",
+              "hidden": true,
+              "options": [
+                {
+                  "name": "Document",
+                  "value": "document"
+                }
+              ],
+              "default": "document",
+              "noDataExpression": true
+            },
+            {
+              "displayName": "Operation",
+              "name": "operation",
+              "type": "options",
+              "hidden": true,
+              "options": [
+                {
+                  "name": "Create a document",
+                  "value": "create"
+                },
+                {
+                  "name": "Get a document",
+                  "value": "get"
+                },
+                {
+                  "name": "Update a document",
+                  "value": "update"
+                }
+              ],
+              "default": "get",
+              "noDataExpression": true
+            },
+            {
+              "displayName": "Document ID or URL",
+              "name": "documentId",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "document"
+                  ],
+                  "operation": [
+                    "get",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Title",
+              "name": "title",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "document"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Simplify Output",
+              "name": "simplify",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Actions",
+              "name": "actions",
+              "type": "fixedCollection",
+              "typeOptions": {
+                "multipleValues": true
+              },
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "update"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "displayName": "Action",
+                  "name": "actionProperties",
+                  "values": [
+                    {
+                      "displayName": "Object",
+                      "name": "object",
+                      "type": "options",
+                      "placeholder": "Select Object",
+                      "options": [
+                        {
+                          "name": "Text",
+                          "value": "text"
+                        },
+                        {
+                          "name": "Header",
+                          "value": "header"
+                        },
+                        {
+                          "name": "Footer",
+                          "value": "footer"
+                        },
+                        {
+                          "name": "Named Range",
+                          "value": "namedRange"
+                        },
+                        {
+                          "name": "Page Break",
+                          "value": "pageBreak"
+                        },
+                        {
+                          "name": "Paragraph Bullets",
+                          "value": "paragraphBullets"
+                        },
+                        {
+                          "name": "Positioned Object",
+                          "value": "positionedObject"
+                        },
+                        {
+                          "name": "Table",
+                          "value": "table"
+                        },
+                        {
+                          "name": "Table Column",
+                          "value": "tableColumn"
+                        },
+                        {
+                          "name": "Table Row",
+                          "value": "tableRow"
+                        }
+                      ],
+                      "default": "",
+                      "required": true
+                    },
+                    {
+                      "displayName": "Action",
+                      "name": "action",
+                      "type": "options",
+                      "placeholder": "Select Action",
+                      "options": [
+                        {
+                          "name": "Insert",
+                          "value": "insert",
+                          "displayOptions": {
+                            "show": {
+                              "object": [
+                                "text",
+                                "pageBreak",
+                                "table",
+                                "tableColumn",
+                                "tableRow"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "name": "Create",
+                          "value": "create",
+                          "displayOptions": {
+                            "show": {
+                              "object": [
+                                "header",
+                                "footer",
+                                "namedRange",
+                                "paragraphBullets"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "name": "Delete",
+                          "value": "delete",
+                          "displayOptions": {
+                            "show": {
+                              "object": [
+                                "header",
+                                "footer",
+                                "namedRange",
+                                "paragraphBullets",
+                                "positionedObject",
+                                "tableColumn",
+                                "tableRow"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "name": "Find and Replace Text",
+                          "value": "findReplace",
+                          "displayOptions": {
+                            "show": {
+                              "object": [
+                                "text"
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "default": "",
+                      "required": true
+                    },
+                    {
+                      "displayName": "Segment",
+                      "name": "segment",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Body",
+                          "value": "body"
+                        },
+                        {
+                          "name": "Header",
+                          "value": "header"
+                        },
+                        {
+                          "name": "Footer",
+                          "value": "footer"
+                        }
+                      ],
+                      "default": "body",
+                      "displayOptions": {
+                        "show": {
+                          "action": [
+                            "insert",
+                            "create"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Segment ID",
+                      "name": "segmentId",
+                      "type": "string",
+                      "displayOptions": {
+                        "show": {
+                          "action": [
+                            "insert",
+                            "create"
+                          ],
+                          "segment": [
+                            "header",
+                            "footer"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Position Type",
+                      "name": "positionType",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "At End",
+                          "value": "atEnd"
+                        },
+                        {
+                          "name": "At Index",
+                          "value": "atIndex"
+                        },
+                        {
+                          "name": "Before Index",
+                          "value": "beforeIndex"
+                        },
+                        {
+                          "name": "After Index",
+                          "value": "afterIndex"
+                        }
+                      ],
+                      "default": "atEnd",
+                      "displayOptions": {
+                        "show": {
+                          "action": [
+                            "insert"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Index",
+                      "name": "index",
+                      "type": "number",
+                      "displayOptions": {
+                        "show": {
+                          "action": [
+                            "insert"
+                          ],
+                          "positionType": [
+                            "atIndex",
+                            "beforeIndex",
+                            "afterIndex"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Row Index",
+                      "name": "rowIndex",
+                      "type": "number",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "tableRow",
+                            "tableColumn"
+                          ],
+                          "action": [
+                            "insert",
+                            "delete"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Column Index",
+                      "name": "columnIndex",
+                      "type": "number",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "tableRow",
+                            "tableColumn"
+                          ],
+                          "action": [
+                            "insert",
+                            "delete"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Text",
+                      "name": "text",
+                      "type": "string",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "text"
+                          ],
+                          "action": [
+                            "insert"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Old Text",
+                      "name": "oldText",
+                      "type": "string",
+                      "displayOptions": {
+                        "show": {
+                          "action": [
+                            "findReplace"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "New Text",
+                      "name": "newText",
+                      "type": "string",
+                      "displayOptions": {
+                        "show": {
+                          "action": [
+                            "findReplace"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Match Case",
+                      "name": "matchCase",
+                      "type": "boolean",
+                      "default": false,
+                      "displayOptions": {
+                        "show": {
+                          "action": [
+                            "findReplace"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Rows",
+                      "name": "rows",
+                      "type": "number",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "table"
+                          ],
+                          "action": [
+                            "insert"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Columns",
+                      "name": "columns",
+                      "type": "number",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "table"
+                          ],
+                          "action": [
+                            "insert"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Range Name",
+                      "name": "rangeName",
+                      "type": "string",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "namedRange"
+                          ],
+                          "action": [
+                            "create"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Start Index",
+                      "name": "startIndex",
+                      "type": "number",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "namedRange",
+                            "paragraphBullets"
+                          ],
+                          "action": [
+                            "create"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "End Index",
+                      "name": "endIndex",
+                      "type": "number",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "namedRange",
+                            "paragraphBullets"
+                          ],
+                          "action": [
+                            "create"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Object ID",
+                      "name": "objectId",
+                      "type": "string",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "positionedObject"
+                          ],
+                          "action": [
+                            "delete"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "displayName": "Update Fields",
+              "name": "updateFields",
+              "type": "fixedCollection",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "update"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "displayName": "Revision Properties",
+                  "name": "revision",
+                  "values": [
+                    {
+                      "displayName": "Revision Mode",
+                      "name": "revisionMode",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Required",
+                          "value": "required"
+                        },
+                        {
+                          "name": "Target",
+                          "value": "target"
+                        }
+                      ],
+                      "default": "required"
+                    },
+                    {
+                      "displayName": "Revision ID",
+                      "name": "revisionId",
+                      "type": "string"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "subCategory": "Document",
+          "dynamicFields": [],
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true
+    },
+    {
+      "id": "google.docs.update-1783408123758",
+      "type": "action",
+      "position": {
+        "x": 1234.6353723074203,
+        "y": 345.6037801350095
+      },
+      "data": {
+        "label": "Update a document",
+        "toolId": "google.docs.update",
+        "toolData": {
+          "id": "google.docs.update",
+          "displayName": "Update a document",
+          "category": "Integrations",
+          "provider": "googleDocs",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/0/01/Google_Docs_logo_%282014-2020%29.svg",
+          "description": "Modify an existing Google document",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "default": "document"
+              },
+              "operation": {
+                "type": "string",
+                "default": "update"
+              },
+              "driveId": {
+                "type": "string",
+                "description": "The ID of the drive to use",
+                "default": "myDrive"
+              },
+              "folderId": {
+                "type": "string",
+                "description": "The ID of the folder to use"
+              },
+              "title": {
+                "type": "string",
+                "description": "The title of the new document"
+              },
+              "documentId": {
+                "type": "string",
+                "description": "The ID or URL of the document"
+              },
+              "simplify": {
+                "type": "boolean",
+                "description": "Whether to return simplified output",
+                "default": false
+              },
+              "text": {
+                "type": "string",
+                "description": "The text to append to the document (deprecated, use actions)"
+              },
+              "actions": {
+                "description": "List of actions to perform (Update only)"
+              },
+              "updateFields": {
+                "description": "Additional update settings (Update only)"
+              },
+              "credentialId": {
+                "type": "string",
+                "description": "The ID of the credentials to use"
+              }
+            },
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "displayName": "Resource",
+              "name": "resource",
+              "type": "options",
+              "hidden": true,
+              "options": [
+                {
+                  "name": "Document",
+                  "value": "document"
+                }
+              ],
+              "default": "document",
+              "noDataExpression": true
+            },
+            {
+              "displayName": "Operation",
+              "name": "operation",
+              "type": "options",
+              "hidden": true,
+              "options": [
+                {
+                  "name": "Create a document",
+                  "value": "create"
+                },
+                {
+                  "name": "Get a document",
+                  "value": "get"
+                },
+                {
+                  "name": "Update a document",
+                  "value": "update"
+                }
+              ],
+              "default": "update",
+              "noDataExpression": true
+            },
+            {
+              "displayName": "Document ID or URL",
+              "name": "documentId",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "document"
+                  ],
+                  "operation": [
+                    "get",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Title",
+              "name": "title",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "document"
+                  ],
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Simplify Output",
+              "name": "simplify",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "update"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Actions",
+              "name": "actions",
+              "type": "fixedCollection",
+              "typeOptions": {
+                "multipleValues": true
+              },
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "update"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "displayName": "Action",
+                  "name": "actionProperties",
+                  "values": [
+                    {
+                      "displayName": "Object",
+                      "name": "object",
+                      "type": "options",
+                      "placeholder": "Select Object",
+                      "options": [
+                        {
+                          "name": "Text",
+                          "value": "text"
+                        },
+                        {
+                          "name": "Header",
+                          "value": "header"
+                        },
+                        {
+                          "name": "Footer",
+                          "value": "footer"
+                        },
+                        {
+                          "name": "Named Range",
+                          "value": "namedRange"
+                        },
+                        {
+                          "name": "Page Break",
+                          "value": "pageBreak"
+                        },
+                        {
+                          "name": "Paragraph Bullets",
+                          "value": "paragraphBullets"
+                        },
+                        {
+                          "name": "Positioned Object",
+                          "value": "positionedObject"
+                        },
+                        {
+                          "name": "Table",
+                          "value": "table"
+                        },
+                        {
+                          "name": "Table Column",
+                          "value": "tableColumn"
+                        },
+                        {
+                          "name": "Table Row",
+                          "value": "tableRow"
+                        }
+                      ],
+                      "default": "",
+                      "required": true
+                    },
+                    {
+                      "displayName": "Action",
+                      "name": "action",
+                      "type": "options",
+                      "placeholder": "Select Action",
+                      "options": [
+                        {
+                          "name": "Insert",
+                          "value": "insert",
+                          "displayOptions": {
+                            "show": {
+                              "object": [
+                                "text",
+                                "pageBreak",
+                                "table",
+                                "tableColumn",
+                                "tableRow"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "name": "Create",
+                          "value": "create",
+                          "displayOptions": {
+                            "show": {
+                              "object": [
+                                "header",
+                                "footer",
+                                "namedRange",
+                                "paragraphBullets"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "name": "Delete",
+                          "value": "delete",
+                          "displayOptions": {
+                            "show": {
+                              "object": [
+                                "header",
+                                "footer",
+                                "namedRange",
+                                "paragraphBullets",
+                                "positionedObject",
+                                "tableColumn",
+                                "tableRow"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "name": "Find and Replace Text",
+                          "value": "findReplace",
+                          "displayOptions": {
+                            "show": {
+                              "object": [
+                                "text"
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "default": "",
+                      "required": true
+                    },
+                    {
+                      "displayName": "Segment",
+                      "name": "segment",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Body",
+                          "value": "body"
+                        },
+                        {
+                          "name": "Header",
+                          "value": "header"
+                        },
+                        {
+                          "name": "Footer",
+                          "value": "footer"
+                        }
+                      ],
+                      "default": "body",
+                      "displayOptions": {
+                        "show": {
+                          "action": [
+                            "insert",
+                            "create"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Segment ID",
+                      "name": "segmentId",
+                      "type": "string",
+                      "displayOptions": {
+                        "show": {
+                          "action": [
+                            "insert",
+                            "create"
+                          ],
+                          "segment": [
+                            "header",
+                            "footer"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Position Type",
+                      "name": "positionType",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "At End",
+                          "value": "atEnd"
+                        },
+                        {
+                          "name": "At Index",
+                          "value": "atIndex"
+                        },
+                        {
+                          "name": "Before Index",
+                          "value": "beforeIndex"
+                        },
+                        {
+                          "name": "After Index",
+                          "value": "afterIndex"
+                        }
+                      ],
+                      "default": "atEnd",
+                      "displayOptions": {
+                        "show": {
+                          "action": [
+                            "insert"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Index",
+                      "name": "index",
+                      "type": "number",
+                      "displayOptions": {
+                        "show": {
+                          "action": [
+                            "insert"
+                          ],
+                          "positionType": [
+                            "atIndex",
+                            "beforeIndex",
+                            "afterIndex"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Row Index",
+                      "name": "rowIndex",
+                      "type": "number",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "tableRow",
+                            "tableColumn"
+                          ],
+                          "action": [
+                            "insert",
+                            "delete"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Column Index",
+                      "name": "columnIndex",
+                      "type": "number",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "tableRow",
+                            "tableColumn"
+                          ],
+                          "action": [
+                            "insert",
+                            "delete"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Text",
+                      "name": "text",
+                      "type": "string",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "text"
+                          ],
+                          "action": [
+                            "insert"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Old Text",
+                      "name": "oldText",
+                      "type": "string",
+                      "displayOptions": {
+                        "show": {
+                          "action": [
+                            "findReplace"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "New Text",
+                      "name": "newText",
+                      "type": "string",
+                      "displayOptions": {
+                        "show": {
+                          "action": [
+                            "findReplace"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Match Case",
+                      "name": "matchCase",
+                      "type": "boolean",
+                      "default": false,
+                      "displayOptions": {
+                        "show": {
+                          "action": [
+                            "findReplace"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Rows",
+                      "name": "rows",
+                      "type": "number",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "table"
+                          ],
+                          "action": [
+                            "insert"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Columns",
+                      "name": "columns",
+                      "type": "number",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "table"
+                          ],
+                          "action": [
+                            "insert"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Range Name",
+                      "name": "rangeName",
+                      "type": "string",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "namedRange"
+                          ],
+                          "action": [
+                            "create"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Start Index",
+                      "name": "startIndex",
+                      "type": "number",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "namedRange",
+                            "paragraphBullets"
+                          ],
+                          "action": [
+                            "create"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "End Index",
+                      "name": "endIndex",
+                      "type": "number",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "namedRange",
+                            "paragraphBullets"
+                          ],
+                          "action": [
+                            "create"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "displayName": "Object ID",
+                      "name": "objectId",
+                      "type": "string",
+                      "displayOptions": {
+                        "show": {
+                          "object": [
+                            "positionedObject"
+                          ],
+                          "action": [
+                            "delete"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "displayName": "Update Fields",
+              "name": "updateFields",
+              "type": "fixedCollection",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "update"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "displayName": "Revision Properties",
+                  "name": "revision",
+                  "values": [
+                    {
+                      "displayName": "Revision Mode",
+                      "name": "revisionMode",
+                      "type": "options",
+                      "options": [
+                        {
+                          "name": "Required",
+                          "value": "required"
+                        },
+                        {
+                          "name": "Target",
+                          "value": "target"
+                        }
+                      ],
+                      "default": "required"
+                    },
+                    {
+                      "displayName": "Revision ID",
+                      "name": "revisionId",
+                      "type": "string"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "subCategory": "Document",
+          "dynamicFields": [],
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true
+    }
+  ],
+  "edges": []
+}

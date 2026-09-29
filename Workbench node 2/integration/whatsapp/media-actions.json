@@ -1,0 +1,232 @@
+{
+  "nodes": [
+    {
+      "id": "whatsapp.media.delete-1783407529387",
+      "type": "action",
+      "position": {
+        "x": 732.9787774501469,
+        "y": -312.9288664041596
+      },
+      "data": {
+        "label": "Delete Media",
+        "toolId": "whatsapp.media.delete",
+        "toolData": {
+          "id": "whatsapp.media.delete",
+          "displayName": "Delete Media",
+          "category": "Integrations",
+          "provider": "whatsapp",
+          "operation": "delete",
+          "icon": "/tools/whatsapp.png",
+          "description": "Delete media from WhatsApp servers",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentialId"
+            ],
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "senderPhoneNumber",
+              "displayName": "Sender Phone Number (or ID)",
+              "type": "options",
+              "description": "The phone number or ID of the sender. Usually your WhatsApp Business phone number ID.",
+              "placeholder": "Select a phone number...",
+              "required": true,
+              "fetchEndpoint": "/api/tools/whatsapp/list-phone-numbers",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "value"
+            },
+            {
+              "name": "mediaId",
+              "displayName": "Media ID",
+              "type": "string",
+              "required": true,
+              "description": "The ID of the media to delete"
+            }
+          ],
+          "initialData": {
+            "resource": "media",
+            "operation": "delete"
+          },
+          "subCategory": "MEDIA ACTIONS"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "media",
+          "operation": "delete"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "whatsapp.media.download-1783407530619",
+      "type": "action",
+      "position": {
+        "x": 755.4104119332861,
+        "y": -172.40127390684643
+      },
+      "data": {
+        "label": "Download Media",
+        "toolId": "whatsapp.media.download",
+        "toolData": {
+          "id": "whatsapp.media.download",
+          "displayName": "Download Media",
+          "category": "Integrations",
+          "provider": "whatsapp",
+          "operation": "download",
+          "icon": "/tools/whatsapp.png",
+          "description": "Download media from WhatsApp servers",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentialId"
+            ],
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "senderPhoneNumber",
+              "displayName": "Sender Phone Number (or ID)",
+              "type": "options",
+              "description": "The phone number or ID of the sender. Usually your WhatsApp Business phone number ID.",
+              "placeholder": "Select a phone number...",
+              "required": true,
+              "fetchEndpoint": "/api/tools/whatsapp/list-phone-numbers",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "value"
+            },
+            {
+              "name": "mediaId",
+              "displayName": "Media ID",
+              "type": "string",
+              "required": true,
+              "description": "The ID of the media to download"
+            }
+          ],
+          "initialData": {
+            "resource": "media",
+            "operation": "download"
+          },
+          "subCategory": "MEDIA ACTIONS"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "media",
+          "operation": "download"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "whatsapp.media.upload-1783407531707",
+      "type": "action",
+      "position": {
+        "x": 626.0986366775426,
+        "y": -208.02798749771455
+      },
+      "data": {
+        "label": "Upload Media",
+        "toolId": "whatsapp.media.upload",
+        "toolData": {
+          "id": "whatsapp.media.upload",
+          "displayName": "Upload Media",
+          "category": "Integrations",
+          "provider": "whatsapp",
+          "operation": "upload",
+          "icon": "/tools/whatsapp.png",
+          "description": "Upload a media file to WhatsApp servers",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentialId"
+            ],
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "senderPhoneNumber",
+              "displayName": "Sender Phone Number (or ID)",
+              "type": "options",
+              "description": "The phone number or ID of the sender. Usually your WhatsApp Business phone number ID.",
+              "placeholder": "Select a phone number...",
+              "required": true,
+              "fetchEndpoint": "/api/tools/whatsapp/list-phone-numbers",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "value"
+            },
+            {
+              "name": "propertyName",
+              "displayName": "Property Name",
+              "type": "string",
+              "default": "data",
+              "required": true,
+              "description": "The name of the binary property that contains the file to be uploaded"
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "fields": [
+                {
+                  "name": "fileName",
+                  "displayName": "Filename",
+                  "type": "string",
+                  "default": "",
+                  "description": "The filename to be used for the uploaded file"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "media",
+            "operation": "upload"
+          },
+          "subCategory": "MEDIA ACTIONS"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "media",
+          "operation": "upload"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

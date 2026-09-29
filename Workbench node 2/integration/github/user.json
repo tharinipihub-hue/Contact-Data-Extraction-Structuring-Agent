@@ -1,0 +1,448 @@
+{
+  "nodes": [
+    {
+      "id": "github.user.getIssues-1783407251079",
+      "type": "action",
+      "position": {
+        "x": 1038.4924708972999,
+        "y": 513.6047802364714
+      },
+      "data": {
+        "label": "Get Issues",
+        "toolId": "github.user.getIssues",
+        "toolData": {
+          "id": "github.user.getIssues",
+          "displayName": "Get Issues",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "getIssues",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Retrieve issues for the authenticated user",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false
+              },
+              "limit": {
+                "type": "number",
+                "default": 50
+              },
+              "filters": {
+                "type": "object",
+                "properties": {
+                  "mentioned": {
+                    "type": "string"
+                  },
+                  "labels": {
+                    "type": "string"
+                  },
+                  "since": {
+                    "type": "string"
+                  },
+                  "state": {
+                    "type": "string",
+                    "enum": [
+                      "all",
+                      "open",
+                      "closed"
+                    ]
+                  },
+                  "sort": {
+                    "type": "string",
+                    "enum": [
+                      "created",
+                      "updated",
+                      "comments"
+                    ]
+                  },
+                  "direction": {
+                    "type": "string",
+                    "enum": [
+                      "asc",
+                      "desc"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "toggle",
+              "default": false,
+              "description": "Whether to return all results or only up to a limit"
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "description": "How many results to return",
+              "displayOptions": {
+                "show": {
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "filters",
+              "displayName": "Filters",
+              "type": "collection",
+              "default": {},
+              "fields": [
+                {
+                  "name": "mentioned",
+                  "displayName": "Mentioned",
+                  "type": "string",
+                  "description": "Mentioned username"
+                },
+                {
+                  "name": "labels",
+                  "displayName": "Labels",
+                  "type": "string",
+                  "description": "Comma-separated labels"
+                },
+                {
+                  "name": "since",
+                  "displayName": "Updated Since",
+                  "type": "dateTime",
+                  "description": "Only issues updated after this date"
+                },
+                {
+                  "name": "state",
+                  "displayName": "State",
+                  "type": "options",
+                  "default": "all",
+                  "options": [
+                    {
+                      "name": "All",
+                      "value": "all"
+                    },
+                    {
+                      "name": "Open",
+                      "value": "open"
+                    },
+                    {
+                      "name": "Closed",
+                      "value": "closed"
+                    }
+                  ]
+                },
+                {
+                  "name": "sort",
+                  "displayName": "Sort",
+                  "type": "options",
+                  "default": "created",
+                  "options": [
+                    {
+                      "name": "Created",
+                      "value": "created"
+                    },
+                    {
+                      "name": "Updated",
+                      "value": "updated"
+                    },
+                    {
+                      "name": "Comments",
+                      "value": "comments"
+                    }
+                  ]
+                },
+                {
+                  "name": "direction",
+                  "displayName": "Direction",
+                  "type": "options",
+                  "default": "desc",
+                  "options": [
+                    {
+                      "name": "Ascending",
+                      "value": "asc"
+                    },
+                    {
+                      "name": "Descending",
+                      "value": "desc"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "user",
+            "operation": "getIssues"
+          },
+          "subCategory": "User"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "user",
+          "operation": "getIssues"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "github.user.getRepos-1783407252840",
+      "type": "action",
+      "position": {
+        "x": 1351.8906604251722,
+        "y": 508.3814770776735
+      },
+      "data": {
+        "label": "Get Repositories",
+        "toolId": "github.user.getRepos",
+        "toolData": {
+          "id": "github.user.getRepos",
+          "displayName": "Get Repositories",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "getRepos",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Get repositories for a user",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "username": {
+                "type": "string"
+              },
+              "owner": {
+                "type": "string"
+              },
+              "ownerMode": {
+                "type": "string"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false
+              },
+              "limit": {
+                "type": "number",
+                "default": 50
+              }
+            },
+            "required": [
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select repository owner...",
+              "description": "The owner of the repositories"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "toggle",
+              "default": false,
+              "description": "Whether to return all results or only up to a limit"
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "description": "How many results to return",
+              "displayOptions": {
+                "show": {
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "resource": "user",
+            "operation": "getRepos"
+          },
+          "subCategory": "User"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "user",
+          "operation": "getRepos"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1351.8906604251722,
+        "y": 508.3814770776735
+      },
+      "dragging": false
+    },
+    {
+      "id": "github.user.invite-1783407255640",
+      "type": "action",
+      "position": {
+        "x": 1647.8778394237183,
+        "y": 506.6403760247408
+      },
+      "data": {
+        "label": "Invite",
+        "toolId": "github.user.invite",
+        "toolData": {
+          "id": "github.user.invite",
+          "displayName": "Invite",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "invite",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Invite a user to an organization",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "organization": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentials",
+              "organization",
+              "email"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "organization",
+              "displayName": "Organization",
+              "type": "string",
+              "required": true,
+              "description": "Organization name"
+            },
+            {
+              "name": "email",
+              "displayName": "Email",
+              "type": "string",
+              "required": true,
+              "description": "Email address to invite"
+            }
+          ],
+          "initialData": {
+            "resource": "user",
+            "operation": "invite"
+          },
+          "subCategory": "User"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "user",
+          "operation": "invite"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 1647.8778394237183,
+        "y": 506.6403760247408
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

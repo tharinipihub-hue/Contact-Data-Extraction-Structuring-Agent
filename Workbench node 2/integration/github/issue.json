@@ -1,0 +1,926 @@
+{
+  "nodes": [
+    {
+      "id": "github.issue.createComment-1783407061416",
+      "type": "action",
+      "position": {
+        "x": 1159.1055611850697,
+        "y": 555.5182702707606
+      },
+      "data": {
+        "label": "Create a comment on an issue",
+        "toolId": "github.issue.createComment",
+        "toolData": {
+          "id": "github.issue.createComment",
+          "displayName": "Create a comment on an issue",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "createComment",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Add a comment to an existing issue",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "issueNumber": {
+                "type": "number"
+              },
+              "body": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "issueNumber",
+              "body"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "issueNumber",
+              "displayName": "Issue Number",
+              "type": "number",
+              "required": true
+            },
+            {
+              "name": "body",
+              "displayName": "Body",
+              "type": "string",
+              "required": true
+            }
+          ],
+          "initialData": {
+            "resource": "issue",
+            "operation": "createComment"
+          },
+          "subCategory": "Issue"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "issue",
+          "operation": "createComment"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "github.issue.create-1783407062920",
+      "type": "action",
+      "position": {
+        "x": 1513.1433637238242,
+        "y": 597.0956634514685
+      },
+      "data": {
+        "label": "Create an issue",
+        "toolId": "github.issue.create",
+        "toolData": {
+          "id": "github.issue.create",
+          "displayName": "Create an issue",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "create",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Open a new issue in a repository",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "body": {
+                "type": "string"
+              },
+              "assignees": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "labels": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "title"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "title",
+              "displayName": "Title",
+              "type": "string",
+              "required": true
+            },
+            {
+              "name": "body",
+              "displayName": "Body",
+              "type": "string",
+              "required": false
+            },
+            {
+              "name": "labels",
+              "displayName": "Labels",
+              "type": "array",
+              "required": false,
+              "description": "Labels to add to the issue",
+              "fields": [
+                {
+                  "name": "label",
+                  "displayName": "Label",
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "assignees",
+              "displayName": "Assignees",
+              "type": "array",
+              "required": false,
+              "description": "Usernames to assign the issue to",
+              "fields": [
+                {
+                  "name": "assignee",
+                  "displayName": "Assignee",
+                  "type": "string"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "issue",
+            "operation": "create"
+          },
+          "subCategory": "Issue",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "issue",
+          "operation": "create"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "github.issue.edit-1783407064671",
+      "type": "action",
+      "position": {
+        "x": 1888.5998233556707,
+        "y": 660.091713725268
+      },
+      "data": {
+        "label": "Edit an issue",
+        "toolId": "github.issue.edit",
+        "toolData": {
+          "id": "github.issue.edit",
+          "displayName": "Edit an issue",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "edit",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Update issue details like title, body, or labels",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "issueNumber": {
+                "type": "number"
+              },
+              "editFields": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "body": {
+                    "type": "string"
+                  },
+                  "state": {
+                    "type": "string",
+                    "enum": [
+                      "open",
+                      "closed"
+                    ]
+                  },
+                  "stateReason": {
+                    "type": "string",
+                    "enum": [
+                      "completed",
+                      "not_planned",
+                      "reopened"
+                    ]
+                  },
+                  "labels": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "assignees": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "issueNumber"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "issueNumber",
+              "displayName": "Issue Number",
+              "type": "number",
+              "required": true
+            },
+            {
+              "name": "editFields",
+              "displayName": "Edit Fields",
+              "type": "collection",
+              "default": {},
+              "fields": [
+                {
+                  "name": "title",
+                  "displayName": "Title",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "body",
+                  "displayName": "Body",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "state",
+                  "displayName": "State",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Closed",
+                      "value": "closed"
+                    },
+                    {
+                      "name": "Open",
+                      "value": "open"
+                    }
+                  ]
+                },
+                {
+                  "name": "stateReason",
+                  "displayName": "State Reason",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "completed",
+                      "value": "completed"
+                    },
+                    {
+                      "name": "not_planned",
+                      "value": "not_planned"
+                    },
+                    {
+                      "name": "reopened",
+                      "value": "reopened"
+                    }
+                  ]
+                },
+                {
+                  "name": "assignees",
+                  "displayName": "Assignees",
+                  "type": "array",
+                  "required": false,
+                  "fields": [
+                    {
+                      "name": "assignee",
+                      "displayName": "Assignee",
+                      "type": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "labels",
+                  "displayName": "Labels",
+                  "type": "array",
+                  "required": false,
+                  "fields": [
+                    {
+                      "name": "label",
+                      "displayName": "Label",
+                      "type": "string"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "issue",
+            "operation": "edit"
+          },
+          "subCategory": "Issue"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "issue",
+          "operation": "edit"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "github.issue.get-1783407066007",
+      "type": "action",
+      "position": {
+        "x": 1642.9152272878516,
+        "y": 846.5600225357152
+      },
+      "data": {
+        "label": "Get an issue",
+        "toolId": "github.issue.get",
+        "toolData": {
+          "id": "github.issue.get",
+          "displayName": "Get an issue",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "get",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Retrieve details of a specific issue",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "issueNumber": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "issueNumber"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "issueNumber",
+              "displayName": "Issue Number",
+              "type": "number",
+              "required": true
+            }
+          ],
+          "initialData": {
+            "resource": "issue",
+            "operation": "get"
+          },
+          "subCategory": "Issue"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "issue",
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "github.issue.lock-1783407067664",
+      "type": "action",
+      "position": {
+        "x": 1349.353633011945,
+        "y": 821.3616024261954
+      },
+      "data": {
+        "label": "Lock an issue",
+        "toolId": "github.issue.lock",
+        "toolData": {
+          "id": "github.issue.lock",
+          "displayName": "Lock an issue",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "lock",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Lock an issue to prevent new comments",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "issueNumber": {
+                "type": "number"
+              },
+              "lockReason": {
+                "type": "string",
+                "enum": [
+                  "off-topic",
+                  "too heated",
+                  "resolved",
+                  "spam"
+                ]
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "issueNumber"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "issueNumber",
+              "displayName": "Issue Number",
+              "type": "number",
+              "required": true
+            },
+            {
+              "name": "lockReason",
+              "displayName": "Lock Reason",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Off-topic",
+                  "value": "off-topic"
+                },
+                {
+                  "name": "Too heated",
+                  "value": "too heated"
+                },
+                {
+                  "name": "Resolved",
+                  "value": "resolved"
+                },
+                {
+                  "name": "Spam",
+                  "value": "spam"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "issue",
+            "operation": "lock"
+          },
+          "subCategory": "Issue"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "issue",
+          "operation": "lock"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

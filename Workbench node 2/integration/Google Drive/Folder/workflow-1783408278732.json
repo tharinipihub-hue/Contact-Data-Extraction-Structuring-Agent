@@ -1,0 +1,311 @@
+{
+  "nodes": [
+    {
+      "id": "google.drive.create_folder-1783408273630",
+      "type": "action",
+      "position": {
+        "x": 704.3052891563191,
+        "y": 260.51526457165505
+      },
+      "data": {
+        "label": "Create folder",
+        "toolId": "google.drive.create_folder",
+        "toolData": {
+          "id": "google.drive.create_folder",
+          "displayName": "Create folder",
+          "category": "Integrations",
+          "provider": "googleDrive",
+          "operation": "driveCreateFolder",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg",
+          "description": "Create a new folder",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "The credential to use for the connection"
+              },
+              "name": {
+                "type": "string",
+                "description": "The name of the folder"
+              },
+              "parentDriveMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "id"
+                ],
+                "default": "list",
+                "description": "How to specify the parent drive"
+              },
+              "parentDriveId": {
+                "type": "string",
+                "description": "The ID of the drive where the parent folder is located"
+              },
+              "parentFolderMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "id"
+                ],
+                "default": "list",
+                "description": "How to specify the parent folder"
+              },
+              "parentFolderId": {
+                "type": "string",
+                "description": "The ID of the parent folder"
+              },
+              "simplifyOutput": {
+                "type": "boolean",
+                "description": "Whether to return a simplified output"
+              },
+              "folderColor": {
+                "type": "string",
+                "description": "The color of the folder"
+              }
+            },
+            "required": [
+              "credentialId",
+              "name"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Folder",
+          "dynamicFields": [
+            {
+              "fieldName": "parentDriveId",
+              "dependsOn": [
+                "credentialId",
+                "parentDriveMode"
+              ],
+              "fetchEndpoint": "/api/tools/drive/list-drives",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "parentFolderId",
+              "dependsOn": [
+                "credentialId",
+                "parentFolderMode"
+              ],
+              "fetchEndpoint": "/api/tools/drive/list-folders",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true
+    },
+    {
+      "id": "google.drive.delete_folder-1783408274566",
+      "type": "action",
+      "position": {
+        "x": 1069.1723863642767,
+        "y": 336.17568976787885
+      },
+      "data": {
+        "label": "Delete folder",
+        "toolId": "google.drive.delete_folder",
+        "toolData": {
+          "id": "google.drive.delete_folder",
+          "displayName": "Delete folder",
+          "category": "Integrations",
+          "provider": "googleDrive",
+          "operation": "driveDeleteFolder",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg",
+          "description": "Delete a folder",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "The credential to use for the connection"
+              },
+              "folderMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "id",
+                  "url"
+                ],
+                "default": "list",
+                "description": "How to specify the folder to delete"
+              },
+              "folderId": {
+                "type": "string",
+                "description": "The ID of the folder to delete"
+              },
+              "deletePermanently": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to delete the folder permanently (bypass trash)"
+              }
+            },
+            "required": [
+              "credentialId",
+              "folderId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Folder",
+          "dynamicFields": [
+            {
+              "fieldName": "folderId",
+              "dependsOn": [
+                "credentialId",
+                "folderMode"
+              ],
+              "fetchEndpoint": "/api/tools/drive/list-folders",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true
+    },
+    {
+      "id": "google.drive.share_folder-1783408275672",
+      "type": "action",
+      "position": {
+        "x": 1145.5399183380352,
+        "y": 261.9294781267247
+      },
+      "data": {
+        "label": "Share folder",
+        "toolId": "google.drive.share_folder",
+        "toolData": {
+          "id": "google.drive.share_folder",
+          "displayName": "Share folder",
+          "category": "Integrations",
+          "provider": "googleDrive",
+          "operation": "driveShareFolder",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg",
+          "description": "Update sharing permissions for a folder",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "The credential to use for the connection"
+              },
+              "folderMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "id",
+                  "url"
+                ],
+                "default": "list",
+                "description": "How to specify the folder to share"
+              },
+              "folderId": {
+                "type": "string",
+                "description": "The ID of the folder to share"
+              },
+              "permissions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "role": {
+                      "type": "string",
+                      "enum": [
+                        "reader",
+                        "commenter",
+                        "writer",
+                        "fileOrganizer",
+                        "organizer",
+                        "owner"
+                      ]
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "user",
+                        "group",
+                        "domain",
+                        "anyone"
+                      ]
+                    },
+                    "emailAddress": {
+                      "type": "string"
+                    },
+                    "domain": {
+                      "type": "string"
+                    },
+                    "allowFileDiscovery": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "role",
+                    "type"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "The permissions to add"
+              },
+              "emailMessage": {
+                "type": "string"
+              },
+              "moveToNewOwnersRoot": {
+                "type": "boolean"
+              },
+              "sendNotificationEmail": {
+                "type": "boolean",
+                "default": true
+              },
+              "transferOwnership": {
+                "type": "boolean"
+              },
+              "useDomainAdminAccess": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "credentialId",
+              "folderId",
+              "permissions"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Folder",
+          "dynamicFields": [
+            {
+              "fieldName": "folderId",
+              "dependsOn": [
+                "credentialId",
+                "folderMode"
+              ],
+              "fetchEndpoint": "/api/tools/drive/list-folders",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true
+    }
+  ],
+  "edges": []
+}

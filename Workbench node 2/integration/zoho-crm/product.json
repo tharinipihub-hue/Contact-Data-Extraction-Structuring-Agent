@@ -1,0 +1,488 @@
+{
+  "nodes": [
+    {
+      "id": "zoho.crm.product.upsert-1783406875179",
+      "type": "action",
+      "position": {
+        "x": -82.46964311086452,
+        "y": -307.16979294548395
+      },
+      "data": {
+        "label": "Create or Update Product",
+        "toolId": "zoho.crm.product.upsert",
+        "toolData": {
+          "id": "zoho.crm.product.upsert",
+          "displayName": "Create or Update Product",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoProductUpsert",
+          "icon": "zoho",
+          "description": "Create or update a product (upsert)",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "Product_Name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Product Name"
+              },
+              "Commission_Rate": {
+                "type": "number",
+                "description": "Commission Rate"
+              },
+              "Description": {
+                "type": "string",
+                "description": "Description"
+              },
+              "Manufacturer": {
+                "type": "string",
+                "description": "Manufacturer"
+              },
+              "Product_Active": {
+                "type": "boolean",
+                "description": "Product Active"
+              },
+              "Product_Category": {
+                "type": "string",
+                "description": "Product Category"
+              },
+              "Quantity_in_Demand": {
+                "type": "number",
+                "description": "Quantity in Demand"
+              },
+              "Quantity_in_Stock": {
+                "type": "number",
+                "description": "Quantity in Stock"
+              },
+              "Taxable": {
+                "type": "boolean",
+                "description": "Taxable"
+              },
+              "Unit_Price": {
+                "type": "number",
+                "description": "Unit Price"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "Product_Name"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.product.create-1783406876371",
+      "type": "action",
+      "position": {
+        "x": 808.7716979972499,
+        "y": -240.47826401902643
+      },
+      "data": {
+        "label": "Create Product",
+        "toolId": "zoho.crm.product.create",
+        "toolData": {
+          "id": "zoho.crm.product.create",
+          "displayName": "Create Product",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoProductCreate",
+          "icon": "zoho",
+          "description": "Create a new product in Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "Product_Name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Product Name"
+              },
+              "Commission_Rate": {
+                "type": "number",
+                "description": "Commission Rate"
+              },
+              "Description": {
+                "type": "string",
+                "description": "Description"
+              },
+              "Manufacturer": {
+                "type": "string",
+                "description": "Manufacturer"
+              },
+              "Product_Active": {
+                "type": "boolean",
+                "description": "Product Active"
+              },
+              "Product_Category": {
+                "type": "string",
+                "description": "Product Category"
+              },
+              "Quantity_in_Demand": {
+                "type": "number",
+                "description": "Quantity in Demand"
+              },
+              "Quantity_in_Stock": {
+                "type": "number",
+                "description": "Quantity in Stock"
+              },
+              "Taxable": {
+                "type": "boolean",
+                "description": "Taxable"
+              },
+              "Unit_Price": {
+                "type": "number",
+                "description": "Unit Price"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "Product_Name"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.product.delete-1783406877642",
+      "type": "action",
+      "position": {
+        "x": 1924.3390909489033,
+        "y": -128.31523809725692
+      },
+      "data": {
+        "label": "Delete Product",
+        "toolId": "zoho.crm.product.delete",
+        "toolData": {
+          "id": "zoho.crm.product.delete",
+          "displayName": "Delete Product",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoProductDelete",
+          "icon": "zoho",
+          "description": "Delete a product from Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "productId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Product ID"
+              }
+            },
+            "required": [
+              "productId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.product.getMany-1783406878995",
+      "type": "action",
+      "position": {
+        "x": 1542.378516188283,
+        "y": -101.03233990006976
+      },
+      "data": {
+        "label": "Get Many Products",
+        "toolId": "zoho.crm.product.getMany",
+        "toolData": {
+          "id": "zoho.crm.product.getMany",
+          "displayName": "Get Many Products",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoProductGetMany",
+          "icon": "zoho",
+          "description": "Retrieve multiple products with filtering",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all results or limit"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 50,
+                "description": "Maximum number of records to return"
+              },
+              "approved": {
+                "type": "boolean",
+                "description": "Filter by approved status"
+              },
+              "converted": {
+                "type": "boolean",
+                "description": "Filter by converted status"
+              },
+              "includeChild": {
+                "type": "boolean",
+                "description": "Include child records"
+              },
+              "territoryId": {
+                "type": "string",
+                "description": "Territory ID filter"
+              },
+              "fields": {
+                "type": "string",
+                "description": "Comma-separated list of fields to return"
+              },
+              "sortBy": {
+                "type": "string",
+                "description": "Field to sort by"
+              },
+              "sortOrder": {
+                "type": "string",
+                "enum": [
+                  "asc",
+                  "desc"
+                ],
+                "description": "Sort Order (Ascending / Descending)"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.product.get-1783406880389",
+      "type": "action",
+      "position": {
+        "x": 972.469087180373,
+        "y": 123.29371194346925
+      },
+      "data": {
+        "label": "Get Product",
+        "toolId": "zoho.crm.product.get",
+        "toolData": {
+          "id": "zoho.crm.product.get",
+          "displayName": "Get Product",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoProductGet",
+          "icon": "zoho",
+          "description": "Retrieve a specific product by ID",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "productId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Product ID"
+              }
+            },
+            "required": [
+              "productId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.product.update-1783406881756",
+      "type": "action",
+      "position": {
+        "x": 111.5420774024665,
+        "y": 20.22498542076214
+      },
+      "data": {
+        "label": "Update Product",
+        "toolId": "zoho.crm.product.update",
+        "toolData": {
+          "id": "zoho.crm.product.update",
+          "displayName": "Update Product",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoProductUpdate",
+          "icon": "zoho",
+          "description": "Update an existing product in Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "productId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Product ID"
+              },
+              "Product_Name": {
+                "type": "string",
+                "description": "Product Name"
+              },
+              "Commission_Rate": {
+                "type": "number",
+                "description": "Commission Rate"
+              },
+              "Description": {
+                "type": "string",
+                "description": "Description"
+              },
+              "Manufacturer": {
+                "type": "string",
+                "description": "Manufacturer"
+              },
+              "Product_Active": {
+                "type": "boolean",
+                "description": "Product Active"
+              },
+              "Product_Category": {
+                "type": "string",
+                "description": "Product Category"
+              },
+              "Quantity_in_Demand": {
+                "type": "number",
+                "description": "Quantity in Demand"
+              },
+              "Quantity_in_Stock": {
+                "type": "number",
+                "description": "Quantity in Stock"
+              },
+              "Taxable": {
+                "type": "boolean",
+                "description": "Taxable"
+              },
+              "Unit_Price": {
+                "type": "number",
+                "description": "Unit Price"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "productId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

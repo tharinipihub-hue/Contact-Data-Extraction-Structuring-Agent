@@ -1,0 +1,2031 @@
+{
+  "nodes": [
+    {
+      "id": "databricks.file.createdirectory-1783405612979",
+      "type": "action",
+      "position": {
+        "x": 997.5779523465337,
+        "y": 473.44998580051816
+      },
+      "data": {
+        "label": "Create Directory",
+        "toolId": "databricks.file.createdirectory",
+        "toolData": {
+          "id": "databricks.file.createdirectory",
+          "displayName": "Create Directory",
+          "category": "Integrations",
+          "provider": "databricks",
+          "operation": "Create Directory",
+          "icon": "https://www.databricks.com/sites/default/files/2021-10/db-nav-logo.svg",
+          "actionGroup": "File",
+          "description": "Create Directory in File",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "file"
+                ],
+                "default": "file"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "createDirectory",
+                  "deleteDirectory",
+                  "deleteFile",
+                  "downloadFile",
+                  "getFileMetadata",
+                  "listDirectory",
+                  "uploadFile"
+                ]
+              },
+              "volumePath": {
+                "type": "string",
+                "minLength": 1
+              },
+              "directoryPath": {
+                "type": "string"
+              },
+              "filePath": {
+                "type": "string"
+              },
+              "inputDataFieldName": {
+                "type": "string",
+                "default": "data"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "pageSize": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "pageToken": {
+                    "type": "string"
+                  },
+                  "overwrite": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "Databricks credentials"
+              }
+            },
+            "required": [
+              "operation",
+              "volumePath"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "File",
+                  "value": "file"
+                }
+              ],
+              "default": "file",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create Directory",
+                  "value": "createDirectory"
+                },
+                {
+                  "name": "Delete Directory",
+                  "value": "deleteDirectory"
+                },
+                {
+                  "name": "Delete File",
+                  "value": "deleteFile"
+                },
+                {
+                  "name": "Download File",
+                  "value": "downloadFile"
+                },
+                {
+                  "name": "Get File Metadata",
+                  "value": "getFileMetadata"
+                },
+                {
+                  "name": "List Directory",
+                  "value": "listDirectory"
+                },
+                {
+                  "name": "Upload File",
+                  "value": "uploadFile"
+                }
+              ],
+              "default": "createDirectory",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "volumePath",
+              "displayName": "Volume Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "workspace.default.myvolume",
+              "description": "Volume path in catalog.schema.volume format",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "directoryPath",
+              "displayName": "Directory Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "folder1",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "createDirectory",
+                    "deleteDirectory",
+                    "listDirectory"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "filePath",
+              "displayName": "File Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "folder/file.txt",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "deleteFile",
+                    "downloadFile",
+                    "getFileMetadata",
+                    "uploadFile"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputDataFieldName",
+              "displayName": "Input Data Field Name",
+              "type": "string",
+              "default": "data",
+              "required": true,
+              "description": "Input field that contains binary/base64 file data",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "uploadFile"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "listDirectory",
+                    "uploadFile"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "pageSize",
+                  "displayName": "Page Size",
+                  "type": "number",
+                  "default": 100,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "listDirectory"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "pageToken",
+                  "displayName": "Page Token",
+                  "type": "string",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "listDirectory"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "overwrite",
+                  "displayName": "Overwrite",
+                  "type": "boolean",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "uploadFile"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "createDirectory",
+            "resource": "file"
+          },
+          "subCategory": "File"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "createDirectory",
+          "resource": "file"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "databricks.file.deletedirectory-1783405613971",
+      "type": "action",
+      "position": {
+        "x": 1339.3720380946286,
+        "y": 499.97502571445017
+      },
+      "data": {
+        "label": "Delete Directory",
+        "toolId": "databricks.file.deletedirectory",
+        "toolData": {
+          "id": "databricks.file.deletedirectory",
+          "displayName": "Delete Directory",
+          "category": "Integrations",
+          "provider": "databricks",
+          "operation": "Delete Directory",
+          "icon": "https://www.databricks.com/sites/default/files/2021-10/db-nav-logo.svg",
+          "actionGroup": "File",
+          "description": "Delete Directory in File",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "file"
+                ],
+                "default": "file"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "createDirectory",
+                  "deleteDirectory",
+                  "deleteFile",
+                  "downloadFile",
+                  "getFileMetadata",
+                  "listDirectory",
+                  "uploadFile"
+                ]
+              },
+              "volumePath": {
+                "type": "string",
+                "minLength": 1
+              },
+              "directoryPath": {
+                "type": "string"
+              },
+              "filePath": {
+                "type": "string"
+              },
+              "inputDataFieldName": {
+                "type": "string",
+                "default": "data"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "pageSize": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "pageToken": {
+                    "type": "string"
+                  },
+                  "overwrite": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "Databricks credentials"
+              }
+            },
+            "required": [
+              "operation",
+              "volumePath"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "File",
+                  "value": "file"
+                }
+              ],
+              "default": "file",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create Directory",
+                  "value": "createDirectory"
+                },
+                {
+                  "name": "Delete Directory",
+                  "value": "deleteDirectory"
+                },
+                {
+                  "name": "Delete File",
+                  "value": "deleteFile"
+                },
+                {
+                  "name": "Download File",
+                  "value": "downloadFile"
+                },
+                {
+                  "name": "Get File Metadata",
+                  "value": "getFileMetadata"
+                },
+                {
+                  "name": "List Directory",
+                  "value": "listDirectory"
+                },
+                {
+                  "name": "Upload File",
+                  "value": "uploadFile"
+                }
+              ],
+              "default": "deleteDirectory",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "volumePath",
+              "displayName": "Volume Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "workspace.default.myvolume",
+              "description": "Volume path in catalog.schema.volume format",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "directoryPath",
+              "displayName": "Directory Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "folder1",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "createDirectory",
+                    "deleteDirectory",
+                    "listDirectory"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "filePath",
+              "displayName": "File Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "folder/file.txt",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "deleteFile",
+                    "downloadFile",
+                    "getFileMetadata",
+                    "uploadFile"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputDataFieldName",
+              "displayName": "Input Data Field Name",
+              "type": "string",
+              "default": "data",
+              "required": true,
+              "description": "Input field that contains binary/base64 file data",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "uploadFile"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "listDirectory",
+                    "uploadFile"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "pageSize",
+                  "displayName": "Page Size",
+                  "type": "number",
+                  "default": 100,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "listDirectory"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "pageToken",
+                  "displayName": "Page Token",
+                  "type": "string",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "listDirectory"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "overwrite",
+                  "displayName": "Overwrite",
+                  "type": "boolean",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "uploadFile"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "deleteDirectory",
+            "resource": "file"
+          },
+          "subCategory": "File"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "deleteDirectory",
+          "resource": "file"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "databricks.file.deletefile-1783405615027",
+      "type": "action",
+      "position": {
+        "x": 1140.0553095985113,
+        "y": 646.2416743827035
+      },
+      "data": {
+        "label": "Delete File",
+        "toolId": "databricks.file.deletefile",
+        "toolData": {
+          "id": "databricks.file.deletefile",
+          "displayName": "Delete File",
+          "category": "Integrations",
+          "provider": "databricks",
+          "operation": "Delete File",
+          "icon": "https://www.databricks.com/sites/default/files/2021-10/db-nav-logo.svg",
+          "actionGroup": "File",
+          "description": "Delete File in File",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "file"
+                ],
+                "default": "file"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "createDirectory",
+                  "deleteDirectory",
+                  "deleteFile",
+                  "downloadFile",
+                  "getFileMetadata",
+                  "listDirectory",
+                  "uploadFile"
+                ]
+              },
+              "volumePath": {
+                "type": "string",
+                "minLength": 1
+              },
+              "directoryPath": {
+                "type": "string"
+              },
+              "filePath": {
+                "type": "string"
+              },
+              "inputDataFieldName": {
+                "type": "string",
+                "default": "data"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "pageSize": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "pageToken": {
+                    "type": "string"
+                  },
+                  "overwrite": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "Databricks credentials"
+              }
+            },
+            "required": [
+              "operation",
+              "volumePath"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "File",
+                  "value": "file"
+                }
+              ],
+              "default": "file",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create Directory",
+                  "value": "createDirectory"
+                },
+                {
+                  "name": "Delete Directory",
+                  "value": "deleteDirectory"
+                },
+                {
+                  "name": "Delete File",
+                  "value": "deleteFile"
+                },
+                {
+                  "name": "Download File",
+                  "value": "downloadFile"
+                },
+                {
+                  "name": "Get File Metadata",
+                  "value": "getFileMetadata"
+                },
+                {
+                  "name": "List Directory",
+                  "value": "listDirectory"
+                },
+                {
+                  "name": "Upload File",
+                  "value": "uploadFile"
+                }
+              ],
+              "default": "deleteFile",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "volumePath",
+              "displayName": "Volume Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "workspace.default.myvolume",
+              "description": "Volume path in catalog.schema.volume format",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "directoryPath",
+              "displayName": "Directory Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "folder1",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "createDirectory",
+                    "deleteDirectory",
+                    "listDirectory"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "filePath",
+              "displayName": "File Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "folder/file.txt",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "deleteFile",
+                    "downloadFile",
+                    "getFileMetadata",
+                    "uploadFile"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputDataFieldName",
+              "displayName": "Input Data Field Name",
+              "type": "string",
+              "default": "data",
+              "required": true,
+              "description": "Input field that contains binary/base64 file data",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "uploadFile"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "listDirectory",
+                    "uploadFile"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "pageSize",
+                  "displayName": "Page Size",
+                  "type": "number",
+                  "default": 100,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "listDirectory"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "pageToken",
+                  "displayName": "Page Token",
+                  "type": "string",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "listDirectory"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "overwrite",
+                  "displayName": "Overwrite",
+                  "type": "boolean",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "uploadFile"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "deleteFile",
+            "resource": "file"
+          },
+          "subCategory": "File"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "deleteFile",
+          "resource": "file"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "databricks.file.downloadfile-1783405616388",
+      "type": "action",
+      "position": {
+        "x": 918.0028326047379,
+        "y": 756.1311254547074
+      },
+      "data": {
+        "label": "Download File",
+        "toolId": "databricks.file.downloadfile",
+        "toolData": {
+          "id": "databricks.file.downloadfile",
+          "displayName": "Download File",
+          "category": "Integrations",
+          "provider": "databricks",
+          "operation": "Download File",
+          "icon": "https://www.databricks.com/sites/default/files/2021-10/db-nav-logo.svg",
+          "actionGroup": "File",
+          "description": "Download File in File",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "file"
+                ],
+                "default": "file"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "createDirectory",
+                  "deleteDirectory",
+                  "deleteFile",
+                  "downloadFile",
+                  "getFileMetadata",
+                  "listDirectory",
+                  "uploadFile"
+                ]
+              },
+              "volumePath": {
+                "type": "string",
+                "minLength": 1
+              },
+              "directoryPath": {
+                "type": "string"
+              },
+              "filePath": {
+                "type": "string"
+              },
+              "inputDataFieldName": {
+                "type": "string",
+                "default": "data"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "pageSize": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "pageToken": {
+                    "type": "string"
+                  },
+                  "overwrite": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "Databricks credentials"
+              }
+            },
+            "required": [
+              "operation",
+              "volumePath"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "File",
+                  "value": "file"
+                }
+              ],
+              "default": "file",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create Directory",
+                  "value": "createDirectory"
+                },
+                {
+                  "name": "Delete Directory",
+                  "value": "deleteDirectory"
+                },
+                {
+                  "name": "Delete File",
+                  "value": "deleteFile"
+                },
+                {
+                  "name": "Download File",
+                  "value": "downloadFile"
+                },
+                {
+                  "name": "Get File Metadata",
+                  "value": "getFileMetadata"
+                },
+                {
+                  "name": "List Directory",
+                  "value": "listDirectory"
+                },
+                {
+                  "name": "Upload File",
+                  "value": "uploadFile"
+                }
+              ],
+              "default": "downloadFile",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "volumePath",
+              "displayName": "Volume Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "workspace.default.myvolume",
+              "description": "Volume path in catalog.schema.volume format",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "directoryPath",
+              "displayName": "Directory Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "folder1",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "createDirectory",
+                    "deleteDirectory",
+                    "listDirectory"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "filePath",
+              "displayName": "File Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "folder/file.txt",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "deleteFile",
+                    "downloadFile",
+                    "getFileMetadata",
+                    "uploadFile"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputDataFieldName",
+              "displayName": "Input Data Field Name",
+              "type": "string",
+              "default": "data",
+              "required": true,
+              "description": "Input field that contains binary/base64 file data",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "uploadFile"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "listDirectory",
+                    "uploadFile"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "pageSize",
+                  "displayName": "Page Size",
+                  "type": "number",
+                  "default": 100,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "listDirectory"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "pageToken",
+                  "displayName": "Page Token",
+                  "type": "string",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "listDirectory"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "overwrite",
+                  "displayName": "Overwrite",
+                  "type": "boolean",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "uploadFile"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "downloadFile",
+            "resource": "file"
+          },
+          "subCategory": "File"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "downloadFile",
+          "resource": "file"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 918.0028326047379,
+        "y": 756.1311254547074
+      },
+      "dragging": false
+    },
+    {
+      "id": "databricks.file.getfilemetadata-1783405617763",
+      "type": "action",
+      "position": {
+        "x": 696.7082138942196,
+        "y": 637.9052332668964
+      },
+      "data": {
+        "label": "Get File Metadata",
+        "toolId": "databricks.file.getfilemetadata",
+        "toolData": {
+          "id": "databricks.file.getfilemetadata",
+          "displayName": "Get File Metadata",
+          "category": "Integrations",
+          "provider": "databricks",
+          "operation": "Get File Metadata",
+          "icon": "https://www.databricks.com/sites/default/files/2021-10/db-nav-logo.svg",
+          "actionGroup": "File",
+          "description": "Get File Metadata in File",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "file"
+                ],
+                "default": "file"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "createDirectory",
+                  "deleteDirectory",
+                  "deleteFile",
+                  "downloadFile",
+                  "getFileMetadata",
+                  "listDirectory",
+                  "uploadFile"
+                ]
+              },
+              "volumePath": {
+                "type": "string",
+                "minLength": 1
+              },
+              "directoryPath": {
+                "type": "string"
+              },
+              "filePath": {
+                "type": "string"
+              },
+              "inputDataFieldName": {
+                "type": "string",
+                "default": "data"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "pageSize": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "pageToken": {
+                    "type": "string"
+                  },
+                  "overwrite": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "Databricks credentials"
+              }
+            },
+            "required": [
+              "operation",
+              "volumePath"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "File",
+                  "value": "file"
+                }
+              ],
+              "default": "file",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create Directory",
+                  "value": "createDirectory"
+                },
+                {
+                  "name": "Delete Directory",
+                  "value": "deleteDirectory"
+                },
+                {
+                  "name": "Delete File",
+                  "value": "deleteFile"
+                },
+                {
+                  "name": "Download File",
+                  "value": "downloadFile"
+                },
+                {
+                  "name": "Get File Metadata",
+                  "value": "getFileMetadata"
+                },
+                {
+                  "name": "List Directory",
+                  "value": "listDirectory"
+                },
+                {
+                  "name": "Upload File",
+                  "value": "uploadFile"
+                }
+              ],
+              "default": "getFileMetadata",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "volumePath",
+              "displayName": "Volume Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "workspace.default.myvolume",
+              "description": "Volume path in catalog.schema.volume format",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "directoryPath",
+              "displayName": "Directory Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "folder1",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "createDirectory",
+                    "deleteDirectory",
+                    "listDirectory"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "filePath",
+              "displayName": "File Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "folder/file.txt",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "deleteFile",
+                    "downloadFile",
+                    "getFileMetadata",
+                    "uploadFile"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputDataFieldName",
+              "displayName": "Input Data Field Name",
+              "type": "string",
+              "default": "data",
+              "required": true,
+              "description": "Input field that contains binary/base64 file data",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "uploadFile"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "listDirectory",
+                    "uploadFile"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "pageSize",
+                  "displayName": "Page Size",
+                  "type": "number",
+                  "default": 100,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "listDirectory"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "pageToken",
+                  "displayName": "Page Token",
+                  "type": "string",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "listDirectory"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "overwrite",
+                  "displayName": "Overwrite",
+                  "type": "boolean",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "uploadFile"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "getFileMetadata",
+            "resource": "file"
+          },
+          "subCategory": "File"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "getFileMetadata",
+          "resource": "file"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 696.7082138942196,
+        "y": 637.9052332668964
+      },
+      "dragging": false
+    },
+    {
+      "id": "databricks.file.listdirectory-1783405626701",
+      "type": "action",
+      "position": {
+        "x": 1274.1962257346815,
+        "y": 384.02270837640464
+      },
+      "data": {
+        "label": "List Directory",
+        "toolId": "databricks.file.listdirectory",
+        "toolData": {
+          "id": "databricks.file.listdirectory",
+          "displayName": "List Directory",
+          "category": "Integrations",
+          "provider": "databricks",
+          "operation": "List Directory",
+          "icon": "https://www.databricks.com/sites/default/files/2021-10/db-nav-logo.svg",
+          "actionGroup": "File",
+          "description": "List Directory in File",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "file"
+                ],
+                "default": "file"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "createDirectory",
+                  "deleteDirectory",
+                  "deleteFile",
+                  "downloadFile",
+                  "getFileMetadata",
+                  "listDirectory",
+                  "uploadFile"
+                ]
+              },
+              "volumePath": {
+                "type": "string",
+                "minLength": 1
+              },
+              "directoryPath": {
+                "type": "string"
+              },
+              "filePath": {
+                "type": "string"
+              },
+              "inputDataFieldName": {
+                "type": "string",
+                "default": "data"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "pageSize": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "pageToken": {
+                    "type": "string"
+                  },
+                  "overwrite": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "Databricks credentials"
+              }
+            },
+            "required": [
+              "operation",
+              "volumePath"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "File",
+                  "value": "file"
+                }
+              ],
+              "default": "file",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create Directory",
+                  "value": "createDirectory"
+                },
+                {
+                  "name": "Delete Directory",
+                  "value": "deleteDirectory"
+                },
+                {
+                  "name": "Delete File",
+                  "value": "deleteFile"
+                },
+                {
+                  "name": "Download File",
+                  "value": "downloadFile"
+                },
+                {
+                  "name": "Get File Metadata",
+                  "value": "getFileMetadata"
+                },
+                {
+                  "name": "List Directory",
+                  "value": "listDirectory"
+                },
+                {
+                  "name": "Upload File",
+                  "value": "uploadFile"
+                }
+              ],
+              "default": "listDirectory",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "volumePath",
+              "displayName": "Volume Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "workspace.default.myvolume",
+              "description": "Volume path in catalog.schema.volume format",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "directoryPath",
+              "displayName": "Directory Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "folder1",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "createDirectory",
+                    "deleteDirectory",
+                    "listDirectory"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "filePath",
+              "displayName": "File Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "folder/file.txt",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "deleteFile",
+                    "downloadFile",
+                    "getFileMetadata",
+                    "uploadFile"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputDataFieldName",
+              "displayName": "Input Data Field Name",
+              "type": "string",
+              "default": "data",
+              "required": true,
+              "description": "Input field that contains binary/base64 file data",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "uploadFile"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "listDirectory",
+                    "uploadFile"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "pageSize",
+                  "displayName": "Page Size",
+                  "type": "number",
+                  "default": 100,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "listDirectory"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "pageToken",
+                  "displayName": "Page Token",
+                  "type": "string",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "listDirectory"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "overwrite",
+                  "displayName": "Overwrite",
+                  "type": "boolean",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "uploadFile"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "listDirectory",
+            "resource": "file"
+          },
+          "subCategory": "File"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "listDirectory",
+          "resource": "file"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1274.1962257346815,
+        "y": 384.02270837640464
+      },
+      "dragging": false
+    },
+    {
+      "id": "databricks.file.uploadfile-1783405628310",
+      "type": "action",
+      "position": {
+        "x": 758.8525931211459,
+        "y": 407.51631515731583
+      },
+      "data": {
+        "label": "Upload File",
+        "toolId": "databricks.file.uploadfile",
+        "toolData": {
+          "id": "databricks.file.uploadfile",
+          "displayName": "Upload File",
+          "category": "Integrations",
+          "provider": "databricks",
+          "operation": "Upload File",
+          "icon": "https://www.databricks.com/sites/default/files/2021-10/db-nav-logo.svg",
+          "actionGroup": "File",
+          "description": "Upload File in File",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "file"
+                ],
+                "default": "file"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "createDirectory",
+                  "deleteDirectory",
+                  "deleteFile",
+                  "downloadFile",
+                  "getFileMetadata",
+                  "listDirectory",
+                  "uploadFile"
+                ]
+              },
+              "volumePath": {
+                "type": "string",
+                "minLength": 1
+              },
+              "directoryPath": {
+                "type": "string"
+              },
+              "filePath": {
+                "type": "string"
+              },
+              "inputDataFieldName": {
+                "type": "string",
+                "default": "data"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "pageSize": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "pageToken": {
+                    "type": "string"
+                  },
+                  "overwrite": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "Databricks credentials"
+              }
+            },
+            "required": [
+              "operation",
+              "volumePath"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "File",
+                  "value": "file"
+                }
+              ],
+              "default": "file",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create Directory",
+                  "value": "createDirectory"
+                },
+                {
+                  "name": "Delete Directory",
+                  "value": "deleteDirectory"
+                },
+                {
+                  "name": "Delete File",
+                  "value": "deleteFile"
+                },
+                {
+                  "name": "Download File",
+                  "value": "downloadFile"
+                },
+                {
+                  "name": "Get File Metadata",
+                  "value": "getFileMetadata"
+                },
+                {
+                  "name": "List Directory",
+                  "value": "listDirectory"
+                },
+                {
+                  "name": "Upload File",
+                  "value": "uploadFile"
+                }
+              ],
+              "default": "uploadFile",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "volumePath",
+              "displayName": "Volume Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "workspace.default.myvolume",
+              "description": "Volume path in catalog.schema.volume format",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "directoryPath",
+              "displayName": "Directory Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "folder1",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "createDirectory",
+                    "deleteDirectory",
+                    "listDirectory"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "filePath",
+              "displayName": "File Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "folder/file.txt",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "deleteFile",
+                    "downloadFile",
+                    "getFileMetadata",
+                    "uploadFile"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputDataFieldName",
+              "displayName": "Input Data Field Name",
+              "type": "string",
+              "default": "data",
+              "required": true,
+              "description": "Input field that contains binary/base64 file data",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "uploadFile"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "file"
+                  ],
+                  "operation": [
+                    "listDirectory",
+                    "uploadFile"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "pageSize",
+                  "displayName": "Page Size",
+                  "type": "number",
+                  "default": 100,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "listDirectory"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "pageToken",
+                  "displayName": "Page Token",
+                  "type": "string",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "listDirectory"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "overwrite",
+                  "displayName": "Overwrite",
+                  "type": "boolean",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "uploadFile"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "uploadFile",
+            "resource": "file"
+          },
+          "subCategory": "File"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "uploadFile",
+          "resource": "file"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 758.8525931211459,
+        "y": 407.51631515731583
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

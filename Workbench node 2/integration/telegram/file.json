@@ -1,0 +1,38 @@
+{
+  "nodes": [
+    {
+      "id": "telegram.file.get-1783407696667",
+      "type": "action",
+      "position": {
+        "x": 732.3190234947605,
+        "y": -246.29371691012844
+      },
+      "data": {
+        "label": "Telegram Get File",
+        "toolId": "telegram.file.get",
+        "toolData": {
+          "id": "telegram.file.get",
+          "displayName": "Telegram Get File",
+          "category": "Integrations",
+          "provider": "telegram",
+          "operation": "get",
+          "icon": "telegram",
+          "description": "Get basic file information.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "File"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

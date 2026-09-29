@@ -1,0 +1,260 @@
+{
+  "nodes": [
+    {
+      "id": "textParsing.htmlParser-1783397360164",
+      "type": "action",
+      "position": {
+        "x": -1146.496760675759,
+        "y": 88.55512925020503
+      },
+      "data": {
+        "label": "HTML Parser",
+        "toolId": "textParsing.htmlParser",
+        "toolData": {
+          "id": "textParsing.htmlParser",
+          "displayName": "HTML Parser",
+          "category": "Data  Processing",
+          "provider": "TextParsing",
+          "operation": "htmlParser",
+          "description": "Fetch and extract data from HTML content using CSS selectors",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "inputType": {
+                "type": "string",
+                "enum": [
+                  "URL",
+                  "HTML"
+                ],
+                "default": "URL",
+                "description": "Select whether to fetch from a URL or provide raw HTML content (e.g. from a previous step)"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Extract Elements",
+                  "HTML to Text"
+                ],
+                "default": "Extract Elements",
+                "description": "Select \"Extract Elements\" to use CSS selectors, or \"HTML to Text\" to get the full page text"
+              },
+              "url": {
+                "type": "string",
+                "description": "e.g., https://example.com"
+              },
+              "html": {
+                "type": "string",
+                "description": "Raw HTML content or expression referencing a previous node"
+              },
+              "selector": {
+                "type": "string",
+                "description": "e.g., h1, .class-name, #id-name"
+              },
+              "multiple": {
+                "type": "boolean",
+                "default": false,
+                "description": "Extract all matching elements instead of just the first"
+              },
+              "attribute": {
+                "type": "string",
+                "description": "e.g., href, src, alt (leave blank for basic text)"
+              },
+              "multipleSelectors": {
+                "type": "string",
+                "description": "ADVANCED: Comma-separated list of multiple CSS selectors (e.g., h1, .card, #id). Overrides the single selector field above."
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Text Parsing"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "textParsing.customPattern-1783397361428",
+      "type": "action",
+      "position": {
+        "x": -572.040181968318,
+        "y": 137.05805937853776
+      },
+      "data": {
+        "label": "Match Custom Pattern",
+        "toolId": "textParsing.customPattern",
+        "toolData": {
+          "id": "textParsing.customPattern",
+          "displayName": "Match Custom Pattern",
+          "category": "Data  Processing",
+          "provider": "TextParsing",
+          "operation": "customPattern",
+          "description": "Find and extract text that matches a custom regular expression pattern.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "inputString": {
+                "type": "string",
+                "description": "The text string you want to search"
+              },
+              "customRegex": {
+                "type": "string",
+                "description": "Custom regular expression pattern"
+              },
+              "matchAll": {
+                "type": "boolean",
+                "default": true,
+                "description": "Find all matches or just the first one?"
+              }
+            },
+            "required": [
+              "inputString",
+              "customRegex"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Text Parsing"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "textParsing.matchElement-1783397363013",
+      "type": "action",
+      "position": {
+        "x": -776.6619184472219,
+        "y": 353.80552838952474
+      },
+      "data": {
+        "label": "Match Pattern",
+        "toolId": "textParsing.matchElement",
+        "toolData": {
+          "id": "textParsing.matchElement",
+          "displayName": "Match Pattern",
+          "category": "Data  Processing",
+          "provider": "TextParsing",
+          "operation": "matchElement",
+          "description": "Find and extract text that matches predefined patterns like Emails, Phones, URLs, or custom RegEx.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "inputString": {
+                "type": "string",
+                "description": "The text string you want to search"
+              },
+              "patternType": {
+                "type": "string",
+                "enum": [
+                  "Email",
+                  "Phone",
+                  "URL",
+                  "Date",
+                  "Strong Password",
+                  "Alphanumeric",
+                  "Only Number",
+                  "IP Address"
+                ],
+                "default": "Email",
+                "description": "The predefined pattern to match"
+              },
+              "matchAll": {
+                "type": "boolean",
+                "default": true,
+                "description": "Find all matches or just the first one?"
+              }
+            },
+            "required": [
+              "inputString"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Text Parsing"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "textParsing.replaceText-1783397364251",
+      "type": "action",
+      "position": {
+        "x": -312.8526490950399,
+        "y": 399.2770253848367
+      },
+      "data": {
+        "label": "Text Replace",
+        "toolId": "textParsing.replaceText",
+        "toolData": {
+          "id": "textParsing.replaceText",
+          "displayName": "Text Replace",
+          "category": "Data  Processing",
+          "provider": "TextParsing",
+          "operation": "replaceText",
+          "icon": "Scissors",
+          "description": "Finds text inside a string and replaces or removes it entirely.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "inputString": {
+                "type": "string",
+                "description": "The original text string you want to modify"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Replace",
+                  "Delete"
+                ],
+                "default": "Replace",
+                "description": "Choose whether to replace text or delete it entirely"
+              },
+              "findText": {
+                "type": "string",
+                "description": "The specific text, word, or character you want to find"
+              },
+              "replaceWith": {
+                "type": "string",
+                "description": "The new text to insert in place of what was found"
+              },
+              "replaceAll": {
+                "type": "boolean",
+                "default": true,
+                "description": "Replace/Delete every instance found, or just the first one?"
+              },
+              "ignoreCase": {
+                "type": "boolean",
+                "default": true,
+                "description": "Ignore uppercase/lowercase differences (e.g., matching \"Apple\" and \"apple\")"
+              }
+            },
+            "required": [
+              "inputString",
+              "findText"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Text Parsing"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

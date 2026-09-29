@@ -1,0 +1,2788 @@
+{
+  "nodes": [
+    {
+      "id": "anthropic-1783408318900",
+      "type": "action",
+      "position": {
+        "x": 683.4972307961634,
+        "y": -312.9288664041596
+      },
+      "data": {
+        "label": "Claude (Anthropic)",
+        "toolId": "anthropic",
+        "toolData": {
+          "id": "anthropic",
+          "displayName": "Claude (Anthropic)",
+          "type": "chat model",
+          "category": "AI / LLM",
+          "provider": "LLM Models",
+          "operation": "execute",
+          "icon": "tools/anthropic.png",
+          "description": "Use Anthropic Claude models for advanced reasoning and text operations.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Text"
+                ],
+                "default": "Text"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Chat"
+                ],
+                "default": "Chat"
+              },
+              "model": {
+                "type": "string",
+                "default": "claude-3-5-sonnet-20241022"
+              },
+              "prompt": {
+                "type": "string"
+              },
+              "messages": {
+                "type": "object",
+                "properties": {
+                  "values": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "prompt": {
+                          "type": "string"
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "user",
+                            "model",
+                            "assistant"
+                          ],
+                          "default": "user"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true
+              },
+              "options": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "credentialId": {
+                "type": "string"
+              },
+              "credentials": {},
+              "userId": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "displayName": "Resource",
+              "name": "resource",
+              "type": "options",
+              "noDataExpression": true,
+              "options": [
+                {
+                  "name": "Text",
+                  "value": "Text"
+                }
+              ],
+              "default": "Text"
+            },
+            {
+              "displayName": "Operation",
+              "name": "operation",
+              "type": "options",
+              "noDataExpression": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Chat",
+                  "value": "Chat"
+                }
+              ],
+              "default": "Chat"
+            },
+            {
+              "displayName": "Model",
+              "name": "model",
+              "type": "options",
+              "fetchEndpoint": "/api/tools/anthropic/list-models",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "id",
+              "default": "claude-sonnet-4.5",
+              "description": "Select the Anthropic model to use."
+            },
+            {
+              "displayName": "Prompt (User Message)",
+              "name": "prompt",
+              "type": "string",
+              "format": "text",
+              "typeOptions": {
+                "rows": 4
+              },
+              "default": "",
+              "placeholder": "e.g. What can you do?",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ],
+                  "operation": [
+                    "Chat"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Simplify Output",
+              "name": "simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Options",
+              "name": "options",
+              "type": "collection",
+              "displayOptions": {
+                "show": {
+                  "/operation": [
+                    "Chat"
+                  ]
+                }
+              },
+              "placeholder": "Add Option",
+              "default": {},
+              "fields": [
+                {
+                  "name": "systemMessage",
+                  "displayName": "System Message",
+                  "type": "string",
+                  "format": "text",
+                  "default": "",
+                  "typeOptions": {
+                    "rows": 3
+                  },
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "maxTokens",
+                  "displayName": "Maximum Number of Tokens",
+                  "type": "number",
+                  "default": 1024,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "temperature",
+                  "displayName": "Output Randomness (Temperature)",
+                  "type": "number",
+                  "default": 0.7,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "topP",
+                  "displayName": "Output Randomness (Top P)",
+                  "type": "number",
+                  "default": 1,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "Text",
+            "operation": "Chat",
+            "model": "claude-sonnet-4.5",
+            "prompt": "",
+            "simplify": true,
+            "credentialId": "",
+            "options": {}
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "Text",
+          "operation": "Chat",
+          "model": "claude-sonnet-4.5",
+          "prompt": "",
+          "simplify": true,
+          "credentialId": "",
+          "options": {}
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "gemini-1783408319707",
+      "type": "action",
+      "position": {
+        "x": 910.4525914491011,
+        "y": -287.8582160994746
+      },
+      "data": {
+        "label": "Google Gemini",
+        "toolId": "gemini",
+        "toolData": {
+          "id": "gemini",
+          "displayName": "Google Gemini",
+          "type": "chat model",
+          "category": "AI / LLM",
+          "provider": "LLM Models",
+          "operation": "execute",
+          "icon": "api",
+          "description": "Interact with Google Gemini AI models for audio, vision, and language processing.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Text",
+                  "Audio",
+                  "Document",
+                  "Media File",
+                  "File Search"
+                ],
+                "default": "Audio"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Message a Model",
+                  "Analyze Audio",
+                  "Transcribe a Recording",
+                  "Analyze Document",
+                  "Upload Media File",
+                  "Create File Search Store",
+                  "Delete File Search Store",
+                  "List File Search Stores",
+                  "Upload to File Search Store"
+                ]
+              },
+              "model": {
+                "type": "string",
+                "default": "gemini-2.5-flash"
+              },
+              "textInput": {
+                "type": "string"
+              },
+              "messages": {
+                "type": "object",
+                "properties": {
+                  "values": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "prompt": {
+                          "type": "string"
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "user",
+                            "model"
+                          ],
+                          "default": "user"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "inputType": {
+                "type": "string",
+                "enum": [
+                  "Binary File(s)",
+                  "Audio URL",
+                  "Document URL",
+                  "Binary File",
+                  "File URL"
+                ],
+                "default": "Binary File(s)"
+              },
+              "audioUrl": {
+                "type": "string"
+              },
+              "documentUrl": {
+                "type": "string"
+              },
+              "fileUrl": {
+                "type": "string"
+              },
+              "outputContentAsJson": {
+                "type": "boolean",
+                "default": false
+              },
+              "builtInTools": {
+                "type": "object",
+                "properties": {
+                  "googleSearch": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "default": true
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "googleMaps": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "latitude": {
+                          "type": "number"
+                        },
+                        "longitude": {
+                          "type": "number"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "urlContext": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "default": true
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "fileSearch": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "default": true
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "codeExecution": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "default": true
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "fileSearchStoreName": {
+                "type": "string"
+              },
+              "displayName": {
+                "type": "string"
+              },
+              "fileDisplayName": {
+                "type": "string"
+              },
+              "pageSize": {
+                "type": "number"
+              },
+              "pageToken": {
+                "type": "string"
+              },
+              "forceDelete": {
+                "type": "boolean"
+              },
+              "inputDataFieldName": {
+                "type": "string",
+                "default": "data"
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true
+              },
+              "options": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "credentialId": {
+                "type": "string"
+              },
+              "credentials": {}
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "displayName": "Resource",
+              "name": "resource",
+              "type": "options",
+              "noDataExpression": true,
+              "options": [
+                {
+                  "name": "Text",
+                  "value": "Text"
+                },
+                {
+                  "name": "Audio",
+                  "value": "Audio"
+                },
+                {
+                  "name": "Document",
+                  "value": "Document"
+                },
+                {
+                  "name": "Media File",
+                  "value": "Media File"
+                },
+                {
+                  "name": "File Search",
+                  "value": "File Search"
+                }
+              ],
+              "default": "Audio"
+            },
+            {
+              "displayName": "Operation",
+              "name": "operation",
+              "type": "options",
+              "noDataExpression": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Message a Model",
+                  "value": "Message a Model"
+                }
+              ],
+              "default": "Message a Model"
+            },
+            {
+              "displayName": "Operation",
+              "name": "operation",
+              "type": "options",
+              "noDataExpression": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Audio"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Analyze Audio",
+                  "value": "Analyze Audio"
+                },
+                {
+                  "name": "Transcribe a Recording",
+                  "value": "Transcribe a Recording"
+                }
+              ],
+              "default": "Analyze Audio"
+            },
+            {
+              "displayName": "Operation",
+              "name": "operation",
+              "type": "options",
+              "noDataExpression": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Document"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Analyze Document",
+                  "value": "Analyze Document"
+                }
+              ],
+              "default": "Analyze Document"
+            },
+            {
+              "displayName": "Operation",
+              "name": "operation",
+              "type": "options",
+              "noDataExpression": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Media File"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Upload Media File",
+                  "value": "Upload Media File"
+                }
+              ],
+              "default": "Upload Media File"
+            },
+            {
+              "displayName": "Operation",
+              "name": "operation",
+              "type": "options",
+              "noDataExpression": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "File Search"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Create File Search Store",
+                  "value": "Create File Search Store"
+                },
+                {
+                  "name": "Delete File Search Store",
+                  "value": "Delete File Search Store"
+                },
+                {
+                  "name": "List File Search Stores",
+                  "value": "List File Search Stores"
+                },
+                {
+                  "name": "Upload to File Search Store",
+                  "value": "Upload to File Search Store"
+                }
+              ],
+              "default": "List File Search Stores"
+            },
+            {
+              "displayName": "Model",
+              "name": "model",
+              "type": "options",
+              "fetchEndpoint": "/api/tools/gemini/list-models",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "id",
+              "default": "gemini-2.5-flash",
+              "description": "Select the Gemini model to use.",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text",
+                    "Audio",
+                    "Document"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Prompt (User Message)",
+              "name": "prompt",
+              "type": "string",
+              "format": "text",
+              "typeOptions": {
+                "rows": 4
+              },
+              "default": "",
+              "placeholder": "e.g. Hello, how can you help me?",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ],
+                  "operation": [
+                    "Message a Model"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Text Input",
+              "name": "textInput",
+              "type": "string",
+              "format": "text",
+              "typeOptions": {
+                "rows": 4
+              },
+              "default": "",
+              "placeholder": "What's in this audio?",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Audio"
+                  ],
+                  "operation": [
+                    "Analyze Audio"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Text Input",
+              "name": "textInput",
+              "type": "string",
+              "format": "text",
+              "typeOptions": {
+                "rows": 4
+              },
+              "default": "",
+              "placeholder": "What's in this document?",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Document"
+                  ],
+                  "operation": [
+                    "Analyze Document"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Input Type",
+              "name": "inputType",
+              "type": "options",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Audio"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Binary File(s)",
+                  "value": "Binary File(s)"
+                },
+                {
+                  "name": "Audio URL",
+                  "value": "Audio URL"
+                }
+              ],
+              "default": "Binary File(s)"
+            },
+            {
+              "displayName": "Input Type",
+              "name": "inputType",
+              "type": "options",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Document"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Binary File(s)",
+                  "value": "Binary File(s)"
+                },
+                {
+                  "name": "Document URL",
+                  "value": "Document URL"
+                }
+              ],
+              "default": "Binary File(s)"
+            },
+            {
+              "displayName": "Input Type",
+              "name": "inputType",
+              "type": "options",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Media File"
+                  ],
+                  "operation": [
+                    "Upload Media File"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Binary File",
+                  "value": "Binary File"
+                },
+                {
+                  "name": "File URL",
+                  "value": "File URL"
+                }
+              ],
+              "default": "Binary File"
+            },
+            {
+              "displayName": "Audio URL",
+              "name": "audioUrl",
+              "type": "string",
+              "default": "",
+              "placeholder": "https://example.com/audio.mp3",
+              "description": "Publicly accessible URL of the audio file to process",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Audio"
+                  ],
+                  "inputType": [
+                    "Audio URL"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Document URL",
+              "name": "documentUrl",
+              "type": "string",
+              "default": "",
+              "placeholder": "https://example.com/file.pdf",
+              "description": "Publicly accessible URL of the document file to process",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Document"
+                  ],
+                  "inputType": [
+                    "Document URL"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "File URL",
+              "name": "fileUrl",
+              "type": "string",
+              "default": "",
+              "placeholder": "https://example.com/file.pdf",
+              "description": "Publicly accessible URL of the file to upload",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Media File"
+                  ],
+                  "operation": [
+                    "Upload Media File"
+                  ],
+                  "inputType": [
+                    "File URL"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "File Search Store Name",
+              "name": "fileSearchStoreName",
+              "type": "string",
+              "default": "",
+              "placeholder": "fileSearchStores/my-file-search-store-123",
+              "description": "The File Search store resource name (for example: fileSearchStores/my-store-id)",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "File Search"
+                  ],
+                  "operation": [
+                    "Delete File Search Store",
+                    "Upload to File Search Store"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Display Name",
+              "name": "displayName",
+              "type": "string",
+              "default": "",
+              "placeholder": "Testing",
+              "description": "Display name for the new File Search store",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "File Search"
+                  ],
+                  "operation": [
+                    "Create File Search Store"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "File Display Name",
+              "name": "fileDisplayName",
+              "type": "string",
+              "default": "",
+              "placeholder": "AWS",
+              "description": "Display name for the uploaded document in the File Search store",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "File Search"
+                  ],
+                  "operation": [
+                    "Upload to File Search Store"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Input Type",
+              "name": "inputType",
+              "type": "options",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "File Search"
+                  ],
+                  "operation": [
+                    "Upload to File Search Store"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Binary File",
+                  "value": "Binary File"
+                }
+              ],
+              "default": "Binary File"
+            },
+            {
+              "displayName": "Page Size",
+              "name": "pageSize",
+              "type": "number",
+              "default": 10,
+              "description": "Maximum number of stores to return per page (1 to 20)",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "File Search"
+                  ],
+                  "operation": [
+                    "List File Search Stores"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Page Token",
+              "name": "pageToken",
+              "type": "string",
+              "default": "",
+              "description": "Pagination token from a previous list response",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "File Search"
+                  ],
+                  "operation": [
+                    "List File Search Stores"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Force Delete",
+              "name": "forceDelete",
+              "type": "boolean",
+              "default": false,
+              "description": "Delete all related documents in the store as well",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "File Search"
+                  ],
+                  "operation": [
+                    "Delete File Search Store"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Input Data Field Name(s)",
+              "name": "inputDataFieldName",
+              "type": "string",
+              "default": "data",
+              "description": "The name of the input binary field to process. Leave as data, or use your form file field name such as image.",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "Analyze Audio",
+                    "Transcribe a Recording",
+                    "Analyze Document",
+                    "Upload Media File",
+                    "Upload to File Search Store"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Simplify Output",
+              "name": "simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text",
+                    "Audio",
+                    "Document"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Output Content as JSON",
+              "name": "outputContentAsJson",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ],
+                  "operation": [
+                    "Message a Model"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Built-in Tools",
+              "name": "builtInTools",
+              "type": "fixedCollection",
+              "typeOptions": {
+                "multipleValues": true,
+                "buttonLabel": "Add Built-in Tool"
+              },
+              "default": {},
+              "displayOptions": {
+                "hide": {
+                  "operation": [
+                    "Message a Model"
+                  ]
+                },
+                "show": {
+                  "resource": [
+                    "Text"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "displayName": "Google Search",
+                  "name": "googleSearch",
+                  "values": [
+                    {
+                      "name": "enabled",
+                      "type": "boolean",
+                      "default": true
+                    }
+                  ]
+                },
+                {
+                  "displayName": "Google Maps",
+                  "name": "googleMaps",
+                  "values": [
+                    {
+                      "displayName": "Latitude",
+                      "name": "latitude",
+                      "type": "number",
+                      "default": 0
+                    },
+                    {
+                      "displayName": "Longitude",
+                      "name": "longitude",
+                      "type": "number",
+                      "default": 0
+                    }
+                  ]
+                },
+                {
+                  "displayName": "URL Context",
+                  "name": "urlContext",
+                  "values": [
+                    {
+                      "name": "enabled",
+                      "type": "boolean",
+                      "default": true
+                    }
+                  ]
+                },
+                {
+                  "displayName": "Code Execution",
+                  "name": "codeExecution",
+                  "values": [
+                    {
+                      "name": "enabled",
+                      "type": "boolean",
+                      "default": true
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "displayName": "Options",
+              "name": "options",
+              "type": "collection",
+              "displayOptions": {
+                "show": {
+                  "/operation": [
+                    "Analyze Audio",
+                    "Transcribe a Recording",
+                    "Analyze Document",
+                    "Message a Model"
+                  ]
+                }
+              },
+              "placeholder": "Add Option",
+              "default": {},
+              "fields": [
+                {
+                  "name": "maxTokens",
+                  "displayName": "Length of Description (Max Tokens)",
+                  "type": "number",
+                  "default": 1000,
+                  "description": "The maximum number of tokens to generate for Analyze Audio and Analyze Document.",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Analyze Audio",
+                        "Analyze Document",
+                        "Message a Model"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "includeMergedResponse",
+                  "displayName": "Include Merged Response",
+                  "type": "boolean",
+                  "default": true,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Message a Model"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "systemMessage",
+                  "displayName": "System Message",
+                  "type": "string",
+                  "format": "text",
+                  "default": "",
+                  "typeOptions": {
+                    "rows": 3
+                  },
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Message a Model"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "frequencyPenalty",
+                  "displayName": "Frequency Penalty",
+                  "type": "number",
+                  "default": 0,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Message a Model"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "numberOfCompletions",
+                  "displayName": "Number of Completions",
+                  "type": "number",
+                  "default": 1,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Message a Model"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "presencePenalty",
+                  "displayName": "Presence Penalty",
+                  "type": "number",
+                  "default": 0,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Message a Model"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "temperature",
+                  "displayName": "Output Randomness (Temperature)",
+                  "type": "number",
+                  "default": 0.7,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Message a Model"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "topP",
+                  "displayName": "Output Randomness (Top P)",
+                  "type": "number",
+                  "default": 0.95,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Message a Model"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "topK",
+                  "displayName": "Output Randomness (Top K)",
+                  "type": "number",
+                  "default": 40,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Message a Model"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "thinkingBudget",
+                  "displayName": "Thinking Budget",
+                  "type": "number",
+                  "default": 0,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Message a Model"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "maxToolCallsIterations",
+                  "displayName": "Max Tool Calls Iterations",
+                  "type": "number",
+                  "default": 1,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Message a Model"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "startTime",
+                  "displayName": "Start Time",
+                  "type": "string",
+                  "default": "",
+                  "description": "Start timestamp for transcription range. Example: 00:00:30 or 30s.",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Transcribe a Recording"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "endTime",
+                  "displayName": "End Time",
+                  "type": "string",
+                  "default": "",
+                  "description": "End timestamp for transcription range. Example: 00:02:00 or 120s.",
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Transcribe a Recording"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "Text",
+            "operation": "Message a Model",
+            "model": "gemini-2.5-flash",
+            "inputType": "Binary File(s)",
+            "prompt": "",
+            "audioUrl": "",
+            "documentUrl": "",
+            "fileUrl": "",
+            "fileSearchStoreName": "",
+            "displayName": "",
+            "fileDisplayName": "",
+            "pageSize": 10,
+            "pageToken": "",
+            "forceDelete": false,
+            "inputDataFieldName": "data",
+            "simplify": true,
+            "outputContentAsJson": false,
+            "builtInTools": {},
+            "credentialId": "",
+            "options": {}
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "Text",
+          "operation": "Message a Model",
+          "model": "gemini-2.5-flash",
+          "inputType": "Binary File(s)",
+          "prompt": "",
+          "audioUrl": "",
+          "documentUrl": "",
+          "fileUrl": "",
+          "fileSearchStoreName": "",
+          "displayName": "",
+          "fileDisplayName": "",
+          "pageSize": 10,
+          "pageToken": "",
+          "forceDelete": false,
+          "inputDataFieldName": "data",
+          "simplify": true,
+          "outputContentAsJson": false,
+          "builtInTools": {},
+          "credentialId": "",
+          "options": {}
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "groq-1783408320483",
+      "type": "action",
+      "position": {
+        "x": 912.4318533152605,
+        "y": -227.1608522039215
+      },
+      "data": {
+        "label": "Groq",
+        "toolId": "groq",
+        "toolData": {
+          "id": "groq",
+          "displayName": "Groq",
+          "type": "chat model",
+          "category": "AI / LLM",
+          "provider": "LLM Models",
+          "operation": "execute",
+          "icon": "tools/groq.png",
+          "description": "Run ultra-fast LLM inference with Groq-hosted open-source models.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Text"
+                ],
+                "default": "Text"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Chat"
+                ],
+                "default": "Chat"
+              },
+              "model": {
+                "type": "string",
+                "default": "llama-3.3-70b-versatile"
+              },
+              "prompt": {
+                "type": "string"
+              },
+              "messages": {
+                "type": "object",
+                "properties": {
+                  "values": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "prompt": {
+                          "type": "string"
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "user",
+                            "model"
+                          ],
+                          "default": "user"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true
+              },
+              "outputContentAsJson": {
+                "type": "boolean",
+                "default": false
+              },
+              "options": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "credentialId": {
+                "type": "string"
+              },
+              "credentials": {}
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "displayName": "Resource",
+              "name": "resource",
+              "type": "options",
+              "noDataExpression": true,
+              "options": [
+                {
+                  "name": "Text",
+                  "value": "Text"
+                }
+              ],
+              "default": "Text"
+            },
+            {
+              "displayName": "Operation",
+              "name": "operation",
+              "type": "options",
+              "noDataExpression": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Chat",
+                  "value": "Chat"
+                }
+              ],
+              "default": "Chat"
+            },
+            {
+              "displayName": "Model",
+              "name": "model",
+              "type": "options",
+              "fetchEndpoint": "/api/tools/groq/list-models",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "id",
+              "default": "llama-3.3-70b-versatile",
+              "description": "Select the Groq model to use."
+            },
+            {
+              "displayName": "Prompt (User Message)",
+              "name": "prompt",
+              "type": "string",
+              "format": "text",
+              "typeOptions": {
+                "rows": 4
+              },
+              "default": "",
+              "placeholder": "e.g. What can you do?",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ],
+                  "operation": [
+                    "Chat"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Simplify Output",
+              "name": "simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Output Content as JSON",
+              "name": "outputContentAsJson",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ],
+                  "operation": [
+                    "Chat"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Options",
+              "name": "options",
+              "type": "collection",
+              "displayOptions": {
+                "show": {
+                  "/operation": [
+                    "Chat"
+                  ]
+                }
+              },
+              "placeholder": "Add Option",
+              "default": {},
+              "fields": [
+                {
+                  "name": "systemMessage",
+                  "displayName": "System Message",
+                  "type": "string",
+                  "format": "text",
+                  "default": "",
+                  "typeOptions": {
+                    "rows": 3
+                  },
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "maxTokens",
+                  "displayName": "Maximum Number of Tokens",
+                  "type": "number",
+                  "default": 1024,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "temperature",
+                  "displayName": "Output Randomness (Temperature)",
+                  "type": "number",
+                  "default": 0.7,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "topP",
+                  "displayName": "Output Randomness (Top P)",
+                  "type": "number",
+                  "default": 0.95,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "Text",
+            "operation": "Chat",
+            "model": "llama-3.3-70b-versatile",
+            "prompt": "",
+            "simplify": true,
+            "outputContentAsJson": false,
+            "credentialId": "",
+            "options": {}
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "Text",
+          "operation": "Chat",
+          "model": "llama-3.3-70b-versatile",
+          "prompt": "",
+          "simplify": true,
+          "outputContentAsJson": false,
+          "credentialId": "",
+          "options": {}
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "mistral-llm-1783408321307",
+      "type": "action",
+      "position": {
+        "x": 885.3819411444161,
+        "y": -213.96577309619255
+      },
+      "data": {
+        "label": "Mistral LLM",
+        "toolId": "mistral-llm",
+        "toolData": {
+          "id": "mistral-llm",
+          "displayName": "Mistral LLM",
+          "type": "chat model",
+          "category": "AI / LLM",
+          "provider": "LLM Models",
+          "operation": "execute",
+          "icon": "tools/mistral.png",
+          "description": "Use Mistral AI models for natural language tasks.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Text"
+                ],
+                "default": "Text"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Chat"
+                ],
+                "default": "Chat"
+              },
+              "model": {
+                "type": "string",
+                "default": "mistral-large-latest"
+              },
+              "prompt": {
+                "type": "string"
+              },
+              "messages": {
+                "type": "object",
+                "properties": {
+                  "values": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "prompt": {
+                          "type": "string"
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "user",
+                            "model"
+                          ],
+                          "default": "user"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true
+              },
+              "outputContentAsJson": {
+                "type": "boolean",
+                "default": false
+              },
+              "options": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "credentialId": {
+                "type": "string"
+              },
+              "credentials": {},
+              "userId": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "displayName": "Resource",
+              "name": "resource",
+              "type": "options",
+              "noDataExpression": true,
+              "options": [
+                {
+                  "name": "Text",
+                  "value": "Text"
+                }
+              ],
+              "default": "Text"
+            },
+            {
+              "displayName": "Operation",
+              "name": "operation",
+              "type": "options",
+              "noDataExpression": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Chat",
+                  "value": "Chat"
+                }
+              ],
+              "default": "Chat"
+            },
+            {
+              "displayName": "Model",
+              "name": "model",
+              "type": "options",
+              "fetchEndpoint": "/api/tools/mistralllm/list-models",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "id",
+              "default": "mistral-large-latest",
+              "description": "Select the Mistral model to use."
+            },
+            {
+              "displayName": "Prompt (User Message)",
+              "name": "prompt",
+              "type": "string",
+              "format": "text",
+              "typeOptions": {
+                "rows": 4
+              },
+              "default": "",
+              "placeholder": "e.g. What can you do?",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ],
+                  "operation": [
+                    "Chat"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Simplify Output",
+              "name": "simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Output Content as JSON",
+              "name": "outputContentAsJson",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ],
+                  "operation": [
+                    "Chat"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Options",
+              "name": "options",
+              "type": "collection",
+              "displayOptions": {
+                "show": {
+                  "/operation": [
+                    "Chat"
+                  ]
+                }
+              },
+              "placeholder": "Add Option",
+              "default": {},
+              "fields": [
+                {
+                  "name": "systemMessage",
+                  "displayName": "System Message",
+                  "type": "string",
+                  "format": "text",
+                  "default": "",
+                  "typeOptions": {
+                    "rows": 3
+                  },
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "maxTokens",
+                  "displayName": "Maximum Number of Tokens",
+                  "type": "number",
+                  "default": 1024,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "temperature",
+                  "displayName": "Output Randomness (Temperature)",
+                  "type": "number",
+                  "default": 0.7,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "topP",
+                  "displayName": "Output Randomness (Top P)",
+                  "type": "number",
+                  "default": 1,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "Text",
+            "operation": "Chat",
+            "model": "mistral-large-latest",
+            "prompt": "",
+            "simplify": true,
+            "outputContentAsJson": false,
+            "credentialId": "",
+            "options": {}
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "Text",
+          "operation": "Chat",
+          "model": "mistral-large-latest",
+          "prompt": "",
+          "simplify": true,
+          "outputContentAsJson": false,
+          "credentialId": "",
+          "options": {}
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "nvidia-1783408322882",
+      "type": "action",
+      "position": {
+        "x": 884.0624332336432,
+        "y": -233.75839175778597
+      },
+      "data": {
+        "label": "NVIDIA",
+        "toolId": "nvidia",
+        "toolData": {
+          "id": "nvidia",
+          "displayName": "NVIDIA",
+          "type": "chat model",
+          "category": "AI / LLM",
+          "provider": "LLM Models",
+          "operation": "execute",
+          "icon": "tools/nvidia.svg",
+          "description": "Chat with NVIDIA-hosted models using NIM OpenAI-compatible APIs.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Text"
+                ],
+                "default": "Text"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Chat"
+                ],
+                "default": "Chat"
+              },
+              "model": {
+                "type": "string",
+                "default": "qwen/qwen3-coder-480b-a35b-instruct"
+              },
+              "prompt": {
+                "type": "string"
+              },
+              "messages": {
+                "type": "object",
+                "properties": {
+                  "values": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "prompt": {
+                          "type": "string"
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "user",
+                            "model"
+                          ],
+                          "default": "user"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true
+              },
+              "outputContentAsJson": {
+                "type": "boolean",
+                "default": false
+              },
+              "options": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "credentialId": {
+                "type": "string"
+              },
+              "credentials": {}
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "displayName": "Resource",
+              "name": "resource",
+              "type": "options",
+              "noDataExpression": true,
+              "options": [
+                {
+                  "name": "Text",
+                  "value": "Text"
+                }
+              ],
+              "default": "Text"
+            },
+            {
+              "displayName": "Operation",
+              "name": "operation",
+              "type": "options",
+              "noDataExpression": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Chat",
+                  "value": "Chat"
+                }
+              ],
+              "default": "Chat"
+            },
+            {
+              "displayName": "Model",
+              "name": "model",
+              "type": "options",
+              "fetchEndpoint": "/api/tools/nvidia/list-models",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "id",
+              "default": "qwen/qwen3-coder-480b-a35b-instruct",
+              "description": "Select the NVIDIA model to use."
+            },
+            {
+              "displayName": "Prompt (User Message)",
+              "name": "prompt",
+              "type": "string",
+              "format": "text",
+              "typeOptions": {
+                "rows": 4
+              },
+              "default": "",
+              "placeholder": "e.g. What can you do?",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ],
+                  "operation": [
+                    "Chat"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Simplify Output",
+              "name": "simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Output Content as JSON",
+              "name": "outputContentAsJson",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ],
+                  "operation": [
+                    "Chat"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Options",
+              "name": "options",
+              "type": "collection",
+              "displayOptions": {
+                "show": {
+                  "/operation": [
+                    "Chat"
+                  ]
+                }
+              },
+              "placeholder": "Add Option",
+              "default": {},
+              "fields": [
+                {
+                  "name": "systemMessage",
+                  "displayName": "System Message",
+                  "type": "string",
+                  "format": "text",
+                  "default": "",
+                  "typeOptions": {
+                    "rows": 3
+                  },
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "maxTokens",
+                  "displayName": "Maximum Number of Tokens",
+                  "type": "number",
+                  "default": 1024,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "temperature",
+                  "displayName": "Output Randomness (Temperature)",
+                  "type": "number",
+                  "default": 0.7,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "topP",
+                  "displayName": "Output Randomness (Top P)",
+                  "type": "number",
+                  "default": 0.95,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "Text",
+            "operation": "Chat",
+            "model": "qwen/qwen3-coder-480b-a35b-instruct",
+            "prompt": "",
+            "simplify": true,
+            "outputContentAsJson": false,
+            "credentialId": "",
+            "options": {}
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "Text",
+          "operation": "Chat",
+          "model": "qwen/qwen3-coder-480b-a35b-instruct",
+          "prompt": "",
+          "simplify": true,
+          "outputContentAsJson": false,
+          "credentialId": "",
+          "options": {}
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "openai-1783408323789",
+      "type": "action",
+      "position": {
+        "x": 766.6262291748558,
+        "y": -246.9534708655149
+      },
+      "data": {
+        "label": "OpenAI",
+        "toolId": "openai",
+        "toolData": {
+          "id": "openai",
+          "displayName": "OpenAI",
+          "type": "chat model",
+          "category": "AI / LLM",
+          "provider": "LLM Models",
+          "operation": "execute",
+          "icon": "tools/openai.png",
+          "description": "Use OpenAI GPT models for various text operations.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Text"
+                ],
+                "default": "Text"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Chat"
+                ],
+                "default": "Chat"
+              },
+              "model": {
+                "type": "string",
+                "default": "gpt-4o"
+              },
+              "prompt": {
+                "type": "string"
+              },
+              "messages": {
+                "type": "object",
+                "properties": {
+                  "values": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "prompt": {
+                          "type": "string"
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "user",
+                            "model"
+                          ],
+                          "default": "user"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true
+              },
+              "outputContentAsJson": {
+                "type": "boolean",
+                "default": false
+              },
+              "options": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "credentialId": {
+                "type": "string"
+              },
+              "credentials": {},
+              "userId": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "displayName": "Resource",
+              "name": "resource",
+              "type": "options",
+              "noDataExpression": true,
+              "options": [
+                {
+                  "name": "Text",
+                  "value": "Text"
+                }
+              ],
+              "default": "Text"
+            },
+            {
+              "displayName": "Operation",
+              "name": "operation",
+              "type": "options",
+              "noDataExpression": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Chat",
+                  "value": "Chat"
+                }
+              ],
+              "default": "Chat"
+            },
+            {
+              "displayName": "Model",
+              "name": "model",
+              "type": "options",
+              "fetchEndpoint": "/api/tools/openai/list-models",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "id",
+              "default": "gpt-4o",
+              "description": "Select the OpenAI model to use."
+            },
+            {
+              "displayName": "Prompt (User Message)",
+              "name": "prompt",
+              "type": "string",
+              "format": "text",
+              "typeOptions": {
+                "rows": 4
+              },
+              "default": "",
+              "placeholder": "e.g. What can you do?",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ],
+                  "operation": [
+                    "Chat"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Simplify Output",
+              "name": "simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Output Content as JSON",
+              "name": "outputContentAsJson",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ],
+                  "operation": [
+                    "Chat"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Options",
+              "name": "options",
+              "type": "collection",
+              "displayOptions": {
+                "show": {
+                  "/operation": [
+                    "Chat"
+                  ]
+                }
+              },
+              "placeholder": "Add Option",
+              "default": {},
+              "fields": [
+                {
+                  "name": "systemMessage",
+                  "displayName": "System Message",
+                  "type": "string",
+                  "format": "text",
+                  "default": "",
+                  "typeOptions": {
+                    "rows": 3
+                  },
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "maxTokens",
+                  "displayName": "Maximum Number of Tokens",
+                  "type": "number",
+                  "default": 1024,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "temperature",
+                  "displayName": "Output Randomness (Temperature)",
+                  "type": "number",
+                  "default": 0.7,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "topP",
+                  "displayName": "Output Randomness (Top P)",
+                  "type": "number",
+                  "default": 1,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "Text",
+            "operation": "Chat",
+            "model": "gpt-4o",
+            "prompt": "",
+            "simplify": true,
+            "outputContentAsJson": false,
+            "credentialId": "",
+            "options": {}
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "Text",
+          "operation": "Chat",
+          "model": "gpt-4o",
+          "prompt": "",
+          "simplify": true,
+          "outputContentAsJson": false,
+          "credentialId": "",
+          "options": {}
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "openrouter-1783408325731",
+      "type": "action",
+      "position": {
+        "x": 884.0624332336432,
+        "y": -229.79986802546728
+      },
+      "data": {
+        "label": "OpenRouter",
+        "toolId": "openrouter",
+        "toolData": {
+          "id": "openrouter",
+          "displayName": "OpenRouter",
+          "type": "chat model",
+          "category": "AI / LLM",
+          "provider": "LLM Models",
+          "operation": "execute",
+          "icon": "tools/openrouter.png",
+          "description": "Access AI models from multiple providers through OpenRouter's unified API.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Text"
+                ],
+                "default": "Text"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Chat"
+                ],
+                "default": "Chat"
+              },
+              "model": {
+                "type": "string",
+                "default": "google/gemma-4-26b-a4b-it"
+              },
+              "prompt": {
+                "type": "string"
+              },
+              "messages": {
+                "type": "object",
+                "properties": {
+                  "values": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "prompt": {
+                          "type": "string"
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "user",
+                            "model"
+                          ],
+                          "default": "user"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true
+              },
+              "outputContentAsJson": {
+                "type": "boolean",
+                "default": false
+              },
+              "options": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "credentialId": {
+                "type": "string"
+              },
+              "credentials": {}
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "displayName": "Resource",
+              "name": "resource",
+              "type": "options",
+              "noDataExpression": true,
+              "options": [
+                {
+                  "name": "Text",
+                  "value": "Text"
+                }
+              ],
+              "default": "Text"
+            },
+            {
+              "displayName": "Operation",
+              "name": "operation",
+              "type": "options",
+              "noDataExpression": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Chat",
+                  "value": "Chat"
+                }
+              ],
+              "default": "Chat"
+            },
+            {
+              "displayName": "Model",
+              "name": "model",
+              "type": "options",
+              "fetchEndpoint": "/api/tools/openrouter/list-models",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "id",
+              "default": "google/gemma-4-26b-a4b-it",
+              "description": "Select the OpenRouter model to use. Models marked with :free have no cost."
+            },
+            {
+              "displayName": "Prompt (User Message)",
+              "name": "prompt",
+              "type": "string",
+              "format": "text",
+              "typeOptions": {
+                "rows": 4
+              },
+              "default": "",
+              "placeholder": "e.g. What can you do?",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ],
+                  "operation": [
+                    "Chat"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Simplify Output",
+              "name": "simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Output Content as JSON",
+              "name": "outputContentAsJson",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ],
+                  "operation": [
+                    "Chat"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Options",
+              "name": "options",
+              "type": "collection",
+              "displayOptions": {
+                "show": {
+                  "/operation": [
+                    "Chat"
+                  ]
+                }
+              },
+              "placeholder": "Add Option",
+              "default": {},
+              "fields": [
+                {
+                  "name": "systemMessage",
+                  "displayName": "System Message",
+                  "type": "string",
+                  "format": "text",
+                  "default": "",
+                  "typeOptions": {
+                    "rows": 3
+                  },
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "maxTokens",
+                  "displayName": "Maximum Number of Tokens",
+                  "type": "number",
+                  "default": 1024,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "temperature",
+                  "displayName": "Output Randomness (Temperature)",
+                  "type": "number",
+                  "default": 0.7,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "topP",
+                  "displayName": "Output Randomness (Top P)",
+                  "type": "number",
+                  "default": 0.95,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "Text",
+            "operation": "Chat",
+            "model": "google/gemma-4-26b-a4b-it",
+            "prompt": "",
+            "simplify": true,
+            "outputContentAsJson": false,
+            "credentialId": "",
+            "options": {}
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "Text",
+          "operation": "Chat",
+          "model": "google/gemma-4-26b-a4b-it",
+          "prompt": "",
+          "simplify": true,
+          "outputContentAsJson": false,
+          "credentialId": "",
+          "options": {}
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

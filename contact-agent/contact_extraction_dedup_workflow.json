@@ -1,0 +1,5225 @@
+{
+  "_platform": "agentbuilder",
+  "_version": 1,
+  "_exportedAt": "2026-09-28T04:48:33.175Z",
+  "_fingerprint": "YWN0aW9uOmNvZGUuZXhlY3V0ZXxhY3Rpb246Y29kZS5leGVjdXRlfGFjdGlvbjpj",
+  "nodes": [
+    {
+      "id": "webhook-trigger-contact-extraction",
+      "data": {
+        "label": "Contact Extraction Webhook",
+        "inputs": {
+          "path": "contact-extraction",
+          "method": "POST",
+          "options": {
+            "allowedOrigins": "*"
+          },
+          "allowedRoles": "admin, staff",
+          "jwtAlgorithm": "HS256",
+          "responseMode": "respondWithNode",
+          "roleClaimKey": "role",
+          "sessionClaim": "sub",
+          "sessionSource": "none",
+          "authentication": "none",
+          "requireRoleCheck": false
+        },
+        "toolId": "webhook",
+        "toolData": {
+          "id": "webhook",
+          "displayName": "Webhook Trigger",
+          "category": "Input /  Output",
+          "icon": "webhook",
+          "description": "Trigger workflow via webhook",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string",
+                "description": "The path to listen on (e.g. \"my-hook\")"
+              },
+              "method": {
+                "type": "string",
+                "enum": [
+                  "GET",
+                  "POST",
+                  "PUT",
+                  "DELETE",
+                  "PATCH",
+                  "HEAD"
+                ],
+                "default": "POST",
+                "description": "HTTP Method"
+              },
+              "responseMode": {
+                "type": "string",
+                "enum": [
+                  "onReceived",
+                  "lastNode",
+                  "respondWithNode",
+                  "streaming"
+                ],
+                "default": "lastNode",
+                "description": "When to respond"
+              },
+              "authentication": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "basicAuth",
+                  "headerAuth",
+                  "jwtAuth"
+                ],
+                "default": "none",
+                "description": "Authentication"
+              },
+              "basicAuthUser": {
+                "type": "string",
+                "description": "Username"
+              },
+              "basicAuthPassword": {
+                "type": "string",
+                "description": "Password"
+              },
+              "headerAuthName": {
+                "type": "string",
+                "description": "Name"
+              },
+              "headerAuthValue": {
+                "type": "string",
+                "description": "Value"
+              },
+              "jwtSecret": {
+                "type": "string",
+                "description": "Secret"
+              },
+              "jwtAlgorithm": {
+                "type": "string",
+                "enum": [
+                  "HS256",
+                  "HS384",
+                  "HS512"
+                ],
+                "default": "HS256",
+                "description": "Algorithm"
+              },
+              "sessionClaim": {
+                "type": "string",
+                "default": "sub",
+                "description": "JWT claim used to identify the session"
+              },
+              "requireRoleCheck": {
+                "type": "boolean",
+                "default": false,
+                "description": "Require Role Check (RBAC)"
+              },
+              "roleClaimKey": {
+                "type": "string",
+                "default": "role",
+                "description": "Role Claim Key"
+              },
+              "allowedRoles": {
+                "type": "string",
+                "default": "admin, staff",
+                "description": "Allowed Roles (comma separated)"
+              },
+              "sessionSource": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "auto",
+                  "header",
+                  "cookie",
+                  "body"
+                ],
+                "default": "none",
+                "description": "Session Source"
+              },
+              "sessionSourceName": {
+                "type": "string",
+                "description": "Session Source Name (header / cookie / body field)"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "allowedOrigins": {
+                    "type": "string",
+                    "description": "Allowed Origins (CORS)"
+                  },
+                  "binaryDataFieldName": {
+                    "type": "string",
+                    "description": "Field Name for Binary Data"
+                  },
+                  "ignoreBots": {
+                    "type": "boolean",
+                    "description": "Ignore Bots"
+                  },
+                  "ipAllowlist": {
+                    "type": "string",
+                    "description": "IP(s) Allowlist"
+                  },
+                  "noResponseBody": {
+                    "type": "boolean",
+                    "description": "No Response Body"
+                  },
+                  "rawBody": {
+                    "type": "boolean",
+                    "description": "Raw Body"
+                  },
+                  "responseCode": {
+                    "type": "number",
+                    "description": "Response Code"
+                  },
+                  "responseData": {
+                    "type": "string",
+                    "description": "Response Data"
+                  }
+                },
+                "additionalProperties": false,
+                "default": {},
+                "description": "Options"
+              }
+            },
+            "required": [
+              "path"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "path",
+              "displayName": "Path",
+              "type": "string",
+              "default": "",
+              "required": true,
+              "description": "The path to listen on (e.g. \"my-hook\")"
+            },
+            {
+              "name": "method",
+              "displayName": "HTTP Method",
+              "type": "options",
+              "default": "POST",
+              "required": true,
+              "options": [
+                {
+                  "name": "GET",
+                  "value": "GET"
+                },
+                {
+                  "name": "POST",
+                  "value": "POST"
+                },
+                {
+                  "name": "PUT",
+                  "value": "PUT"
+                },
+                {
+                  "name": "DELETE",
+                  "value": "DELETE"
+                },
+                {
+                  "name": "PATCH",
+                  "value": "PATCH"
+                },
+                {
+                  "name": "HEAD",
+                  "value": "HEAD"
+                }
+              ],
+              "description": "HTTP Method to listen for"
+            },
+            {
+              "name": "responseMode",
+              "displayName": "Respond",
+              "type": "options",
+              "default": "lastNode",
+              "required": true,
+              "options": [
+                {
+                  "name": "Immediately",
+                  "value": "onReceived"
+                },
+                {
+                  "name": "When Last Node Finishes",
+                  "value": "lastNode"
+                },
+                {
+                  "name": "Using 'Respond to Webhook' Node",
+                  "value": "respondWithNode"
+                },
+                {
+                  "name": "Streaming",
+                  "value": "streaming"
+                }
+              ],
+              "description": "When to respond to the webhook request"
+            },
+            {
+              "name": "authentication",
+              "displayName": "Authentication",
+              "type": "options",
+              "default": "none",
+              "options": [
+                {
+                  "name": "Basic Auth",
+                  "value": "basicAuth"
+                },
+                {
+                  "name": "Header Auth",
+                  "value": "headerAuth"
+                },
+                {
+                  "name": "JWT Auth",
+                  "value": "jwtAuth"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ],
+              "description": "The type of authentication to use for incoming webhook requests"
+            },
+            {
+              "name": "sessionSource",
+              "displayName": "Session Source",
+              "type": "options",
+              "default": "none",
+              "options": [
+                {
+                  "name": "None (legacy, no session)",
+                  "value": "none"
+                },
+                {
+                  "name": "Auto (platform issues a session id)",
+                  "value": "auto"
+                },
+                {
+                  "name": "From Header",
+                  "value": "header"
+                },
+                {
+                  "name": "From Cookie",
+                  "value": "cookie"
+                },
+                {
+                  "name": "From Body Field",
+                  "value": "body"
+                }
+              ],
+              "description": "How the platform identifies the caller for per-user session continuity. Required when memory or loops should partition by caller."
+            },
+            {
+              "name": "sessionSourceName",
+              "displayName": "Session Source Name",
+              "type": "string",
+              "default": "",
+              "placeholder": "e.g. X-Caller-Id (header), userId (body field), session_id (cookie)",
+              "description": "Header name, body field path, or cookie name used as the caller id.",
+              "displayOptions": {
+                "show": {
+                  "sessionSource": [
+                    "header",
+                    "cookie",
+                    "body"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "basicAuthUser",
+              "displayName": "User",
+              "type": "string",
+              "default": "",
+              "required": true,
+              "description": "The username for Basic Authentication",
+              "displayOptions": {
+                "show": {
+                  "authentication": [
+                    "basicAuth"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "basicAuthPassword",
+              "displayName": "Password",
+              "type": "string",
+              "default": "",
+              "required": true,
+              "typeOptions": {
+                "password": true
+              },
+              "description": "The password for Basic Authentication",
+              "displayOptions": {
+                "show": {
+                  "authentication": [
+                    "basicAuth"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "headerAuthName",
+              "displayName": "Name",
+              "type": "string",
+              "default": "",
+              "required": true,
+              "description": "The header name to check for authentication",
+              "displayOptions": {
+                "show": {
+                  "authentication": [
+                    "headerAuth"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "headerAuthValue",
+              "displayName": "Value",
+              "type": "string",
+              "default": "",
+              "required": true,
+              "typeOptions": {
+                "password": true
+              },
+              "description": "The expected header value for authentication",
+              "displayOptions": {
+                "show": {
+                  "authentication": [
+                    "headerAuth"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "jwtSecret",
+              "displayName": "Secret",
+              "type": "string",
+              "default": "",
+              "required": true,
+              "typeOptions": {
+                "password": true
+              },
+              "description": "The secret key used to verify the JWT token",
+              "displayOptions": {
+                "show": {
+                  "authentication": [
+                    "jwtAuth"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "jwtAlgorithm",
+              "displayName": "Algorithm",
+              "type": "options",
+              "default": "HS256",
+              "options": [
+                {
+                  "name": "HS256",
+                  "value": "HS256"
+                },
+                {
+                  "name": "HS384",
+                  "value": "HS384"
+                },
+                {
+                  "name": "HS512",
+                  "value": "HS512"
+                }
+              ],
+              "description": "The algorithm used to sign the JWT token",
+              "displayOptions": {
+                "show": {
+                  "authentication": [
+                    "jwtAuth"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "sessionClaim",
+              "displayName": "Session Claim",
+              "type": "string",
+              "default": "sub",
+              "description": "The claim in the JWT payload that identifies the user (e.g. sub, email, userId). Leave blank to skip session tracking.",
+              "displayOptions": {
+                "show": {
+                  "authentication": [
+                    "jwtAuth"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "requireRoleCheck",
+              "displayName": "Require Role Check (RBAC)",
+              "type": "boolean",
+              "default": false,
+              "description": "If enabled, the incoming JWT must contain an authorized role claim to execute the workflow.",
+              "displayOptions": {
+                "show": {
+                  "authentication": [
+                    "jwtAuth"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "roleClaimKey",
+              "displayName": "Role Claim Key",
+              "type": "string",
+              "default": "role",
+              "description": "The field name inside the JWT payload that contains the user's role (e.g., \"role\", \"groups\").",
+              "displayOptions": {
+                "show": {
+                  "authentication": [
+                    "jwtAuth"
+                  ],
+                  "requireRoleCheck": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "allowedRoles",
+              "displayName": "Allowed Roles",
+              "type": "string",
+              "default": "admin, staff",
+              "description": "A comma-separated list of roles that are allowed to trigger this workflow. If empty, all roles pass.",
+              "displayOptions": {
+                "show": {
+                  "authentication": [
+                    "jwtAuth"
+                  ],
+                  "requireRoleCheck": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "default": {},
+              "placeholder": "Add option",
+              "fields": [
+                {
+                  "name": "allowedOrigins",
+                  "displayName": "Allowed Origins (CORS)",
+                  "type": "string",
+                  "default": "*",
+                  "placeholder": "*",
+                  "description": "Comma-separated list of allowed origins for CORS. Use * to allow all origins."
+                },
+                {
+                  "name": "binaryDataFieldName",
+                  "displayName": "Field Name for Binary Data",
+                  "type": "string",
+                  "default": "data",
+                  "placeholder": "data",
+                  "description": "The name of the field in the request that contains binary data (for file uploads)."
+                },
+                {
+                  "name": "ignoreBots",
+                  "displayName": "Ignore Bots",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "If enabled, requests from known bots (crawlers, spiders) will be ignored."
+                },
+                {
+                  "name": "ipAllowlist",
+                  "displayName": "IP(s) Allowlist",
+                  "type": "string",
+                  "default": "",
+                  "placeholder": "e.g. 127.0.0.1, 192.168.1.0/24",
+                  "description": "Comma-separated list of IPs or CIDR ranges. Only these IPs can trigger the webhook."
+                },
+                {
+                  "name": "noResponseBody",
+                  "displayName": "No Response Body",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "If enabled, the webhook will respond with an empty body (only status code)."
+                },
+                {
+                  "name": "rawBody",
+                  "displayName": "Raw Body",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "If enabled, the raw request body will be passed as-is without parsing."
+                },
+                {
+                  "name": "responseData",
+                  "displayName": "Response Data",
+                  "type": "string",
+                  "default": "",
+                  "placeholder": "Response body content",
+                  "description": "Custom response data to return when the webhook is triggered (JSON or text)."
+                }
+              ]
+            }
+          ]
+        },
+        "isTrigger": true,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": true
+      },
+      "type": "webhook",
+      "width": 220,
+      "height": 100,
+      "dragging": false,
+      "position": {
+        "x": -45.0535679490943,
+        "y": 222.91387930327107
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": -45.0535679490943,
+        "y": 222.91387930327107
+      }
+    },
+    {
+      "id": "set-passthrough-fields",
+      "data": {
+        "label": "Preserve file_id & batch_id",
+        "inputs": {
+          "mode": "manual",
+          "assignments": [
+            {
+              "name": "file_id",
+              "value": "{{ $json.body.file_id }}",
+              "valueType": "expression"
+            },
+            {
+              "name": "batch_id",
+              "value": "{{ $json.body.batch_id }}",
+              "valueType": "expression"
+            },
+            {
+              "name": "file_name",
+              "value": "{{ $json.body.file_name }}",
+              "valueType": "expression"
+            },
+            {
+              "name": "file_type",
+              "value": "{{ $json.body.file_type }}",
+              "valueType": "expression"
+            },
+            {
+              "name": "file_content",
+              "value": "{{ $json.body.file_content }}",
+              "valueType": "expression"
+            },
+            {
+              "name": "callback_url",
+              "value": "{{ $json.body.callback_url }}",
+              "valueType": "expression"
+            },
+            {
+              "name": "source_label",
+              "value": "{{ $json.body.source_label || 'upload' }}",
+              "valueType": "expression"
+            }
+          ],
+          "includeBinaryData": true,
+          "supportDotNotation": true,
+          "inputFieldsToInclude": "all",
+          "includeOtherInputFields": false,
+          "ignoreTypeConversionErrors": false
+        },
+        "toolId": "core.set",
+        "toolData": {
+          "id": "core.set",
+          "displayName": "Set Fields",
+          "category": "Core  Utilities",
+          "provider": "core",
+          "operation": "set",
+          "description": "Set or update fields",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "manual",
+                  "json"
+                ],
+                "default": "manual",
+                "description": "Select Manual Mapping or JSON Output"
+              },
+              "assignments": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Field name"
+                    },
+                    "value": {
+                      "description": "Field value (Fixed or Expression)"
+                    },
+                    "valueType": {
+                      "type": "string",
+                      "enum": [
+                        "fixed",
+                        "expression"
+                      ],
+                      "default": "expression",
+                      "description": "Whether field value is fixed or an expression"
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "Data type of the field"
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Fields to set when using Manual Mapping"
+              },
+              "jsonValue": {
+                "type": "string",
+                "description": "JSON to merge into the output when using JSON Output mode"
+              },
+              "includeOtherInputFields": {
+                "type": "boolean",
+                "default": false,
+                "description": "Also include unchanged fields from the input"
+              },
+              "inputFieldsToInclude": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "selected",
+                  "allExcept"
+                ],
+                "default": "all",
+                "description": "Choose which input data to include in the output data"
+              },
+              "fieldsToInclude": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "List of input fields to include when Input Fields to Include is Selected"
+              },
+              "fieldsToExclude": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "List of input fields to exclude when Input Fields to Include is All Except"
+              },
+              "includeBinaryData": {
+                "type": "boolean",
+                "default": true,
+                "description": "Include binary data in the output"
+              },
+              "ignoreTypeConversionErrors": {
+                "type": "boolean",
+                "default": false,
+                "description": "Ignore some data type errors when mapping fields (Manual Mapping only)"
+              },
+              "supportDotNotation": {
+                "type": "boolean",
+                "default": true,
+                "description": "If enabled, dotted names create nested objects (e.g. number.one → { number: { one: value } })"
+              },
+              "items": {
+                "type": "array",
+                "description": "Array of items to process (for multi-item execution)"
+              },
+              "$inputItem": {
+                "description": "Single item to process (for backward compatibility)"
+              }
+            },
+            "additionalProperties": true,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 238.2788762147302,
+        "y": 312.16931770180054
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 238.2788762147302,
+        "y": 312.16931770180054
+      }
+    },
+    {
+      "id": "switch-file-type",
+      "data": {
+        "label": "Route by File Type",
+        "inputs": {
+          "mode": "rules",
+          "rules": [
+            {
+              "value1": "{{ $json.file_type }}",
+              "value2": "pdf",
+              "operator": "contains",
+              "outputIndex": 0
+            },
+            {
+              "value1": "{{ $json.file_type }}",
+              "value2": "csv",
+              "operator": "contains",
+              "outputIndex": 1
+            },
+            {
+              "value1": "{{ $json.file_type }}",
+              "value2": "image",
+              "operator": "contains",
+              "outputIndex": 2
+            }
+          ],
+          "ignoreCase": true,
+          "fallbackOutput": "fallback",
+          "sendToAllMatches": false
+        },
+        "toolId": "core_switch",
+        "toolData": {
+          "id": "core_switch",
+          "displayName": "Switch",
+          "category": "Logic & Flow Control",
+          "icon": "switch",
+          "description": "Route workflow using conditions",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "rules",
+                  "expression"
+                ],
+                "default": "rules",
+                "description": "Switch mode"
+              },
+              "rules": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "value1": {
+                      "description": "First value to compare"
+                    },
+                    "operator": {
+                      "type": "string",
+                      "enum": [
+                        "equal",
+                        "notEqual",
+                        "contains",
+                        "notContains",
+                        "startsWith",
+                        "notStartsWith",
+                        "endsWith",
+                        "notEndsWith",
+                        "regex",
+                        "notRegex",
+                        "greaterThan",
+                        "greaterThanOrEqual",
+                        "lessThan",
+                        "lessThanOrEqual",
+                        "isEmpty",
+                        "isNotEmpty",
+                        "isTrue",
+                        "isFalse"
+                      ],
+                      "description": "Comparison operator"
+                    },
+                    "value2": {
+                      "description": "Second value to compare (if needed)"
+                    },
+                    "outputIndex": {
+                      "type": "number",
+                      "default": 0,
+                      "description": "Index of the output handle to route to (0, 1, 2...)"
+                    }
+                  },
+                  "required": [
+                    "operator"
+                  ],
+                  "additionalProperties": false
+                },
+                "default": []
+              },
+              "outputIndexExpression": {
+                "description": "Expression or value that resolves to output index in expression mode"
+              },
+              "sendToAllMatches": {
+                "type": "boolean",
+                "default": false,
+                "description": "When true, route to all matching rules; otherwise first matching rule only"
+              },
+              "ignoreCase": {
+                "type": "boolean",
+                "default": false,
+                "description": "Case-insensitive matching for string operations"
+              },
+              "fallbackOutput": {
+                "type": "number",
+                "description": "Output index for items that match no rules"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "switch",
+      "width": 240,
+      "height": 233,
+      "dragging": false,
+      "position": {
+        "x": 535.3385701995278,
+        "y": 241.2978841478208
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 535.3385701995278,
+        "y": 241.2978841478208
+      }
+    },
+    {
+      "id": "extract-pdf",
+      "data": {
+        "label": "Extract From PDF",
+        "inputs": {
+          "pdfData": "{{ $json.file_content }}"
+        },
+        "toolId": "extract-from-file.extract-from-pdf",
+        "toolData": {
+          "id": "extract-from-file.extract-from-pdf",
+          "displayName": "Extract From PDF",
+          "category": "Knowledge / Context",
+          "provider": "extractFromFile",
+          "operation": "extract-from-pdf",
+          "icon": "https://cdn-icons-png.flaticon.com/512/337/337946.png",
+          "description": "Parse PDF content into JSON text",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "pdfData": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Input Binary Field (base64 or raw content)"
+              },
+              "file": {
+                "description": "File object from webhook"
+              }
+            },
+            "required": [
+              "pdfData"
+            ],
+            "additionalProperties": true,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 878.7273715172041,
+        "y": -296.11066767405265
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 878.7273715172041,
+        "y": -296.11066767405265
+      }
+    },
+    {
+      "id": "groq-pdf-extractor",
+      "data": {
+        "label": "Chat Text",
+        "inputs": {
+          "model": "openai/gpt-oss-120b",
+          "prompt": "Extract all contacts from this text. Return ONLY valid JSON: {\"contacts\":[{\"full_name\":null,\"first_name\":null,\"last_name\":null,\"designation\":null,\"company\":null,\"email\":null,\"phone\":null,\"address\":null,\"city\":null,\"state\":null,\"country\":null,\"sector_industry\":null,\"linkedin_url\":null,\"website\":null,\"source\":\"{{ $json.file_name }}\",\"validation_status\":\"valid\",\"duplicate_status\":\"unknown\"}]}. Use null for missing fields. No markdown.\n\nText:\n{{ ($json.text || $json.markdown || $json.content || '').slice(0, 6000) }}",
+          "options": {
+            "maxTokens": 4096,
+            "temperature": 0.05,
+            "systemMessage": "You are a contact extraction AI. Output only valid JSON. No prose, no markdown fences."
+          },
+          "resource": "Text",
+          "simplify": true,
+          "operation": "Chat",
+          "credentialId": "82f0d626-a2e2-4122-ab71-c6bd195e7c7f",
+          "outputContentAsJson": true
+        },
+        "toolId": "groq",
+        "toolData": {
+          "id": "groq",
+          "displayName": "Groq",
+          "type": "chat model",
+          "category": "AI / LLM",
+          "provider": "LLM Models",
+          "operation": "execute",
+          "icon": "tools/groq.png",
+          "description": "Run ultra-fast LLM inference with Groq-hosted open-source models.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Text"
+                ],
+                "default": "Text"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Chat"
+                ],
+                "default": "Chat"
+              },
+              "model": {
+                "type": "string",
+                "default": "llama-3.3-70b-versatile"
+              },
+              "prompt": {
+                "type": "string"
+              },
+              "messages": {
+                "type": "object",
+                "properties": {
+                  "values": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "prompt": {
+                          "type": "string"
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "user",
+                            "model"
+                          ],
+                          "default": "user"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true
+              },
+              "outputContentAsJson": {
+                "type": "boolean",
+                "default": false
+              },
+              "options": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "credentialId": {
+                "type": "string"
+              },
+              "credentials": {}
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "displayName": "Resource",
+              "name": "resource",
+              "type": "options",
+              "noDataExpression": true,
+              "options": [
+                {
+                  "name": "Text",
+                  "value": "Text"
+                }
+              ],
+              "default": "Text"
+            },
+            {
+              "displayName": "Operation",
+              "name": "operation",
+              "type": "options",
+              "noDataExpression": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Chat",
+                  "value": "Chat"
+                }
+              ],
+              "default": "Chat"
+            },
+            {
+              "displayName": "Model",
+              "name": "model",
+              "type": "options",
+              "fetchEndpoint": "/api/tools/groq/list-models",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "id",
+              "default": "llama-3.3-70b-versatile",
+              "description": "Select the Groq model to use."
+            },
+            {
+              "displayName": "Prompt (User Message)",
+              "name": "prompt",
+              "type": "string",
+              "format": "text",
+              "typeOptions": {
+                "rows": 4
+              },
+              "default": "",
+              "placeholder": "e.g. What can you do?",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ],
+                  "operation": [
+                    "Chat"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Simplify Output",
+              "name": "simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Output Content as JSON",
+              "name": "outputContentAsJson",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ],
+                  "operation": [
+                    "Chat"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Options",
+              "name": "options",
+              "type": "collection",
+              "displayOptions": {
+                "show": {
+                  "/operation": [
+                    "Chat"
+                  ]
+                }
+              },
+              "placeholder": "Add Option",
+              "default": {},
+              "fields": [
+                {
+                  "name": "systemMessage",
+                  "displayName": "System Message",
+                  "type": "string",
+                  "format": "text",
+                  "default": "",
+                  "typeOptions": {
+                    "rows": 3
+                  },
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "maxTokens",
+                  "displayName": "Maximum Number of Tokens",
+                  "type": "number",
+                  "default": 1024,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "temperature",
+                  "displayName": "Output Randomness (Temperature)",
+                  "type": "number",
+                  "default": 0.7,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "topP",
+                  "displayName": "Output Randomness (Top P)",
+                  "type": "number",
+                  "default": 0.95,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "Text",
+            "operation": "Chat",
+            "model": "llama-3.3-70b-versatile",
+            "prompt": "",
+            "simplify": true,
+            "outputContentAsJson": false,
+            "credentialId": "",
+            "options": {}
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 1145.8950908055667,
+        "y": -295.91702942704615
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1145.8950908055667,
+        "y": -295.91702942704615
+      }
+    },
+    {
+      "id": "sheets-pdf",
+      "data": {
+        "label": "Append to Google Sheets (PDF)",
+        "inputs": {
+          "values": {
+            "City": "{{$json.city}}",
+            "Email": "{{$json.email}}",
+            "Phone": "{{$json.phone}}",
+            "State": "{{$json.state}}",
+            "Source": "{{$json.source}}",
+            "Address": "{{$json.address}}",
+            "Company": "{{$json.company}}",
+            "Country": "{{$json.country}}",
+            "Website": "{{$json.website}}",
+            "LinkedIn": "{{$json.linkedin_url}}",
+            "Full Name": "{{$json.full_name}}",
+            "Last Name": "{{$json.last_name}}",
+            "First Name": "{{$json.first_name}}",
+            "Designation": "{{$json.designation}}",
+            "Duplicate Status": "{{$json.duplicate_status}}",
+            "Sector/Industry    ": "{{$json.sector_industry}}",
+            "Validation Status  ": "{{$json.validation_status}}",
+            "Lead Score": "{{$json.lead_score}}",
+            "Lead Tier": "{{$json.lead_tier}}",
+            "Scoring Rationale": "{{$json.scoring_rationale}}",
+            "Sales Summary": "{{$json.sales_summary}}"
+          },
+          "sheetName": "Contacts",
+          "credentialId": "23d93458-3f69-440a-8551-58fb1b035772",
+          "spreadsheetId": "1AZqaSfoyhcjQOLif1xZfeGi9rfMWHwKDRJUaYuArJVE",
+          "valueInputOption": "USER_ENTERED"
+        },
+        "toolId": "google.sheets.append_row",
+        "toolData": {
+          "id": "google.sheets.append_row",
+          "displayName": "Append Row",
+          "category": "Integrations",
+          "provider": "sheets",
+          "operation": "sheetsAppendRow",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg",
+          "description": "Append a row of data to a sheet",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "description": "Google Sheets credentials"
+              },
+              "spreadsheetId": {
+                "type": "string",
+                "description": "Document"
+              },
+              "sheetName": {
+                "type": "string",
+                "description": "Sheet Name"
+              },
+              "values": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": {}
+                  },
+                  {
+                    "type": "array"
+                  }
+                ],
+                "description": "Values to Send"
+              },
+              "valueInputOption": {
+                "type": "string",
+                "enum": [
+                  "RAW",
+                  "USER_ENTERED"
+                ],
+                "default": "USER_ENTERED",
+                "description": "How input data should be interpreted"
+              }
+            },
+            "required": [
+              "spreadsheetId",
+              "sheetName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Row",
+          "dynamicFields": [
+            {
+              "fieldName": "spreadsheetId",
+              "label": "Document (Spreadsheet)",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/list-spreadsheets",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "sheetName",
+              "label": "Sheet (Tab)",
+              "dependsOn": [
+                "credentials",
+                "spreadsheetId"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/list-sheets",
+              "labelKey": "title",
+              "valueKey": "title"
+            }
+          ],
+          "executionMode": "batch",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 2303.3990328371465,
+        "y": -281.920446122552
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2303.3990328371465,
+        "y": -281.920446122552
+      }
+    },
+    {
+      "id": "collect-results-pdf",
+      "data": {
+        "label": "Collect PDF Results",
+        "inputs": {
+          "mode": "manual",
+          "assignments": [
+            {
+              "name": "file_id",
+              "value": "={{ $node['set-passthrough-fields'].json.file_id }}",
+              "valueType": "expression"
+            },
+            {
+              "name": "batch_id",
+              "value": "={{ $node['set-passthrough-fields'].json.batch_id }}",
+              "valueType": "expression"
+            },
+            {
+              "name": "status",
+              "value": "done",
+              "valueType": "string"
+            },
+            {
+              "name": "contacts",
+              "value": "={{ $json.contacts || [] }}",
+              "valueType": "expression"
+            }
+          ],
+          "includeBinaryData": true,
+          "supportDotNotation": true,
+          "inputFieldsToInclude": "all",
+          "includeOtherInputFields": false,
+          "ignoreTypeConversionErrors": false
+        },
+        "toolId": "core.set",
+        "toolData": {
+          "id": "core.set",
+          "displayName": "Set Fields",
+          "category": "Core  Utilities",
+          "provider": "core",
+          "operation": "set",
+          "description": "Set or update fields",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "manual",
+                  "json"
+                ],
+                "default": "manual",
+                "description": "Select Manual Mapping or JSON Output"
+              },
+              "assignments": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Field name"
+                    },
+                    "value": {
+                      "description": "Field value (Fixed or Expression)"
+                    },
+                    "valueType": {
+                      "type": "string",
+                      "enum": [
+                        "fixed",
+                        "expression"
+                      ],
+                      "default": "expression",
+                      "description": "Whether field value is fixed or an expression"
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "Data type of the field"
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Fields to set when using Manual Mapping"
+              },
+              "jsonValue": {
+                "type": "string",
+                "description": "JSON to merge into the output when using JSON Output mode"
+              },
+              "includeOtherInputFields": {
+                "type": "boolean",
+                "default": false,
+                "description": "Also include unchanged fields from the input"
+              },
+              "inputFieldsToInclude": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "selected",
+                  "allExcept"
+                ],
+                "default": "all",
+                "description": "Choose which input data to include in the output data"
+              },
+              "fieldsToInclude": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "List of input fields to include when Input Fields to Include is Selected"
+              },
+              "fieldsToExclude": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "List of input fields to exclude when Input Fields to Include is All Except"
+              },
+              "includeBinaryData": {
+                "type": "boolean",
+                "default": true,
+                "description": "Include binary data in the output"
+              },
+              "ignoreTypeConversionErrors": {
+                "type": "boolean",
+                "default": false,
+                "description": "Ignore some data type errors when mapping fields (Manual Mapping only)"
+              },
+              "supportDotNotation": {
+                "type": "boolean",
+                "default": true,
+                "description": "If enabled, dotted names create nested objects (e.g. number.one → { number: { one: value } })"
+              },
+              "items": {
+                "type": "array",
+                "description": "Array of items to process (for multi-item execution)"
+              },
+              "$inputItem": {
+                "description": "Single item to process (for backward compatibility)"
+              }
+            },
+            "additionalProperties": true,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 2591.615364373937,
+        "y": -272.9490800473385
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2591.615364373937,
+        "y": -272.9490800473385
+      }
+    },
+    {
+      "id": "respond-pdf",
+      "data": {
+        "label": "Callback to Backend (PDF)",
+        "inputs": {
+          "respondWith": "JSON",
+          "responseBody": "{{ JSON.stringify($json) }}",
+          "responseCode": 200,
+          "inputFieldName": "data"
+        },
+        "toolId": "respondToWebhook",
+        "toolData": {
+          "id": "respondToWebhook",
+          "displayName": "Webhook Response",
+          "category": "Input /  Output",
+          "icon": "reply",
+          "description": "Send response to webhook",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "respondWith": {
+                "type": "string",
+                "enum": [
+                  "All Incoming Items",
+                  "First Incoming Item",
+                  "JSON",
+                  "Binary File",
+                  "JWT Token",
+                  "Text",
+                  "Redirect",
+                  "No Data"
+                ],
+                "default": "All Incoming Items",
+                "description": "What to respond with."
+              },
+              "responseBody": {
+                "type": "string",
+                "description": "The body of the response (can be an expression)"
+              },
+              "credentialId": {
+                "type": "string",
+                "description": "JWT credential ID"
+              },
+              "payload": {
+                "type": "string",
+                "description": "JWT Token Payload (JSON string or expression)"
+              },
+              "redirectUrl": {
+                "type": "string",
+                "description": "Redirect URL"
+              },
+              "inputFieldName": {
+                "type": "string",
+                "default": "data",
+                "description": "Input Field Name containing the binary file"
+              },
+              "responseCode": {
+                "type": "number",
+                "description": "HTTP Response Code"
+              },
+              "putResponseInField": {
+                "type": "string",
+                "description": "If set, put the response into this field instead of the default output"
+              },
+              "enableStreaming": {
+                "type": "boolean",
+                "description": "Stream the response back to the caller when supported"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "headers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 2894.2431728725123,
+        "y": -298.7899448348809
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2894.2431728725123,
+        "y": -298.7899448348809
+      }
+    },
+    {
+      "id": "extract-csv",
+      "data": {
+        "label": "Extract From CSV",
+        "inputs": {
+          "bom": true,
+          "trim": true,
+          "quote": false,
+          "escape": "\"",
+          "csvData": "{{ $json.file_content }}",
+          "headers": true,
+          "maxRows": 0,
+          "rawData": false,
+          "encoding": "utf-8",
+          "delimiter": ",",
+          "skipErrors": false,
+          "includeEmpty": false,
+          "readAsString": false,
+          "startingLine": 1,
+          "maxSkipErrors": -1
+        },
+        "toolId": "extract-from-file.extract-from-csv",
+        "toolData": {
+          "id": "extract-from-file.extract-from-csv",
+          "displayName": "Extract From CSV",
+          "category": "Knowledge / Context",
+          "provider": "extractFromFile",
+          "operation": "extract-from-csv",
+          "icon": "https://cdn-icons-png.flaticon.com/512/28/28842.png",
+          "description": "Parse CSV content into JSON",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "csvData": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Input Binary Field"
+              },
+              "delimiter": {
+                "type": "string",
+                "default": ",",
+                "description": "CSV separator character (e.g. , ; | \t)"
+              },
+              "encoding": {
+                "type": "string",
+                "default": "utf-8",
+                "description": "Character encoding of the file"
+              },
+              "bom": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether to remove BOM from the beginning of the file"
+              },
+              "quote": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to preserve quote characters around fields"
+              },
+              "escape": {
+                "type": "string",
+                "default": "\"",
+                "description": "Character used to escape quote character"
+              },
+              "headers": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether the first row is a header row"
+              },
+              "includeEmpty": {
+                "type": "boolean",
+                "default": false,
+                "description": "Include empty cells in the output"
+              },
+              "maxRows": {
+                "type": "number",
+                "default": 0,
+                "description": "Maximum number of rows to parse"
+              },
+              "rawData": {
+                "type": "boolean",
+                "default": false,
+                "description": "Output the raw data without parsing it"
+              },
+              "readAsString": {
+                "type": "boolean",
+                "default": false,
+                "description": "Force all fields to be read as strings"
+              },
+              "startingLine": {
+                "type": "number",
+                "default": 1,
+                "description": "The line number to start parsing from"
+              },
+              "skipErrors": {
+                "type": "boolean",
+                "default": false,
+                "description": "Skip records that have errors during parsing"
+              },
+              "maxSkipErrors": {
+                "type": "number",
+                "default": -1,
+                "description": "Maximum number of errors to skip (-1 for unlimited)"
+              },
+              "trim": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to trim whitespace from fields"
+              }
+            },
+            "required": [
+              "csvData"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "initialData": {
+            "csvData": "data",
+            "delimiter": ","
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 907.0647696161991,
+        "y": -16.446420269642175
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 907.0647696161991,
+        "y": -16.446420269642175
+      }
+    },
+    {
+      "id": "groq-csv-extractor",
+      "data": {
+        "label": "Chat Text",
+        "inputs": {
+          "model": "openai/gpt-oss-20b",
+          "prompt": "Normalize these CSV rows into contact records. Return ONLY valid JSON: {\"contacts\":[{\"full_name\":null,\"first_name\":null,\"last_name\":null,\"designation\":null,\"company\":null,\"email\":null,\"phone\":null,\"address\":null,\"city\":null,\"state\":null,\"country\":null,\"sector_industry\":null,\"linkedin_url\":null,\"website\":null,\"source\":\"{{ $json.file_name }}\",\"validation_status\":\"valid\",\"duplicate_status\":\"unknown\"}]}. Map columns intelligently. Use null for missing. No markdown.\n\nCSV rows:\n{{ JSON.stringify($json).slice(0, 6000) }}",
+          "options": {
+            "maxTokens": 4096,
+            "temperature": 0.05,
+            "systemMessage": "You are a contact normalization AI. Output only valid JSON. No prose, no markdown fences."
+          },
+          "resource": "Text",
+          "simplify": true,
+          "operation": "Chat",
+          "credentialId": "82f0d626-a2e2-4122-ab71-c6bd195e7c7f",
+          "outputContentAsJson": true
+        },
+        "toolId": "groq",
+        "toolData": {
+          "id": "groq",
+          "displayName": "Groq",
+          "type": "chat model",
+          "category": "AI / LLM",
+          "provider": "LLM Models",
+          "operation": "execute",
+          "icon": "tools/groq.png",
+          "description": "Run ultra-fast LLM inference with Groq-hosted open-source models.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Text"
+                ],
+                "default": "Text"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Chat"
+                ],
+                "default": "Chat"
+              },
+              "model": {
+                "type": "string",
+                "default": "llama-3.3-70b-versatile"
+              },
+              "prompt": {
+                "type": "string"
+              },
+              "messages": {
+                "type": "object",
+                "properties": {
+                  "values": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "prompt": {
+                          "type": "string"
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "user",
+                            "model"
+                          ],
+                          "default": "user"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true
+              },
+              "outputContentAsJson": {
+                "type": "boolean",
+                "default": false
+              },
+              "options": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "credentialId": {
+                "type": "string"
+              },
+              "credentials": {}
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "displayName": "Resource",
+              "name": "resource",
+              "type": "options",
+              "noDataExpression": true,
+              "options": [
+                {
+                  "name": "Text",
+                  "value": "Text"
+                }
+              ],
+              "default": "Text"
+            },
+            {
+              "displayName": "Operation",
+              "name": "operation",
+              "type": "options",
+              "noDataExpression": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Chat",
+                  "value": "Chat"
+                }
+              ],
+              "default": "Chat"
+            },
+            {
+              "displayName": "Model",
+              "name": "model",
+              "type": "options",
+              "fetchEndpoint": "/api/tools/groq/list-models",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "id",
+              "default": "llama-3.3-70b-versatile",
+              "description": "Select the Groq model to use."
+            },
+            {
+              "displayName": "Prompt (User Message)",
+              "name": "prompt",
+              "type": "string",
+              "format": "text",
+              "typeOptions": {
+                "rows": 4
+              },
+              "default": "",
+              "placeholder": "e.g. What can you do?",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ],
+                  "operation": [
+                    "Chat"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Simplify Output",
+              "name": "simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Output Content as JSON",
+              "name": "outputContentAsJson",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ],
+                  "operation": [
+                    "Chat"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Options",
+              "name": "options",
+              "type": "collection",
+              "displayOptions": {
+                "show": {
+                  "/operation": [
+                    "Chat"
+                  ]
+                }
+              },
+              "placeholder": "Add Option",
+              "default": {},
+              "fields": [
+                {
+                  "name": "systemMessage",
+                  "displayName": "System Message",
+                  "type": "string",
+                  "format": "text",
+                  "default": "",
+                  "typeOptions": {
+                    "rows": 3
+                  },
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "maxTokens",
+                  "displayName": "Maximum Number of Tokens",
+                  "type": "number",
+                  "default": 1024,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "temperature",
+                  "displayName": "Output Randomness (Temperature)",
+                  "type": "number",
+                  "default": 0.7,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "topP",
+                  "displayName": "Output Randomness (Top P)",
+                  "type": "number",
+                  "default": 0.95,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "Text",
+            "operation": "Chat",
+            "model": "llama-3.3-70b-versatile",
+            "prompt": "",
+            "simplify": true,
+            "outputContentAsJson": false,
+            "credentialId": "",
+            "options": {}
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 1208.2395139211737,
+        "y": -7.035422800764593
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1208.2395139211737,
+        "y": -7.035422800764593
+      }
+    },
+    {
+      "id": "sheets-csv",
+      "data": {
+        "label": "Append to Google Sheets (CSV)",
+        "inputs": {
+          "values": {
+            "City": "{{ $json.City }}",
+            "Email": "{{ $json.Email }}",
+            "Phone": "{{ $json.Phone }}",
+            "State": "{{ $json.State }}",
+            "Source": "{{ $json.Source }}",
+            "Address": "{{ $json.Address }}",
+            "Company": "{{ $json.Company }}",
+            "Country": "{{ $json.Country }}",
+            "Website": "{{ $json.Website }}",
+            "LinkedIn": "{{ $json.LinkedIn }}",
+            "Full Name": "{{ $json[\"Full Name\"] }}",
+            "Last Name": "{{ $json[\"Last Name\"] }}",
+            "First Name": "{{ $json[\"First Name\"] }}",
+            "Designation": "{{ $json.Designation }}",
+            "Duplicate Status": "{{ $json[\"Duplicate Status\"] }}",
+            "Sector/Industry    ": "{{ $json[\"Sector/Industry\"] }}",
+            "Validation Status  ": "{{ $json[\"Validation Status\"] }}",
+            "Lead Score": "{{ $json[\"Lead Score\"] }}",
+            "Lead Tier": "{{ $json[\"Lead Tier\"] }}",
+            "Scoring Rationale": "{{ $json[\"Scoring Rationale\"] }}",
+            "Sales Summary": "{{ $json[\"Sales Summary\"] }}"
+          },
+          "sheetName": "Contacts",
+          "credentialId": "23d93458-3f69-440a-8551-58fb1b035772",
+          "spreadsheetId": "1AZqaSfoyhcjQOLif1xZfeGi9rfMWHwKDRJUaYuArJVE",
+          "valueInputOption": "USER_ENTERED"
+        },
+        "toolId": "google.sheets.append_row",
+        "toolData": {
+          "id": "google.sheets.append_row",
+          "displayName": "Append Row",
+          "category": "Integrations",
+          "provider": "sheets",
+          "operation": "sheetsAppendRow",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg",
+          "description": "Append a row of data to a sheet",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "description": "Google Sheets credentials"
+              },
+              "spreadsheetId": {
+                "type": "string",
+                "description": "Document"
+              },
+              "sheetName": {
+                "type": "string",
+                "description": "Sheet Name"
+              },
+              "values": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": {}
+                  },
+                  {
+                    "type": "array"
+                  }
+                ],
+                "description": "Values to Send"
+              },
+              "valueInputOption": {
+                "type": "string",
+                "enum": [
+                  "RAW",
+                  "USER_ENTERED"
+                ],
+                "default": "USER_ENTERED",
+                "description": "How input data should be interpreted"
+              }
+            },
+            "required": [
+              "spreadsheetId",
+              "sheetName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Row",
+          "dynamicFields": [
+            {
+              "fieldName": "spreadsheetId",
+              "label": "Document (Spreadsheet)",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/list-spreadsheets",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "sheetName",
+              "label": "Sheet (Tab)",
+              "dependsOn": [
+                "credentials",
+                "spreadsheetId"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/list-sheets",
+              "labelKey": "title",
+              "valueKey": "title"
+            }
+          ],
+          "executionMode": "batch",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 2235.529445764302,
+        "y": 2.748560716626713
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2235.529445764302,
+        "y": 2.748560716626713
+      }
+    },
+    {
+      "id": "respond-csv",
+      "data": {
+        "label": "Callback to Backend (CSV)",
+        "inputs": {
+          "respondWith": "JSON",
+          "responseBody": "{{ JSON.stringify($json) }}",
+          "responseCode": 200,
+          "inputFieldName": "data"
+        },
+        "toolId": "respondToWebhook",
+        "toolData": {
+          "id": "respondToWebhook",
+          "displayName": "Webhook Response",
+          "category": "Input /  Output",
+          "icon": "reply",
+          "description": "Send response to webhook",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "respondWith": {
+                "type": "string",
+                "enum": [
+                  "All Incoming Items",
+                  "First Incoming Item",
+                  "JSON",
+                  "Binary File",
+                  "JWT Token",
+                  "Text",
+                  "Redirect",
+                  "No Data"
+                ],
+                "default": "All Incoming Items",
+                "description": "What to respond with."
+              },
+              "responseBody": {
+                "type": "string",
+                "description": "The body of the response (can be an expression)"
+              },
+              "credentialId": {
+                "type": "string",
+                "description": "JWT credential ID"
+              },
+              "payload": {
+                "type": "string",
+                "description": "JWT Token Payload (JSON string or expression)"
+              },
+              "redirectUrl": {
+                "type": "string",
+                "description": "Redirect URL"
+              },
+              "inputFieldName": {
+                "type": "string",
+                "default": "data",
+                "description": "Input Field Name containing the binary file"
+              },
+              "responseCode": {
+                "type": "number",
+                "description": "HTTP Response Code"
+              },
+              "putResponseInField": {
+                "type": "string",
+                "description": "If set, put the response into this field instead of the default output"
+              },
+              "enableStreaming": {
+                "type": "boolean",
+                "description": "Stream the response back to the caller when supported"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "headers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 2775.455645785622,
+        "y": -8.60377125343183
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2775.455645785622,
+        "y": -8.60377125343183
+      }
+    },
+    {
+      "id": "groq-ocr-extractor",
+      "data": {
+        "label": "Groq: Extract Contacts from Image Text",
+        "inputs": {
+          "model": "llama-3.1-8b-instant",
+          "prompt": "Extract contacts from this OCR text. Return ONLY valid JSON: {\"contacts\":[{\"full_name\":null,\"first_name\":null,\"last_name\":null,\"designation\":null,\"company\":null,\"email\":null,\"phone\":null,\"address\":null,\"city\":null,\"state\":null,\"country\":null,\"sector_industry\":null,\"linkedin_url\":null,\"website\":null,\"source\":\"{{ $json.file_name }}\",\"validation_status\":\"valid\",\"duplicate_status\":\"unknown\"}]}. No markdown.\n\nOCR Text:\n{{ ($json.text || $json.markdown || $json.content || $json.pages?.[0]?.text || '').slice(0, 4000) }}",
+          "options": {
+            "maxTokens": 2048,
+            "temperature": 0.05,
+            "systemMessage": "You extract contacts from OCR text. Output only valid JSON. No prose, no markdown."
+          },
+          "resource": "Text",
+          "simplify": true,
+          "operation": "Chat",
+          "credentialId": "",
+          "outputContentAsJson": true
+        },
+        "toolId": "groq",
+        "toolData": {
+          "id": "groq",
+          "displayName": "Groq",
+          "type": "chat model",
+          "category": "AI / LLM",
+          "provider": "LLM Models",
+          "operation": "execute",
+          "icon": "tools/groq.png",
+          "description": "Run ultra-fast LLM inference with Groq-hosted open-source models.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Text"
+                ],
+                "default": "Text"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Chat"
+                ],
+                "default": "Chat"
+              },
+              "model": {
+                "type": "string",
+                "default": "llama-3.3-70b-versatile"
+              },
+              "prompt": {
+                "type": "string"
+              },
+              "messages": {
+                "type": "object",
+                "properties": {
+                  "values": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "prompt": {
+                          "type": "string"
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "user",
+                            "model"
+                          ],
+                          "default": "user"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true
+              },
+              "outputContentAsJson": {
+                "type": "boolean",
+                "default": false
+              },
+              "options": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "credentialId": {
+                "type": "string"
+              },
+              "credentials": {}
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "displayName": "Resource",
+              "name": "resource",
+              "type": "options",
+              "noDataExpression": true,
+              "options": [
+                {
+                  "name": "Text",
+                  "value": "Text"
+                }
+              ],
+              "default": "Text"
+            },
+            {
+              "displayName": "Operation",
+              "name": "operation",
+              "type": "options",
+              "noDataExpression": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Chat",
+                  "value": "Chat"
+                }
+              ],
+              "default": "Chat"
+            },
+            {
+              "displayName": "Model",
+              "name": "model",
+              "type": "options",
+              "fetchEndpoint": "/api/tools/groq/list-models",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "id",
+              "default": "llama-3.3-70b-versatile",
+              "description": "Select the Groq model to use."
+            },
+            {
+              "displayName": "Prompt (User Message)",
+              "name": "prompt",
+              "type": "string",
+              "format": "text",
+              "typeOptions": {
+                "rows": 4
+              },
+              "default": "",
+              "placeholder": "e.g. What can you do?",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ],
+                  "operation": [
+                    "Chat"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Simplify Output",
+              "name": "simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Output Content as JSON",
+              "name": "outputContentAsJson",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ],
+                  "operation": [
+                    "Chat"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Options",
+              "name": "options",
+              "type": "collection",
+              "displayOptions": {
+                "show": {
+                  "/operation": [
+                    "Chat"
+                  ]
+                }
+              },
+              "placeholder": "Add Option",
+              "default": {},
+              "fields": [
+                {
+                  "name": "systemMessage",
+                  "displayName": "System Message",
+                  "type": "string",
+                  "format": "text",
+                  "default": "",
+                  "typeOptions": {
+                    "rows": 3
+                  },
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "maxTokens",
+                  "displayName": "Maximum Number of Tokens",
+                  "type": "number",
+                  "default": 1024,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "temperature",
+                  "displayName": "Output Randomness (Temperature)",
+                  "type": "number",
+                  "default": 0.7,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "topP",
+                  "displayName": "Output Randomness (Top P)",
+                  "type": "number",
+                  "default": 0.95,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "Text",
+            "operation": "Chat",
+            "model": "llama-3.3-70b-versatile",
+            "prompt": "",
+            "simplify": true,
+            "outputContentAsJson": false,
+            "credentialId": "",
+            "options": {}
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 1522.4520244513296,
+        "y": 415.6666383545523
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1522.4520244513296,
+        "y": 415.6666383545523
+      }
+    },
+    {
+      "id": "sheets-ocr",
+      "data": {
+        "label": "Append to Google Sheets (Image/OCR)",
+        "inputs": {
+          "values": {
+            "City": "{{ $json.city }}",
+            "Email": "{{ $json.email }}",
+            "Phone": "{{ $json.phone }}",
+            "State": "{{ $json.state }}",
+            "Source": "{{ $json.source }}",
+            "Address": "{{ $json.address }}",
+            "Company": "{{ $json.company }}",
+            "Country": "{{ $json.country }}",
+            "Website": "{{ $json.website }}",
+            "Full Name": "{{ $json.full_name }}",
+            "Last Name": "{{ $json.last_name }}",
+            "First Name": "{{ $json.first_name }}",
+            "Designation": "{{ $json.designation }}",
+            "Extracted At": "{{ new Date().toISOString() }}",
+            "LinkedIn URL": "{{ $json.linkedin_url }}",
+            "Sector/Industry": "{{ $json.sector_industry }}",
+            "Duplicate Status": "{{ $json.duplicate_status }}",
+            "Validation Status": "{{ $json.validation_status }}"
+          },
+          "sheetName": "Contacts",
+          "credentialId": "",
+          "spreadsheetId": "1AZqaSfoyhcjQOLif1xZfeGi9rfMWHwKDRJUaYuArJVE",
+          "valueInputOption": "USER_ENTERED"
+        },
+        "toolId": "google.sheets.append_row",
+        "toolData": {
+          "id": "google.sheets.append_row",
+          "displayName": "Append Row",
+          "category": "Integrations",
+          "provider": "sheets",
+          "operation": "sheetsAppendRow",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg",
+          "description": "Append a row of data to a sheet",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "description": "Google Sheets credentials"
+              },
+              "spreadsheetId": {
+                "type": "string",
+                "description": "Document"
+              },
+              "sheetName": {
+                "type": "string",
+                "description": "Sheet Name"
+              },
+              "values": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": {}
+                  },
+                  {
+                    "type": "array"
+                  }
+                ],
+                "description": "Values to Send"
+              },
+              "valueInputOption": {
+                "type": "string",
+                "enum": [
+                  "RAW",
+                  "USER_ENTERED"
+                ],
+                "default": "USER_ENTERED",
+                "description": "How input data should be interpreted"
+              }
+            },
+            "required": [
+              "spreadsheetId",
+              "sheetName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Row",
+          "dynamicFields": [
+            {
+              "fieldName": "spreadsheetId",
+              "label": "Document (Spreadsheet)",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/list-spreadsheets",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "sheetName",
+              "label": "Sheet (Tab)",
+              "dependsOn": [
+                "credentials",
+                "spreadsheetId"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/list-sheets",
+              "labelKey": "title",
+              "valueKey": "title"
+            }
+          ],
+          "executionMode": "batch",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 2012.5741948683387,
+        "y": 400.6350368496492
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2012.5741948683387,
+        "y": 400.6350368496492
+      }
+    },
+    {
+      "id": "collect-results-ocr",
+      "data": {
+        "label": "Collect OCR Results",
+        "inputs": {
+          "mode": "manual",
+          "assignments": [
+            {
+              "name": "file_id",
+              "value": "={{ $node['set-passthrough-fields'].json.file_id }}",
+              "valueType": "expression"
+            },
+            {
+              "name": "batch_id",
+              "value": "={{ $node['set-passthrough-fields'].json.batch_id }}",
+              "valueType": "expression"
+            },
+            {
+              "name": "status",
+              "value": "done",
+              "valueType": "string"
+            },
+            {
+              "name": "contacts",
+              "value": "={{ $json.contacts || [] }}",
+              "valueType": "expression"
+            }
+          ],
+          "includeOtherInputFields": false
+        },
+        "toolId": "core.set",
+        "toolData": {
+          "id": "core.set",
+          "displayName": "Set Fields",
+          "category": "Core  Utilities",
+          "provider": "core",
+          "operation": "set",
+          "description": "Set or update fields",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "manual",
+                  "json"
+                ],
+                "default": "manual",
+                "description": "Select Manual Mapping or JSON Output"
+              },
+              "assignments": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Field name"
+                    },
+                    "value": {
+                      "description": "Field value (Fixed or Expression)"
+                    },
+                    "valueType": {
+                      "type": "string",
+                      "enum": [
+                        "fixed",
+                        "expression"
+                      ],
+                      "default": "expression",
+                      "description": "Whether field value is fixed or an expression"
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "Data type of the field"
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Fields to set when using Manual Mapping"
+              },
+              "jsonValue": {
+                "type": "string",
+                "description": "JSON to merge into the output when using JSON Output mode"
+              },
+              "includeOtherInputFields": {
+                "type": "boolean",
+                "default": false,
+                "description": "Also include unchanged fields from the input"
+              },
+              "inputFieldsToInclude": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "selected",
+                  "allExcept"
+                ],
+                "default": "all",
+                "description": "Choose which input data to include in the output data"
+              },
+              "fieldsToInclude": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "List of input fields to include when Input Fields to Include is Selected"
+              },
+              "fieldsToExclude": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "List of input fields to exclude when Input Fields to Include is All Except"
+              },
+              "includeBinaryData": {
+                "type": "boolean",
+                "default": true,
+                "description": "Include binary data in the output"
+              },
+              "ignoreTypeConversionErrors": {
+                "type": "boolean",
+                "default": false,
+                "description": "Ignore some data type errors when mapping fields (Manual Mapping only)"
+              },
+              "supportDotNotation": {
+                "type": "boolean",
+                "default": true,
+                "description": "If enabled, dotted names create nested objects (e.g. number.one → { number: { one: value } })"
+              },
+              "items": {
+                "type": "array",
+                "description": "Array of items to process (for multi-item execution)"
+              },
+              "$inputItem": {
+                "description": "Single item to process (for backward compatibility)"
+              }
+            },
+            "additionalProperties": true,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 2295.7111639204577,
+        "y": 308.4282741869071
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2295.7111639204577,
+        "y": 308.4282741869071
+      }
+    },
+    {
+      "id": "respond-ocr",
+      "data": {
+        "label": "Callback to Backend (OCR)",
+        "inputs": {
+          "respondWith": "JSON",
+          "responseBody": "{{ JSON.stringify($json) }}",
+          "responseCode": 200
+        },
+        "toolId": "respondToWebhook",
+        "toolData": {
+          "id": "respondToWebhook",
+          "displayName": "Webhook Response",
+          "category": "Input /  Output",
+          "icon": "reply",
+          "description": "Send response to webhook",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "respondWith": {
+                "type": "string",
+                "enum": [
+                  "All Incoming Items",
+                  "First Incoming Item",
+                  "JSON",
+                  "Binary File",
+                  "JWT Token",
+                  "Text",
+                  "Redirect",
+                  "No Data"
+                ],
+                "default": "All Incoming Items",
+                "description": "What to respond with."
+              },
+              "responseBody": {
+                "type": "string",
+                "description": "The body of the response (can be an expression)"
+              },
+              "credentialId": {
+                "type": "string",
+                "description": "JWT credential ID"
+              },
+              "payload": {
+                "type": "string",
+                "description": "JWT Token Payload (JSON string or expression)"
+              },
+              "redirectUrl": {
+                "type": "string",
+                "description": "Redirect URL"
+              },
+              "inputFieldName": {
+                "type": "string",
+                "default": "data",
+                "description": "Input Field Name containing the binary file"
+              },
+              "responseCode": {
+                "type": "number",
+                "description": "HTTP Response Code"
+              },
+              "putResponseInField": {
+                "type": "string",
+                "description": "If set, put the response into this field instead of the default output"
+              },
+              "enableStreaming": {
+                "type": "boolean",
+                "description": "Stream the response back to the caller when supported"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "headers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 2519.900401351882,
+        "y": 463.04232942545013
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2519.900401351882,
+        "y": 463.04232942545013
+      }
+    },
+    {
+      "id": "groq-text-extractor",
+      "data": {
+        "label": "Chat Text",
+        "inputs": {
+          "model": "llama-3.1-8b-instant",
+          "prompt": "Extract contacts from this text. Return ONLY valid JSON: {\"contacts\":[{\"full_name\":null,\"first_name\":null,\"last_name\":null,\"designation\":null,\"company\":null,\"email\":null,\"phone\":null,\"address\":null,\"city\":null,\"state\":null,\"country\":null,\"sector_industry\":null,\"linkedin_url\":null,\"website\":null,\"source\":\"{{ $json.file_name }}\",\"validation_status\":\"valid\",\"duplicate_status\":\"unknown\"}]}. No markdown.\n\nText:\n{{ ($json.file_content || $json.text || '').slice(0, 6000) }}",
+          "options": {
+            "maxTokens": 4096,
+            "temperature": 0.05,
+            "systemMessage": "You extract and structure contact information. Output only valid JSON. No prose, no markdown."
+          },
+          "resource": "Text",
+          "simplify": true,
+          "operation": "Chat",
+          "credentialId": "82f0d626-a2e2-4122-ab71-c6bd195e7c7f",
+          "outputContentAsJson": true
+        },
+        "toolId": "groq",
+        "toolData": {
+          "id": "groq",
+          "displayName": "Groq",
+          "type": "chat model",
+          "category": "AI / LLM",
+          "provider": "LLM Models",
+          "operation": "execute",
+          "icon": "tools/groq.png",
+          "description": "Run ultra-fast LLM inference with Groq-hosted open-source models.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Text"
+                ],
+                "default": "Text"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Chat"
+                ],
+                "default": "Chat"
+              },
+              "model": {
+                "type": "string",
+                "default": "llama-3.3-70b-versatile"
+              },
+              "prompt": {
+                "type": "string"
+              },
+              "messages": {
+                "type": "object",
+                "properties": {
+                  "values": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "prompt": {
+                          "type": "string"
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "user",
+                            "model"
+                          ],
+                          "default": "user"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true
+              },
+              "outputContentAsJson": {
+                "type": "boolean",
+                "default": false
+              },
+              "options": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "credentialId": {
+                "type": "string"
+              },
+              "credentials": {}
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "displayName": "Resource",
+              "name": "resource",
+              "type": "options",
+              "noDataExpression": true,
+              "options": [
+                {
+                  "name": "Text",
+                  "value": "Text"
+                }
+              ],
+              "default": "Text"
+            },
+            {
+              "displayName": "Operation",
+              "name": "operation",
+              "type": "options",
+              "noDataExpression": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Chat",
+                  "value": "Chat"
+                }
+              ],
+              "default": "Chat"
+            },
+            {
+              "displayName": "Model",
+              "name": "model",
+              "type": "options",
+              "fetchEndpoint": "/api/tools/groq/list-models",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "id",
+              "default": "llama-3.3-70b-versatile",
+              "description": "Select the Groq model to use."
+            },
+            {
+              "displayName": "Prompt (User Message)",
+              "name": "prompt",
+              "type": "string",
+              "format": "text",
+              "typeOptions": {
+                "rows": 4
+              },
+              "default": "",
+              "placeholder": "e.g. What can you do?",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ],
+                  "operation": [
+                    "Chat"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Simplify Output",
+              "name": "simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Output Content as JSON",
+              "name": "outputContentAsJson",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Text"
+                  ],
+                  "operation": [
+                    "Chat"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Options",
+              "name": "options",
+              "type": "collection",
+              "displayOptions": {
+                "show": {
+                  "/operation": [
+                    "Chat"
+                  ]
+                }
+              },
+              "placeholder": "Add Option",
+              "default": {},
+              "fields": [
+                {
+                  "name": "systemMessage",
+                  "displayName": "System Message",
+                  "type": "string",
+                  "format": "text",
+                  "default": "",
+                  "typeOptions": {
+                    "rows": 3
+                  },
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "maxTokens",
+                  "displayName": "Maximum Number of Tokens",
+                  "type": "number",
+                  "default": 1024,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "temperature",
+                  "displayName": "Output Randomness (Temperature)",
+                  "type": "number",
+                  "default": 0.7,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "topP",
+                  "displayName": "Output Randomness (Top P)",
+                  "type": "number",
+                  "default": 0.95,
+                  "displayOptions": {
+                    "show": {
+                      "/operation": [
+                        "Chat"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "Text",
+            "operation": "Chat",
+            "model": "llama-3.3-70b-versatile",
+            "prompt": "",
+            "simplify": true,
+            "outputContentAsJson": false,
+            "credentialId": "",
+            "options": {}
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 980,
+        "y": 680
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 980,
+        "y": 680
+      }
+    },
+    {
+      "id": "loop-text-contacts",
+      "data": {
+        "label": "Loop Text Contacts",
+        "inputs": {
+          "options": {
+            "doneBranchOutput": "bundled"
+          },
+          "batchSize": 1,
+          "inputField": "contacts"
+        },
+        "toolId": "core_loop",
+        "toolData": {
+          "id": "core_loop",
+          "displayName": "Loop Items",
+          "category": "Logic & Flow Control",
+          "icon": "Repeat",
+          "description": "Process items in loop",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "inputField": {
+                "type": "string",
+                "description": "Field name containing an array (e.g. \"dates\")"
+              },
+              "batchSize": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1000
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "default": 1,
+                "description": "Batch Size — Enter a number or an expression (e.g. {{ $json.size }})"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "doneBranchOutput": {
+                    "type": "string",
+                    "enum": [
+                      "separate",
+                      "bundled"
+                    ],
+                    "default": "separate",
+                    "description": "Done Branch Output — \"separate\" emits individual items, \"bundled\" emits one item with all results in an array"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "loop",
+      "width": 220,
+      "height": 210,
+      "dragging": false,
+      "position": {
+        "x": 1260,
+        "y": 680
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1260,
+        "y": 680
+      }
+    },
+    {
+      "id": "sheets-text",
+      "data": {
+        "label": "Append to Google Sheets (Text)",
+        "inputs": {
+          "values": {
+            "City": "{{ $json.city }}",
+            "Email": "{{ $json.email }}",
+            "Phone": "{{ $json.phone }}",
+            "State": "{{ $json.state }}",
+            "Source": "{{ $json.source }}",
+            "Address": "{{ $json.address }}",
+            "Company": "{{ $json.company }}",
+            "Country": "{{ $json.country }}",
+            "Website": "{{ $json.website }}",
+            "Full Name": "{{ $json.full_name }}",
+            "Last Name": "{{ $json.last_name }}",
+            "First Name": "{{ $json.first_name }}",
+            "Designation": "{{ $json.designation }}",
+            "Extracted At": "{{ new Date().toISOString() }}",
+            "LinkedIn URL": "{{ $json.linkedin_url }}",
+            "Sector/Industry": "{{ $json.sector_industry }}",
+            "Duplicate Status": "{{ $json.duplicate_status }}",
+            "Validation Status": "{{ $json.validation_status }}"
+          },
+          "sheetName": "Contacts",
+          "credentialId": "",
+          "spreadsheetId": "1AZqaSfoyhcjQOLif1xZfeGi9rfMWHwKDRJUaYuArJVE",
+          "valueInputOption": "USER_ENTERED"
+        },
+        "toolId": "google.sheets.append_row",
+        "toolData": {
+          "id": "google.sheets.append_row",
+          "displayName": "Append Row",
+          "category": "Integrations",
+          "provider": "sheets",
+          "operation": "sheetsAppendRow",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg",
+          "description": "Append a row of data to a sheet",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "description": "Google Sheets credentials"
+              },
+              "spreadsheetId": {
+                "type": "string",
+                "description": "Document"
+              },
+              "sheetName": {
+                "type": "string",
+                "description": "Sheet Name"
+              },
+              "values": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": {}
+                  },
+                  {
+                    "type": "array"
+                  }
+                ],
+                "description": "Values to Send"
+              },
+              "valueInputOption": {
+                "type": "string",
+                "enum": [
+                  "RAW",
+                  "USER_ENTERED"
+                ],
+                "default": "USER_ENTERED",
+                "description": "How input data should be interpreted"
+              }
+            },
+            "required": [
+              "spreadsheetId",
+              "sheetName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Row",
+          "dynamicFields": [
+            {
+              "fieldName": "spreadsheetId",
+              "label": "Document (Spreadsheet)",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/list-spreadsheets",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "sheetName",
+              "label": "Sheet (Tab)",
+              "dependsOn": [
+                "credentials",
+                "spreadsheetId"
+              ],
+              "fetchEndpoint": "/api/tools/sheets/list-sheets",
+              "labelKey": "title",
+              "valueKey": "title"
+            }
+          ],
+          "executionMode": "batch",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 1805.5399568034559,
+        "y": 865.7289416846653
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1805.5399568034559,
+        "y": 865.7289416846653
+      }
+    },
+    {
+      "id": "collect-results-text",
+      "data": {
+        "label": "Collect Text Results",
+        "inputs": {
+          "mode": "manual",
+          "assignments": [
+            {
+              "name": "file_id",
+              "value": "={{ $node['set-passthrough-fields'].json.file_id }}",
+              "valueType": "expression"
+            },
+            {
+              "name": "batch_id",
+              "value": "={{ $node['set-passthrough-fields'].json.batch_id }}",
+              "valueType": "expression"
+            },
+            {
+              "name": "status",
+              "value": "done",
+              "valueType": "string"
+            },
+            {
+              "name": "contacts",
+              "value": "={{ $json.contacts || [] }}",
+              "valueType": "expression"
+            }
+          ],
+          "includeOtherInputFields": false
+        },
+        "toolId": "core.set",
+        "toolData": {
+          "id": "core.set",
+          "displayName": "Set Fields",
+          "category": "Core  Utilities",
+          "provider": "core",
+          "operation": "set",
+          "description": "Set or update fields",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "manual",
+                  "json"
+                ],
+                "default": "manual",
+                "description": "Select Manual Mapping or JSON Output"
+              },
+              "assignments": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Field name"
+                    },
+                    "value": {
+                      "description": "Field value (Fixed or Expression)"
+                    },
+                    "valueType": {
+                      "type": "string",
+                      "enum": [
+                        "fixed",
+                        "expression"
+                      ],
+                      "default": "expression",
+                      "description": "Whether field value is fixed or an expression"
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "Data type of the field"
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Fields to set when using Manual Mapping"
+              },
+              "jsonValue": {
+                "type": "string",
+                "description": "JSON to merge into the output when using JSON Output mode"
+              },
+              "includeOtherInputFields": {
+                "type": "boolean",
+                "default": false,
+                "description": "Also include unchanged fields from the input"
+              },
+              "inputFieldsToInclude": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "selected",
+                  "allExcept"
+                ],
+                "default": "all",
+                "description": "Choose which input data to include in the output data"
+              },
+              "fieldsToInclude": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "List of input fields to include when Input Fields to Include is Selected"
+              },
+              "fieldsToExclude": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "List of input fields to exclude when Input Fields to Include is All Except"
+              },
+              "includeBinaryData": {
+                "type": "boolean",
+                "default": true,
+                "description": "Include binary data in the output"
+              },
+              "ignoreTypeConversionErrors": {
+                "type": "boolean",
+                "default": false,
+                "description": "Ignore some data type errors when mapping fields (Manual Mapping only)"
+              },
+              "supportDotNotation": {
+                "type": "boolean",
+                "default": true,
+                "description": "If enabled, dotted names create nested objects (e.g. number.one → { number: { one: value } })"
+              },
+              "items": {
+                "type": "array",
+                "description": "Array of items to process (for multi-item execution)"
+              },
+              "$inputItem": {
+                "description": "Single item to process (for backward compatibility)"
+              }
+            },
+            "additionalProperties": true,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 1887.8698704103672,
+        "y": 703.6096112311014
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1887.8698704103672,
+        "y": 703.6096112311014
+      }
+    },
+    {
+      "id": "respond-text",
+      "data": {
+        "label": "Callback to Backend (Text)",
+        "inputs": {
+          "respondWith": "JSON",
+          "responseBody": "{{ JSON.stringify($json) }}",
+          "responseCode": 200
+        },
+        "toolId": "respondToWebhook",
+        "toolData": {
+          "id": "respondToWebhook",
+          "displayName": "Webhook Response",
+          "category": "Input /  Output",
+          "icon": "reply",
+          "description": "Send response to webhook",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "respondWith": {
+                "type": "string",
+                "enum": [
+                  "All Incoming Items",
+                  "First Incoming Item",
+                  "JSON",
+                  "Binary File",
+                  "JWT Token",
+                  "Text",
+                  "Redirect",
+                  "No Data"
+                ],
+                "default": "All Incoming Items",
+                "description": "What to respond with."
+              },
+              "responseBody": {
+                "type": "string",
+                "description": "The body of the response (can be an expression)"
+              },
+              "credentialId": {
+                "type": "string",
+                "description": "JWT credential ID"
+              },
+              "payload": {
+                "type": "string",
+                "description": "JWT Token Payload (JSON string or expression)"
+              },
+              "redirectUrl": {
+                "type": "string",
+                "description": "Redirect URL"
+              },
+              "inputFieldName": {
+                "type": "string",
+                "default": "data",
+                "description": "Input Field Name containing the binary file"
+              },
+              "responseCode": {
+                "type": "number",
+                "description": "HTTP Response Code"
+              },
+              "putResponseInField": {
+                "type": "string",
+                "description": "If set, put the response into this field instead of the default output"
+              },
+              "enableStreaming": {
+                "type": "boolean",
+                "description": "Stream the response back to the caller when supported"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "headers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "position": {
+        "x": 2180,
+        "y": 680
+      },
+      "positionAbsolute": {
+        "x": 2180,
+        "y": 680
+      }
+    },
+    {
+      "id": "code.execute-1790393196070002",
+      "data": {
+        "label": "Code",
+        "inputs": {
+          "code": "const text = $json.content?.parts?.[0]?.text;\n\nif (!text) {\n  return [];\n}\n\nlet parsed;\n\ntry {\n  parsed = JSON.parse(text);\n} catch (error) {\n  return [];\n}\n\nif (!Array.isArray(parsed.contacts)) {\n  return [];\n}\n\n\nfunction scoreLead(contact) {\n  let score = 0;\n  const reasons = [];\n\n  const rawTitle = (contact.designation || contact.Designation || \"\").toLowerCase().trim();\n  const rawCompany = (contact.company || contact.Company || \"\").trim();\n  const rawEmail = (contact.email || contact.Email || \"\").toLowerCase().trim();\n  const rawPhone = (contact.phone || contact.Phone || \"\").trim();\n  const rawLinkedin = (contact.linkedin_url || contact.LinkedIn || \"\").trim();\n  const rawIndustry = (contact.sector_industry || contact[\"Sector/Industry\"] || \"\").toLowerCase().trim();\n  const rawAddress = (contact.address || contact.Address || contact.city || \"\").trim();\n\n  // ── 0. AI Competitor Clash Check (Priority Override) ──\n  // Since we are an AI-based company, competing AI providers/startups are marked Low Priority\n  const isEducationalOrTrust = /college|university|institution|institute|school|trust|academy|sns/i.test(rawCompany);\n  const aiRegex = /\\b(ai|artificial intelligence|generative ai|genai|llm|machine learning|deep learning|agentic ai)\\b/i;\n  const isAICompetitor = (aiRegex.test(rawIndustry) || aiRegex.test(rawCompany)) && !isEducationalOrTrust;\n\n  if (isAICompetitor) {\n    const compScore = 15;\n    const tier = \"Cold\";\n    const tierLabel = \"Low Priority\";\n    const companyDisplay = rawCompany || \"AI Vendor\";\n    const titleDisplay = contact.designation || contact.Designation || \"Contact\";\n    const channels = [];\n    if (rawPhone) channels.push(\"Phone: \" + rawPhone);\n    if (rawEmail) channels.push(\"Email: \" + rawEmail);\n    const channelStr = channels.length > 0 ? channels.join(\", \") : \"Not specified\";\n\n    const salesSummary = `[${tierLabel} - Score: ${compScore}/100] Profile: ${titleDisplay} at ${companyDisplay} [Sector: AI Solutions / Direct Competitor] | Verified Channels: ${channelStr} | Action: Direct AI industry competitor overlap. Deprioritized for sales outreach to avoid market conflict.`;\n\n    return {\n      score: compScore,\n      tier,\n      rationale: \"Direct AI company overlap / competitor clash; low commercial suitability for sales pursuit\",\n      salesSummary\n    };\n  }\n\n  // ── 1. Apex Leadership & Decision-Maker Authority (0-40 pts) ──\n  const isApexLeader = /trustee|chairman|chairperson|correspondent|director|chancellor|principal|dean|president|founder|co-founder|chief|ceo|cto|cfo|coo|cro|owner|partner|secretary/i.test(rawTitle);\n\n  if (isApexLeader) {\n    score += 40;\n    reasons.push(\"Apex institutional leadership / executive decision maker\");\n  } else if (/vp|vice president|head of|head|provost|controller/i.test(rawTitle)) {\n    score += 35;\n    reasons.push(\"Senior executive / department head\");\n  } else if (/manager|lead|supervisor|coordinator|hod|head of department/i.test(rawTitle)) {\n    score += 25;\n    reasons.push(\"Departmental management role\");\n  } else if (/professor|associate professor|assistant professor|specialist|consultant|analyst|engineer|architect|scientist|lecturer/i.test(rawTitle)) {\n    score += 20;\n    reasons.push(\"Academic faculty / domain specialist\");\n  } else if (rawTitle) {\n    score += 15;\n    reasons.push(\"Professional staff role\");\n  } else {\n    score += 5;\n    reasons.push(\"Designation not specified\");\n  }\n\n  // ── 2. Sector & Institutional Value (0-30 pts) ──\n  const isTargetSector = /education|college|university|institution|institute|trust|academy|foundation|academic|school|software|saas|it|cloud|cybersecurity|data|engineering|healthcare|pharma|finance|banking/i.test(rawIndustry) ||\n    /sns|college|institution|institute|university|trust|foundation|academy|school|technologies|systems|labs|industries|corp|group/i.test(rawCompany.toLowerCase());\n\n  if (isTargetSector) {\n    score += 30;\n    reasons.push(\"Institutional / High-priority sector\");\n  } else if (rawCompany || rawIndustry) {\n    score += 20;\n    reasons.push(\"Standard commercial organization\");\n  } else {\n    score += 5;\n  }\n\n  // ── 3. Reachability & Verified Contact Details (0-30 pts) ──\n  let reachScore = 0;\n  const isPersonalEmail = /gmail|yahoo|hotmail|outlook|icloud|aol/i.test(rawEmail);\n\n  if (rawEmail && !isPersonalEmail) {\n    reachScore += 15;\n  } else if (rawEmail) {\n    reachScore += 8;\n  }\n\n  if (rawPhone && rawPhone.replace(/\\D/g, \"\").length >= 7) {\n    reachScore += 10;\n  }\n\n  if (rawLinkedin && rawLinkedin.includes(\"linkedin\")) {\n    reachScore += 5;\n  } else if (rawAddress) {\n    reachScore += 5;\n  }\n\n  score += reachScore;\n  reasons.push(reachScore >= 20 ? \"High reachability\" : \"Verified contact channels\");\n\n  if (isApexLeader) {\n    score = Math.max(score, 85);\n  }\n\n  score = Math.min(100, Math.max(0, score));\n\n  let tier = \"Cold\";\n  if (score >= 70) {\n    tier = \"Hot\";\n  } else if (score >= 40) {\n    tier = \"Warm\";\n  }\n\n  let tierLabel = \"Low Priority\";\n  if (tier === \"Hot\") tierLabel = \"High Priority\";\n  else if (tier === \"Warm\") tierLabel = \"Medium Priority\";\n\n  const companyDisplay = rawCompany || \"SNS Institutions\";\n  const titleDisplay = contact.designation || contact.Designation || \"Leadership\";\n\n  let action = \"\";\n  if (isApexLeader) {\n    action = \"Apex institutional leadership. Prepare executive briefing for strategic partnerships and high-level institutional collaboration.\";\n  } else if (tier === \"Hot\") {\n    action = \"Initiate direct executive correspondence via official communication channels.\";\n  } else if (tier === \"Warm\") {\n    action = \"Send institutional introduction and case study; request connection with designated department lead.\";\n  } else {\n    action = \"Maintain on institutional communication list; low priority for manual direct outreach.\";\n  }\n\n  const channels = [];\n  if (rawPhone) channels.push(\"Phone: \" + rawPhone);\n  if (rawEmail) channels.push((isPersonalEmail ? \"Personal Email: \" : \"Official Email: \") + rawEmail);\n  if (rawAddress) channels.push(\"Location: \" + rawAddress);\n  const channelStr = channels.length > 0 ? channels.join(\", \") : \"Official institutional channels\";\n\n  const salesSummary = `[${tierLabel} - Score: ${score}/100] Profile: ${titleDisplay} at ${companyDisplay} | Verified Channels: ${channelStr} | Action: ${action}`;\n\n  return {\n    score,\n    tier,\n    rationale: reasons.join(\"; \"),\n    salesSummary\n  };\n}\n\n\nconst seenEmails = new Set();\nconst uniqueContacts = [];\n\nfor (const contact of parsed.contacts) {\n  const rawEmail = (contact.email || \"\").toLowerCase().trim();\n  const rawName = (contact.full_name || \"\").toLowerCase().trim();\n  const dedupKey = rawEmail || rawName;\n\n  if (dedupKey && seenEmails.has(dedupKey)) {\n    continue;\n  }\n  if (dedupKey) {\n    seenEmails.add(dedupKey);\n  }\n\n  const result = scoreLead(contact);\n\n  uniqueContacts.push({\n    json: {\n      ...contact,\n      duplicate_status: \"UNIQUE\",\n      lead_score: result.score,\n      lead_tier: result.tier,\n      scoring_rationale: result.rationale,\n      sales_summary: result.salesSummary\n    }\n  });\n}\n\nreturn uniqueContacts;\n",
+          "mode": "all",
+          "language": "javascript"
+        },
+        "toolId": "code.execute",
+        "toolData": {
+          "id": "code.execute",
+          "displayName": "Code",
+          "category": "Data  Processing",
+          "provider": "code",
+          "operation": "execute",
+          "icon": "💻",
+          "description": "Execute custom JavaScript or Python code",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "language": {
+                "type": "string",
+                "enum": [
+                  "javascript",
+                  "python"
+                ],
+                "description": "Programming language to execute"
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "each"
+                ],
+                "default": "all",
+                "description": "Execution mode"
+              },
+              "code": {
+                "type": "string",
+                "description": "Code to execute"
+              },
+              "input": {
+                "description": "Input data available as \"input\" variable"
+              },
+              "context": {
+                "description": "Execution context including other node results"
+              }
+            },
+            "required": [
+              "language",
+              "code"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 1455.3947310164642,
+        "y": -292.302872075324
+      },
+      "selected": true,
+      "positionAbsolute": {
+        "x": 1455.3947310164642,
+        "y": -292.302872075324
+      }
+    },
+    {
+      "id": "code.execute-1790403756314001",
+      "data": {
+        "label": "Code",
+        "inputs": {
+          "code": "const items = $input.all();\n\nconst rows = [];\n\nfor (const item of items) {\n  const text = item.json?.content?.parts?.[0]?.text;\n\n  if (!text) continue;\n\n  let parsed;\n\n  try {\n    parsed = JSON.parse(text);\n  } catch (error) {\n    continue;\n  }\n\n  if (!Array.isArray(parsed.contacts)) continue;\n\n  for (const contact of parsed.contacts) {\n    rows.push([\n      contact.city ?? \"\",\n      contact.email ?? \"\",\n      contact.phone ?? \"\",\n      contact.state ?? \"\",\n      contact.source ?? \"\",\n      contact.address ?? \"\",\n      contact.company ?? \"\",\n      contact.country ?? \"\",\n      contact.website ?? \"\",\n      contact.linkedin_url ?? \"\",\n      contact.full_name ?? \"\",\n      contact.last_name ?? \"\",\n      contact.first_name ?? \"\",\n      contact.designation ?? \"\",\n      contact.duplicate_status ?? \"\",\n      contact.sector_industry ?? \"\",\n      contact.validation_status ?? \"\"\n    ]);\n  }\n}\n\nreturn [\n  {\n    json: {\n      values: rows\n    }\n  }\n];",
+          "mode": "all",
+          "language": "javascript"
+        },
+        "toolId": "code.execute",
+        "toolData": {
+          "id": "code.execute",
+          "displayName": "Code",
+          "category": "Data  Processing",
+          "provider": "code",
+          "operation": "execute",
+          "icon": "💻",
+          "description": "Execute custom JavaScript or Python code",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "language": {
+                "type": "string",
+                "enum": [
+                  "javascript",
+                  "python"
+                ],
+                "description": "Programming language to execute"
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "each"
+                ],
+                "default": "all",
+                "description": "Execution mode"
+              },
+              "code": {
+                "type": "string",
+                "description": "Code to execute"
+              },
+              "input": {
+                "description": "Input data available as \"input\" variable"
+              },
+              "context": {
+                "description": "Execution context including other node results"
+              }
+            },
+            "required": [
+              "language",
+              "code"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 1451.0756665808262,
+        "y": -2.5473892522273616
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1451.0756665808262,
+        "y": -2.5473892522273616
+      }
+    },
+    {
+      "id": "code.execute-1790404105408002",
+      "data": {
+        "label": "Code",
+        "inputs": {
+          "code": "const values = $json.values ?? [];\n\nreturn values.map(row => ({\n  json: {\n    city: row[0] ?? \"\",\n    email: row[1] ?? \"\",\n    phone: row[2] ?? \"\",\n    state: row[3] ?? \"\",\n    source: row[4] ?? \"\",\n    address: row[5] ?? \"\",\n    company: row[6] ?? \"\",\n    country: row[7] ?? \"\",\n    website: row[8] ?? \"\",\n    linkedin_url: row[9] ?? \"\",\n    full_name: row[10] ?? \"\",\n    last_name: row[11] ?? \"\",\n    first_name: row[12] ?? \"\",\n    designation: row[13] ?? \"\",\n    duplicate_status: row[14] ?? \"\",\n    sector_industry: row[15] ?? \"\",\n    validation_status: row[16] ?? \"\"\n  }\n}));",
+          "mode": "all",
+          "language": "javascript"
+        },
+        "toolId": "code.execute",
+        "toolData": {
+          "id": "code.execute",
+          "displayName": "Code",
+          "category": "Data  Processing",
+          "provider": "code",
+          "operation": "execute",
+          "icon": "💻",
+          "description": "Execute custom JavaScript or Python code",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "language": {
+                "type": "string",
+                "enum": [
+                  "javascript",
+                  "python"
+                ],
+                "description": "Programming language to execute"
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "each"
+                ],
+                "default": "all",
+                "description": "Execution mode"
+              },
+              "code": {
+                "type": "string",
+                "description": "Code to execute"
+              },
+              "input": {
+                "description": "Input data available as \"input\" variable"
+              },
+              "context": {
+                "description": "Execution context including other node results"
+              }
+            },
+            "required": [
+              "language",
+              "code"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 1703.5353074725508,
+        "y": 7.978116167063291
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1703.5353074725508,
+        "y": 7.978116167063291
+      }
+    },
+    {
+      "id": "code.execute-1790404245195003",
+      "data": {
+        "label": "prepare google sheets rows",
+        "inputs": {
+          "code": "const items = $input.all();\n\n\nfunction scoreLead(contact) {\n  let score = 0;\n  const reasons = [];\n\n  const rawTitle = (contact.designation || contact.Designation || \"\").toLowerCase().trim();\n  const rawCompany = (contact.company || contact.Company || \"\").trim();\n  const rawEmail = (contact.email || contact.Email || \"\").toLowerCase().trim();\n  const rawPhone = (contact.phone || contact.Phone || \"\").trim();\n  const rawLinkedin = (contact.linkedin_url || contact.LinkedIn || \"\").trim();\n  const rawIndustry = (contact.sector_industry || contact[\"Sector/Industry\"] || \"\").toLowerCase().trim();\n  const rawAddress = (contact.address || contact.Address || contact.city || \"\").trim();\n\n  // ── 0. AI Competitor Clash Check (Priority Override) ──\n  // Since we are an AI-based company, competing AI providers/startups are marked Low Priority\n  const isEducationalOrTrust = /college|university|institution|institute|school|trust|academy|sns/i.test(rawCompany);\n  const aiRegex = /\\b(ai|artificial intelligence|generative ai|genai|llm|machine learning|deep learning|agentic ai)\\b/i;\n  const isAICompetitor = (aiRegex.test(rawIndustry) || aiRegex.test(rawCompany)) && !isEducationalOrTrust;\n\n  if (isAICompetitor) {\n    const compScore = 15;\n    const tier = \"Cold\";\n    const tierLabel = \"Low Priority\";\n    const companyDisplay = rawCompany || \"AI Vendor\";\n    const titleDisplay = contact.designation || contact.Designation || \"Contact\";\n    const channels = [];\n    if (rawPhone) channels.push(\"Phone: \" + rawPhone);\n    if (rawEmail) channels.push(\"Email: \" + rawEmail);\n    const channelStr = channels.length > 0 ? channels.join(\", \") : \"Not specified\";\n\n    const salesSummary = `[${tierLabel} - Score: ${compScore}/100] Profile: ${titleDisplay} at ${companyDisplay} [Sector: AI Solutions / Direct Competitor] | Verified Channels: ${channelStr} | Action: Direct AI industry competitor overlap. Deprioritized for sales outreach to avoid market conflict.`;\n\n    return {\n      score: compScore,\n      tier,\n      rationale: \"Direct AI company overlap / competitor clash; low commercial suitability for sales pursuit\",\n      salesSummary\n    };\n  }\n\n  // ── 1. Apex Leadership & Decision-Maker Authority (0-40 pts) ──\n  const isApexLeader = /trustee|chairman|chairperson|correspondent|director|chancellor|principal|dean|president|founder|co-founder|chief|ceo|cto|cfo|coo|cro|owner|partner|secretary/i.test(rawTitle);\n\n  if (isApexLeader) {\n    score += 40;\n    reasons.push(\"Apex institutional leadership / executive decision maker\");\n  } else if (/vp|vice president|head of|head|provost|controller/i.test(rawTitle)) {\n    score += 35;\n    reasons.push(\"Senior executive / department head\");\n  } else if (/manager|lead|supervisor|coordinator|hod|head of department/i.test(rawTitle)) {\n    score += 25;\n    reasons.push(\"Departmental management role\");\n  } else if (/professor|associate professor|assistant professor|specialist|consultant|analyst|engineer|architect|scientist|lecturer/i.test(rawTitle)) {\n    score += 20;\n    reasons.push(\"Academic faculty / domain specialist\");\n  } else if (rawTitle) {\n    score += 15;\n    reasons.push(\"Professional staff role\");\n  } else {\n    score += 5;\n    reasons.push(\"Designation not specified\");\n  }\n\n  // ── 2. Sector & Institutional Value (0-30 pts) ──\n  const isTargetSector = /education|college|university|institution|institute|trust|academy|foundation|academic|school|software|saas|it|cloud|cybersecurity|data|engineering|healthcare|pharma|finance|banking/i.test(rawIndustry) ||\n    /sns|college|institution|institute|university|trust|foundation|academy|school|technologies|systems|labs|industries|corp|group/i.test(rawCompany.toLowerCase());\n\n  if (isTargetSector) {\n    score += 30;\n    reasons.push(\"Institutional / High-priority sector\");\n  } else if (rawCompany || rawIndustry) {\n    score += 20;\n    reasons.push(\"Standard commercial organization\");\n  } else {\n    score += 5;\n  }\n\n  // ── 3. Reachability & Verified Contact Details (0-30 pts) ──\n  let reachScore = 0;\n  const isPersonalEmail = /gmail|yahoo|hotmail|outlook|icloud|aol/i.test(rawEmail);\n\n  if (rawEmail && !isPersonalEmail) {\n    reachScore += 15;\n  } else if (rawEmail) {\n    reachScore += 8;\n  }\n\n  if (rawPhone && rawPhone.replace(/\\D/g, \"\").length >= 7) {\n    reachScore += 10;\n  }\n\n  if (rawLinkedin && rawLinkedin.includes(\"linkedin\")) {\n    reachScore += 5;\n  } else if (rawAddress) {\n    reachScore += 5;\n  }\n\n  score += reachScore;\n  reasons.push(reachScore >= 20 ? \"High reachability\" : \"Verified contact channels\");\n\n  if (isApexLeader) {\n    score = Math.max(score, 85);\n  }\n\n  score = Math.min(100, Math.max(0, score));\n\n  let tier = \"Cold\";\n  if (score >= 70) {\n    tier = \"Hot\";\n  } else if (score >= 40) {\n    tier = \"Warm\";\n  }\n\n  let tierLabel = \"Low Priority\";\n  if (tier === \"Hot\") tierLabel = \"High Priority\";\n  else if (tier === \"Warm\") tierLabel = \"Medium Priority\";\n\n  const companyDisplay = rawCompany || \"SNS Institutions\";\n  const titleDisplay = contact.designation || contact.Designation || \"Leadership\";\n\n  let action = \"\";\n  if (isApexLeader) {\n    action = \"Apex institutional leadership. Prepare executive briefing for strategic partnerships and high-level institutional collaboration.\";\n  } else if (tier === \"Hot\") {\n    action = \"Initiate direct executive correspondence via official communication channels.\";\n  } else if (tier === \"Warm\") {\n    action = \"Send institutional introduction and case study; request connection with designated department lead.\";\n  } else {\n    action = \"Maintain on institutional communication list; low priority for manual direct outreach.\";\n  }\n\n  const channels = [];\n  if (rawPhone) channels.push(\"Phone: \" + rawPhone);\n  if (rawEmail) channels.push((isPersonalEmail ? \"Personal Email: \" : \"Official Email: \") + rawEmail);\n  if (rawAddress) channels.push(\"Location: \" + rawAddress);\n  const channelStr = channels.length > 0 ? channels.join(\", \") : \"Official institutional channels\";\n\n  const salesSummary = `[${tierLabel} - Score: ${score}/100] Profile: ${titleDisplay} at ${companyDisplay} | Verified Channels: ${channelStr} | Action: ${action}`;\n\n  return {\n    score,\n    tier,\n    rationale: reasons.join(\"; \"),\n    salesSummary\n  };\n}\n\n\nconst seenEmails = new Set();\nconst uniqueItems = [];\n\nfor (const item of items) {\n  const c = item.json;\n  const rawEmail = (c.email ?? \"\").toLowerCase().trim();\n  const rawName = (c.full_name ?? \"\").toLowerCase().trim();\n  const dedupKey = rawEmail || rawName;\n\n  if (dedupKey && seenEmails.has(dedupKey)) {\n    continue;\n  }\n  if (dedupKey) {\n    seenEmails.add(dedupKey);\n  }\n\n  const result = scoreLead(c);\n\n  uniqueItems.push({\n    json: {\n      City: c.city ?? \"\",\n      Email: c.email ?? \"\",\n      Phone: c.phone ?? \"\",\n      State: c.state ?? \"\",\n      Source: c.source ?? \"\",\n      Address: c.address ?? \"\",\n      Company: c.company ?? \"\",\n      Country: c.country ?? \"\",\n      Website: c.website ?? \"\",\n      LinkedIn: c.linkedin_url ?? \"\",\n      \"Full Name\": c.full_name ?? \"\",\n      \"Last Name\": c.last_name ?? \"\",\n      \"First Name\": c.first_name ?? \"\",\n      Designation: c.designation ?? \"\",\n      \"Duplicate Status\": \"UNIQUE\",\n      \"Sector/Industry\": c.sector_industry ?? \"\",\n      \"Validation Status\": c.validation_status ?? \"\",\n      \"Lead Score\": result.score,\n      \"Lead Tier\": result.tier,\n      \"Scoring Rationale\": result.rationale,\n      \"Sales Summary\": result.salesSummary\n    }\n  });\n}\n\nreturn uniqueItems;\n",
+          "mode": "all",
+          "language": "javascript"
+        },
+        "toolId": "code.execute",
+        "toolData": {
+          "id": "code.execute",
+          "displayName": "Code",
+          "category": "Data  Processing",
+          "provider": "code",
+          "operation": "execute",
+          "icon": "💻",
+          "description": "Execute custom JavaScript or Python code",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "language": {
+                "type": "string",
+                "enum": [
+                  "javascript",
+                  "python"
+                ],
+                "description": "Programming language to execute"
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "each"
+                ],
+                "default": "all",
+                "description": "Execution mode"
+              },
+              "code": {
+                "type": "string",
+                "description": "Code to execute"
+              },
+              "input": {
+                "description": "Input data available as \"input\" variable"
+              },
+              "context": {
+                "description": "Execution context including other node results"
+              }
+            },
+            "required": [
+              "language",
+              "code"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 1985.1910929911637,
+        "y": 5.8867582086218135
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1985.1910929911637,
+        "y": 5.8867582086218135
+      }
+    },
+    {
+      "id": "code.execute-1790404540877004",
+      "data": {
+        "label": "Code",
+        "inputs": {
+          "code": "const items = $input.all();\n\nconst preserved = $node[\"Preserve file_id & batch_id\"].json;\n\nreturn [\n  {\n    json: {\n      file_id: preserved.file_id ?? \"\",\n      batch_id: preserved.batch_id ?? \"\",\n      status: \"done\",\n      contacts: items.length\n    }\n  }\n];",
+          "mode": "all",
+          "language": "javascript"
+        },
+        "toolId": "code.execute",
+        "toolData": {
+          "id": "code.execute",
+          "displayName": "Code",
+          "category": "Data  Processing",
+          "provider": "code",
+          "operation": "execute",
+          "icon": "💻",
+          "description": "Execute custom JavaScript or Python code",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "language": {
+                "type": "string",
+                "enum": [
+                  "javascript",
+                  "python"
+                ],
+                "description": "Programming language to execute"
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "each"
+                ],
+                "default": "all",
+                "description": "Execution mode"
+              },
+              "code": {
+                "type": "string",
+                "description": "Code to execute"
+              },
+              "input": {
+                "description": "Input data available as \"input\" variable"
+              },
+              "context": {
+                "description": "Execution context including other node results"
+              }
+            },
+            "required": [
+              "language",
+              "code"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 2512.8123741689355,
+        "y": -9.564317302348172
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2512.8123741689355,
+        "y": -9.564317302348172
+      }
+    },
+    {
+      "id": "note-1790409083659",
+      "data": {
+        "label": "pdf --> working (Deduplication + Lead Scoring enabled)\\ncsv --> working (Deduplication + Lead Scoring enabled)",
+        "isFormWait": false,
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": []
+      },
+      "type": "sticky-note",
+      "width": 208,
+      "height": 150,
+      "dragging": false,
+      "position": {
+        "x": 437.4166491743225,
+        "y": -446.9879315537412
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 437.4166491743225,
+        "y": -446.9879315537412
+      }
+    },
+    {
+      "id": "code.execute-1790416955399004",
+      "data": {
+        "label": "Code",
+        "inputs": {
+          "code": "const items = $input.all();\n\nreturn items.map(item => {\n  const fileContent = item.json.file_content;\n  const fileType = item.json.file_type || 'image/jpeg';\n  const fileName = item.json.file_name || 'business-card.jpg';\n\n  if (!fileContent) {\n    throw new Error('file_content is missing');\n  }\n\n  return {\n    json: item.json,\n    binary: {\n      file_content: {\n        data: fileContent,\n        mimeType: fileType,\n        fileName: fileName,\n        fileExtension: fileName.split('.').pop() || 'jpg'\n      }\n    }\n  };\n});",
+          "mode": "all",
+          "language": "javascript"
+        },
+        "toolId": "code.execute",
+        "toolData": {
+          "id": "code.execute",
+          "displayName": "Code",
+          "category": "Data  Processing",
+          "provider": "code",
+          "operation": "execute",
+          "icon": "💻",
+          "description": "Execute custom JavaScript or Python code",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "language": {
+                "type": "string",
+                "enum": [
+                  "javascript",
+                  "python"
+                ],
+                "description": "Programming language to execute"
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "each"
+                ],
+                "default": "all",
+                "description": "Execution mode"
+              },
+              "code": {
+                "type": "string",
+                "description": "Code to execute"
+              },
+              "input": {
+                "description": "Input data available as \"input\" variable"
+              },
+              "context": {
+                "description": "Execution context including other node results"
+              }
+            },
+            "required": [
+              "language",
+              "code"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 1793.2492482520697,
+        "y": 279.8446118927198
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1793.2492482520697,
+        "y": 279.8446118927198
+      }
+    },
+    {
+      "id": "httpRequest-1790417827865006",
+      "data": {
+        "label": "Http Request",
+        "inputs": {
+          "url": "https://z988g939-20128.inc1.devtunnels.ms/v1/chat/completions",
+          "body": "{\n  \"model\":\"pol/openai/gpt-4o-mini\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an image analysis engine. Analyze the provided business card and return ONLY valid JSON.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": [\n        {\n          \"type\": \"text\",\n          \"text\": \"Extract all visible contact information from this business card. Do not invent information. Use null when information is not visible. Return ONLY valid JSON with this structure: {\\\"full_name\\\":null,\\\"designation\\\":null,\\\"company\\\":null,\\\"email\\\":null,\\\"phone\\\":null,\\\"address\\\":null,\\\"city\\\":null,\\\"state\\\":null,\\\"country\\\":null,\\\"website\\\":null,\\\"linkedin_url\\\":null}\"\n        },\n        {\n          \"type\": \"image_url\",\n          \"image_url\": {\n            \"url\": \"https://cider-resistant-morality.ngrok-free.dev/files/{{$json.file_id}}\"\n          }\n        }\n      ]\n    }\n  ],\n  \"temperature\": 0\n}",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer sk-dfdd92a16952054a-7ce2b9-8e722ccb"
+          },
+          "timeout": 300000,
+          "bodyType": "json",
+          "_internal": {
+            "headerMode": "kv"
+          },
+          "contentType": "json",
+          "includeHeaders": false,
+          "responseFormat": "auto",
+          "lowercaseHeaders": true,
+          "allowUnauthorized": false,
+          "ignoreResponseCode": false,
+          "outputPropertyName": "data"
+        },
+        "toolId": "httpRequest",
+        "toolData": {
+          "id": "httpRequest",
+          "displayName": "Http Request",
+          "category": "API & HTTP",
+          "icon": "Globe",
+          "description": "Make HTTP API requests to external services.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "method": {
+                "type": "string",
+                "enum": [
+                  "GET",
+                  "POST",
+                  "PUT",
+                  "PATCH",
+                  "DELETE",
+                  "HEAD",
+                  "OPTIONS"
+                ],
+                "default": "GET",
+                "description": "HTTP method to use"
+              },
+              "url": {
+                "type": "string",
+                "description": "URL to send the request to"
+              },
+              "headers": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Headers to include in the request"
+              },
+              "queryParameters": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Query parameters to append to the URL"
+              },
+              "body": {
+                "description": "Request body"
+              },
+              "bodyType": {
+                "type": "string",
+                "enum": [
+                  "json",
+                  "fields"
+                ],
+                "default": "json",
+                "description": "How the body is defined"
+              },
+              "bodyFields": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Body fields for key-value input"
+              },
+              "contentType": {
+                "type": "string",
+                "enum": [
+                  "json",
+                  "form-data",
+                  "form-urlencoded",
+                  "raw"
+                ],
+                "default": "json",
+                "description": "Content type of the request body"
+              },
+              "responseFormat": {
+                "type": "string",
+                "enum": [
+                  "auto",
+                  "json",
+                  "text",
+                  "binary"
+                ],
+                "default": "auto",
+                "description": "Format of the response data"
+              },
+              "authentication": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "header",
+                      "query",
+                      "basic",
+                      "bearer",
+                      "predefinedCredentialType"
+                    ],
+                    "default": "none"
+                  },
+                  "config": {
+                    "type": "object",
+                    "additionalProperties": {},
+                    "description": "Auth config. For predefinedCredentialType: { credentialType: string, credentialId: string }"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Authentication configuration"
+              },
+              "ignoreResponseCode": {
+                "type": "boolean",
+                "default": false,
+                "description": "If enabled, the node will not fail on non-2xx status codes"
+              },
+              "includeHeaders": {
+                "type": "boolean",
+                "default": false,
+                "description": "If enabled, response headers will be included in the output"
+              },
+              "allowUnauthorized": {
+                "type": "boolean",
+                "default": false,
+                "description": "If enabled, SSL certificate verification will be skipped"
+              },
+              "lowercaseHeaders": {
+                "type": "boolean",
+                "default": true,
+                "description": "If enabled, all header keys will be converted to lowercase"
+              },
+              "timeout": {
+                "type": "number",
+                "default": 300000,
+                "description": "Request timeout in milliseconds"
+              },
+              "outputPropertyName": {
+                "type": "string",
+                "default": "data",
+                "description": "The name of the property to store binary data in"
+              }
+            },
+            "required": [
+              "url"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 947.6695636862544,
+        "y": 1064.1280839757476
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 947.6695636862544,
+        "y": 1064.1280839757476
+      }
+    },
+    {
+      "id": "code.execute-1790420331162007",
+      "data": {
+        "label": "Code",
+        "inputs": {
+          "code": "const items = $input.all();\n\nreturn items.map(item => {\n  const base64 = String(item.json.file_content || \"\")\n    .replace(/\\s/g, \"\");\n\n  return {\n    json: {\n      ...item.json,\n      image_data_url: `data:image/jpeg;base64,${base64}`,\n      base64_length: base64.length,\n      base64_start: base64.substring(0, 30),\n      base64_end: base64.substring(base64.length - 30)\n    }\n  };\n});",
+          "mode": "all",
+          "language": "javascript"
+        },
+        "toolId": "code.execute",
+        "toolData": {
+          "id": "code.execute",
+          "displayName": "Code",
+          "category": "Data  Processing",
+          "provider": "code",
+          "operation": "execute",
+          "icon": "💻",
+          "description": "Execute custom JavaScript or Python code",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "language": {
+                "type": "string",
+                "enum": [
+                  "javascript",
+                  "python"
+                ],
+                "description": "Programming language to execute"
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "each"
+                ],
+                "default": "all",
+                "description": "Execution mode"
+              },
+              "code": {
+                "type": "string",
+                "description": "Code to execute"
+              },
+              "input": {
+                "description": "Input data available as \"input\" variable"
+              },
+              "context": {
+                "description": "Execution context including other node results"
+              }
+            },
+            "required": [
+              "language",
+              "code"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 936.996735593744,
+        "y": 402.78226044305677
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 936.996735593744,
+        "y": 402.78226044305677
+      }
+    },
+    {
+      "id": "mistral-1790420619046008",
+      "data": {
+        "label": "Extract Text Document",
+        "inputs": {
+          "url": "https://cider-resistant-morality.ngrok-free.dev/files/{{$json.body.file_id}}",
+          "model": "mistral-ocr-latest",
+          "options": {
+            "enableBatchProcessing": false
+          },
+          "resource": "Document",
+          "simplify": true,
+          "inputType": "URL",
+          "operation": "Extract Text",
+          "credentialId": "7eaca54a-5182-4822-9277-d03cd6110cb2",
+          "documentType": "Image",
+          "inputDataFieldName": "*"
+        },
+        "toolId": "mistral",
+        "toolData": {
+          "id": "mistral",
+          "displayName": "Mistral OCR",
+          "category": "AI / LLM",
+          "operation": "execute",
+          "icon": "api",
+          "description": "Extract text from documents and images using Mistral OCR.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Document"
+                ],
+                "default": "Document"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Extract Text"
+                ],
+                "default": "Extract Text"
+              },
+              "model": {
+                "type": "string",
+                "minLength": 1,
+                "default": "mistral-ocr-latest"
+              },
+              "documentType": {
+                "type": "string",
+                "enum": [
+                  "Document",
+                  "Image"
+                ],
+                "default": "Document"
+              },
+              "inputType": {
+                "type": "string",
+                "enum": [
+                  "URL",
+                  "Binary Data"
+                ],
+                "default": "Binary Data"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "inputDataFieldName": {
+                "type": "string",
+                "default": "file"
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true
+              },
+              "file": {},
+              "files": {
+                "type": "array"
+              },
+              "options": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "credentialId": {
+                "type": "string"
+              },
+              "credentials": {}
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "displayName": "Resource",
+              "name": "resource",
+              "type": "options",
+              "noDataExpression": true,
+              "options": [
+                {
+                  "name": "Document",
+                  "value": "Document"
+                }
+              ],
+              "default": "Document"
+            },
+            {
+              "displayName": "Operation",
+              "name": "operation",
+              "type": "options",
+              "noDataExpression": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "Document"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "Extract Text",
+                  "value": "Extract Text"
+                }
+              ],
+              "default": "Extract Text"
+            },
+            {
+              "displayName": "Model",
+              "name": "model",
+              "type": "options",
+              "options": [
+                {
+                  "name": "mistral-ocr-latest",
+                  "value": "mistral-ocr-latest"
+                }
+              ],
+              "default": "mistral-ocr-latest",
+              "description": "Select the Mistral OCR model to use."
+            },
+            {
+              "displayName": "Document Type",
+              "name": "documentType",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Document",
+                  "value": "Document"
+                },
+                {
+                  "name": "Image",
+                  "value": "Image"
+                }
+              ],
+              "default": "Document"
+            },
+            {
+              "displayName": "Input Type",
+              "name": "inputType",
+              "type": "options",
+              "options": [
+                {
+                  "name": "URL",
+                  "value": "URL"
+                },
+                {
+                  "name": "Binary Data",
+                  "value": "Binary Data"
+                }
+              ],
+              "default": "Binary Data"
+            },
+            {
+              "displayName": "URL",
+              "name": "url",
+              "type": "string",
+              "default": "",
+              "placeholder": "https://example.com/file1.pdf, https://example.com/file2.pdf",
+              "description": "You can provide one URL or multiple URLs separated by commas or new lines.",
+              "displayOptions": {
+                "show": {
+                  "inputType": [
+                    "URL"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Input Binary Field",
+              "name": "inputDataFieldName",
+              "type": "string",
+              "default": "file",
+              "description": "Binary field name. Use comma-separated fields (e.g., file1,file2) or * to process all binary fields.",
+              "displayOptions": {
+                "show": {
+                  "inputType": [
+                    "Binary Data"
+                  ]
+                }
+              }
+            },
+            {
+              "displayName": "Simplify Output",
+              "name": "simplify",
+              "type": "boolean",
+              "default": true
+            },
+            {
+              "displayName": "Options",
+              "name": "options",
+              "type": "collection",
+              "placeholder": "Add Option",
+              "default": {},
+              "options": [
+                {
+                  "name": "Enable Batch Processing",
+                  "value": "enableBatchProcessing",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Queue OCR requests for batch processing when supported by your workflow."
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "Document",
+            "operation": "Extract Text",
+            "model": "mistral-ocr-latest",
+            "documentType": "Document",
+            "inputType": "Binary Data",
+            "inputDataFieldName": "file",
+            "simplify": true,
+            "credentialId": "",
+            "options": {
+              "enableBatchProcessing": false
+            }
+          }
+        },
+        "isTrigger": false,
+        "isFormWait": false,
+        "executionId": "6ab9dec6cd5dd862946f72b5",
+        "isTimerWait": false,
+        "isWebhookWait": false,
+        "connectedHandles": [],
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "dragging": false,
+      "position": {
+        "x": 1237.8621203022499,
+        "y": 410.7979909151292
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1237.8621203022499,
+        "y": 410.7979909151292
+      }
+    },
+    {
+      "id": "code.execute-1790568229224001",
+      "data": {
+        "label": "Code",
+        "inputs": {},
+        "toolId": "code.execute",
+        "toolData": {
+          "id": "code.execute",
+          "displayName": "Code",
+          "category": "Data  Processing",
+          "provider": "code",
+          "operation": "execute",
+          "icon": "💻",
+          "description": "Execute custom JavaScript or Python code",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "language": {
+                "type": "string",
+                "enum": [
+                  "javascript",
+                  "python"
+                ],
+                "description": "Programming language to execute"
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "each"
+                ],
+                "default": "all",
+                "description": "Execution mode"
+              },
+              "code": {
+                "type": "string",
+                "description": "Code to execute"
+              },
+              "input": {
+                "description": "Input data available as \"input\" variable"
+              },
+              "context": {
+                "description": "Execution context including other node results"
+              }
+            },
+            "required": [
+              "language",
+              "code"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false
+      },
+      "type": "action",
+      "width": 220,
+      "height": 94,
+      "position": {
+        "x": 2044.0117456313956,
+        "y": -557.5178817102283
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "data": {},
+      "type": "custom",
+      "source": "webhook-trigger-contact-extraction",
+      "target": "set-passthrough-fields"
+    },
+    {
+      "id": "e2",
+      "data": {},
+      "type": "custom",
+      "source": "set-passthrough-fields",
+      "target": "switch-file-type"
+    },
+    {
+      "id": "e3",
+      "data": {},
+      "type": "custom",
+      "source": "switch-file-type",
+      "target": "extract-pdf",
+      "sourceHandle": "output-0"
+    },
+    {
+      "id": "e4",
+      "data": {},
+      "type": "custom",
+      "source": "switch-file-type",
+      "target": "extract-csv",
+      "sourceHandle": "output-1"
+    },
+    {
+      "id": "e6",
+      "data": {},
+      "type": "custom",
+      "source": "switch-file-type",
+      "target": "groq-text-extractor",
+      "sourceHandle": "output-fallback"
+    },
+    {
+      "id": "e7",
+      "data": {},
+      "type": "custom",
+      "source": "extract-pdf",
+      "target": "groq-pdf-extractor"
+    },
+    {
+      "id": "e11",
+      "data": {},
+      "type": "custom",
+      "source": "collect-results-pdf",
+      "target": "respond-pdf"
+    },
+    {
+      "id": "e12",
+      "data": {},
+      "type": "custom",
+      "source": "extract-csv",
+      "target": "groq-csv-extractor"
+    },
+    {
+      "id": "e21",
+      "data": {},
+      "type": "custom",
+      "source": "collect-results-ocr",
+      "target": "respond-ocr"
+    },
+    {
+      "id": "e22",
+      "data": {},
+      "type": "custom",
+      "source": "groq-text-extractor",
+      "target": "loop-text-contacts"
+    },
+    {
+      "id": "e23",
+      "data": {},
+      "type": "custom",
+      "source": "loop-text-contacts",
+      "target": "sheets-text",
+      "sourceHandle": "output-1"
+    },
+    {
+      "id": "e24",
+      "data": {},
+      "type": "custom",
+      "source": "loop-text-contacts",
+      "target": "collect-results-text",
+      "sourceHandle": "output-0"
+    },
+    {
+      "id": "e25",
+      "data": {},
+      "type": "custom",
+      "source": "collect-results-text",
+      "target": "respond-text"
+    },
+    {
+      "id": "reactflow__edge-loop-text-contactsloop-sheets-text",
+      "data": {},
+      "type": "custom",
+      "source": "loop-text-contacts",
+      "target": "sheets-text",
+      "sourceHandle": "loop"
+    },
+    {
+      "id": "reactflow__edge-loop-text-contactsdone-collect-results-text",
+      "data": {},
+      "type": "custom",
+      "source": "loop-text-contacts",
+      "target": "collect-results-text",
+      "sourceHandle": "done"
+    },
+    {
+      "id": "reactflow__edge-groq-pdf-extractor-code.execute-1790393196070002",
+      "data": {},
+      "type": "custom",
+      "source": "groq-pdf-extractor",
+      "target": "code.execute-1790393196070002"
+    },
+    {
+      "id": "reactflow__edge-code.execute-1790393196070002-sheets-pdf",
+      "data": {},
+      "type": "custom",
+      "source": "code.execute-1790393196070002",
+      "target": "sheets-pdf"
+    },
+    {
+      "id": "reactflow__edge-sheets-pdf-collect-results-pdf",
+      "data": {},
+      "type": "custom",
+      "source": "sheets-pdf",
+      "target": "collect-results-pdf"
+    },
+    {
+      "id": "reactflow__edge-groq-csv-extractor-code.execute-1790403756314001",
+      "data": {},
+      "type": "custom",
+      "source": "groq-csv-extractor",
+      "target": "code.execute-1790403756314001"
+    },
+    {
+      "id": "reactflow__edge-code.execute-1790403756314001-code.execute-1790404105408002",
+      "data": {},
+      "type": "custom",
+      "source": "code.execute-1790403756314001",
+      "target": "code.execute-1790404105408002"
+    },
+    {
+      "id": "reactflow__edge-code.execute-1790404105408002-code.execute-1790404245195003",
+      "data": {},
+      "type": "custom",
+      "source": "code.execute-1790404105408002",
+      "target": "code.execute-1790404245195003"
+    },
+    {
+      "id": "reactflow__edge-code.execute-1790404245195003-sheets-csv",
+      "data": {},
+      "type": "custom",
+      "source": "code.execute-1790404245195003",
+      "target": "sheets-csv"
+    },
+    {
+      "id": "reactflow__edge-sheets-csv-code.execute-1790404540877004",
+      "data": {},
+      "type": "custom",
+      "source": "sheets-csv",
+      "target": "code.execute-1790404540877004"
+    },
+    {
+      "id": "reactflow__edge-code.execute-1790404540877004-respond-csv",
+      "data": {},
+      "type": "custom",
+      "source": "code.execute-1790404540877004",
+      "target": "respond-csv"
+    },
+    {
+      "id": "reactflow__edge-groq-ocr-extractor-code.execute-1790416955399004",
+      "data": {},
+      "type": "custom",
+      "source": "groq-ocr-extractor",
+      "target": "code.execute-1790416955399004",
+      "selected": false
+    },
+    {
+      "id": "reactflow__edge-code.execute-1790416955399004-sheets-ocr",
+      "data": {},
+      "type": "custom",
+      "source": "code.execute-1790416955399004",
+      "target": "sheets-ocr"
+    },
+    {
+      "id": "reactflow__edge-sheets-ocr-collect-results-ocr",
+      "data": {},
+      "type": "custom",
+      "source": "sheets-ocr",
+      "target": "collect-results-ocr"
+    },
+    {
+      "id": "reactflow__edge-switch-file-typeoutput-2-code.execute-1790420331162007",
+      "data": {},
+      "type": "custom",
+      "source": "switch-file-type",
+      "target": "code.execute-1790420331162007",
+      "sourceHandle": "output-2"
+    },
+    {
+      "id": "reactflow__edge-code.execute-1790420331162007-mistral-1790420619046008",
+      "data": {},
+      "type": "custom",
+      "source": "code.execute-1790420331162007",
+      "target": "mistral-1790420619046008"
+    },
+    {
+      "id": "reactflow__edge-mistral-1790420619046008-groq-ocr-extractor",
+      "data": {},
+      "type": "custom",
+      "source": "mistral-1790420619046008",
+      "target": "groq-ocr-extractor"
+    }
+  ],
+  "_description": "Contact Data Extraction Agent with Deduplication & AI Lead Scoring"
+}

@@ -1,0 +1,1887 @@
+{
+  "nodes": [
+    {
+      "id": "notion.databasePage.create-1783407468342",
+      "type": "action",
+      "position": {
+        "x": 1214.3436772434948,
+        "y": 645.9284602593508
+      },
+      "data": {
+        "label": "Create a database page",
+        "toolId": "notion.databasePage.create",
+        "toolData": {
+          "id": "notion.databasePage.create",
+          "displayName": "Create a database page",
+          "category": "Integrations",
+          "provider": "notion",
+          "operation": "create",
+          "icon": "notion",
+          "description": "Create a page in a database",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "databaseIdMode": {
+                "type": "string",
+                "enum": [
+                  "url",
+                  "id",
+                  "list"
+                ],
+                "default": "list"
+              },
+              "databaseId": {
+                "type": "string"
+              },
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "properties": {},
+              "content": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "richText": {
+                      "type": "boolean"
+                    },
+                    "textContent": {
+                      "type": "string"
+                    },
+                    "textSegments": {},
+                    "isToggleable": {
+                      "type": "boolean"
+                    },
+                    "checked": {
+                      "type": "boolean"
+                    },
+                    "language": {
+                      "type": "string"
+                    },
+                    "caption": {
+                      "type": "string"
+                    },
+                    "icon": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string"
+                    },
+                    "sourceType": {
+                      "type": "string",
+                      "enum": [
+                        "url",
+                        "upload"
+                      ]
+                    },
+                    "children": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/properties/content/items"
+                      }
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "databaseId",
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "databaseIdMode",
+              "displayName": "Database",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "grid": "col-span-4",
+              "options": [
+                {
+                  "name": "From List",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By ID",
+                  "value": "id"
+                }
+              ]
+            },
+            {
+              "name": "databaseId",
+              "displayName": "Database",
+              "hideLabel": true,
+              "type": "options",
+              "required": true,
+              "grid": "col-span-8",
+              "placeholder": "Select a Database...",
+              "fetchEndpoint": "/api/tools/notion/list-databases",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "title",
+              "valueKey": "id",
+              "displayOptions": {
+                "show": {
+                  "databaseIdMode": [
+                    "list"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "databaseId",
+              "displayName": "Database",
+              "hideLabel": true,
+              "type": "string",
+              "required": true,
+              "grid": "col-span-8",
+              "placeholder": "e.g. https://www.notion.so/...",
+              "displayOptions": {
+                "show": {
+                  "databaseIdMode": [
+                    "url",
+                    "id"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "title",
+              "displayName": "Title",
+              "type": "string",
+              "required": true,
+              "placeholder": "Enter Title..."
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "toggle",
+              "default": true
+            },
+            {
+              "name": "properties",
+              "displayName": "Properties",
+              "type": "array",
+              "placeholder": "Add Property",
+              "default": [],
+              "fields": [
+                {
+                  "name": "key",
+                  "displayName": "Property Name or ID",
+                  "type": "options",
+                  "required": true,
+                  "fetchEndpoint": "/api/tools/notion/list-properties",
+                  "dependsOn": [
+                    "credentials",
+                    "databaseId"
+                  ],
+                  "labelKey": "name",
+                  "valueKey": "id"
+                },
+                {
+                  "name": "value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "required": true
+                }
+              ]
+            },
+            {
+              "name": "content",
+              "displayName": "Blocks",
+              "type": "array",
+              "default": [],
+              "placeholder": "Add Block",
+              "fields": [
+                {
+                  "name": "type",
+                  "displayName": "Type Name or ID",
+                  "type": "options",
+                  "required": true,
+                  "default": "paragraph",
+                  "options": [
+                    {
+                      "name": "Paragraph",
+                      "value": "paragraph"
+                    },
+                    {
+                      "name": "Heading 1",
+                      "value": "heading_1"
+                    },
+                    {
+                      "name": "Heading 2",
+                      "value": "heading_2"
+                    },
+                    {
+                      "name": "Heading 3",
+                      "value": "heading_3"
+                    },
+                    {
+                      "name": "Toggle",
+                      "value": "toggle"
+                    },
+                    {
+                      "name": "To-Do",
+                      "value": "to_do"
+                    },
+                    {
+                      "name": "Bulleted List Item",
+                      "value": "bulleted_list_item"
+                    },
+                    {
+                      "name": "Numbered List Item",
+                      "value": "numbered_list_item"
+                    },
+                    {
+                      "name": "Quote",
+                      "value": "quote"
+                    },
+                    {
+                      "name": "Callout",
+                      "value": "callout"
+                    },
+                    {
+                      "name": "Code",
+                      "value": "code"
+                    },
+                    {
+                      "name": "Equation",
+                      "value": "equation"
+                    },
+                    {
+                      "name": "Divider",
+                      "value": "divider"
+                    },
+                    {
+                      "name": "Table of Contents",
+                      "value": "table_of_contents"
+                    },
+                    {
+                      "name": "Breadcrumb",
+                      "value": "breadcrumb"
+                    },
+                    {
+                      "name": "Image",
+                      "value": "image"
+                    },
+                    {
+                      "name": "Video",
+                      "value": "video"
+                    },
+                    {
+                      "name": "File",
+                      "value": "file"
+                    },
+                    {
+                      "name": "PDF",
+                      "value": "pdf"
+                    },
+                    {
+                      "name": "Bookmark",
+                      "value": "bookmark"
+                    },
+                    {
+                      "name": "Embed",
+                      "value": "embed"
+                    },
+                    {
+                      "name": "Link to Page",
+                      "value": "link_to_page"
+                    },
+                    {
+                      "name": "Table",
+                      "value": "table"
+                    },
+                    {
+                      "name": "Table Row",
+                      "value": "table_row"
+                    }
+                  ]
+                },
+                {
+                  "name": "richText",
+                  "displayName": "Rich Text",
+                  "type": "toggle",
+                  "default": false,
+                  "displayOptions": {
+                    "hide": {
+                      "type": [
+                        "image",
+                        "video",
+                        "file",
+                        "pdf",
+                        "divider",
+                        "table_of_contents",
+                        "breadcrumb",
+                        "equation",
+                        "bookmark",
+                        "embed",
+                        "link_to_page",
+                        "table"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "textContent",
+                  "displayName": "Text",
+                  "type": "string",
+                  "format": "text",
+                  "default": "",
+                  "placeholder": "Enter content...",
+                  "displayOptions": {
+                    "show": {
+                      "richText": [
+                        false
+                      ]
+                    },
+                    "hide": {
+                      "type": [
+                        "image",
+                        "video",
+                        "file",
+                        "pdf",
+                        "divider",
+                        "table_of_contents",
+                        "breadcrumb",
+                        "equation",
+                        "bookmark",
+                        "embed",
+                        "link_to_page",
+                        "table"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "textSegments",
+                  "displayName": "Text",
+                  "type": "array",
+                  "default": [],
+                  "placeholder": "Add Text",
+                  "fields": [
+                    {
+                      "name": "type",
+                      "displayName": "Type",
+                      "type": "options",
+                      "required": true,
+                      "default": "text",
+                      "options": [
+                        {
+                          "name": "Equation",
+                          "value": "equation"
+                        },
+                        {
+                          "name": "Mention",
+                          "value": "mention"
+                        },
+                        {
+                          "name": "Text",
+                          "value": "text"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "expression",
+                      "displayName": "Expression",
+                      "type": "string",
+                      "required": true,
+                      "default": "",
+                      "placeholder": "Enter expression...",
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "equation"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "mentionType",
+                      "displayName": "Mention Type",
+                      "type": "options",
+                      "required": true,
+                      "default": "database",
+                      "options": [
+                        {
+                          "name": "Database",
+                          "value": "database"
+                        },
+                        {
+                          "name": "Date",
+                          "value": "date"
+                        },
+                        {
+                          "name": "Page",
+                          "value": "page"
+                        },
+                        {
+                          "name": "User",
+                          "value": "user"
+                        }
+                      ],
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "mention"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "databaseSelectionMethod",
+                      "displayName": "Database",
+                      "type": "options",
+                      "default": "list",
+                      "grid": "col-span-4",
+                      "options": [
+                        {
+                          "name": "From List",
+                          "value": "list"
+                        },
+                        {
+                          "name": "By URL",
+                          "value": "url"
+                        },
+                        {
+                          "name": "By ID",
+                          "value": "id"
+                        }
+                      ],
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "mention"
+                          ],
+                          "mentionType": [
+                            "database"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "databaseId",
+                      "displayName": "Database",
+                      "hideLabel": true,
+                      "type": "string",
+                      "required": true,
+                      "grid": "col-span-8",
+                      "placeholder": "Enter ID or URL...",
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "mention"
+                          ],
+                          "mentionType": [
+                            "database"
+                          ],
+                          "databaseSelectionMethod": [
+                            "url",
+                            "id"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "databaseId",
+                      "displayName": "Database",
+                      "hideLabel": true,
+                      "type": "options",
+                      "required": true,
+                      "grid": "col-span-8",
+                      "placeholder": "Select a Database...",
+                      "fetchEndpoint": "/api/tools/notion/list-databases",
+                      "dependsOn": [
+                        "credentials"
+                      ],
+                      "labelKey": "title",
+                      "valueKey": "id",
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "mention"
+                          ],
+                          "mentionType": [
+                            "database"
+                          ],
+                          "databaseSelectionMethod": [
+                            "list"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "dateRange",
+                      "displayName": "Range",
+                      "type": "toggle",
+                      "default": false,
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "mention"
+                          ],
+                          "mentionType": [
+                            "date"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "date",
+                      "displayName": "Date",
+                      "type": "dateTime",
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "mention"
+                          ],
+                          "mentionType": [
+                            "date"
+                          ],
+                          "dateRange": [
+                            false
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "dateStart",
+                      "displayName": "Date Start",
+                      "type": "dateTime",
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "mention"
+                          ],
+                          "mentionType": [
+                            "date"
+                          ],
+                          "dateRange": [
+                            true
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "dateEnd",
+                      "displayName": "Date End",
+                      "type": "dateTime",
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "mention"
+                          ],
+                          "mentionType": [
+                            "date"
+                          ],
+                          "dateRange": [
+                            true
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "pageId",
+                      "displayName": "Page ID",
+                      "type": "string",
+                      "required": true,
+                      "default": "",
+                      "placeholder": "Enter Page ID...",
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "mention"
+                          ],
+                          "mentionType": [
+                            "page"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "userId",
+                      "displayName": "User Name or ID",
+                      "type": "options",
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "mention"
+                          ],
+                          "mentionType": [
+                            "user"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "text",
+                      "displayName": "Text",
+                      "type": "string",
+                      "default": "",
+                      "placeholder": "Enter text...",
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "text"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "isLink",
+                      "displayName": "Is Link",
+                      "type": "toggle",
+                      "default": false,
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "text"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "linkUrl",
+                      "displayName": "Text Link",
+                      "type": "string",
+                      "default": "",
+                      "placeholder": "https://...",
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "text"
+                          ],
+                          "isLink": [
+                            true
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "annotations",
+                      "displayName": "Annotations",
+                      "type": "collection",
+                      "placeholder": "Add Annotation",
+                      "isCollectionItem": true,
+                      "default": {},
+                      "fields": [
+                        {
+                          "name": "bold",
+                          "displayName": "Bold",
+                          "type": "toggle",
+                          "default": false
+                        },
+                        {
+                          "name": "italic",
+                          "displayName": "Italic",
+                          "type": "toggle",
+                          "default": false
+                        },
+                        {
+                          "name": "strikethrough",
+                          "displayName": "Strikethrough",
+                          "type": "toggle",
+                          "default": false
+                        },
+                        {
+                          "name": "underline",
+                          "displayName": "Underline",
+                          "type": "toggle",
+                          "default": false
+                        },
+                        {
+                          "name": "code",
+                          "displayName": "Code",
+                          "type": "toggle",
+                          "default": false
+                        },
+                        {
+                          "name": "color",
+                          "displayName": "Color",
+                          "type": "options",
+                          "default": "default",
+                          "options": [
+                            {
+                              "name": "Default",
+                              "value": "default"
+                            },
+                            {
+                              "name": "Gray",
+                              "value": "gray"
+                            },
+                            {
+                              "name": "Brown",
+                              "value": "brown"
+                            },
+                            {
+                              "name": "Orange",
+                              "value": "orange"
+                            },
+                            {
+                              "name": "Yellow",
+                              "value": "yellow"
+                            },
+                            {
+                              "name": "Green",
+                              "value": "green"
+                            },
+                            {
+                              "name": "Blue",
+                              "value": "blue"
+                            },
+                            {
+                              "name": "Purple",
+                              "value": "purple"
+                            },
+                            {
+                              "name": "Pink",
+                              "value": "pink"
+                            },
+                            {
+                              "name": "Red",
+                              "value": "red"
+                            },
+                            {
+                              "name": "Gray Background",
+                              "value": "gray_background"
+                            },
+                            {
+                              "name": "Brown Background",
+                              "value": "brown_background"
+                            },
+                            {
+                              "name": "Orange Background",
+                              "value": "orange_background"
+                            },
+                            {
+                              "name": "Yellow Background",
+                              "value": "yellow_background"
+                            },
+                            {
+                              "name": "Green Background",
+                              "value": "green_background"
+                            },
+                            {
+                              "name": "Blue Background",
+                              "value": "blue_background"
+                            },
+                            {
+                              "name": "Purple Background",
+                              "value": "purple_background"
+                            },
+                            {
+                              "name": "Pink Background",
+                              "value": "pink_background"
+                            },
+                            {
+                              "name": "Red Background",
+                              "value": "red_background"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "displayOptions": {
+                    "show": {
+                      "richText": [
+                        true
+                      ]
+                    },
+                    "hide": {
+                      "type": [
+                        "image",
+                        "video",
+                        "file",
+                        "pdf",
+                        "divider",
+                        "table_of_contents",
+                        "breadcrumb",
+                        "equation",
+                        "bookmark",
+                        "embed",
+                        "link_to_page",
+                        "table"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "isToggleable",
+                  "displayName": "Is Toggleable",
+                  "type": "toggle",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "heading_1",
+                        "heading_2",
+                        "heading_3"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "checked",
+                  "displayName": "Checked",
+                  "type": "toggle",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "to_do"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "url",
+                  "displayName": "URL",
+                  "type": "string",
+                  "default": "",
+                  "required": true,
+                  "placeholder": "https://...",
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "image",
+                        "video",
+                        "file",
+                        "pdf",
+                        "embed",
+                        "bookmark"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "caption",
+                  "displayName": "Caption",
+                  "type": "string",
+                  "default": "",
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "image",
+                        "video",
+                        "file",
+                        "pdf",
+                        "code",
+                        "bookmark"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "language",
+                  "displayName": "Language",
+                  "type": "options",
+                  "default": "plain text",
+                  "options": [
+                    {
+                      "name": "Plain Text",
+                      "value": "plain text"
+                    },
+                    {
+                      "name": "JavaScript",
+                      "value": "javascript"
+                    },
+                    {
+                      "name": "TypeScript",
+                      "value": "typescript"
+                    },
+                    {
+                      "name": "Python",
+                      "value": "python"
+                    },
+                    {
+                      "name": "Java",
+                      "value": "java"
+                    },
+                    {
+                      "name": "C++",
+                      "value": "c++"
+                    },
+                    {
+                      "name": "HTML",
+                      "value": "html"
+                    },
+                    {
+                      "name": "CSS",
+                      "value": "css"
+                    },
+                    {
+                      "name": "SQL",
+                      "value": "sql"
+                    },
+                    {
+                      "name": "JSON",
+                      "value": "json"
+                    },
+                    {
+                      "name": "Markdown",
+                      "value": "markdown"
+                    }
+                  ],
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "code"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "expression",
+                  "displayName": "Expression",
+                  "type": "string",
+                  "default": "",
+                  "placeholder": "e^{i\\pi} + 1 = 0",
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "equation"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "icon",
+                  "displayName": "Icon",
+                  "type": "string",
+                  "default": "💡",
+                  "placeholder": "Emoji or Image URL",
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "callout"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "linkToPageId",
+                  "displayName": "Page ID",
+                  "type": "string",
+                  "default": "",
+                  "placeholder": "Enter page ID...",
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "link_to_page"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "tableWidth",
+                  "displayName": "Table Width",
+                  "type": "number",
+                  "default": 2,
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "table"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "hasColumnHeader",
+                  "displayName": "Has Column Header",
+                  "type": "toggle",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "table"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "hasRowHeader",
+                  "displayName": "Has Row Header",
+                  "type": "toggle",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "table"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "placeholder": "Add option",
+              "default": {},
+              "fields": [
+                {
+                  "name": "iconType",
+                  "displayName": "Icon Type",
+                  "type": "options",
+                  "default": "emoji",
+                  "options": [
+                    {
+                      "name": "Emoji",
+                      "value": "emoji"
+                    },
+                    {
+                      "name": "External URL",
+                      "value": "external"
+                    }
+                  ]
+                },
+                {
+                  "name": "icon",
+                  "displayName": "Icon",
+                  "type": "string",
+                  "placeholder": "Enter emoji (🕶️) or image URL..."
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "databasePage",
+            "operation": "create"
+          },
+          "subCategory": "Database Page"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "databasePage",
+          "operation": "create"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false
+    },
+    {
+      "id": "notion.databasePage.get-1783407469368",
+      "type": "action",
+      "position": {
+        "x": 1503.3664520303105,
+        "y": 658.1161676298791
+      },
+      "data": {
+        "label": "Get a database page",
+        "toolId": "notion.databasePage.get",
+        "toolData": {
+          "id": "notion.databasePage.get",
+          "displayName": "Get a database page",
+          "category": "Integrations",
+          "provider": "notion",
+          "operation": "get",
+          "icon": "notion",
+          "description": "Get a page in a database",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "pageId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentials",
+              "pageId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "pageIdMode",
+              "displayName": "Database Page",
+              "type": "options",
+              "required": true,
+              "default": "url",
+              "grid": "col-span-4",
+              "options": [
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By ID",
+                  "value": "id"
+                }
+              ]
+            },
+            {
+              "name": "pageId",
+              "displayName": "Database Page",
+              "hideLabel": true,
+              "type": "string",
+              "required": true,
+              "grid": "col-span-8",
+              "placeholder": "https://www.notion.so/..."
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "toggle",
+              "default": true,
+              "description": "Whether to return a simplified version of the response"
+            }
+          ],
+          "initialData": {
+            "resource": "databasePage",
+            "operation": "get"
+          },
+          "subCategory": "Database Page"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "databasePage",
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1503.3664520303105,
+        "y": 658.1161676298791
+      },
+      "dragging": false
+    },
+    {
+      "id": "notion.databasePage.getMany-1783407470704",
+      "type": "action",
+      "position": {
+        "x": 1499.8842499244452,
+        "y": 887.9415066169854
+      },
+      "data": {
+        "label": "Get many database pages",
+        "toolId": "notion.databasePage.getMany",
+        "toolData": {
+          "id": "notion.databasePage.getMany",
+          "displayName": "Get many database pages",
+          "category": "Integrations",
+          "provider": "notion",
+          "operation": "getMany",
+          "icon": "notion",
+          "description": "Get many pages in a database",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "databaseIdMode": {
+                "type": "string",
+                "enum": [
+                  "url",
+                  "id",
+                  "list"
+                ],
+                "default": "list"
+              },
+              "databaseId": {
+                "type": "string"
+              },
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "limit": {
+                "type": "number",
+                "default": 50
+              },
+              "filter": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "databaseId",
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "databaseIdMode",
+              "displayName": "Database",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "grid": "col-span-4",
+              "options": [
+                {
+                  "name": "From List",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By ID",
+                  "value": "id"
+                }
+              ]
+            },
+            {
+              "name": "databaseId",
+              "displayName": "Database",
+              "hideLabel": true,
+              "type": "options",
+              "required": true,
+              "grid": "col-span-8",
+              "placeholder": "Select a Database...",
+              "fetchEndpoint": "/api/tools/notion/list-databases",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "title",
+              "valueKey": "id",
+              "displayOptions": {
+                "show": {
+                  "databaseIdMode": [
+                    "list"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "databaseId",
+              "displayName": "Database",
+              "hideLabel": true,
+              "type": "string",
+              "required": true,
+              "grid": "col-span-8",
+              "placeholder": "e.g. https://www.notion.so/...",
+              "displayOptions": {
+                "show": {
+                  "databaseIdMode": [
+                    "url",
+                    "id"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "toggle",
+              "default": false,
+              "description": "Whether to return all pages"
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "description": "Maximum number of pages to return",
+              "displayOptions": {
+                "show": {
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "toggle",
+              "default": true,
+              "description": "Whether to return a simplified version of the response"
+            },
+            {
+              "name": "filter",
+              "displayName": "Filter",
+              "type": "options",
+              "default": "none",
+              "options": [
+                {
+                  "name": "None",
+                  "value": "none"
+                },
+                {
+                  "name": "Build Manually",
+                  "value": "manual"
+                },
+                {
+                  "name": "JSON Filter",
+                  "value": "json"
+                }
+              ]
+            },
+            {
+              "name": "mustMatch",
+              "displayName": "Must Match",
+              "type": "options",
+              "default": "or",
+              "options": [
+                {
+                  "name": "Any Filter",
+                  "value": "or"
+                },
+                {
+                  "name": "All Filters",
+                  "value": "and"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "filter": [
+                    "manual"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "filters",
+              "displayName": "Filters",
+              "type": "array",
+              "placeholder": "Add Condition",
+              "default": [],
+              "displayOptions": {
+                "show": {
+                  "filter": [
+                    "manual"
+                  ]
+                }
+              },
+              "fields": [
+                {
+                  "name": "property",
+                  "displayName": "Property Name or ID",
+                  "type": "options",
+                  "required": true,
+                  "fetchEndpoint": "/api/tools/notion/list-properties",
+                  "dependsOn": [
+                    "credentials",
+                    "databaseId"
+                  ],
+                  "labelKey": "name",
+                  "valueKey": "id"
+                },
+                {
+                  "name": "condition",
+                  "displayName": "Condition",
+                  "type": "options",
+                  "default": "equals",
+                  "displayOptions": {
+                    "show": {
+                      "property": [
+                        "_any_"
+                      ]
+                    }
+                  },
+                  "options": [
+                    {
+                      "name": "Equals",
+                      "value": "equals"
+                    },
+                    {
+                      "name": "Does Not Equal",
+                      "value": "does_not_equal"
+                    },
+                    {
+                      "name": "Contains",
+                      "value": "contains"
+                    },
+                    {
+                      "name": "Does Not Contain",
+                      "value": "does_not_contain"
+                    },
+                    {
+                      "name": "Starts With",
+                      "value": "starts_with"
+                    },
+                    {
+                      "name": "Ends With",
+                      "value": "ends_with"
+                    },
+                    {
+                      "name": "Greater Than",
+                      "value": "greater_than"
+                    },
+                    {
+                      "name": "Less Than",
+                      "value": "less_than"
+                    },
+                    {
+                      "name": "Greater Than or Equal To",
+                      "value": "greater_than_or_equal_to"
+                    },
+                    {
+                      "name": "Less Than or Equal To",
+                      "value": "less_than_or_equal_to"
+                    },
+                    {
+                      "name": "Is Empty",
+                      "value": "is_empty"
+                    },
+                    {
+                      "name": "Is Not Empty",
+                      "value": "is_not_empty"
+                    }
+                  ]
+                },
+                {
+                  "name": "value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "placeholder": "Enter text, number, or boolean...",
+                  "displayOptions": {
+                    "show": {
+                      "condition": [
+                        "_any_"
+                      ],
+                      "property": [
+                        "_contains:|title",
+                        "_contains:|rich_text",
+                        "_contains:|url",
+                        "_contains:|email",
+                        "_contains:|phone_number",
+                        "_contains:|number",
+                        "_contains:|checkbox",
+                        "_contains:|relation",
+                        "_contains:|formula"
+                      ]
+                    },
+                    "hide": {
+                      "condition": [
+                        "is_empty",
+                        "is_not_empty"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "dateValue",
+                  "displayName": "Date",
+                  "type": "dateTime",
+                  "displayOptions": {
+                    "show": {
+                      "condition": [
+                        "_any_"
+                      ],
+                      "property": [
+                        "_contains:|date",
+                        "_contains:|created_time",
+                        "_contains:|last_edited_time"
+                      ]
+                    },
+                    "hide": {
+                      "condition": [
+                        "is_empty",
+                        "is_not_empty"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "statusValue",
+                  "displayName": "Status Name or ID",
+                  "type": "options",
+                  "fetchEndpoint": "/api/tools/notion/list-status-options",
+                  "dependsOn": [
+                    "credentials",
+                    "databaseId",
+                    "property"
+                  ],
+                  "labelKey": "name",
+                  "valueKey": "id",
+                  "displayOptions": {
+                    "show": {
+                      "condition": [
+                        "_any_"
+                      ],
+                      "property": [
+                        "_contains:|status",
+                        "_contains:|select",
+                        "_contains:|multi_select"
+                      ]
+                    },
+                    "hide": {
+                      "condition": [
+                        "is_empty",
+                        "is_not_empty"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "filterJson",
+              "displayName": "Filter (JSON)",
+              "type": "string",
+              "format": "text",
+              "displayOptions": {
+                "show": {
+                  "filter": [
+                    "json"
+                  ]
+                }
+              },
+              "description": "Notion Filter Object in JSON format"
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "placeholder": "Add option",
+              "default": {},
+              "fields": [
+                {
+                  "name": "downloadFiles",
+                  "displayName": "Download Files",
+                  "type": "toggle",
+                  "default": false
+                },
+                {
+                  "name": "sort",
+                  "displayName": "Sort",
+                  "type": "array",
+                  "placeholder": "Add Sort",
+                  "default": [],
+                  "fields": [
+                    {
+                      "name": "timestamp",
+                      "displayName": "Timestamp",
+                      "type": "toggle",
+                      "default": false
+                    },
+                    {
+                      "name": "property",
+                      "displayName": "Property Name or ID",
+                      "type": "string"
+                    },
+                    {
+                      "name": "direction",
+                      "displayName": "Direction",
+                      "type": "options",
+                      "default": "ascending",
+                      "options": [
+                        {
+                          "name": "Ascending",
+                          "value": "ascending"
+                        },
+                        {
+                          "name": "Descending",
+                          "value": "descending"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "databasePage",
+            "operation": "getMany"
+          },
+          "subCategory": "Database Page"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "databasePage",
+          "operation": "getMany"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1499.8842499244452,
+        "y": 887.9415066169854
+      },
+      "dragging": false
+    },
+    {
+      "id": "notion.databasePage.update-1783407472297",
+      "type": "action",
+      "position": {
+        "x": 1137.7352309144596,
+        "y": 884.45930451112
+      },
+      "data": {
+        "label": "Update a database page",
+        "toolId": "notion.databasePage.update",
+        "toolData": {
+          "id": "notion.databasePage.update",
+          "displayName": "Update a database page",
+          "category": "Integrations",
+          "provider": "notion",
+          "operation": "update",
+          "icon": "notion",
+          "description": "Update pages in a database",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "pageId": {
+                "type": "string"
+              },
+              "properties": {}
+            },
+            "required": [
+              "credentials",
+              "pageId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "pageIdMode",
+              "displayName": "Database Page",
+              "type": "options",
+              "required": true,
+              "default": "url",
+              "grid": "col-span-4",
+              "options": [
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By ID",
+                  "value": "id"
+                }
+              ]
+            },
+            {
+              "name": "pageId",
+              "displayName": "Database Page",
+              "hideLabel": true,
+              "type": "string",
+              "required": true,
+              "grid": "col-span-8",
+              "placeholder": "https://www.notion.so/..."
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "toggle",
+              "default": true,
+              "description": "Whether to return a simplified version of the response"
+            },
+            {
+              "name": "properties",
+              "displayName": "Properties",
+              "type": "array",
+              "placeholder": "Add Property",
+              "default": [],
+              "fields": [
+                {
+                  "name": "key",
+                  "displayName": "Property Name or ID",
+                  "type": "options",
+                  "required": true,
+                  "fetchEndpoint": "/api/tools/notion/list-properties",
+                  "dependsOn": [
+                    "credentials",
+                    "pageId"
+                  ],
+                  "labelKey": "name",
+                  "valueKey": "id"
+                },
+                {
+                  "name": "value",
+                  "displayName": "Value",
+                  "type": "string",
+                  "displayOptions": {
+                    "show": {
+                      "key": [
+                        "_contains:|title",
+                        "_contains:|rich_text",
+                        "_contains:|url",
+                        "_contains:|email",
+                        "_contains:|phone_number",
+                        "_contains:|number",
+                        "_contains:|checkbox",
+                        "_contains:|relation",
+                        "_contains:|formula"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "dateValue",
+                  "displayName": "Date",
+                  "type": "dateTime",
+                  "displayOptions": {
+                    "show": {
+                      "key": [
+                        "_contains:|date",
+                        "_contains:|created_time",
+                        "_contains:|last_edited_time"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "statusValue",
+                  "displayName": "Status Name or ID",
+                  "type": "options",
+                  "fetchEndpoint": "/api/tools/notion/list-status-options",
+                  "dependsOn": [
+                    "credentials",
+                    "pageId",
+                    "key"
+                  ],
+                  "labelKey": "name",
+                  "valueKey": "id",
+                  "displayOptions": {
+                    "show": {
+                      "key": [
+                        "_contains:|status",
+                        "_contains:|select",
+                        "_contains:|multi_select"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "options",
+              "displayName": "Options",
+              "type": "collection",
+              "placeholder": "Add option",
+              "default": {},
+              "fields": [
+                {
+                  "name": "iconType",
+                  "displayName": "Icon Type",
+                  "type": "options",
+                  "default": "emoji",
+                  "options": [
+                    {
+                      "name": "Emoji",
+                      "value": "emoji"
+                    },
+                    {
+                      "name": "File",
+                      "value": "file"
+                    }
+                  ]
+                },
+                {
+                  "name": "icon",
+                  "displayName": "Icon",
+                  "type": "string",
+                  "placeholder": "Enter emoji or file URL..."
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "databasePage",
+            "operation": "update"
+          },
+          "subCategory": "Database Page"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "databasePage",
+          "operation": "update"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1137.7352309144596,
+        "y": 884.45930451112
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

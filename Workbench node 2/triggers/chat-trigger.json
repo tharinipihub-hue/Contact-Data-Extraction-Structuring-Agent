@@ -1,0 +1,328 @@
+{
+  "nodes": [
+    {
+      "id": "chatTrigger-1783397028555",
+      "type": "manual-trigger",
+      "position": {
+        "x": -823.1717747570667,
+        "y": 162.07118765476577
+      },
+      "data": {
+        "label": "Chat Trigger",
+        "toolId": "chatTrigger",
+        "toolData": {
+          "id": "chatTrigger",
+          "displayName": "Chat Trigger",
+          "category": "Triggers",
+          "provider": "core",
+          "icon": "MessageSquare",
+          "description": "Start workflow from chat",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "isPublic": {
+                "type": "boolean",
+                "default": false,
+                "description": "Make Chat Publicly Available"
+              },
+              "responseMode": {
+                "type": "string",
+                "enum": [
+                  "Last Node",
+                  "Using Response Nodes"
+                ],
+                "default": "Last Node",
+                "description": "Response Mode"
+              },
+              "initialMessage": {
+                "type": "string",
+                "description": "Initial Message(s)"
+              },
+              "title": {
+                "type": "string",
+                "description": "Title"
+              },
+              "subtitle": {
+                "type": "string",
+                "description": "Subtitle"
+              },
+              "placeholder": {
+                "type": "string",
+                "default": "Type your message...",
+                "description": "Input Placeholder"
+              },
+              "loadPreviousSession": {
+                "type": "boolean",
+                "default": true,
+                "description": "Load Previous Session"
+              },
+              "requireButtonClick": {
+                "type": "boolean",
+                "default": false,
+                "description": "Require Button Click to Start Chat"
+              },
+              "authentication": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "jwtAuth"
+                ],
+                "default": "none",
+                "description": "Authentication"
+              },
+              "jwtSecret": {
+                "type": "string",
+                "description": "JWT Secret"
+              },
+              "jwtAlgorithm": {
+                "type": "string",
+                "enum": [
+                  "HS256",
+                  "HS384",
+                  "HS512"
+                ],
+                "default": "HS256",
+                "description": "JWT Algorithm"
+              },
+              "sessionClaim": {
+                "type": "string",
+                "default": "sub",
+                "description": "JWT claim used to identify the session"
+              },
+              "requireRoleCheck": {
+                "type": "boolean",
+                "default": false,
+                "description": "Require Role Check (RBAC)"
+              },
+              "roleClaimKey": {
+                "type": "string",
+                "default": "role",
+                "description": "Role Claim Key"
+              },
+              "allowedRoles": {
+                "type": "string",
+                "default": "admin, staff",
+                "description": "Allowed Roles (comma separated)"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "isPublic",
+              "displayName": "Make Chat Publicly Available",
+              "type": "boolean",
+              "default": false,
+              "description": "If ON, creates a public webhook hosted chat page"
+            },
+            {
+              "name": "responseMode",
+              "displayName": "Response Mode",
+              "type": "options",
+              "required": true,
+              "advanced": true,
+              "default": "Last Node",
+              "options": [
+                {
+                  "name": "Last Node",
+                  "value": "Last Node"
+                },
+                {
+                  "name": "Using Response Nodes",
+                  "value": "Using Response Nodes"
+                }
+              ],
+              "description": "Determines how responses are returned to the user"
+            },
+            {
+              "name": "initialMessage",
+              "displayName": "Initial Message(s)",
+              "type": "string",
+              "format": "text",
+              "description": "Displayed when chat UI opens. Does NOT trigger execution.",
+              "default": ""
+            },
+            {
+              "name": "title",
+              "displayName": "Title",
+              "type": "string",
+              "advanced": true,
+              "description": "Appears at top of chat UI",
+              "default": ""
+            },
+            {
+              "name": "subtitle",
+              "displayName": "Subtitle",
+              "type": "string",
+              "advanced": true,
+              "description": "Appears below title",
+              "default": ""
+            },
+            {
+              "name": "placeholder",
+              "displayName": "Input Placeholder",
+              "type": "string",
+              "advanced": true,
+              "default": "Type your message..."
+            },
+            {
+              "name": "loadPreviousSession",
+              "displayName": "Load Previous Session",
+              "type": "boolean",
+              "advanced": true,
+              "default": true,
+              "description": "Load past messages using sessionId"
+            },
+            {
+              "name": "requireButtonClick",
+              "displayName": "Require Button Click to Start Chat",
+              "type": "boolean",
+              "advanced": true,
+              "default": false,
+              "description": "Chat input hidden initially. Shows 'Start Chat' button."
+            },
+            {
+              "name": "authentication",
+              "displayName": "Authentication",
+              "type": "options",
+              "advanced": true,
+              "default": "none",
+              "options": [
+                {
+                  "name": "None",
+                  "value": "none"
+                },
+                {
+                  "name": "JWT Auth",
+                  "value": "jwtAuth"
+                }
+              ],
+              "description": "Require callers to present a valid JWT. The session is derived from a JWT claim so each authenticated user keeps a stable, private conversation."
+            },
+            {
+              "name": "jwtSecret",
+              "displayName": "JWT Secret",
+              "type": "string",
+              "advanced": true,
+              "default": "",
+              "typeOptions": {
+                "password": true
+              },
+              "description": "Secret used to verify the caller's JWT (HMAC).",
+              "displayOptions": {
+                "show": {
+                  "authentication": [
+                    "jwtAuth"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "jwtAlgorithm",
+              "displayName": "JWT Algorithm",
+              "type": "options",
+              "advanced": true,
+              "default": "HS256",
+              "options": [
+                {
+                  "name": "HS256",
+                  "value": "HS256"
+                },
+                {
+                  "name": "HS384",
+                  "value": "HS384"
+                },
+                {
+                  "name": "HS512",
+                  "value": "HS512"
+                }
+              ],
+              "description": "Algorithm used to sign the JWT.",
+              "displayOptions": {
+                "show": {
+                  "authentication": [
+                    "jwtAuth"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "sessionClaim",
+              "displayName": "Session Claim",
+              "type": "string",
+              "advanced": true,
+              "default": "sub",
+              "placeholder": "sub",
+              "description": "JWT claim that identifies the user (e.g. sub, userId, email). The same value always maps to the same session.",
+              "displayOptions": {
+                "show": {
+                  "authentication": [
+                    "jwtAuth"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "requireRoleCheck",
+              "displayName": "Require Role Check (RBAC)",
+              "type": "boolean",
+              "advanced": true,
+              "default": false,
+              "description": "If enabled, blocks execution unless the JWT contains a matching role.",
+              "displayOptions": {
+                "show": {
+                  "authentication": [
+                    "jwtAuth"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "roleClaimKey",
+              "displayName": "Role Claim Key",
+              "type": "string",
+              "advanced": true,
+              "default": "role",
+              "description": "The field in your JWT payload that stores the user's role.",
+              "displayOptions": {
+                "show": {
+                  "authentication": [
+                    "jwtAuth"
+                  ],
+                  "requireRoleCheck": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "allowedRoles",
+              "displayName": "Allowed Roles (comma separated)",
+              "type": "string",
+              "advanced": true,
+              "default": "admin, staff",
+              "description": "Comma-separated list of roles allowed to trigger this workflow. Example: admin, staff",
+              "displayOptions": {
+                "show": {
+                  "authentication": [
+                    "jwtAuth"
+                  ],
+                  "requireRoleCheck": [
+                    true
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "isTrigger": true,
+        "isPrimaryTrigger": true,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 100
+    }
+  ],
+  "edges": []
+}

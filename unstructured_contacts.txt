@@ -1,0 +1,25 @@
+CONFERENCE ATTENDEE & CONTACT DIRECTORY - AI EXPO 2026
+
+1. Ananya Sundaram
+Lead AI Architect at NexaGen Systems
+Email: ananya.s@nexagensys.com | Cell: +91 94432 10987
+Office: 3rd Floor, Tidel Park, Coimbatore, TN, India
+Web: https://nexagensys.com/ai
+LinkedIn: https://linkedin.com/in/ananya-sundaram-ai
+Notes: Interested in multi-agent orchestration tools.
+
+2. David K. Miller (Dave)
+Founder & Managing Director - Quantum Ventures LLC
+Contact: david.miller@quantumventures.vc or phone +1-212-555-0199
+Located in Manhattan, New York, NY 10022
+Website: www.quantumventures.vc
+Personal LinkedIn: linkedin.com/in/dave-miller-investor
+Follow-up: Pitch our SNS Agent Workbench integration capabilities next Tuesday.
+
+3. Priya Nambiar
+Chief Data Officer @ HealthTech Global Inc.
+Mobile: +44 20 7946 0912 / Direct: priya.n@healthtechglobal.org
+London Headquarters: 100 Victoria Embankment, London, UK
+Website: https://healthtechglobal.org
+Profile: https://linkedin.com/in/priyanambiar-data
+Notes: Wants to automate patient contact structuring from medical intake forms.

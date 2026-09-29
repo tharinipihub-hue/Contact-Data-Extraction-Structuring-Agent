@@ -1,0 +1,1862 @@
+{
+  "nodes": [
+    {
+      "id": "airtable.getBaseSchema-1783397952168",
+      "type": "action",
+      "position": {
+        "x": 429.22136312888625,
+        "y": 968.5929624473105
+      },
+      "data": {
+        "label": "Get base schema",
+        "toolId": "airtable.getBaseSchema",
+        "toolData": {
+          "id": "airtable.getBaseSchema",
+          "displayName": "Get base schema",
+          "category": "Integrations",
+          "provider": "airtable",
+          "operation": "getBaseSchema",
+          "description": "Returns the schema of the tables in a given base.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Airtable API Token"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "base",
+                  "record"
+                ],
+                "default": "record",
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "getManyBases",
+                  "getBaseSchema",
+                  "createRecord",
+                  "createOrUpdateRecord",
+                  "deleteRecord",
+                  "getRecord",
+                  "searchRecords",
+                  "updateRecord"
+                ],
+                "description": "Operation"
+              },
+              "baseId": {
+                "type": "string",
+                "description": "Base ID"
+              },
+              "tableName": {
+                "type": "string",
+                "description": "Table Name"
+              },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "field": {
+                      "type": "string"
+                    },
+                    "direction": {
+                      "type": "string",
+                      "enum": [
+                        "asc",
+                        "desc"
+                      ],
+                      "default": "asc"
+                    }
+                  },
+                  "required": [
+                    "field"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Sort conditions"
+              }
+            },
+            "required": [
+              "credentialId",
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "initialData": {
+            "resource": "base",
+            "operation": "getBaseSchema"
+          },
+          "subCategory": "Base",
+          "dynamicFields": [
+            {
+              "fieldName": "resource",
+              "label": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "label": "Base",
+                  "value": "base"
+                },
+                {
+                  "label": "Record",
+                  "value": "record"
+                }
+              ],
+              "defaultValue": "base"
+            },
+            {
+              "fieldName": "operation",
+              "label": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "label": "Get Many",
+                  "value": "getManyBases"
+                },
+                {
+                  "label": "Get Schema",
+                  "value": "getBaseSchema"
+                }
+              ],
+              "defaultValue": "getBaseSchema"
+            },
+            {
+              "fieldName": "baseId",
+              "label": "Base",
+              "type": "options",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/bases",
+              "labelKey": "name",
+              "valueKey": "id",
+              "displayOptions": {
+                "hide": {
+                  "operation": [
+                    "getManyBases"
+                  ]
+                }
+              }
+            },
+            {
+              "fieldName": "tableName",
+              "label": "Table",
+              "type": "options",
+              "dependsOn": [
+                "credentialId",
+                "baseId"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/tables",
+              "labelKey": "name",
+              "valueKey": "name",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "record"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "base",
+          "operation": "getBaseSchema"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "airtable.getManyBases-1783397954088",
+      "type": "action",
+      "position": {
+        "x": 507.22136312888625,
+        "y": 1166.5929624473106
+      },
+      "data": {
+        "label": "Get many bases",
+        "toolId": "airtable.getManyBases",
+        "toolData": {
+          "id": "airtable.getManyBases",
+          "displayName": "Get many bases",
+          "category": "Integrations",
+          "provider": "airtable",
+          "operation": "getManyBases",
+          "description": "Returns all bases the API key owner can access.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Airtable API Token"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "base",
+                  "record"
+                ],
+                "default": "record",
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "getManyBases",
+                  "getBaseSchema",
+                  "createRecord",
+                  "createOrUpdateRecord",
+                  "deleteRecord",
+                  "getRecord",
+                  "searchRecords",
+                  "updateRecord"
+                ],
+                "description": "Operation"
+              },
+              "baseId": {
+                "type": "string",
+                "description": "Base ID"
+              },
+              "tableName": {
+                "type": "string",
+                "description": "Table Name"
+              },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "field": {
+                      "type": "string"
+                    },
+                    "direction": {
+                      "type": "string",
+                      "enum": [
+                        "asc",
+                        "desc"
+                      ],
+                      "default": "asc"
+                    }
+                  },
+                  "required": [
+                    "field"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Sort conditions"
+              }
+            },
+            "required": [
+              "credentialId",
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "initialData": {
+            "resource": "base",
+            "operation": "getManyBases"
+          },
+          "subCategory": "Base",
+          "dynamicFields": [
+            {
+              "fieldName": "resource",
+              "label": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "label": "Base",
+                  "value": "base"
+                },
+                {
+                  "label": "Record",
+                  "value": "record"
+                }
+              ],
+              "defaultValue": "base"
+            },
+            {
+              "fieldName": "operation",
+              "label": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "label": "Get Many",
+                  "value": "getManyBases"
+                },
+                {
+                  "label": "Get Schema",
+                  "value": "getBaseSchema"
+                }
+              ],
+              "defaultValue": "getManyBases"
+            },
+            {
+              "fieldName": "baseId",
+              "label": "Base",
+              "type": "options",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/bases",
+              "labelKey": "name",
+              "valueKey": "id",
+              "displayOptions": {
+                "hide": {
+                  "operation": [
+                    "getManyBases"
+                  ]
+                }
+              }
+            },
+            {
+              "fieldName": "tableName",
+              "label": "Table",
+              "type": "options",
+              "dependsOn": [
+                "credentialId",
+                "baseId"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/tables",
+              "labelKey": "name",
+              "valueKey": "name",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "record"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "base",
+          "operation": "getManyBases"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "airtable-1783397955992",
+      "type": "action",
+      "position": {
+        "x": 824.2213631288863,
+        "y": 1023.5929624473105
+      },
+      "data": {
+        "label": "Airtable",
+        "toolId": "airtable",
+        "toolData": {
+          "id": "airtable",
+          "displayName": "Airtable",
+          "category": "Integrations",
+          "provider": "airtable",
+          "operation": "createRecord",
+          "description": "Interact with Airtable bases and records.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Airtable API Token"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "base",
+                  "record"
+                ],
+                "default": "record",
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "getManyBases",
+                  "getBaseSchema",
+                  "createRecord",
+                  "createOrUpdateRecord",
+                  "deleteRecord",
+                  "getRecord",
+                  "searchRecords",
+                  "updateRecord"
+                ],
+                "description": "Operation"
+              },
+              "baseId": {
+                "type": "string",
+                "description": "Base ID"
+              },
+              "tableName": {
+                "type": "string",
+                "description": "Table Name"
+              },
+              "fields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Fields Mapping"
+              },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "field": {
+                      "type": "string"
+                    },
+                    "direction": {
+                      "type": "string",
+                      "enum": [
+                        "asc",
+                        "desc"
+                      ],
+                      "default": "asc"
+                    }
+                  },
+                  "required": [
+                    "field"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Sort conditions"
+              }
+            },
+            "required": [
+              "credentialId",
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "initialData": {
+            "resource": "record",
+            "operation": "createRecord"
+          },
+          "subCategory": "Record",
+          "dynamicFields": [
+            {
+              "fieldName": "resource",
+              "label": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "label": "Base",
+                  "value": "base"
+                },
+                {
+                  "label": "Record",
+                  "value": "record"
+                }
+              ],
+              "defaultValue": "record"
+            },
+            {
+              "fieldName": "operation",
+              "label": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "label": "Create",
+                  "value": "createRecord"
+                },
+                {
+                  "label": "Create or Update",
+                  "value": "createOrUpdateRecord"
+                },
+                {
+                  "label": "Delete",
+                  "value": "deleteRecord"
+                },
+                {
+                  "label": "Get",
+                  "value": "getRecord"
+                },
+                {
+                  "label": "Search",
+                  "value": "searchRecords"
+                },
+                {
+                  "label": "Update",
+                  "value": "updateRecord"
+                }
+              ],
+              "defaultValue": "createRecord"
+            },
+            {
+              "fieldName": "baseId",
+              "label": "Base",
+              "type": "options",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/bases",
+              "labelKey": "name",
+              "valueKey": "id",
+              "displayOptions": {
+                "hide": {
+                  "operation": [
+                    "getManyBases"
+                  ]
+                }
+              }
+            },
+            {
+              "fieldName": "tableName",
+              "label": "Table",
+              "type": "options",
+              "dependsOn": [
+                "credentialId",
+                "baseId"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/tables",
+              "labelKey": "name",
+              "valueKey": "name",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "record"
+                  ]
+                }
+              }
+            },
+            {
+              "fieldName": "fields",
+              "label": "Fields",
+              "type": "collection",
+              "dependsOn": [
+                "credentialId",
+                "baseId",
+                "tableName"
+              ],
+              "placeholder": "Add Field"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "record",
+          "operation": "createRecord"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "airtable.createRecord-1783397957424",
+      "type": "action",
+      "position": {
+        "x": 895.2213631288863,
+        "y": 1172.5929624473106
+      },
+      "data": {
+        "label": "Create a record",
+        "toolId": "airtable.createRecord",
+        "toolData": {
+          "id": "airtable.createRecord",
+          "displayName": "Create a record",
+          "category": "Integrations",
+          "provider": "airtable",
+          "operation": "createRecord",
+          "description": "Creates a new record in an Airtable table.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Airtable API Token"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "base",
+                  "record"
+                ],
+                "default": "record",
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "getManyBases",
+                  "getBaseSchema",
+                  "createRecord",
+                  "createOrUpdateRecord",
+                  "deleteRecord",
+                  "getRecord",
+                  "searchRecords",
+                  "updateRecord"
+                ],
+                "description": "Operation"
+              },
+              "baseId": {
+                "type": "string",
+                "description": "Base ID"
+              },
+              "tableName": {
+                "type": "string",
+                "description": "Table Name"
+              },
+              "fields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Fields Mapping"
+              },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "field": {
+                      "type": "string"
+                    },
+                    "direction": {
+                      "type": "string",
+                      "enum": [
+                        "asc",
+                        "desc"
+                      ],
+                      "default": "asc"
+                    }
+                  },
+                  "required": [
+                    "field"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Sort conditions"
+              }
+            },
+            "required": [
+              "credentialId",
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "initialData": {
+            "resource": "record",
+            "operation": "createRecord"
+          },
+          "subCategory": "Record",
+          "dynamicFields": [
+            {
+              "fieldName": "resource",
+              "label": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "label": "Base",
+                  "value": "base"
+                },
+                {
+                  "label": "Record",
+                  "value": "record"
+                }
+              ],
+              "defaultValue": "record"
+            },
+            {
+              "fieldName": "operation",
+              "label": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "label": "Create",
+                  "value": "createRecord"
+                },
+                {
+                  "label": "Create or Update",
+                  "value": "createOrUpdateRecord"
+                },
+                {
+                  "label": "Delete",
+                  "value": "deleteRecord"
+                },
+                {
+                  "label": "Get",
+                  "value": "getRecord"
+                },
+                {
+                  "label": "Search",
+                  "value": "searchRecords"
+                },
+                {
+                  "label": "Update",
+                  "value": "updateRecord"
+                }
+              ],
+              "defaultValue": "createRecord"
+            },
+            {
+              "fieldName": "baseId",
+              "label": "Base",
+              "type": "options",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/bases",
+              "labelKey": "name",
+              "valueKey": "id",
+              "displayOptions": {
+                "hide": {
+                  "operation": [
+                    "getManyBases"
+                  ]
+                }
+              }
+            },
+            {
+              "fieldName": "tableName",
+              "label": "Table",
+              "type": "options",
+              "dependsOn": [
+                "credentialId",
+                "baseId"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/tables",
+              "labelKey": "name",
+              "valueKey": "name",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "record"
+                  ]
+                }
+              }
+            },
+            {
+              "fieldName": "fields",
+              "label": "Fields",
+              "type": "collection",
+              "dependsOn": [
+                "credentialId",
+                "baseId",
+                "tableName"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/fields",
+              "placeholder": "Add Field",
+              "description": "The data to send for the operation."
+            }
+          ],
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "record",
+          "operation": "createRecord"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "airtable.createOrUpdateRecord-1783397958863",
+      "type": "action",
+      "position": {
+        "x": 856.2213631288863,
+        "y": 1341.5929624473106
+      },
+      "data": {
+        "label": "Create or update a record",
+        "toolId": "airtable.createOrUpdateRecord",
+        "toolData": {
+          "id": "airtable.createOrUpdateRecord",
+          "displayName": "Create or update a record",
+          "category": "Integrations",
+          "provider": "airtable",
+          "operation": "createOrUpdateRecord",
+          "description": "Creates a new record or if one of the given fields matches an existing record, updates that record.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Airtable API Token"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "base",
+                  "record"
+                ],
+                "default": "record",
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "getManyBases",
+                  "getBaseSchema",
+                  "createRecord",
+                  "createOrUpdateRecord",
+                  "deleteRecord",
+                  "getRecord",
+                  "searchRecords",
+                  "updateRecord"
+                ],
+                "description": "Operation"
+              },
+              "baseId": {
+                "type": "string",
+                "description": "Base ID"
+              },
+              "tableName": {
+                "type": "string",
+                "description": "Table Name"
+              },
+              "fields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Fields Mapping"
+              },
+              "upsertFields": {
+                "type": "string",
+                "description": "Unique Fields for Upsert (comma-separated)"
+              },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "field": {
+                      "type": "string"
+                    },
+                    "direction": {
+                      "type": "string",
+                      "enum": [
+                        "asc",
+                        "desc"
+                      ],
+                      "default": "asc"
+                    }
+                  },
+                  "required": [
+                    "field"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Sort conditions"
+              }
+            },
+            "required": [
+              "credentialId",
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "initialData": {
+            "resource": "record",
+            "operation": "createOrUpdateRecord"
+          },
+          "subCategory": "Record",
+          "dynamicFields": [
+            {
+              "fieldName": "resource",
+              "label": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "label": "Base",
+                  "value": "base"
+                },
+                {
+                  "label": "Record",
+                  "value": "record"
+                }
+              ],
+              "defaultValue": "record"
+            },
+            {
+              "fieldName": "operation",
+              "label": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "label": "Create",
+                  "value": "createRecord"
+                },
+                {
+                  "label": "Create or Update",
+                  "value": "createOrUpdateRecord"
+                },
+                {
+                  "label": "Delete",
+                  "value": "deleteRecord"
+                },
+                {
+                  "label": "Get",
+                  "value": "getRecord"
+                },
+                {
+                  "label": "Search",
+                  "value": "searchRecords"
+                },
+                {
+                  "label": "Update",
+                  "value": "updateRecord"
+                }
+              ],
+              "defaultValue": "createOrUpdateRecord"
+            },
+            {
+              "fieldName": "baseId",
+              "label": "Base",
+              "type": "options",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/bases",
+              "labelKey": "name",
+              "valueKey": "id",
+              "displayOptions": {
+                "hide": {
+                  "operation": [
+                    "getManyBases"
+                  ]
+                }
+              }
+            },
+            {
+              "fieldName": "tableName",
+              "label": "Table",
+              "type": "options",
+              "dependsOn": [
+                "credentialId",
+                "baseId"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/tables",
+              "labelKey": "name",
+              "valueKey": "name",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "record"
+                  ]
+                }
+              }
+            },
+            {
+              "fieldName": "fields",
+              "label": "Fields",
+              "type": "collection",
+              "dependsOn": [
+                "credentialId",
+                "baseId",
+                "tableName"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/fields",
+              "placeholder": "Add Field",
+              "description": "The data to send for the operation."
+            },
+            {
+              "fieldName": "upsertFields",
+              "label": "Fields to Match On",
+              "type": "options",
+              "multiple": true,
+              "dependsOn": [
+                "credentialId",
+                "baseId",
+                "tableName"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/fields",
+              "labelKey": "name",
+              "valueKey": "name",
+              "placeholder": "Select field(s)",
+              "description": "Field names to use for matching existing records for upsert."
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "record",
+          "operation": "createOrUpdateRecord"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "airtable.deleteRecord-1783397963232",
+      "type": "action",
+      "position": {
+        "x": 564.2213631288863,
+        "y": 1418.5929624473106
+      },
+      "data": {
+        "label": "Delete a record",
+        "toolId": "airtable.deleteRecord",
+        "toolData": {
+          "id": "airtable.deleteRecord",
+          "displayName": "Delete a record",
+          "category": "Integrations",
+          "provider": "airtable",
+          "operation": "deleteRecord",
+          "description": "Deletes a record in an Airtable table.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Airtable API Token"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "base",
+                  "record"
+                ],
+                "default": "record",
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "getManyBases",
+                  "getBaseSchema",
+                  "createRecord",
+                  "createOrUpdateRecord",
+                  "deleteRecord",
+                  "getRecord",
+                  "searchRecords",
+                  "updateRecord"
+                ],
+                "description": "Operation"
+              },
+              "baseId": {
+                "type": "string",
+                "description": "Base ID"
+              },
+              "tableName": {
+                "type": "string",
+                "description": "Table Name"
+              },
+              "recordId": {
+                "type": "string",
+                "description": "Record ID"
+              },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "field": {
+                      "type": "string"
+                    },
+                    "direction": {
+                      "type": "string",
+                      "enum": [
+                        "asc",
+                        "desc"
+                      ],
+                      "default": "asc"
+                    }
+                  },
+                  "required": [
+                    "field"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Sort conditions"
+              }
+            },
+            "required": [
+              "credentialId",
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "initialData": {
+            "resource": "record",
+            "operation": "deleteRecord"
+          },
+          "subCategory": "Record",
+          "dynamicFields": [
+            {
+              "fieldName": "resource",
+              "label": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "label": "Base",
+                  "value": "base"
+                },
+                {
+                  "label": "Record",
+                  "value": "record"
+                }
+              ],
+              "defaultValue": "record"
+            },
+            {
+              "fieldName": "operation",
+              "label": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "label": "Create",
+                  "value": "createRecord"
+                },
+                {
+                  "label": "Create or Update",
+                  "value": "createOrUpdateRecord"
+                },
+                {
+                  "label": "Delete",
+                  "value": "deleteRecord"
+                },
+                {
+                  "label": "Get",
+                  "value": "getRecord"
+                },
+                {
+                  "label": "Search",
+                  "value": "searchRecords"
+                },
+                {
+                  "label": "Update",
+                  "value": "updateRecord"
+                }
+              ],
+              "defaultValue": "deleteRecord"
+            },
+            {
+              "fieldName": "baseId",
+              "label": "Base",
+              "type": "options",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/bases",
+              "labelKey": "name",
+              "valueKey": "id",
+              "displayOptions": {
+                "hide": {
+                  "operation": [
+                    "getManyBases"
+                  ]
+                }
+              }
+            },
+            {
+              "fieldName": "tableName",
+              "label": "Table",
+              "type": "options",
+              "dependsOn": [
+                "credentialId",
+                "baseId"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/tables",
+              "labelKey": "name",
+              "valueKey": "name",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "record"
+                  ]
+                }
+              }
+            },
+            {
+              "fieldName": "recordId",
+              "label": "Record ID",
+              "type": "string",
+              "dependsOn": [
+                "tableName"
+              ],
+              "description": "The ID of the record to delete."
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "record",
+          "operation": "deleteRecord"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "airtable.getRecord-1783397964928",
+      "type": "action",
+      "position": {
+        "x": 518.2213631288863,
+        "y": 1301.5929624473106
+      },
+      "data": {
+        "label": "Get a record",
+        "toolId": "airtable.getRecord",
+        "toolData": {
+          "id": "airtable.getRecord",
+          "displayName": "Get a record",
+          "category": "Integrations",
+          "provider": "airtable",
+          "operation": "getRecord",
+          "description": "Retrieves a single record from a table.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Airtable API Token"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "base",
+                  "record"
+                ],
+                "default": "record",
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "getManyBases",
+                  "getBaseSchema",
+                  "createRecord",
+                  "createOrUpdateRecord",
+                  "deleteRecord",
+                  "getRecord",
+                  "searchRecords",
+                  "updateRecord"
+                ],
+                "description": "Operation"
+              },
+              "baseId": {
+                "type": "string",
+                "description": "Base ID"
+              },
+              "tableName": {
+                "type": "string",
+                "description": "Table Name"
+              },
+              "recordId": {
+                "type": "string",
+                "description": "Record ID"
+              },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "field": {
+                      "type": "string"
+                    },
+                    "direction": {
+                      "type": "string",
+                      "enum": [
+                        "asc",
+                        "desc"
+                      ],
+                      "default": "asc"
+                    }
+                  },
+                  "required": [
+                    "field"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Sort conditions"
+              }
+            },
+            "required": [
+              "credentialId",
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "initialData": {
+            "resource": "record",
+            "operation": "getRecord"
+          },
+          "subCategory": "Record",
+          "dynamicFields": [
+            {
+              "fieldName": "resource",
+              "label": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "label": "Base",
+                  "value": "base"
+                },
+                {
+                  "label": "Record",
+                  "value": "record"
+                }
+              ],
+              "defaultValue": "record"
+            },
+            {
+              "fieldName": "operation",
+              "label": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "label": "Create",
+                  "value": "createRecord"
+                },
+                {
+                  "label": "Create or Update",
+                  "value": "createOrUpdateRecord"
+                },
+                {
+                  "label": "Delete",
+                  "value": "deleteRecord"
+                },
+                {
+                  "label": "Get",
+                  "value": "getRecord"
+                },
+                {
+                  "label": "Search",
+                  "value": "searchRecords"
+                },
+                {
+                  "label": "Update",
+                  "value": "updateRecord"
+                }
+              ],
+              "defaultValue": "getRecord"
+            },
+            {
+              "fieldName": "baseId",
+              "label": "Base",
+              "type": "options",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/bases",
+              "labelKey": "name",
+              "valueKey": "id",
+              "displayOptions": {
+                "hide": {
+                  "operation": [
+                    "getManyBases"
+                  ]
+                }
+              }
+            },
+            {
+              "fieldName": "tableName",
+              "label": "Table",
+              "type": "options",
+              "dependsOn": [
+                "credentialId",
+                "baseId"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/tables",
+              "labelKey": "name",
+              "valueKey": "name",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "record"
+                  ]
+                }
+              }
+            },
+            {
+              "fieldName": "recordId",
+              "label": "Record ID",
+              "type": "string",
+              "dependsOn": [
+                "tableName"
+              ],
+              "description": "The ID of the record to retrieve."
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "record",
+          "operation": "getRecord"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "airtable.searchRecords-1783397966584",
+      "type": "action",
+      "position": {
+        "x": 230.22136312888622,
+        "y": 1149.5929624473106
+      },
+      "data": {
+        "label": "Search records",
+        "toolId": "airtable.searchRecords",
+        "toolData": {
+          "id": "airtable.searchRecords",
+          "displayName": "Search records",
+          "category": "Integrations",
+          "provider": "airtable",
+          "operation": "searchRecords",
+          "description": "Searches for records in an Airtable table.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Airtable API Token"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "base",
+                  "record"
+                ],
+                "default": "record",
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "getManyBases",
+                  "getBaseSchema",
+                  "createRecord",
+                  "createOrUpdateRecord",
+                  "deleteRecord",
+                  "getRecord",
+                  "searchRecords",
+                  "updateRecord"
+                ],
+                "description": "Operation"
+              },
+              "baseId": {
+                "type": "string",
+                "description": "Base ID"
+              },
+              "tableName": {
+                "type": "string",
+                "description": "Table Name"
+              },
+              "filterByFormula": {
+                "type": "string",
+                "description": "Filter by Formula"
+              },
+              "maxRecords": {
+                "type": "number",
+                "description": "Max Records",
+                "default": 100
+              },
+              "view": {
+                "type": "string",
+                "description": "View Name"
+              },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "field": {
+                      "type": "string"
+                    },
+                    "direction": {
+                      "type": "string",
+                      "enum": [
+                        "asc",
+                        "desc"
+                      ],
+                      "default": "asc"
+                    }
+                  },
+                  "required": [
+                    "field"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Sort conditions"
+              }
+            },
+            "required": [
+              "credentialId",
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "initialData": {
+            "resource": "record",
+            "operation": "searchRecords"
+          },
+          "subCategory": "Record",
+          "dynamicFields": [
+            {
+              "fieldName": "resource",
+              "label": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "label": "Base",
+                  "value": "base"
+                },
+                {
+                  "label": "Record",
+                  "value": "record"
+                }
+              ],
+              "defaultValue": "record"
+            },
+            {
+              "fieldName": "operation",
+              "label": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "label": "Create",
+                  "value": "createRecord"
+                },
+                {
+                  "label": "Create or Update",
+                  "value": "createOrUpdateRecord"
+                },
+                {
+                  "label": "Delete",
+                  "value": "deleteRecord"
+                },
+                {
+                  "label": "Get",
+                  "value": "getRecord"
+                },
+                {
+                  "label": "Search",
+                  "value": "searchRecords"
+                },
+                {
+                  "label": "Update",
+                  "value": "updateRecord"
+                }
+              ],
+              "defaultValue": "searchRecords"
+            },
+            {
+              "fieldName": "baseId",
+              "label": "Base",
+              "type": "options",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/bases",
+              "labelKey": "name",
+              "valueKey": "id",
+              "displayOptions": {
+                "hide": {
+                  "operation": [
+                    "getManyBases"
+                  ]
+                }
+              }
+            },
+            {
+              "fieldName": "tableName",
+              "label": "Table",
+              "type": "options",
+              "dependsOn": [
+                "credentialId",
+                "baseId"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/tables",
+              "labelKey": "name",
+              "valueKey": "name",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "record"
+                  ]
+                }
+              }
+            },
+            {
+              "fieldName": "filterByFormula",
+              "label": "Filter by Formula",
+              "type": "string",
+              "dependsOn": [
+                "tableName"
+              ],
+              "placeholder": "e.g. {Status} = \"Done\"",
+              "description": "An Airtable formula to filter the returned records."
+            },
+            {
+              "fieldName": "maxRecords",
+              "label": "Limit",
+              "type": "number",
+              "defaultValue": 100,
+              "dependsOn": [
+                "tableName"
+              ],
+              "description": "Max number of records to return. Default 100."
+            },
+            {
+              "fieldName": "view",
+              "label": "View",
+              "type": "options",
+              "dependsOn": [
+                "credentialId",
+                "baseId",
+                "tableName"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/views",
+              "labelKey": "name",
+              "valueKey": "name",
+              "placeholder": "Grid view",
+              "description": "The name or ID of the view to use."
+            }
+          ],
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "record",
+          "operation": "searchRecords"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "airtable.updateRecord-1783397968376",
+      "type": "action",
+      "position": {
+        "x": 815.2213631288863,
+        "y": 886.5929624473105
+      },
+      "data": {
+        "label": "Update record",
+        "toolId": "airtable.updateRecord",
+        "toolData": {
+          "id": "airtable.updateRecord",
+          "displayName": "Update record",
+          "category": "Integrations",
+          "provider": "airtable",
+          "operation": "updateRecord",
+          "description": "Updates fields of an existing record in a table.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Airtable API Token"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "base",
+                  "record"
+                ],
+                "default": "record",
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "getManyBases",
+                  "getBaseSchema",
+                  "createRecord",
+                  "createOrUpdateRecord",
+                  "deleteRecord",
+                  "getRecord",
+                  "searchRecords",
+                  "updateRecord"
+                ],
+                "description": "Operation"
+              },
+              "baseId": {
+                "type": "string",
+                "description": "Base ID"
+              },
+              "tableName": {
+                "type": "string",
+                "description": "Table Name"
+              },
+              "recordId": {
+                "type": "string",
+                "description": "Record ID"
+              },
+              "fields": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Fields Mapping"
+              },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "field": {
+                      "type": "string"
+                    },
+                    "direction": {
+                      "type": "string",
+                      "enum": [
+                        "asc",
+                        "desc"
+                      ],
+                      "default": "asc"
+                    }
+                  },
+                  "required": [
+                    "field"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Sort conditions"
+              }
+            },
+            "required": [
+              "credentialId",
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "initialData": {
+            "resource": "record",
+            "operation": "updateRecord"
+          },
+          "subCategory": "Record",
+          "dynamicFields": [
+            {
+              "fieldName": "resource",
+              "label": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "label": "Base",
+                  "value": "base"
+                },
+                {
+                  "label": "Record",
+                  "value": "record"
+                }
+              ],
+              "defaultValue": "record"
+            },
+            {
+              "fieldName": "operation",
+              "label": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "label": "Create",
+                  "value": "createRecord"
+                },
+                {
+                  "label": "Create or Update",
+                  "value": "createOrUpdateRecord"
+                },
+                {
+                  "label": "Delete",
+                  "value": "deleteRecord"
+                },
+                {
+                  "label": "Get",
+                  "value": "getRecord"
+                },
+                {
+                  "label": "Search",
+                  "value": "searchRecords"
+                },
+                {
+                  "label": "Update",
+                  "value": "updateRecord"
+                }
+              ],
+              "defaultValue": "updateRecord"
+            },
+            {
+              "fieldName": "baseId",
+              "label": "Base",
+              "type": "options",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/bases",
+              "labelKey": "name",
+              "valueKey": "id",
+              "displayOptions": {
+                "hide": {
+                  "operation": [
+                    "getManyBases"
+                  ]
+                }
+              }
+            },
+            {
+              "fieldName": "tableName",
+              "label": "Table",
+              "type": "options",
+              "dependsOn": [
+                "credentialId",
+                "baseId"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/tables",
+              "labelKey": "name",
+              "valueKey": "name",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "record"
+                  ]
+                }
+              }
+            },
+            {
+              "fieldName": "recordId",
+              "label": "Record ID",
+              "type": "string",
+              "dependsOn": [
+                "tableName"
+              ],
+              "description": "The ID of the record to update."
+            },
+            {
+              "fieldName": "fields",
+              "label": "Fields",
+              "type": "collection",
+              "dependsOn": [
+                "credentialId",
+                "baseId",
+                "tableName"
+              ],
+              "fetchEndpoint": "/api/tools/airtable/fields",
+              "placeholder": "Add Field",
+              "description": "The fields to update."
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "record",
+          "operation": "updateRecord"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

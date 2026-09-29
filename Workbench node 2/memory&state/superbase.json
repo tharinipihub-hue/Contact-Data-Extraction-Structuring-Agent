@@ -1,0 +1,778 @@
+{
+  "nodes": [
+    {
+      "id": "supabase.createRow-1783398779557",
+      "type": "action",
+      "position": {
+        "x": 805.9528027573031,
+        "y": -12.97715439042454
+      },
+      "data": {
+        "label": "Create Row",
+        "toolId": "supabase.createRow",
+        "toolData": {
+          "id": "supabase.createRow",
+          "displayName": "Create Row",
+          "category": "Memory & State",
+          "provider": "supabase",
+          "operation": "createRow",
+          "icon": "https://supabase.com/brand-assets/supabase-logo-icon.svg",
+          "description": "Create a new row in a Supabase table",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Credential"
+              },
+              "useCustomSchema": {
+                "type": "boolean",
+                "default": false,
+                "description": "Use Custom Schema"
+              },
+              "schema": {
+                "type": "string",
+                "default": "public",
+                "description": "Schema"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Row",
+                  "Custom API Call"
+                ],
+                "default": "Row",
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create row",
+                  "Delete row",
+                  "Get row",
+                  "Get Many rows",
+                  "Update row",
+                  "Custom API Call"
+                ],
+                "default": "Create row",
+                "description": "Operation"
+              },
+              "tableName": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Table Name or ID"
+              },
+              "dataToSend": {
+                "type": "string",
+                "enum": [
+                  "Auto-Map Input Data to Columns",
+                  "Define Below for Each Column",
+                  "Nothing"
+                ],
+                "default": "Define Below for Each Column",
+                "description": "Data to Send"
+              },
+              "inputsToIgnore": {
+                "type": "string",
+                "description": "Inputs to Ignore"
+              },
+              "values": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Additional Fields"
+              }
+            },
+            "required": [
+              "credentialId",
+              "tableName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Row",
+          "dynamicFields": [
+            {
+              "fieldName": "tableName",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/supabase/tables",
+              "labelKey": "label",
+              "valueKey": "name"
+            },
+            {
+              "fieldName": "values",
+              "dependsOn": [
+                "credentialId",
+                "tableName"
+              ],
+              "fetchEndpoint": "/api/tools/supabase/columns",
+              "labelKey": "label",
+              "valueKey": "name"
+            }
+          ],
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "supabase.deleteRow-1783398784085",
+      "type": "action",
+      "position": {
+        "x": 1063.6357585913313,
+        "y": -7.753851231626669
+      },
+      "data": {
+        "label": "Delete Row",
+        "toolId": "supabase.deleteRow",
+        "toolData": {
+          "id": "supabase.deleteRow",
+          "displayName": "Delete Row",
+          "category": "Memory & State",
+          "provider": "supabase",
+          "operation": "deleteRow",
+          "icon": "https://supabase.com/brand-assets/supabase-logo-icon.svg",
+          "description": "Delete a row from a Supabase table",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Credential"
+              },
+              "useCustomSchema": {
+                "type": "boolean",
+                "default": true,
+                "description": "Use Custom Schema"
+              },
+              "schema": {
+                "type": "string",
+                "default": "public",
+                "description": "Schema"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Row",
+                  "Custom API Call"
+                ],
+                "default": "Row",
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create row",
+                  "Delete row",
+                  "Get row",
+                  "Get Many rows",
+                  "Update row",
+                  "Custom API Call"
+                ],
+                "default": "Delete row",
+                "description": "Operation"
+              },
+              "tableName": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Table Name or ID"
+              },
+              "selectType": {
+                "type": "string",
+                "enum": [
+                  "Build Manually",
+                  "String"
+                ],
+                "default": "Build Manually",
+                "description": "Select Type"
+              },
+              "mustMatch": {
+                "type": "string",
+                "enum": [
+                  "Any Select Condition",
+                  "All Select Conditions"
+                ],
+                "default": "All Select Conditions",
+                "description": "Must Match"
+              },
+              "filters": {
+                "type": "string",
+                "description": "Filters (ex: id=eq.1)"
+              },
+              "matchConditions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "columnName": {
+                      "type": "string",
+                      "description": "Field Name or ID"
+                    },
+                    "condition": {
+                      "type": "string",
+                      "enum": [
+                        "Equals",
+                        "Full-Text",
+                        "Greater Than",
+                        "Greater Than or Equal",
+                        "ILIKE operator",
+                        "Is",
+                        "Less Than",
+                        "Less Than or Equal",
+                        "LIKE operator",
+                        "Not Equals"
+                      ],
+                      "default": "Equals",
+                      "description": "Condition"
+                    },
+                    "columnValue": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Field Value"
+                    }
+                  },
+                  "required": [
+                    "columnName"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Select Conditions"
+              }
+            },
+            "required": [
+              "credentialId",
+              "tableName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Row",
+          "dynamicFields": [
+            {
+              "fieldName": "tableName",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/supabase/tables",
+              "labelKey": "label",
+              "valueKey": "name"
+            },
+            {
+              "fieldName": "matchConditions",
+              "dependsOn": [
+                "credentialId",
+                "tableName"
+              ],
+              "fetchEndpoint": "/api/tools/supabase/columns",
+              "labelKey": "label",
+              "valueKey": "name"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1063.6357585913313,
+        "y": -7.753851231626669
+      },
+      "dragging": false
+    },
+    {
+      "id": "supabase.getManyRows-1783398787013",
+      "type": "action",
+      "position": {
+        "x": 1330.0242196900228,
+        "y": -9.494952284559304
+      },
+      "data": {
+        "label": "Get Many Rows",
+        "toolId": "supabase.getManyRows",
+        "toolData": {
+          "id": "supabase.getManyRows",
+          "displayName": "Get Many Rows",
+          "category": "Memory & State",
+          "provider": "supabase",
+          "operation": "getManyRows",
+          "icon": "https://supabase.com/brand-assets/supabase-logo-icon.svg",
+          "description": "Get multiple rows from a Supabase table",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Credential"
+              },
+              "useCustomSchema": {
+                "type": "boolean",
+                "default": false,
+                "description": "Use Custom Schema"
+              },
+              "schema": {
+                "type": "string",
+                "default": "public",
+                "description": "Schema"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Row",
+                  "Custom API Call"
+                ],
+                "default": "Row",
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create row",
+                  "Delete row",
+                  "Get row",
+                  "Get Many rows",
+                  "Update row",
+                  "Custom API Call"
+                ],
+                "default": "Get Many rows",
+                "description": "Operation"
+              },
+              "tableName": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Table Name or ID"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "default": 50,
+                "description": "Limit"
+              },
+              "selectType": {
+                "type": "string",
+                "enum": [
+                  "None",
+                  "Build Manually",
+                  "String"
+                ],
+                "default": "Build Manually",
+                "description": "Select Type"
+              },
+              "mustMatch": {
+                "type": "string",
+                "enum": [
+                  "Any Filter",
+                  "All Filter"
+                ],
+                "default": "All Filter",
+                "description": "Must Match"
+              },
+              "filters": {
+                "type": "string",
+                "description": "Filters (ex: id=eq.1)"
+              },
+              "matchConditions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "columnName": {
+                      "type": "string",
+                      "description": "Field Name or ID"
+                    },
+                    "condition": {
+                      "type": "string",
+                      "enum": [
+                        "Equals",
+                        "Full-Text",
+                        "Greater Than",
+                        "Greater Than or Equal",
+                        "ILIKE operator",
+                        "Is",
+                        "Less Than",
+                        "Less Than or Equal",
+                        "LIKE operator",
+                        "Not Equals"
+                      ],
+                      "default": "Equals",
+                      "description": "Condition"
+                    },
+                    "columnValue": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Field Value"
+                    }
+                  },
+                  "required": [
+                    "columnName"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Select Conditions"
+              }
+            },
+            "required": [
+              "credentialId",
+              "tableName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Row",
+          "dynamicFields": [
+            {
+              "fieldName": "tableName",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/supabase/tables",
+              "labelKey": "label",
+              "valueKey": "name"
+            },
+            {
+              "fieldName": "matchConditions",
+              "dependsOn": [
+                "credentialId",
+                "tableName"
+              ],
+              "fetchEndpoint": "/api/tools/supabase/columns",
+              "labelKey": "label",
+              "valueKey": "name"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1330.0242196900228,
+        "y": -9.494952284559304
+      },
+      "dragging": false
+    },
+    {
+      "id": "supabase.getRow-1783398790789",
+      "type": "action",
+      "position": {
+        "x": 1082.7878701735904,
+        "y": 239.48249828480593
+      },
+      "data": {
+        "label": "Get Row",
+        "toolId": "supabase.getRow",
+        "toolData": {
+          "id": "supabase.getRow",
+          "displayName": "Get Row",
+          "category": "Memory & State",
+          "provider": "supabase",
+          "operation": "getRow",
+          "icon": "https://supabase.com/brand-assets/supabase-logo-icon.svg",
+          "description": "Get a single row from a Supabase table",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Credential"
+              },
+              "useCustomSchema": {
+                "type": "boolean",
+                "default": false,
+                "description": "Use Custom Schema"
+              },
+              "schema": {
+                "type": "string",
+                "default": "public",
+                "description": "Schema"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Row",
+                  "Custom API Call"
+                ],
+                "default": "Row",
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create row",
+                  "Delete row",
+                  "Get row",
+                  "Get Many rows",
+                  "Update row",
+                  "Custom API Call"
+                ],
+                "default": "Get row",
+                "description": "Operation"
+              },
+              "tableName": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Table Name or ID"
+              },
+              "matchConditions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "columnName": {
+                      "type": "string",
+                      "description": "Field Name or ID"
+                    },
+                    "columnValue": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Field Value"
+                    }
+                  },
+                  "required": [
+                    "columnName"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Select Conditions"
+              }
+            },
+            "required": [
+              "credentialId",
+              "tableName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Row",
+          "dynamicFields": [
+            {
+              "fieldName": "tableName",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/supabase/tables",
+              "labelKey": "label",
+              "valueKey": "name"
+            },
+            {
+              "fieldName": "matchConditions",
+              "dependsOn": [
+                "credentialId",
+                "tableName"
+              ],
+              "fetchEndpoint": "/api/tools/supabase/columns",
+              "labelKey": "label",
+              "valueKey": "name"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "supabase.updateRow-1783398792477",
+      "type": "action",
+      "position": {
+        "x": 1349.1763312722817,
+        "y": 236.00029617894063
+      },
+      "data": {
+        "label": "Update Row",
+        "toolId": "supabase.updateRow",
+        "toolData": {
+          "id": "supabase.updateRow",
+          "displayName": "Update Row",
+          "category": "Memory & State",
+          "provider": "supabase",
+          "operation": "updateRow",
+          "icon": "https://supabase.com/brand-assets/supabase-logo-icon.svg",
+          "description": "Update a row in a Supabase table",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Credential"
+              },
+              "useCustomSchema": {
+                "type": "boolean",
+                "default": false,
+                "description": "Use Custom Schema"
+              },
+              "schema": {
+                "type": "string",
+                "default": "public",
+                "description": "Schema"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Row",
+                  "Custom API Call"
+                ],
+                "default": "Row",
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create row",
+                  "Delete row",
+                  "Get row",
+                  "Get Many rows",
+                  "Update row",
+                  "Custom API Call"
+                ],
+                "default": "Update row",
+                "description": "Operation"
+              },
+              "tableName": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Table Name or ID"
+              },
+              "dataToSend": {
+                "type": "string",
+                "enum": [
+                  "Auto-Map Input Data to Columns",
+                  "Define Below for Each Column",
+                  "Nothing"
+                ],
+                "default": "Define Below for Each Column",
+                "description": "Data to Send"
+              },
+              "inputsToIgnore": {
+                "type": "string",
+                "description": "Inputs to Ignore"
+              },
+              "values": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Additional Fields"
+              },
+              "selectType": {
+                "type": "string",
+                "enum": [
+                  "Build Manually",
+                  "String"
+                ],
+                "default": "Build Manually",
+                "description": "Select Type"
+              },
+              "mustMatch": {
+                "type": "string",
+                "enum": [
+                  "Any Select Condition",
+                  "All Select Conditions"
+                ],
+                "default": "All Select Conditions",
+                "description": "Must Match"
+              },
+              "filters": {
+                "type": "string",
+                "description": "Filters (ex: id=eq.1)"
+              },
+              "matchConditions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "columnName": {
+                      "type": "string",
+                      "description": "Field Name or ID"
+                    },
+                    "condition": {
+                      "type": "string",
+                      "enum": [
+                        "Equals",
+                        "Full-Text",
+                        "Greater Than",
+                        "Greater Than or Equal",
+                        "ILIKE operator",
+                        "Is",
+                        "Less Than",
+                        "Less Than or Equal",
+                        "LIKE operator",
+                        "Not Equals"
+                      ],
+                      "default": "Equals",
+                      "description": "Condition"
+                    },
+                    "columnValue": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Field Value"
+                    }
+                  },
+                  "required": [
+                    "columnName"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Select Conditions"
+              }
+            },
+            "required": [
+              "credentialId",
+              "tableName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Row",
+          "dynamicFields": [
+            {
+              "fieldName": "tableName",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/supabase/tables",
+              "labelKey": "label",
+              "valueKey": "name"
+            },
+            {
+              "fieldName": "values",
+              "dependsOn": [
+                "credentialId",
+                "tableName"
+              ],
+              "fetchEndpoint": "/api/tools/supabase/columns",
+              "labelKey": "label",
+              "valueKey": "name"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 1349.1763312722817,
+        "y": 236.00029617894063
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

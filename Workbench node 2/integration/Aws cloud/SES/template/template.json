@@ -1,0 +1,1430 @@
+{
+  "nodes": [
+    {
+      "id": "aws.ses.template.create-1783404902011",
+      "type": "action",
+      "position": {
+        "x": 951.3695236067517,
+        "y": 352.2002529329463
+      },
+      "data": {
+        "label": "Create",
+        "toolId": "aws.ses.template.create",
+        "toolData": {
+          "id": "aws.ses.template.create",
+          "displayName": "Create",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Create",
+          "icon": "/tools/aws-ses.png",
+          "actionGroup": "SES Template",
+          "description": "Create in SES Template",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "template"
+                ],
+                "default": "template"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ],
+                "default": "getMany"
+              },
+              "templateName": {
+                "type": "string"
+              },
+              "subjectPart": {
+                "type": "string"
+              },
+              "htmlPart": {
+                "type": "string"
+              },
+              "textPart": {
+                "type": "string"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false
+              },
+              "limit": {
+                "type": "number"
+              },
+              "updateFields": {
+                "type": "object",
+                "properties": {
+                  "subjectPart": {
+                    "type": "string"
+                  },
+                  "htmlPart": {
+                    "type": "string"
+                  },
+                  "textPart": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {},
+              "region": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "string",
+              "default": "template",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "__never__"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "create",
+              "required": true
+            },
+            {
+              "name": "templateName",
+              "displayName": "Template Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "placeholder": "MyTemplate",
+              "description": "The name of the template."
+            },
+            {
+              "name": "templateName",
+              "displayName": "Template Name",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/ses/list-templates",
+              "dependsOn": [
+                "credentials"
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              },
+              "description": "The name of the template."
+            },
+            {
+              "name": "subjectPart",
+              "displayName": "Subject Part",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The subject line of the email."
+            },
+            {
+              "name": "htmlPart",
+              "displayName": "Html Part",
+              "type": "string",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The HTML body of the email.",
+              "format": "text"
+            },
+            {
+              "name": "textPart",
+              "displayName": "Text Part",
+              "type": "string",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The plain-text body of the email.",
+              "format": "text"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all templates."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 10,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "The maximum number of templates to return."
+            },
+            {
+              "name": "updateFields",
+              "displayName": "Update Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "update"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "subjectPart",
+                  "displayName": "Subject Part",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "htmlPart",
+                  "displayName": "Html Part",
+                  "type": "string",
+                  "default": "",
+                  "format": "text"
+                },
+                {
+                  "name": "textPart",
+                  "displayName": "Text Part",
+                  "type": "string",
+                  "default": "",
+                  "format": "text"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "create"
+          },
+          "subCategory": "SES Template"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "create"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.ses.template.delete-1783404903323",
+      "type": "action",
+      "position": {
+        "x": 989.6737483917811,
+        "y": 524.5692644655787
+      },
+      "data": {
+        "label": "Delete",
+        "toolId": "aws.ses.template.delete",
+        "toolData": {
+          "id": "aws.ses.template.delete",
+          "displayName": "Delete",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Delete",
+          "icon": "/tools/aws-ses.png",
+          "actionGroup": "SES Template",
+          "description": "Delete in SES Template",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "template"
+                ],
+                "default": "template"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ],
+                "default": "getMany"
+              },
+              "templateName": {
+                "type": "string"
+              },
+              "subjectPart": {
+                "type": "string"
+              },
+              "htmlPart": {
+                "type": "string"
+              },
+              "textPart": {
+                "type": "string"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false
+              },
+              "limit": {
+                "type": "number"
+              },
+              "updateFields": {
+                "type": "object",
+                "properties": {
+                  "subjectPart": {
+                    "type": "string"
+                  },
+                  "htmlPart": {
+                    "type": "string"
+                  },
+                  "textPart": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {},
+              "region": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "string",
+              "default": "template",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "__never__"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "delete",
+              "required": true
+            },
+            {
+              "name": "templateName",
+              "displayName": "Template Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "placeholder": "MyTemplate",
+              "description": "The name of the template."
+            },
+            {
+              "name": "templateName",
+              "displayName": "Template Name",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/ses/list-templates",
+              "dependsOn": [
+                "credentials"
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              },
+              "description": "The name of the template."
+            },
+            {
+              "name": "subjectPart",
+              "displayName": "Subject Part",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The subject line of the email."
+            },
+            {
+              "name": "htmlPart",
+              "displayName": "Html Part",
+              "type": "string",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The HTML body of the email.",
+              "format": "text"
+            },
+            {
+              "name": "textPart",
+              "displayName": "Text Part",
+              "type": "string",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The plain-text body of the email.",
+              "format": "text"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all templates."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 10,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "The maximum number of templates to return."
+            },
+            {
+              "name": "updateFields",
+              "displayName": "Update Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "update"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "subjectPart",
+                  "displayName": "Subject Part",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "htmlPart",
+                  "displayName": "Html Part",
+                  "type": "string",
+                  "default": "",
+                  "format": "text"
+                },
+                {
+                  "name": "textPart",
+                  "displayName": "Text Part",
+                  "type": "string",
+                  "default": "",
+                  "format": "text"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "delete"
+          },
+          "subCategory": "SES Template"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "delete"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.ses.template.get-1783404904579",
+      "type": "action",
+      "position": {
+        "x": 1050.6122878225099,
+        "y": 768.3234221884933
+      },
+      "data": {
+        "label": "Get",
+        "toolId": "aws.ses.template.get",
+        "toolData": {
+          "id": "aws.ses.template.get",
+          "displayName": "Get",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Get",
+          "icon": "/tools/aws-ses.png",
+          "actionGroup": "SES Template",
+          "description": "Get in SES Template",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "template"
+                ],
+                "default": "template"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ],
+                "default": "getMany"
+              },
+              "templateName": {
+                "type": "string"
+              },
+              "subjectPart": {
+                "type": "string"
+              },
+              "htmlPart": {
+                "type": "string"
+              },
+              "textPart": {
+                "type": "string"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false
+              },
+              "limit": {
+                "type": "number"
+              },
+              "updateFields": {
+                "type": "object",
+                "properties": {
+                  "subjectPart": {
+                    "type": "string"
+                  },
+                  "htmlPart": {
+                    "type": "string"
+                  },
+                  "textPart": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {},
+              "region": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "string",
+              "default": "template",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "__never__"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "get",
+              "required": true
+            },
+            {
+              "name": "templateName",
+              "displayName": "Template Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "placeholder": "MyTemplate",
+              "description": "The name of the template."
+            },
+            {
+              "name": "templateName",
+              "displayName": "Template Name",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/ses/list-templates",
+              "dependsOn": [
+                "credentials"
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              },
+              "description": "The name of the template."
+            },
+            {
+              "name": "subjectPart",
+              "displayName": "Subject Part",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The subject line of the email."
+            },
+            {
+              "name": "htmlPart",
+              "displayName": "Html Part",
+              "type": "string",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The HTML body of the email.",
+              "format": "text"
+            },
+            {
+              "name": "textPart",
+              "displayName": "Text Part",
+              "type": "string",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The plain-text body of the email.",
+              "format": "text"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all templates."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 10,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "The maximum number of templates to return."
+            },
+            {
+              "name": "updateFields",
+              "displayName": "Update Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "update"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "subjectPart",
+                  "displayName": "Subject Part",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "htmlPart",
+                  "displayName": "Html Part",
+                  "type": "string",
+                  "default": "",
+                  "format": "text"
+                },
+                {
+                  "name": "textPart",
+                  "displayName": "Text Part",
+                  "type": "string",
+                  "default": "",
+                  "format": "text"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "get"
+          },
+          "subCategory": "SES Template"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.ses.template.getmany-1783404906179",
+      "type": "action",
+      "position": {
+        "x": 688.4632534913222,
+        "y": 712.6081861375415
+      },
+      "data": {
+        "label": "Get Many",
+        "toolId": "aws.ses.template.getmany",
+        "toolData": {
+          "id": "aws.ses.template.getmany",
+          "displayName": "Get Many",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Get Many",
+          "icon": "/tools/aws-ses.png",
+          "actionGroup": "SES Template",
+          "description": "Get Many in SES Template",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "template"
+                ],
+                "default": "template"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ],
+                "default": "getMany"
+              },
+              "templateName": {
+                "type": "string"
+              },
+              "subjectPart": {
+                "type": "string"
+              },
+              "htmlPart": {
+                "type": "string"
+              },
+              "textPart": {
+                "type": "string"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false
+              },
+              "limit": {
+                "type": "number"
+              },
+              "updateFields": {
+                "type": "object",
+                "properties": {
+                  "subjectPart": {
+                    "type": "string"
+                  },
+                  "htmlPart": {
+                    "type": "string"
+                  },
+                  "textPart": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {},
+              "region": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "string",
+              "default": "template",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "__never__"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "getMany",
+              "required": true
+            },
+            {
+              "name": "templateName",
+              "displayName": "Template Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "placeholder": "MyTemplate",
+              "description": "The name of the template."
+            },
+            {
+              "name": "templateName",
+              "displayName": "Template Name",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/ses/list-templates",
+              "dependsOn": [
+                "credentials"
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              },
+              "description": "The name of the template."
+            },
+            {
+              "name": "subjectPart",
+              "displayName": "Subject Part",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The subject line of the email."
+            },
+            {
+              "name": "htmlPart",
+              "displayName": "Html Part",
+              "type": "string",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The HTML body of the email.",
+              "format": "text"
+            },
+            {
+              "name": "textPart",
+              "displayName": "Text Part",
+              "type": "string",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The plain-text body of the email.",
+              "format": "text"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all templates."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 10,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "The maximum number of templates to return."
+            },
+            {
+              "name": "updateFields",
+              "displayName": "Update Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "update"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "subjectPart",
+                  "displayName": "Subject Part",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "htmlPart",
+                  "displayName": "Html Part",
+                  "type": "string",
+                  "default": "",
+                  "format": "text"
+                },
+                {
+                  "name": "textPart",
+                  "displayName": "Text Part",
+                  "type": "string",
+                  "default": "",
+                  "format": "text"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "getMany"
+          },
+          "subCategory": "SES Template"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "getMany"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.ses.template.update-1783404907379",
+      "type": "action",
+      "position": {
+        "x": 481.27221942684486,
+        "y": 489.7472419337338
+      },
+      "data": {
+        "label": "Update",
+        "toolId": "aws.ses.template.update",
+        "toolData": {
+          "id": "aws.ses.template.update",
+          "displayName": "Update",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Update",
+          "icon": "/tools/aws-ses.png",
+          "actionGroup": "SES Template",
+          "description": "Update in SES Template",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "template"
+                ],
+                "default": "template"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "get",
+                  "getMany",
+                  "update"
+                ],
+                "default": "getMany"
+              },
+              "templateName": {
+                "type": "string"
+              },
+              "subjectPart": {
+                "type": "string"
+              },
+              "htmlPart": {
+                "type": "string"
+              },
+              "textPart": {
+                "type": "string"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false
+              },
+              "limit": {
+                "type": "number"
+              },
+              "updateFields": {
+                "type": "object",
+                "properties": {
+                  "subjectPart": {
+                    "type": "string"
+                  },
+                  "htmlPart": {
+                    "type": "string"
+                  },
+                  "textPart": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {},
+              "region": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "string",
+              "default": "template",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "__never__"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Update",
+                  "value": "update"
+                }
+              ],
+              "default": "update",
+              "required": true
+            },
+            {
+              "name": "templateName",
+              "displayName": "Template Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "placeholder": "MyTemplate",
+              "description": "The name of the template."
+            },
+            {
+              "name": "templateName",
+              "displayName": "Template Name",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/ses/list-templates",
+              "dependsOn": [
+                "credentials"
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get",
+                    "update"
+                  ]
+                }
+              },
+              "description": "The name of the template."
+            },
+            {
+              "name": "subjectPart",
+              "displayName": "Subject Part",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The subject line of the email."
+            },
+            {
+              "name": "htmlPart",
+              "displayName": "Html Part",
+              "type": "string",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The HTML body of the email.",
+              "format": "text"
+            },
+            {
+              "name": "textPart",
+              "displayName": "Text Part",
+              "type": "string",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              },
+              "description": "The plain-text body of the email.",
+              "format": "text"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all templates."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 10,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "The maximum number of templates to return."
+            },
+            {
+              "name": "updateFields",
+              "displayName": "Update Fields",
+              "type": "collection",
+              "placeholder": "Add Field",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "update"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "subjectPart",
+                  "displayName": "Subject Part",
+                  "type": "string",
+                  "default": ""
+                },
+                {
+                  "name": "htmlPart",
+                  "displayName": "Html Part",
+                  "type": "string",
+                  "default": "",
+                  "format": "text"
+                },
+                {
+                  "name": "textPart",
+                  "displayName": "Text Part",
+                  "type": "string",
+                  "default": "",
+                  "format": "text"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "update"
+          },
+          "subCategory": "SES Template"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "update"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

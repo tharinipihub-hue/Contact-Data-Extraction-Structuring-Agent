@@ -1,0 +1,204 @@
+{
+  "nodes": [
+    {
+      "id": "slack.message.delete-1783408249372",
+      "type": "action",
+      "position": {
+        "x": 2639.1970710377436,
+        "y": -410.6790244297113
+      },
+      "data": {
+        "label": "Slack Delete Message",
+        "toolId": "slack.message.delete",
+        "toolData": {
+          "id": "slack.message.delete",
+          "displayName": "Slack Delete Message",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Delete",
+          "icon": "slack",
+          "description": "Delete a message.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "slack.message.getPermalink-1783408250829",
+      "type": "action",
+      "position": {
+        "x": 3158.329995067554,
+        "y": -340.57713322860553
+      },
+      "data": {
+        "label": "Slack Get Permalink",
+        "toolId": "slack.message.getPermalink",
+        "toolData": {
+          "id": "slack.message.getPermalink",
+          "displayName": "Slack Get Permalink",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Get Permalink",
+          "icon": "slack",
+          "description": "Get a permalink to a message.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "slack.message.search-1783408252380",
+      "type": "action",
+      "position": {
+        "x": 2730.1400650283676,
+        "y": -94.2731911706663
+      },
+      "data": {
+        "label": "Slack Search Messages",
+        "toolId": "slack.message.search",
+        "toolData": {
+          "id": "slack.message.search",
+          "displayName": "Slack Search Messages",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Search",
+          "icon": "slack",
+          "description": "Search for messages matching a query.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "slack.message.sendAndWait-1783408253821",
+      "type": "action",
+      "position": {
+        "x": 3270.114091847696,
+        "y": -120.79823108459821
+      },
+      "data": {
+        "label": "Slack Send & Wait",
+        "toolId": "slack.message.sendAndWait",
+        "toolData": {
+          "id": "slack.message.sendAndWait",
+          "displayName": "Slack Send & Wait",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Send & Wait",
+          "icon": "slack",
+          "description": "Send a message and wait for a response.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "slack.message.send-1783408256228",
+      "type": "action",
+      "position": {
+        "x": 3662.3057534322606,
+        "y": -272.36988773563775
+      },
+      "data": {
+        "label": "Slack Send Message",
+        "toolId": "slack.message.send",
+        "toolData": {
+          "id": "slack.message.send",
+          "displayName": "Slack Send Message",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Send",
+          "icon": "slack",
+          "description": "Send a message to a channel.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "slack.message.update-1783408257244",
+      "type": "action",
+      "position": {
+        "x": 3416.0018113743213,
+        "y": 44.035945523407285
+      },
+      "data": {
+        "label": "Slack Update Message",
+        "toolId": "slack.message.update",
+        "toolData": {
+          "id": "slack.message.update",
+          "displayName": "Slack Update Message",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Update",
+          "icon": "slack",
+          "description": "Update an existing message.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Message"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

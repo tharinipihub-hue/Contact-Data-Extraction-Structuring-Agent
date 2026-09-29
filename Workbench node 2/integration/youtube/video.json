@@ -1,0 +1,138 @@
+{
+  "nodes": [
+    {
+      "id": "youtube_searchVideos-1783407432109",
+      "type": "action",
+      "position": {
+        "x": 199.23782754251113,
+        "y": -378.9042619428043
+      },
+      "data": {
+        "label": "YouTube Search",
+        "toolId": "youtube_searchVideos",
+        "toolData": {
+          "id": "youtube_searchVideos",
+          "displayName": "YouTube Search",
+          "category": "Integrations",
+          "provider": "youtube",
+          "operation": "searchVideos",
+          "icon": "youtube",
+          "description": "Search for videos on YouTube",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "query": {
+                "type": "string",
+                "description": "Search query"
+              },
+              "maxResults": {
+                "type": "number",
+                "default": 10,
+                "description": "Maximum number of results"
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Video",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "youtube_getVideoTranscript-1783407433387",
+      "type": "action",
+      "position": {
+        "x": 705.9288652793025,
+        "y": -339.31902461961744
+      },
+      "data": {
+        "label": "YouTube Transcript",
+        "toolId": "youtube_getVideoTranscript",
+        "toolData": {
+          "id": "youtube_getVideoTranscript",
+          "displayName": "YouTube Transcript",
+          "category": "Integrations",
+          "provider": "youtube",
+          "operation": "getVideoTranscript",
+          "icon": "youtube",
+          "description": "Get the transcript of a YouTube video",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "videoId": {
+                "type": "string",
+                "description": "The ID of the video"
+              },
+              "language": {
+                "type": "string",
+                "description": "Language for transcript"
+              }
+            },
+            "required": [
+              "videoId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Video"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "youtube_getVideoDetails-1783407434517",
+      "type": "action",
+      "position": {
+        "x": 695.3728019931194,
+        "y": -191.5341386130533
+      },
+      "data": {
+        "label": "YouTube Video Details",
+        "toolId": "youtube_getVideoDetails",
+        "toolData": {
+          "id": "youtube_getVideoDetails",
+          "displayName": "YouTube Video Details",
+          "category": "Integrations",
+          "provider": "youtube",
+          "operation": "getVideoDetails",
+          "icon": "youtube",
+          "description": "Get detailed information about a YouTube video",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "videoId": {
+                "type": "string",
+                "description": "The ID of the video"
+              }
+            },
+            "required": [
+              "videoId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Video"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

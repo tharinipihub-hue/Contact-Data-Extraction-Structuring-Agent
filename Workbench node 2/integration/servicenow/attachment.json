@@ -1,0 +1,1097 @@
+{
+  "nodes": [
+    {
+      "id": "servicenow.attachment.delete-1783407781063",
+      "type": "action",
+      "position": {
+        "x": 218.54087105815026,
+        "y": -517.4827091542313
+      },
+      "data": {
+        "label": "Delete",
+        "toolId": "servicenow.attachment.delete",
+        "toolData": {
+          "id": "servicenow.attachment.delete",
+          "displayName": "Delete",
+          "category": "Integrations",
+          "provider": "servicenow",
+          "operation": "Delete",
+          "icon": "/tools/servicenow.png",
+          "actionGroup": "Attachment",
+          "description": "Delete in Attachment",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "upload",
+                  "delete",
+                  "get",
+                  "getMany"
+                ],
+                "description": "Attachment Operation"
+              },
+              "tableNameOrId": {
+                "type": "string",
+                "description": "Table Name or ID"
+              },
+              "tableRecordId": {
+                "type": "string",
+                "description": "Table Record ID"
+              },
+              "inputDataFieldName": {
+                "type": "string",
+                "default": "data",
+                "description": "Input Data Field Name"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "fileName": {
+                    "type": "string"
+                  },
+                  "filter": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "attachmentId": {
+                "type": "string",
+                "description": "Attachment ID"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "default": 50,
+                "description": "Limit"
+              },
+              "downloadAttachments": {
+                "type": "boolean",
+                "default": false,
+                "description": "Download Attachments"
+              },
+              "credentials": {
+                "description": "ServiceNow credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Attachment",
+                  "value": "attachment"
+                }
+              ],
+              "default": "attachment",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Upload",
+                  "value": "upload"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                }
+              ],
+              "default": "delete",
+              "required": true
+            },
+            {
+              "name": "tableNameOrId",
+              "displayName": "Table Name or ID",
+              "type": "options",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/serviceNow/tables",
+              "labelKey": "label",
+              "valueKey": "name",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "tableRecordId",
+              "displayName": "Table Record ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputDataFieldName",
+              "displayName": "Input Data Field Name",
+              "type": "string",
+              "default": "data",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "attachmentId",
+              "displayName": "Attachment ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "downloadAttachments",
+              "displayName": "Download Attachments",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "options",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Option",
+              "default": {},
+              "options": [
+                {
+                  "name": "fileName",
+                  "displayName": "File Name for the Attachment",
+                  "type": "string"
+                },
+                {
+                  "name": "filter",
+                  "displayName": "Filter",
+                  "type": "string",
+                  "description": "<col_name><operator><value>"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "get",
+                    "getMany"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "delete"
+          },
+          "subCategory": "Attachment"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "delete"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "servicenow.attachment.get-1783407782647",
+      "type": "action",
+      "position": {
+        "x": 767.1202604351406,
+        "y": -459.7375102724428
+      },
+      "data": {
+        "label": "Get",
+        "toolId": "servicenow.attachment.get",
+        "toolData": {
+          "id": "servicenow.attachment.get",
+          "displayName": "Get",
+          "category": "Integrations",
+          "provider": "servicenow",
+          "operation": "Get",
+          "icon": "/tools/servicenow.png",
+          "actionGroup": "Attachment",
+          "description": "Get in Attachment",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "upload",
+                  "delete",
+                  "get",
+                  "getMany"
+                ],
+                "description": "Attachment Operation"
+              },
+              "tableNameOrId": {
+                "type": "string",
+                "description": "Table Name or ID"
+              },
+              "tableRecordId": {
+                "type": "string",
+                "description": "Table Record ID"
+              },
+              "inputDataFieldName": {
+                "type": "string",
+                "default": "data",
+                "description": "Input Data Field Name"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "fileName": {
+                    "type": "string"
+                  },
+                  "filter": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "attachmentId": {
+                "type": "string",
+                "description": "Attachment ID"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "default": 50,
+                "description": "Limit"
+              },
+              "downloadAttachments": {
+                "type": "boolean",
+                "default": false,
+                "description": "Download Attachments"
+              },
+              "credentials": {
+                "description": "ServiceNow credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Attachment",
+                  "value": "attachment"
+                }
+              ],
+              "default": "attachment",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Upload",
+                  "value": "upload"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                }
+              ],
+              "default": "get",
+              "required": true
+            },
+            {
+              "name": "tableNameOrId",
+              "displayName": "Table Name or ID",
+              "type": "options",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/serviceNow/tables",
+              "labelKey": "label",
+              "valueKey": "name",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "tableRecordId",
+              "displayName": "Table Record ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputDataFieldName",
+              "displayName": "Input Data Field Name",
+              "type": "string",
+              "default": "data",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "attachmentId",
+              "displayName": "Attachment ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "downloadAttachments",
+              "displayName": "Download Attachments",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "options",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Option",
+              "default": {},
+              "options": [
+                {
+                  "name": "fileName",
+                  "displayName": "File Name for the Attachment",
+                  "type": "string"
+                },
+                {
+                  "name": "filter",
+                  "displayName": "Filter",
+                  "type": "string",
+                  "description": "<col_name><operator><value>"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "get",
+                    "getMany"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "get"
+          },
+          "subCategory": "Attachment"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "servicenow.attachment.getmany-1783407784159",
+      "type": "action",
+      "position": {
+        "x": 1279.6089005110134,
+        "y": -442.89516059858784
+      },
+      "data": {
+        "label": "Get Many",
+        "toolId": "servicenow.attachment.getmany",
+        "toolData": {
+          "id": "servicenow.attachment.getmany",
+          "displayName": "Get Many",
+          "category": "Integrations",
+          "provider": "servicenow",
+          "operation": "Get Many",
+          "icon": "/tools/servicenow.png",
+          "actionGroup": "Attachment",
+          "description": "Get Many in Attachment",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "upload",
+                  "delete",
+                  "get",
+                  "getMany"
+                ],
+                "description": "Attachment Operation"
+              },
+              "tableNameOrId": {
+                "type": "string",
+                "description": "Table Name or ID"
+              },
+              "tableRecordId": {
+                "type": "string",
+                "description": "Table Record ID"
+              },
+              "inputDataFieldName": {
+                "type": "string",
+                "default": "data",
+                "description": "Input Data Field Name"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "fileName": {
+                    "type": "string"
+                  },
+                  "filter": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "attachmentId": {
+                "type": "string",
+                "description": "Attachment ID"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "default": 50,
+                "description": "Limit"
+              },
+              "downloadAttachments": {
+                "type": "boolean",
+                "default": false,
+                "description": "Download Attachments"
+              },
+              "credentials": {
+                "description": "ServiceNow credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Attachment",
+                  "value": "attachment"
+                }
+              ],
+              "default": "attachment",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Upload",
+                  "value": "upload"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                }
+              ],
+              "default": "getMany",
+              "required": true
+            },
+            {
+              "name": "tableNameOrId",
+              "displayName": "Table Name or ID",
+              "type": "options",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/serviceNow/tables",
+              "labelKey": "label",
+              "valueKey": "name",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "tableRecordId",
+              "displayName": "Table Record ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputDataFieldName",
+              "displayName": "Input Data Field Name",
+              "type": "string",
+              "default": "data",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "attachmentId",
+              "displayName": "Attachment ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "downloadAttachments",
+              "displayName": "Download Attachments",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "options",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Option",
+              "default": {},
+              "options": [
+                {
+                  "name": "fileName",
+                  "displayName": "File Name for the Attachment",
+                  "type": "string"
+                },
+                {
+                  "name": "filter",
+                  "displayName": "Filter",
+                  "type": "string",
+                  "description": "<col_name><operator><value>"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "get",
+                    "getMany"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "getMany"
+          },
+          "subCategory": "Attachment"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "getMany"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "servicenow.attachment.upload-1783407785976",
+      "type": "action",
+      "position": {
+        "x": 887.4227581055333,
+        "y": -243.1930144657361
+      },
+      "data": {
+        "label": "Upload",
+        "toolId": "servicenow.attachment.upload",
+        "toolData": {
+          "id": "servicenow.attachment.upload",
+          "displayName": "Upload",
+          "category": "Integrations",
+          "provider": "servicenow",
+          "operation": "Upload",
+          "icon": "/tools/servicenow.png",
+          "actionGroup": "Attachment",
+          "description": "Upload in Attachment",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "upload",
+                  "delete",
+                  "get",
+                  "getMany"
+                ],
+                "description": "Attachment Operation"
+              },
+              "tableNameOrId": {
+                "type": "string",
+                "description": "Table Name or ID"
+              },
+              "tableRecordId": {
+                "type": "string",
+                "description": "Table Record ID"
+              },
+              "inputDataFieldName": {
+                "type": "string",
+                "default": "data",
+                "description": "Input Data Field Name"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "fileName": {
+                    "type": "string"
+                  },
+                  "filter": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "attachmentId": {
+                "type": "string",
+                "description": "Attachment ID"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return All"
+              },
+              "limit": {
+                "type": "number",
+                "default": 50,
+                "description": "Limit"
+              },
+              "downloadAttachments": {
+                "type": "boolean",
+                "default": false,
+                "description": "Download Attachments"
+              },
+              "credentials": {
+                "description": "ServiceNow credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Attachment",
+                  "value": "attachment"
+                }
+              ],
+              "default": "attachment",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Upload",
+                  "value": "upload"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                }
+              ],
+              "default": "upload",
+              "required": true
+            },
+            {
+              "name": "tableNameOrId",
+              "displayName": "Table Name or ID",
+              "type": "options",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/serviceNow/tables",
+              "labelKey": "label",
+              "valueKey": "name",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "tableRecordId",
+              "displayName": "Table Record ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "inputDataFieldName",
+              "displayName": "Input Data Field Name",
+              "type": "string",
+              "default": "data",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "attachmentId",
+              "displayName": "Attachment ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "delete",
+                    "get"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "downloadAttachments",
+              "displayName": "Download Attachments",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "options",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Option",
+              "default": {},
+              "options": [
+                {
+                  "name": "fileName",
+                  "displayName": "File Name for the Attachment",
+                  "type": "string"
+                },
+                {
+                  "name": "filter",
+                  "displayName": "Filter",
+                  "type": "string",
+                  "description": "<col_name><operator><value>"
+                }
+              ],
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "upload",
+                    "get",
+                    "getMany"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "upload"
+          },
+          "subCategory": "Attachment"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "upload"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

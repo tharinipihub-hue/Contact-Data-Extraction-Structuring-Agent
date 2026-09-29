@@ -1,0 +1,95 @@
+{
+  "nodes": [
+    {
+      "id": "aws.textract.document.analyzeexpense-1783405170539",
+      "type": "action",
+      "position": {
+        "x": 949.2423672680411,
+        "y": 516.337637909696
+      },
+      "data": {
+        "label": "Analyze Receipt or Invoice",
+        "toolId": "aws.textract.document.analyzeexpense",
+        "toolData": {
+          "id": "aws.textract.document.analyzeexpense",
+          "displayName": "Analyze Receipt or Invoice",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Analyze Receipt or Invoice",
+          "icon": "/tools/textract.jpg",
+          "actionGroup": "AWS Textract",
+          "description": "Analyze Receipt or Invoice in AWS Textract",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "analyzeDocument",
+                  "analyzeExpense"
+                ]
+              },
+              "inputDataFieldName": {
+                "type": "string"
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true
+              },
+              "credentials": {}
+            },
+            "required": [
+              "operation",
+              "inputDataFieldName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Analyze Receipt or Invoice",
+                  "value": "analyzeExpense",
+                  "description": "Analyze receipts and invoices to extract structured information like vendor, totals, and line items"
+                }
+              ],
+              "default": "analyzeExpense",
+              "required": true
+            },
+            {
+              "name": "inputDataFieldName",
+              "displayName": "Input Data Field Name",
+              "type": "string",
+              "default": "data",
+              "description": "The name of the incoming binary property to analyze",
+              "required": true
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "boolean",
+              "default": true,
+              "description": "Whether to simplify the output to a more readable format"
+            }
+          ],
+          "initialData": {
+            "operation": "analyzeExpense"
+          },
+          "subCategory": "AWS Textract"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "analyzeExpense"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

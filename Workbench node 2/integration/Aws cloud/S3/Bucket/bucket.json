@@ -1,0 +1,1731 @@
+{
+  "nodes": [
+    {
+      "id": "aws.s3.bucket.create-1783399151745",
+      "type": "action",
+      "position": {
+        "x": 574.847338385984,
+        "y": 373.4042772217245
+      },
+      "data": {
+        "label": "Create",
+        "toolId": "aws.s3.bucket.create",
+        "toolData": {
+          "id": "aws.s3.bucket.create",
+          "displayName": "Create",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Create",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Amazon-S3-Logo.svg",
+          "actionGroup": "S3 Bucket",
+          "description": "Create in S3 Bucket",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "getMany",
+                  "search"
+                ],
+                "description": "Bucket Operation"
+              },
+              "newBucketName": {
+                "type": "string",
+                "description": "Name of the bucket to create or delete"
+              },
+              "searchBucketName": {
+                "type": "string",
+                "description": "Bucket Name for searching"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return All buckets"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit number of returned buckets"
+              },
+              "acl": {
+                "type": "string",
+                "description": "Access Control List"
+              },
+              "bucketObjectLockEnabled": {
+                "type": "boolean",
+                "description": "Bucket Object Lock Enabled"
+              },
+              "grantFullControl": {
+                "type": "boolean",
+                "description": "Grant Full Control"
+              },
+              "grantRead": {
+                "type": "boolean",
+                "description": "Grant Read"
+              },
+              "grantReadAcp": {
+                "type": "boolean",
+                "description": "Grant Read ACP"
+              },
+              "grantWrite": {
+                "type": "boolean",
+                "description": "Grant Write"
+              },
+              "grantWriteAcp": {
+                "type": "boolean",
+                "description": "Grant Write ACP"
+              },
+              "region": {
+                "type": "string",
+                "description": "Region (optional, overrides credential region)"
+              },
+              "delimiter": {
+                "type": "string",
+                "description": "Delimiter"
+              },
+              "encodingType": {
+                "type": "string",
+                "description": "Encoding Type"
+              },
+              "fetchOwner": {
+                "type": "boolean",
+                "description": "Fetch Owner"
+              },
+              "prefix": {
+                "type": "string",
+                "description": "Prefix"
+              },
+              "requesterPays": {
+                "type": "boolean",
+                "description": "Requester Pays"
+              },
+              "startAfter": {
+                "type": "string",
+                "description": "Start After"
+              },
+              "credentials": {
+                "description": "AWS S3 credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Search",
+                  "value": "search"
+                }
+              ],
+              "default": "create",
+              "required": true
+            },
+            {
+              "name": "newBucketName",
+              "displayName": "Bucket Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "delete"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "searchBucketName",
+              "displayName": "Bucket Name (Search)",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany",
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 100,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany",
+                    "search"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "acl",
+              "displayName": "ACL",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Private",
+                  "value": "private"
+                },
+                {
+                  "name": "Public Read",
+                  "value": "public-read"
+                },
+                {
+                  "name": "Public Read Write",
+                  "value": "public-read-write"
+                },
+                {
+                  "name": "Authenticated Read",
+                  "value": "authenticated-read"
+                }
+              ],
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "bucketObjectLockEnabled",
+              "displayName": "Bucket Object Lock Enabled",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "grantFullControl",
+              "displayName": "Grant Full Control",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "grantRead",
+              "displayName": "Grant Read",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "grantReadAcp",
+              "displayName": "Grant Read ACP",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "grantWrite",
+              "displayName": "Grant Write",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "grantWriteAcp",
+              "displayName": "Grant Write ACP",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "region",
+              "displayName": "Region",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "delimiter",
+              "displayName": "Delimiter",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "encodingType",
+              "displayName": "Encoding Type",
+              "type": "options",
+              "options": [
+                {
+                  "name": "URL",
+                  "value": "url"
+                }
+              ],
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fetchOwner",
+              "displayName": "Fetch Owner",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "prefix",
+              "displayName": "Prefix",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "requesterPays",
+              "displayName": "Requester Pays",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "startAfter",
+              "displayName": "Start After",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "create"
+          },
+          "subCategory": "S3 Bucket"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "create"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.s3.bucket.delete-1783399153000",
+      "type": "action",
+      "position": {
+        "x": 584.3742276351635,
+        "y": 603.6531348278126
+      },
+      "data": {
+        "label": "Delete",
+        "toolId": "aws.s3.bucket.delete",
+        "toolData": {
+          "id": "aws.s3.bucket.delete",
+          "displayName": "Delete",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Delete",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Amazon-S3-Logo.svg",
+          "actionGroup": "S3 Bucket",
+          "description": "Delete in S3 Bucket",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "getMany",
+                  "search"
+                ],
+                "description": "Bucket Operation"
+              },
+              "newBucketName": {
+                "type": "string",
+                "description": "Name of the bucket to create or delete"
+              },
+              "searchBucketName": {
+                "type": "string",
+                "description": "Bucket Name for searching"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return All buckets"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit number of returned buckets"
+              },
+              "acl": {
+                "type": "string",
+                "description": "Access Control List"
+              },
+              "bucketObjectLockEnabled": {
+                "type": "boolean",
+                "description": "Bucket Object Lock Enabled"
+              },
+              "grantFullControl": {
+                "type": "boolean",
+                "description": "Grant Full Control"
+              },
+              "grantRead": {
+                "type": "boolean",
+                "description": "Grant Read"
+              },
+              "grantReadAcp": {
+                "type": "boolean",
+                "description": "Grant Read ACP"
+              },
+              "grantWrite": {
+                "type": "boolean",
+                "description": "Grant Write"
+              },
+              "grantWriteAcp": {
+                "type": "boolean",
+                "description": "Grant Write ACP"
+              },
+              "region": {
+                "type": "string",
+                "description": "Region (optional, overrides credential region)"
+              },
+              "delimiter": {
+                "type": "string",
+                "description": "Delimiter"
+              },
+              "encodingType": {
+                "type": "string",
+                "description": "Encoding Type"
+              },
+              "fetchOwner": {
+                "type": "boolean",
+                "description": "Fetch Owner"
+              },
+              "prefix": {
+                "type": "string",
+                "description": "Prefix"
+              },
+              "requesterPays": {
+                "type": "boolean",
+                "description": "Requester Pays"
+              },
+              "startAfter": {
+                "type": "string",
+                "description": "Start After"
+              },
+              "credentials": {
+                "description": "AWS S3 credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Search",
+                  "value": "search"
+                }
+              ],
+              "default": "delete",
+              "required": true
+            },
+            {
+              "name": "newBucketName",
+              "displayName": "Bucket Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "delete"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "searchBucketName",
+              "displayName": "Bucket Name (Search)",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany",
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 100,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany",
+                    "search"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "acl",
+              "displayName": "ACL",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Private",
+                  "value": "private"
+                },
+                {
+                  "name": "Public Read",
+                  "value": "public-read"
+                },
+                {
+                  "name": "Public Read Write",
+                  "value": "public-read-write"
+                },
+                {
+                  "name": "Authenticated Read",
+                  "value": "authenticated-read"
+                }
+              ],
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "bucketObjectLockEnabled",
+              "displayName": "Bucket Object Lock Enabled",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "grantFullControl",
+              "displayName": "Grant Full Control",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "grantRead",
+              "displayName": "Grant Read",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "grantReadAcp",
+              "displayName": "Grant Read ACP",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "grantWrite",
+              "displayName": "Grant Write",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "grantWriteAcp",
+              "displayName": "Grant Write ACP",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "region",
+              "displayName": "Region",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "delimiter",
+              "displayName": "Delimiter",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "encodingType",
+              "displayName": "Encoding Type",
+              "type": "options",
+              "options": [
+                {
+                  "name": "URL",
+                  "value": "url"
+                }
+              ],
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fetchOwner",
+              "displayName": "Fetch Owner",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "prefix",
+              "displayName": "Prefix",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "requesterPays",
+              "displayName": "Requester Pays",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "startAfter",
+              "displayName": "Start After",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "delete"
+          },
+          "subCategory": "S3 Bucket"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "delete"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 584.3742276351635,
+        "y": 603.6531348278126
+      },
+      "dragging": false
+    },
+    {
+      "id": "aws.s3.bucket.getmany-1783399154569",
+      "type": "action",
+      "position": {
+        "x": 346.83960573095464,
+        "y": 499.984944969263
+      },
+      "data": {
+        "label": "Get Many",
+        "toolId": "aws.s3.bucket.getmany",
+        "toolData": {
+          "id": "aws.s3.bucket.getmany",
+          "displayName": "Get Many",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Get Many",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Amazon-S3-Logo.svg",
+          "actionGroup": "S3 Bucket",
+          "description": "Get Many in S3 Bucket",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "getMany",
+                  "search"
+                ],
+                "description": "Bucket Operation"
+              },
+              "newBucketName": {
+                "type": "string",
+                "description": "Name of the bucket to create or delete"
+              },
+              "searchBucketName": {
+                "type": "string",
+                "description": "Bucket Name for searching"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return All buckets"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit number of returned buckets"
+              },
+              "acl": {
+                "type": "string",
+                "description": "Access Control List"
+              },
+              "bucketObjectLockEnabled": {
+                "type": "boolean",
+                "description": "Bucket Object Lock Enabled"
+              },
+              "grantFullControl": {
+                "type": "boolean",
+                "description": "Grant Full Control"
+              },
+              "grantRead": {
+                "type": "boolean",
+                "description": "Grant Read"
+              },
+              "grantReadAcp": {
+                "type": "boolean",
+                "description": "Grant Read ACP"
+              },
+              "grantWrite": {
+                "type": "boolean",
+                "description": "Grant Write"
+              },
+              "grantWriteAcp": {
+                "type": "boolean",
+                "description": "Grant Write ACP"
+              },
+              "region": {
+                "type": "string",
+                "description": "Region (optional, overrides credential region)"
+              },
+              "delimiter": {
+                "type": "string",
+                "description": "Delimiter"
+              },
+              "encodingType": {
+                "type": "string",
+                "description": "Encoding Type"
+              },
+              "fetchOwner": {
+                "type": "boolean",
+                "description": "Fetch Owner"
+              },
+              "prefix": {
+                "type": "string",
+                "description": "Prefix"
+              },
+              "requesterPays": {
+                "type": "boolean",
+                "description": "Requester Pays"
+              },
+              "startAfter": {
+                "type": "string",
+                "description": "Start After"
+              },
+              "credentials": {
+                "description": "AWS S3 credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Search",
+                  "value": "search"
+                }
+              ],
+              "default": "getMany",
+              "required": true
+            },
+            {
+              "name": "newBucketName",
+              "displayName": "Bucket Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "delete"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "searchBucketName",
+              "displayName": "Bucket Name (Search)",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany",
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 100,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany",
+                    "search"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "acl",
+              "displayName": "ACL",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Private",
+                  "value": "private"
+                },
+                {
+                  "name": "Public Read",
+                  "value": "public-read"
+                },
+                {
+                  "name": "Public Read Write",
+                  "value": "public-read-write"
+                },
+                {
+                  "name": "Authenticated Read",
+                  "value": "authenticated-read"
+                }
+              ],
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "bucketObjectLockEnabled",
+              "displayName": "Bucket Object Lock Enabled",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "grantFullControl",
+              "displayName": "Grant Full Control",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "grantRead",
+              "displayName": "Grant Read",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "grantReadAcp",
+              "displayName": "Grant Read ACP",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "grantWrite",
+              "displayName": "Grant Write",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "grantWriteAcp",
+              "displayName": "Grant Write ACP",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "region",
+              "displayName": "Region",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "delimiter",
+              "displayName": "Delimiter",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "encodingType",
+              "displayName": "Encoding Type",
+              "type": "options",
+              "options": [
+                {
+                  "name": "URL",
+                  "value": "url"
+                }
+              ],
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fetchOwner",
+              "displayName": "Fetch Owner",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "prefix",
+              "displayName": "Prefix",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "requesterPays",
+              "displayName": "Requester Pays",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "startAfter",
+              "displayName": "Start After",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "getMany"
+          },
+          "subCategory": "S3 Bucket"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "getMany"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 346.83960573095464,
+        "y": 499.984944969263
+      },
+      "dragging": false
+    },
+    {
+      "id": "aws.s3.bucket.search-1783399156153",
+      "type": "action",
+      "position": {
+        "x": 846.4895172869109,
+        "y": 488.2921506493583
+      },
+      "data": {
+        "label": "Search",
+        "toolId": "aws.s3.bucket.search",
+        "toolData": {
+          "id": "aws.s3.bucket.search",
+          "displayName": "Search",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Search",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Amazon-S3-Logo.svg",
+          "actionGroup": "S3 Bucket",
+          "description": "Search in S3 Bucket",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "getMany",
+                  "search"
+                ],
+                "description": "Bucket Operation"
+              },
+              "newBucketName": {
+                "type": "string",
+                "description": "Name of the bucket to create or delete"
+              },
+              "searchBucketName": {
+                "type": "string",
+                "description": "Bucket Name for searching"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return All buckets"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit number of returned buckets"
+              },
+              "acl": {
+                "type": "string",
+                "description": "Access Control List"
+              },
+              "bucketObjectLockEnabled": {
+                "type": "boolean",
+                "description": "Bucket Object Lock Enabled"
+              },
+              "grantFullControl": {
+                "type": "boolean",
+                "description": "Grant Full Control"
+              },
+              "grantRead": {
+                "type": "boolean",
+                "description": "Grant Read"
+              },
+              "grantReadAcp": {
+                "type": "boolean",
+                "description": "Grant Read ACP"
+              },
+              "grantWrite": {
+                "type": "boolean",
+                "description": "Grant Write"
+              },
+              "grantWriteAcp": {
+                "type": "boolean",
+                "description": "Grant Write ACP"
+              },
+              "region": {
+                "type": "string",
+                "description": "Region (optional, overrides credential region)"
+              },
+              "delimiter": {
+                "type": "string",
+                "description": "Delimiter"
+              },
+              "encodingType": {
+                "type": "string",
+                "description": "Encoding Type"
+              },
+              "fetchOwner": {
+                "type": "boolean",
+                "description": "Fetch Owner"
+              },
+              "prefix": {
+                "type": "string",
+                "description": "Prefix"
+              },
+              "requesterPays": {
+                "type": "boolean",
+                "description": "Requester Pays"
+              },
+              "startAfter": {
+                "type": "string",
+                "description": "Start After"
+              },
+              "credentials": {
+                "description": "AWS S3 credentials"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Create",
+                  "value": "create"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Search",
+                  "value": "search"
+                }
+              ],
+              "default": "search",
+              "required": true
+            },
+            {
+              "name": "newBucketName",
+              "displayName": "Bucket Name",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create",
+                    "delete"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "searchBucketName",
+              "displayName": "Bucket Name (Search)",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany",
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 100,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany",
+                    "search"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "acl",
+              "displayName": "ACL",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Private",
+                  "value": "private"
+                },
+                {
+                  "name": "Public Read",
+                  "value": "public-read"
+                },
+                {
+                  "name": "Public Read Write",
+                  "value": "public-read-write"
+                },
+                {
+                  "name": "Authenticated Read",
+                  "value": "authenticated-read"
+                }
+              ],
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "bucketObjectLockEnabled",
+              "displayName": "Bucket Object Lock Enabled",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "grantFullControl",
+              "displayName": "Grant Full Control",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "grantRead",
+              "displayName": "Grant Read",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "grantReadAcp",
+              "displayName": "Grant Read ACP",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "grantWrite",
+              "displayName": "Grant Write",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "grantWriteAcp",
+              "displayName": "Grant Write ACP",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "region",
+              "displayName": "Region",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "create"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "delimiter",
+              "displayName": "Delimiter",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "encodingType",
+              "displayName": "Encoding Type",
+              "type": "options",
+              "options": [
+                {
+                  "name": "URL",
+                  "value": "url"
+                }
+              ],
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "fetchOwner",
+              "displayName": "Fetch Owner",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "prefix",
+              "displayName": "Prefix",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "requesterPays",
+              "displayName": "Requester Pays",
+              "type": "boolean",
+              "default": false,
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "startAfter",
+              "displayName": "Start After",
+              "type": "string",
+              "advanced": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "search"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "search"
+          },
+          "subCategory": "S3 Bucket"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "search"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 846.4895172869109,
+        "y": 488.2921506493583
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

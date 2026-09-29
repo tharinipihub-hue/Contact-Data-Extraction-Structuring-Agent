@@ -1,0 +1,446 @@
+{
+  "nodes": [
+    {
+      "id": "google.gmail.reply-1783407756105",
+      "type": "action",
+      "position": {
+        "x": 958.2155478842053,
+        "y": 405.23921384296085
+      },
+      "data": {
+        "label": "Reply to a message",
+        "toolId": "google.gmail.reply",
+        "toolData": {
+          "id": "google.gmail.reply",
+          "displayName": "Reply to a message",
+          "category": "Integrations",
+          "provider": "gmail",
+          "operation": "reply",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          "description": "Reply to an email message in Gmail",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "messageId": {
+                "type": "string",
+                "description": "Gmail message ID to reply to (e.g., 172ce2c4a72cc243)"
+              },
+              "emailType": {
+                "type": "string",
+                "enum": [
+                  "text",
+                  "html"
+                ],
+                "description": "Email body format - Text or HTML"
+              },
+              "message": {
+                "type": "string",
+                "description": "Reply message content (plain text or HTML depending on emailType)"
+              },
+              "cc": {
+                "type": "string",
+                "description": "CC recipients (comma-separated). Supports \"Name\" <email> format."
+              },
+              "bcc": {
+                "type": "string",
+                "description": "BCC recipients (comma-separated). Supports \"Name\" <email> format."
+              },
+              "senderName": {
+                "type": "string",
+                "description": "Sender name for the reply"
+              },
+              "replyToSenderOnly": {
+                "type": "boolean",
+                "default": false,
+                "description": "If true, reply only to sender; if false, reply to all"
+              },
+              "attachments": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string",
+                      "description": "Base64 encoded file content"
+                    },
+                    "mimeType": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "content"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Email attachments"
+              },
+              "appendAttribution": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether to append \"Sent via Agent Builder\" to the email"
+              }
+            },
+            "required": [
+              "credentials",
+              "messageId",
+              "emailType",
+              "message"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Send/Reply"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 92,
+      "selected": true
+    },
+    {
+      "id": "google.gmail.sendAndWait-1783407757246",
+      "type": "action",
+      "position": {
+        "x": 947.6089462211833,
+        "y": 569.2879862310348
+      },
+      "data": {
+        "label": "Send and Wait for Approval",
+        "toolId": "google.gmail.sendAndWait",
+        "toolData": {
+          "id": "google.gmail.sendAndWait",
+          "displayName": "Send and Wait for Approval",
+          "category": "Integrations",
+          "provider": "gmail",
+          "operation": "send-and-wait",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          "description": "Send an email with approval buttons and wait for response",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "to": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Recipient email address"
+              },
+              "cc": {
+                "type": "string",
+                "description": "CC recipients (comma-separated)"
+              },
+              "bcc": {
+                "type": "string",
+                "description": "BCC recipients (comma-separated)"
+              },
+              "subject": {
+                "type": "string",
+                "description": "Email subject"
+              },
+              "message": {
+                "type": "string",
+                "description": "Email message body"
+              },
+              "emailType": {
+                "type": "string",
+                "enum": [
+                  "text",
+                  "html"
+                ],
+                "default": "text",
+                "description": "Email body format"
+              },
+              "responseType": {
+                "type": "string",
+                "enum": [
+                  "Free Text",
+                  "Approval",
+                  "Custom Form"
+                ],
+                "default": "Free Text",
+                "description": "Response Type"
+              },
+              "approvalConfigured": {
+                "type": "boolean"
+              },
+              "approvalType": {
+                "type": "string",
+                "enum": [
+                  "Approve Only",
+                  "Approve and Disapprove"
+                ],
+                "default": "Approve Only"
+              },
+              "approveLabel": {
+                "type": "string",
+                "default": "Approve"
+              },
+              "approveStyle": {
+                "type": "string",
+                "enum": [
+                  "Primary",
+                  "Secondary"
+                ],
+                "default": "Primary"
+              },
+              "disapproveLabel": {
+                "type": "string",
+                "default": "Decline"
+              },
+              "disapproveStyle": {
+                "type": "string",
+                "enum": [
+                  "Primary",
+                  "Secondary"
+                ],
+                "default": "Secondary"
+              },
+              "defineForm": {
+                "type": "string",
+                "enum": [
+                  "Fields Below",
+                  "JSON"
+                ],
+                "default": "Fields Below",
+                "description": "Define Form"
+              },
+              "formJson": {
+                "type": "string",
+                "description": "Form JSON"
+              },
+              "formElements": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldName": {
+                      "type": "string",
+                      "description": "Field Name"
+                    },
+                    "elementType": {
+                      "type": "string",
+                      "enum": [
+                        "Checkboxes",
+                        "Dropdown",
+                        "Email",
+                        "File",
+                        "Hidden Field",
+                        "Number",
+                        "Password",
+                        "Radio Buttons",
+                        "Text Input",
+                        "Textarea"
+                      ],
+                      "default": "Text Input",
+                      "description": "Element Type"
+                    },
+                    "placeholder": {
+                      "type": "string",
+                      "description": "Placeholder"
+                    },
+                    "defaultValue": {
+                      "type": "string",
+                      "description": "Default Value"
+                    },
+                    "required": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "Required Field"
+                    },
+                    "options": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string",
+                            "description": "Option Label"
+                          },
+                          "value": {
+                            "type": "string",
+                            "description": "Option Value"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "default": [],
+                      "description": "Options"
+                    }
+                  },
+                  "required": [
+                    "fieldName"
+                  ],
+                  "additionalProperties": false
+                },
+                "default": [],
+                "description": "Form Elements"
+              },
+              "approvalOptions": {
+                "type": "object",
+                "properties": {
+                  "typeOfApproval": {
+                    "type": "string",
+                    "enum": [
+                      "approve-only",
+                      "approve-decline"
+                    ],
+                    "default": "approve-decline"
+                  },
+                  "approveButtonLabel": {
+                    "type": "string",
+                    "default": "Approve"
+                  },
+                  "declineButtonLabel": {
+                    "type": "string",
+                    "default": "Decline"
+                  },
+                  "approveButtonStyle": {
+                    "type": "string",
+                    "enum": [
+                      "primary",
+                      "secondary",
+                      "destructive"
+                    ],
+                    "default": "primary"
+                  },
+                  "declineButtonStyle": {
+                    "type": "string",
+                    "enum": [
+                      "primary",
+                      "secondary",
+                      "destructive"
+                    ],
+                    "default": "secondary"
+                  },
+                  "limitWaitTime": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 86400,
+                    "description": "Max wait time in seconds (1 sec - 24 hours)"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "attachments": {
+                "description": "Attachments"
+              },
+              "messageButtonLabel": {
+                "type": "string",
+                "description": "Message Button Label"
+              },
+              "formTitle": {
+                "type": "string",
+                "description": "Response Form Title"
+              },
+              "formDescription": {
+                "type": "string",
+                "description": "Response Form Description"
+              },
+              "formButtonLabel": {
+                "type": "string",
+                "description": "Response Form Button Label"
+              },
+              "formCustomStyling": {
+                "type": "string",
+                "description": "Response Form Custom Styling"
+              },
+              "limitWaitTime": {
+                "type": "boolean",
+                "description": "Limit Wait Time"
+              },
+              "limitWaitType": {
+                "type": "string",
+                "enum": [
+                  "interval",
+                  "absolute"
+                ],
+                "default": "interval"
+              },
+              "limitWaitAmount": {
+                "type": "number",
+                "default": 60
+              },
+              "limitWaitUnit": {
+                "type": "string",
+                "enum": [
+                  "minutes",
+                  "hours",
+                  "days"
+                ],
+                "default": "minutes"
+              },
+              "limitWaitDateTime": {
+                "type": "string"
+              },
+              "appendAgentBuilderAttribution": {
+                "type": "boolean",
+                "default": true,
+                "description": "Append \"Agent Builder\" attribution"
+              }
+            },
+            "required": [
+              "credentials",
+              "to",
+              "message"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Send/Reply",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 92,
+      "selected": true
+    }
+  ],
+  "edges": []
+}

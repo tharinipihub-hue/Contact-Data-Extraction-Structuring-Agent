@@ -1,0 +1,156 @@
+{
+  "nodes": [
+    {
+      "id": "databricks.modelServing.queryendpoint-1783405751124",
+      "type": "action",
+      "position": {
+        "x": 1939.2292157185418,
+        "y": 432.1578430050663
+      },
+      "data": {
+        "label": "Query Endpoint",
+        "toolId": "databricks.modelServing.queryendpoint",
+        "toolData": {
+          "id": "databricks.modelServing.queryendpoint",
+          "displayName": "Query Endpoint",
+          "category": "Integrations",
+          "provider": "databricks",
+          "operation": "Query Endpoint",
+          "icon": "https://www.databricks.com/sites/default/files/2021-10/db-nav-logo.svg",
+          "actionGroup": "Model Serving",
+          "description": "Query Endpoint in Model Serving",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "modelServing"
+                ],
+                "default": "modelServing"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "queryEndpoint"
+                ],
+                "default": "queryEndpoint"
+              },
+              "endpointName": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "requestBody": {
+                "type": "string",
+                "default": ""
+              },
+              "credentials": {
+                "description": "Databricks credentials"
+              }
+            },
+            "required": [
+              "endpointName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Model Serving",
+                  "value": "modelServing"
+                }
+              ],
+              "default": "modelServing",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Query Endpoint",
+                  "value": "queryEndpoint"
+                }
+              ],
+              "default": "queryEndpoint",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "modelServing"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "endpointName",
+              "displayName": "Endpoint",
+              "type": "options",
+              "required": true,
+              "placeholder": "Select an endpoint",
+              "description": "Databricks Model Serving endpoint",
+              "fetchEndpoint": "/api/tools/databricks/list-model-serving-endpoints",
+              "dependsOn": [
+                "credentials"
+              ],
+              "labelKey": "name",
+              "valueKey": "value",
+              "externalUrlKey": "externalUrl",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "modelServing"
+                  ],
+                  "operation": [
+                    "queryEndpoint"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "requestBody",
+              "displayName": "Request Body",
+              "type": "string",
+              "format": "text",
+              "required": true,
+              "placeholder": "{\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello!\"\n    }\n  ]\n}",
+              "description": "JSON payload sent to the selected serving endpoint",
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "modelServing"
+                  ],
+                  "operation": [
+                    "queryEndpoint"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "queryEndpoint",
+            "resource": "modelServing"
+          },
+          "subCategory": "Model Serving"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "queryEndpoint",
+          "resource": "modelServing"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

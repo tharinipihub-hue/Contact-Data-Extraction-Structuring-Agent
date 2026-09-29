@@ -1,0 +1,212 @@
+{
+  "nodes": [
+    {
+      "id": "servicenow.configurationItem.getmany-1783407866409",
+      "type": "action",
+      "position": {
+        "x": 860.7286245029586,
+        "y": -421.0295436478099
+      },
+      "data": {
+        "label": "Get Many",
+        "toolId": "servicenow.configurationItem.getmany",
+        "toolData": {
+          "id": "servicenow.configurationItem.getmany",
+          "displayName": "Get Many",
+          "category": "Integrations",
+          "provider": "servicenow",
+          "operation": "Get Many",
+          "icon": "/tools/servicenow.png",
+          "actionGroup": "Configuration Item",
+          "description": "Get Many in Configuration Item",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "getMany"
+                ]
+              },
+              "returnAll": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "excludeReferenceLink": {
+                    "type": "boolean"
+                  },
+                  "fieldNamesOrIds": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "returnValues": {
+                    "type": "string",
+                    "enum": [
+                      "false",
+                      "true",
+                      "all"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "credentials": {
+                "description": "ServiceNow credentials"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Configuration Item",
+                  "value": "configurationItem"
+                }
+              ],
+              "default": "configurationItem",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                }
+              ],
+              "default": "getMany",
+              "required": true
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "options",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "placeholder": "Add Option",
+              "default": {},
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "options": [
+                {
+                  "name": "excludeReferenceLink",
+                  "displayName": "Exclude Reference Link",
+                  "type": "boolean",
+                  "default": false
+                },
+                {
+                  "name": "fieldNamesOrIds",
+                  "displayName": "Field Names or IDs",
+                  "type": "options",
+                  "multiple": true,
+                  "dependsOn": [
+                    "credentialId"
+                  ],
+                  "fetchEndpoint": "/api/tools/serviceNow/columns?tableName=cmdb_ci",
+                  "labelKey": "label",
+                  "valueKey": "name",
+                  "description": "The fields to return (sysparm_fields)"
+                },
+                {
+                  "name": "filter",
+                  "displayName": "Filter",
+                  "type": "string",
+                  "description": "ServiceNow query (sysparm_query)"
+                },
+                {
+                  "name": "returnValues",
+                  "displayName": "Return Values",
+                  "type": "options",
+                  "options": [
+                    {
+                      "name": "Actual Values",
+                      "value": "false"
+                    },
+                    {
+                      "name": "Display Values",
+                      "value": "true"
+                    },
+                    {
+                      "name": "Both",
+                      "value": "all"
+                    }
+                  ],
+                  "default": "false",
+                  "description": "What values to return (sysparm_display_value)"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "operation": "getMany"
+          },
+          "subCategory": "Configuration Item"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "getMany"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

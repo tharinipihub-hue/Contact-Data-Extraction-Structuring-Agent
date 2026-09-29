@@ -1,0 +1,872 @@
+{
+  "nodes": [
+    {
+      "id": "github.release.create-1783407131527",
+      "type": "action",
+      "position": {
+        "x": 1205.7226383876816,
+        "y": 556.7781912762366
+      },
+      "data": {
+        "label": "Create a release",
+        "toolId": "github.release.create",
+        "toolData": {
+          "id": "github.release.create",
+          "displayName": "Create a release",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "create",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Publish a new release for a repository",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "tagName": {
+                "type": "string"
+              },
+              "additionalFields": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "body": {
+                    "type": "string"
+                  },
+                  "draft": {
+                    "type": "boolean"
+                  },
+                  "prerelease": {
+                    "type": "boolean"
+                  },
+                  "targetCommitish": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "tagName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "tagName",
+              "displayName": "Tag",
+              "type": "string",
+              "required": true,
+              "description": "Tag name for the release"
+            },
+            {
+              "name": "additionalFields",
+              "displayName": "Additional Fields",
+              "type": "collection",
+              "default": {},
+              "fields": [
+                {
+                  "name": "name",
+                  "displayName": "Release Name",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "body",
+                  "displayName": "Description",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "draft",
+                  "displayName": "Draft",
+                  "type": "boolean",
+                  "default": false
+                },
+                {
+                  "name": "prerelease",
+                  "displayName": "Prerelease",
+                  "type": "boolean",
+                  "default": false
+                },
+                {
+                  "name": "targetCommitish",
+                  "displayName": "Target Commitish",
+                  "type": "string",
+                  "required": false,
+                  "description": "Specifies the commitish value that determines where the Git tag is created from"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "release",
+            "operation": "create"
+          },
+          "subCategory": "Release"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "release",
+          "operation": "create"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "github.release.delete-1783407132936",
+      "type": "action",
+      "position": {
+        "x": 1568.579887964768,
+        "y": 579.4567693748045
+      },
+      "data": {
+        "label": "Delete a release",
+        "toolId": "github.release.delete",
+        "toolData": {
+          "id": "github.release.delete",
+          "displayName": "Delete a release",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "delete",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Remove an existing release",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "releaseId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "releaseId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "releaseId",
+              "displayName": "Release ID",
+              "type": "string",
+              "required": true,
+              "description": "The ID of the release to delete"
+            }
+          ],
+          "initialData": {
+            "resource": "release",
+            "operation": "delete"
+          },
+          "subCategory": "Release"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "release",
+          "operation": "delete"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "github.release.get-1783407135107",
+      "type": "action",
+      "position": {
+        "x": 1946.5561896075665,
+        "y": 656.3119507088401
+      },
+      "data": {
+        "label": "Get a release",
+        "toolId": "github.release.get",
+        "toolData": {
+          "id": "github.release.get",
+          "displayName": "Get a release",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "get",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Fetch details of a specific release",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "releaseId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "releaseId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "releaseId",
+              "displayName": "Release ID",
+              "type": "string",
+              "required": true,
+              "description": "The ID of the release to get"
+            }
+          ],
+          "initialData": {
+            "resource": "release",
+            "operation": "get"
+          },
+          "subCategory": "Release"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "release",
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "github.release.getMany-1783407136519",
+      "type": "action",
+      "position": {
+        "x": 1687.0124624795114,
+        "y": 826.4012864480993
+      },
+      "data": {
+        "label": "Get all releases",
+        "toolId": "github.release.getMany",
+        "toolData": {
+          "id": "github.release.getMany",
+          "displayName": "Get all releases",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "getMany",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Retrieve multiple releases from a repository",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false
+              },
+              "limit": {
+                "type": "number",
+                "default": 50
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "toggle",
+              "default": false,
+              "description": "Whether to return all results or only up to a limit"
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "description": "How many results to return",
+              "displayOptions": {
+                "show": {
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "resource": "release",
+            "operation": "getMany"
+          },
+          "subCategory": "Release"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "release",
+          "operation": "getMany"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "github.release.update-1783407137664",
+      "type": "action",
+      "position": {
+        "x": 1295.1770297764772,
+        "y": 794.9032613111995
+      },
+      "data": {
+        "label": "Update a release",
+        "toolId": "github.release.update",
+        "toolData": {
+          "id": "github.release.update",
+          "displayName": "Update a release",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "update",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Modify release name, notes, or status",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "releaseId": {
+                "type": "string"
+              },
+              "updateFields": {
+                "type": "object",
+                "properties": {
+                  "tagName": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "body": {
+                    "type": "string"
+                  },
+                  "draft": {
+                    "type": "boolean"
+                  },
+                  "prerelease": {
+                    "type": "boolean"
+                  },
+                  "targetCommitish": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "releaseId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "releaseId",
+              "displayName": "Release ID",
+              "type": "string",
+              "required": true,
+              "description": "The ID of the release to update"
+            },
+            {
+              "name": "updateFields",
+              "displayName": "Update Fields",
+              "type": "collection",
+              "default": {},
+              "fields": [
+                {
+                  "name": "tagName",
+                  "displayName": "Tag",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "name",
+                  "displayName": "Release Name",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "body",
+                  "displayName": "Description",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "draft",
+                  "displayName": "Draft",
+                  "type": "boolean",
+                  "default": false
+                },
+                {
+                  "name": "prerelease",
+                  "displayName": "Prerelease",
+                  "type": "boolean",
+                  "default": false
+                },
+                {
+                  "name": "targetCommitish",
+                  "displayName": "Target Commitish",
+                  "type": "string",
+                  "required": false
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "release",
+            "operation": "update"
+          },
+          "subCategory": "Release"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "release",
+          "operation": "update"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 1295.1770297764772,
+        "y": 794.9032613111995
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

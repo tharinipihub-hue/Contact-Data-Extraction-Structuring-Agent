@@ -1,0 +1,689 @@
+{
+  "nodes": [
+    {
+      "id": "stripe.trigger-1783407850852",
+      "type": "stripe.trigger",
+      "position": {
+        "x": 746.8336105132623,
+        "y": -267.40584348249473
+      },
+      "data": {
+        "label": "Stripe Trigger",
+        "toolId": "stripe.trigger",
+        "toolData": {
+          "id": "stripe.trigger",
+          "displayName": "Stripe Trigger",
+          "category": "Integrations",
+          "provider": "stripe",
+          "operation": "stripeTrigger",
+          "icon": "/tools/stripe.svg",
+          "description": "Handle Stripe webhook events",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "events": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "The events to listen for"
+              },
+              "credentialId": {
+                "type": "string",
+                "description": "Stripe account credential"
+              },
+              "apiVersion": {
+                "type": "string",
+                "description": "Stripe API version to use"
+              },
+              "path": {
+                "type": "string",
+                "description": "Unique path for the webhook"
+              }
+            },
+            "required": [
+              "events",
+              "credentialId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "events",
+              "displayName": "Events",
+              "type": "multiOptions",
+              "default": [],
+              "required": true,
+              "description": "The events to listen for",
+              "options": [
+                {
+                  "name": "*",
+                  "value": "*"
+                },
+                {
+                  "name": "account.updated",
+                  "value": "account.updated"
+                },
+                {
+                  "name": "account.application.authorized",
+                  "value": "account.application.authorized"
+                },
+                {
+                  "name": "account.application.deauthorized",
+                  "value": "account.application.deauthorized"
+                },
+                {
+                  "name": "account.external_account.created",
+                  "value": "account.external_account.created"
+                },
+                {
+                  "name": "account.external_account.deleted",
+                  "value": "account.external_account.deleted"
+                },
+                {
+                  "name": "account.external_account.updated",
+                  "value": "account.external_account.updated"
+                },
+                {
+                  "name": "application.fee.created",
+                  "value": "application.fee.created"
+                },
+                {
+                  "name": "application.fee.refunded",
+                  "value": "application.fee.refunded"
+                },
+                {
+                  "name": "application.fee.refund.updated",
+                  "value": "application.fee.refund.updated"
+                },
+                {
+                  "name": "balance.available",
+                  "value": "balance.available"
+                },
+                {
+                  "name": "capability.updated",
+                  "value": "capability.updated"
+                },
+                {
+                  "name": "charge.captured",
+                  "value": "charge.captured"
+                },
+                {
+                  "name": "charge.expired",
+                  "value": "charge.expired"
+                },
+                {
+                  "name": "charge.failed",
+                  "value": "charge.failed"
+                },
+                {
+                  "name": "charge.pending",
+                  "value": "charge.pending"
+                },
+                {
+                  "name": "charge.refunded",
+                  "value": "charge.refunded"
+                },
+                {
+                  "name": "charge.succeeded",
+                  "value": "charge.succeeded"
+                },
+                {
+                  "name": "charge.updated",
+                  "value": "charge.updated"
+                },
+                {
+                  "name": "charge.dispute.closed",
+                  "value": "charge.dispute.closed"
+                },
+                {
+                  "name": "charge.dispute.created",
+                  "value": "charge.dispute.created"
+                },
+                {
+                  "name": "charge.dispute.funds_reinstated",
+                  "value": "charge.dispute.funds_reinstated"
+                },
+                {
+                  "name": "charge.dispute.funds_withdrawn",
+                  "value": "charge.dispute.funds_withdrawn"
+                },
+                {
+                  "name": "charge.dispute.updated",
+                  "value": "charge.dispute.updated"
+                },
+                {
+                  "name": "charge.refund.updated",
+                  "value": "charge.refund.updated"
+                },
+                {
+                  "name": "checkout.session.completed",
+                  "value": "checkout.session.completed"
+                },
+                {
+                  "name": "coupon.created",
+                  "value": "coupon.created"
+                },
+                {
+                  "name": "coupon.deleted",
+                  "value": "coupon.deleted"
+                },
+                {
+                  "name": "coupon.updated",
+                  "value": "coupon.updated"
+                },
+                {
+                  "name": "credit.note.created",
+                  "value": "credit.note.created"
+                },
+                {
+                  "name": "credit.note.updated",
+                  "value": "credit.note.updated"
+                },
+                {
+                  "name": "credit.note.voided",
+                  "value": "credit.note.voided"
+                },
+                {
+                  "name": "customer.created",
+                  "value": "customer.created"
+                },
+                {
+                  "name": "customer.deleted",
+                  "value": "customer.deleted"
+                },
+                {
+                  "name": "customer.updated",
+                  "value": "customer.updated"
+                },
+                {
+                  "name": "customer.discount.created",
+                  "value": "customer.discount.created"
+                },
+                {
+                  "name": "customer.discount.deleted",
+                  "value": "customer.discount.deleted"
+                },
+                {
+                  "name": "customer.discount.updated",
+                  "value": "customer.discount.updated"
+                },
+                {
+                  "name": "customer.source.created",
+                  "value": "customer.source.created"
+                },
+                {
+                  "name": "customer.source.deleted",
+                  "value": "customer.source.deleted"
+                },
+                {
+                  "name": "customer.source.expiring",
+                  "value": "customer.source.expiring"
+                },
+                {
+                  "name": "customer.source.updated",
+                  "value": "customer.source.updated"
+                },
+                {
+                  "name": "customer.subscription.created",
+                  "value": "customer.subscription.created"
+                },
+                {
+                  "name": "customer.subscription.deleted",
+                  "value": "customer.subscription.deleted"
+                },
+                {
+                  "name": "customer.subscription.trial_will_end",
+                  "value": "customer.subscription.trial_will_end"
+                },
+                {
+                  "name": "customer.subscription.updated",
+                  "value": "customer.subscription.updated"
+                },
+                {
+                  "name": "customer.tax_id.created",
+                  "value": "customer.tax_id.created"
+                },
+                {
+                  "name": "customer.tax_id.deleted",
+                  "value": "customer.tax_id.deleted"
+                },
+                {
+                  "name": "customer.tax_id.updated",
+                  "value": "customer.tax_id.updated"
+                },
+                {
+                  "name": "file.created",
+                  "value": "file.created"
+                },
+                {
+                  "name": "invoice.created",
+                  "value": "invoice.created"
+                },
+                {
+                  "name": "invoice.deleted",
+                  "value": "invoice.deleted"
+                },
+                {
+                  "name": "invoice.finalized",
+                  "value": "invoice.finalized"
+                },
+                {
+                  "name": "invoice.marked_uncollectible",
+                  "value": "invoice.marked_uncollectible"
+                },
+                {
+                  "name": "invoice.paid",
+                  "value": "invoice.paid"
+                },
+                {
+                  "name": "invoice.payment_action_required",
+                  "value": "invoice.payment_action_required"
+                },
+                {
+                  "name": "invoice.payment_failed",
+                  "value": "invoice.payment_failed"
+                },
+                {
+                  "name": "invoice.payment_paid",
+                  "value": "invoice.payment_paid"
+                },
+                {
+                  "name": "invoice.payment_succeeded",
+                  "value": "invoice.payment_succeeded"
+                },
+                {
+                  "name": "invoice.sent",
+                  "value": "invoice.sent"
+                },
+                {
+                  "name": "invoice.upcoming",
+                  "value": "invoice.upcoming"
+                },
+                {
+                  "name": "invoice.updated",
+                  "value": "invoice.updated"
+                },
+                {
+                  "name": "invoice.voided",
+                  "value": "invoice.voided"
+                },
+                {
+                  "name": "invoiceitem.created",
+                  "value": "invoiceitem.created"
+                },
+                {
+                  "name": "invoiceitem.deleted",
+                  "value": "invoiceitem.deleted"
+                },
+                {
+                  "name": "invoiceitem.updated",
+                  "value": "invoiceitem.updated"
+                },
+                {
+                  "name": "issuing.authorization.created",
+                  "value": "issuing.authorization.created"
+                },
+                {
+                  "name": "issuing.authorization.request",
+                  "value": "issuing.authorization.request"
+                },
+                {
+                  "name": "issuing.authorization.updated",
+                  "value": "issuing.authorization.updated"
+                },
+                {
+                  "name": "issuing.card.created",
+                  "value": "issuing.card.created"
+                },
+                {
+                  "name": "issuing.card.updated",
+                  "value": "issuing.card.updated"
+                },
+                {
+                  "name": "issuing.cardholder.created",
+                  "value": "issuing.cardholder.created"
+                },
+                {
+                  "name": "issuing.cardholder.updated",
+                  "value": "issuing.cardholder.updated"
+                },
+                {
+                  "name": "issuing.dispute.created",
+                  "value": "issuing.dispute.created"
+                },
+                {
+                  "name": "issuing.dispute.updated",
+                  "value": "issuing.dispute.updated"
+                },
+                {
+                  "name": "issuing.settlement.created",
+                  "value": "issuing.settlement.created"
+                },
+                {
+                  "name": "issuing.settlement.updated",
+                  "value": "issuing.settlement.updated"
+                },
+                {
+                  "name": "issuing.transaction.created",
+                  "value": "issuing.transaction.created"
+                },
+                {
+                  "name": "issuing.transaction.updated",
+                  "value": "issuing.transaction.updated"
+                },
+                {
+                  "name": "order.created",
+                  "value": "order.created"
+                },
+                {
+                  "name": "order.payment_failed",
+                  "value": "order.payment_failed"
+                },
+                {
+                  "name": "order.payment_succeeded",
+                  "value": "order.payment_succeeded"
+                },
+                {
+                  "name": "order.updated",
+                  "value": "order.updated"
+                },
+                {
+                  "name": "order.return.created",
+                  "value": "order.return.created"
+                },
+                {
+                  "name": "payment.intent.amount_capturable_updated",
+                  "value": "payment.intent.amount_capturable_updated"
+                },
+                {
+                  "name": "payment.intent.canceled",
+                  "value": "payment.intent.canceled"
+                },
+                {
+                  "name": "payment.intent.created",
+                  "value": "payment.intent.created"
+                },
+                {
+                  "name": "payment.intent.payment_failed",
+                  "value": "payment.intent.payment_failed"
+                },
+                {
+                  "name": "payment.intent.succeeded",
+                  "value": "payment.intent.succeeded"
+                },
+                {
+                  "name": "payment.intent.requires_action",
+                  "value": "payment.intent.requires_action"
+                },
+                {
+                  "name": "payment.method.attached",
+                  "value": "payment.method.attached"
+                },
+                {
+                  "name": "payment.method.card_automatically_updated",
+                  "value": "payment.method.card_automatically_updated"
+                },
+                {
+                  "name": "payment.method.detached",
+                  "value": "payment.method.detached"
+                },
+                {
+                  "name": "payment.method.updated",
+                  "value": "payment.method.updated"
+                },
+                {
+                  "name": "payout.canceled",
+                  "value": "payout.canceled"
+                },
+                {
+                  "name": "payout.created",
+                  "value": "payout.created"
+                },
+                {
+                  "name": "payout.failed",
+                  "value": "payout.failed"
+                },
+                {
+                  "name": "payout.paid",
+                  "value": "payout.paid"
+                },
+                {
+                  "name": "payout.updated",
+                  "value": "payout.updated"
+                },
+                {
+                  "name": "person.created",
+                  "value": "person.created"
+                },
+                {
+                  "name": "person.deleted",
+                  "value": "person.deleted"
+                },
+                {
+                  "name": "person.updated",
+                  "value": "person.updated"
+                },
+                {
+                  "name": "plan.created",
+                  "value": "plan.created"
+                },
+                {
+                  "name": "plan.deleted",
+                  "value": "plan.deleted"
+                },
+                {
+                  "name": "plan.updated",
+                  "value": "plan.updated"
+                },
+                {
+                  "name": "product.created",
+                  "value": "product.created"
+                },
+                {
+                  "name": "product.deleted",
+                  "value": "product.deleted"
+                },
+                {
+                  "name": "product.updated",
+                  "value": "product.updated"
+                },
+                {
+                  "name": "radar.early_fraud_warning.created",
+                  "value": "radar.early_fraud_warning.created"
+                },
+                {
+                  "name": "radar.early_fraud_warning.updated",
+                  "value": "radar.early_fraud_warning.updated"
+                },
+                {
+                  "name": "recipient.created",
+                  "value": "recipient.created"
+                },
+                {
+                  "name": "recipient.deleted",
+                  "value": "recipient.deleted"
+                },
+                {
+                  "name": "recipient.updated",
+                  "value": "recipient.updated"
+                },
+                {
+                  "name": "reporting.report_run.failed",
+                  "value": "reporting.report_run.failed"
+                },
+                {
+                  "name": "reporting.report_run.succeeded",
+                  "value": "reporting.report_run.succeeded"
+                },
+                {
+                  "name": "reporting.report_type.updated",
+                  "value": "reporting.report_type.updated"
+                },
+                {
+                  "name": "review.closed",
+                  "value": "review.closed"
+                },
+                {
+                  "name": "review.opened",
+                  "value": "review.opened"
+                },
+                {
+                  "name": "setup.intent.canceled",
+                  "value": "setup.intent.canceled"
+                },
+                {
+                  "name": "setup.intent.created",
+                  "value": "setup.intent.created"
+                },
+                {
+                  "name": "setup.intent.setup_failed",
+                  "value": "setup.intent.setup_failed"
+                },
+                {
+                  "name": "setup.intent.succeeded",
+                  "value": "setup.intent.succeeded"
+                },
+                {
+                  "name": "sigma.scheduled_query_run.created",
+                  "value": "sigma.scheduled_query_run.created"
+                },
+                {
+                  "name": "sku.created",
+                  "value": "sku.created"
+                },
+                {
+                  "name": "sku.deleted",
+                  "value": "sku.deleted"
+                },
+                {
+                  "name": "sku.updated",
+                  "value": "sku.updated"
+                },
+                {
+                  "name": "source.canceled",
+                  "value": "source.canceled"
+                },
+                {
+                  "name": "source.chargeable",
+                  "value": "source.chargeable"
+                },
+                {
+                  "name": "source.failed",
+                  "value": "source.failed"
+                },
+                {
+                  "name": "source.mandate_notification",
+                  "value": "source.mandate_notification"
+                },
+                {
+                  "name": "source.refund_attributes_required",
+                  "value": "source.refund_attributes_required"
+                },
+                {
+                  "name": "source.transaction.created",
+                  "value": "source.transaction.created"
+                },
+                {
+                  "name": "source.transaction.updated",
+                  "value": "source.transaction.updated"
+                },
+                {
+                  "name": "subscription.schedule.aborted",
+                  "value": "subscription.schedule.aborted"
+                },
+                {
+                  "name": "subscription.schedule.canceled",
+                  "value": "subscription.schedule.canceled"
+                },
+                {
+                  "name": "subscription.schedule.completed",
+                  "value": "subscription.schedule.completed"
+                },
+                {
+                  "name": "subscription.schedule.created",
+                  "value": "subscription.schedule.created"
+                },
+                {
+                  "name": "subscription.schedule.expiring",
+                  "value": "subscription.schedule.expiring"
+                },
+                {
+                  "name": "subscription.schedule.released",
+                  "value": "subscription.schedule.released"
+                },
+                {
+                  "name": "subscription.schedule.updated",
+                  "value": "subscription.schedule.updated"
+                },
+                {
+                  "name": "tax.rate.created",
+                  "value": "tax.rate.created"
+                },
+                {
+                  "name": "tax.rate.updated",
+                  "value": "tax.rate.updated"
+                },
+                {
+                  "name": "topup.canceled",
+                  "value": "topup.canceled"
+                },
+                {
+                  "name": "topup.created",
+                  "value": "topup.created"
+                },
+                {
+                  "name": "topup.failed",
+                  "value": "topup.failed"
+                },
+                {
+                  "name": "topup.reversed",
+                  "value": "topup.reversed"
+                },
+                {
+                  "name": "topup.succeeded",
+                  "value": "topup.succeeded"
+                },
+                {
+                  "name": "transfer.created",
+                  "value": "transfer.created"
+                },
+                {
+                  "name": "transfer.failed",
+                  "value": "transfer.failed"
+                },
+                {
+                  "name": "transfer.paid",
+                  "value": "transfer.paid"
+                },
+                {
+                  "name": "transfer.reversed",
+                  "value": "transfer.reversed"
+                },
+                {
+                  "name": "transfer.updated",
+                  "value": "transfer.updated"
+                }
+              ]
+            },
+            {
+              "name": "apiVersion",
+              "displayName": "API Version",
+              "type": "string",
+              "default": "",
+              "description": "Stripe API version to use (e.g. 2024-01-28.clover)"
+            }
+          ],
+          "subCategory": "Stripe"
+        },
+        "isTrigger": true,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 100
+    }
+  ],
+  "edges": []
+}

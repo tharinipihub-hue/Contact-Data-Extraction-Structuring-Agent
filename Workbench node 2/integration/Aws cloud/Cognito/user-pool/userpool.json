@@ -1,0 +1,121 @@
+{
+  "nodes": [
+    {
+      "id": "aws.cognito.userPool.get-1783398372617",
+      "type": "action",
+      "position": {
+        "x": 316.28648943756906,
+        "y": 635.737717579099
+      },
+      "data": {
+        "label": "Get",
+        "toolId": "aws.cognito.userPool.get",
+        "toolData": {
+          "id": "aws.cognito.userPool.get",
+          "displayName": "Get",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Get",
+          "icon": "/tools/awsCognito.png",
+          "actionGroup": "Cognito User Pool",
+          "description": "Get in Cognito User Pool",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "get"
+                ],
+                "description": "Operation to perform"
+              },
+              "userPoolId": {
+                "type": "string",
+                "description": "The ID of the user pool."
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true,
+                "description": "Return a simplified version of the user pool details."
+              },
+              "credentials": {
+                "description": "AWS Cognito credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region"
+              }
+            },
+            "required": [
+              "operation",
+              "userPoolId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Get",
+                  "value": "get"
+                }
+              ],
+              "default": "get",
+              "required": true
+            },
+            {
+              "name": "userPoolId",
+              "displayName": "User Pool",
+              "type": "options",
+              "required": true,
+              "fetchEndpoint": "/api/tools/cognito/list-user-pools",
+              "dependsOn": [
+                "credentials"
+              ],
+              "placeholder": "Select a user pool...",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              },
+              "description": "Select an existing user pool from your account."
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get"
+                  ]
+                }
+              },
+              "description": "Return a simplified version of the user pool details (default is ON)."
+            }
+          ],
+          "initialData": {
+            "operation": "get"
+          },
+          "subCategory": "Cognito User Pool",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

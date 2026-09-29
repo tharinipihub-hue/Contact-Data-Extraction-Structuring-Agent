@@ -1,0 +1,170 @@
+{
+  "nodes": [
+    {
+      "id": "telegram.chat.getAdministrators-1783407662939",
+      "type": "action",
+      "position": {
+        "x": 646.5510092945224,
+        "y": -297.7545254302713
+      },
+      "data": {
+        "label": "Telegram Get Administrators",
+        "toolId": "telegram.chat.getAdministrators",
+        "toolData": {
+          "id": "telegram.chat.getAdministrators",
+          "displayName": "Telegram Get Administrators",
+          "category": "Integrations",
+          "provider": "telegram",
+          "operation": "getAdministrators",
+          "icon": "telegram",
+          "description": "Retrieve chat administrators list.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Chat"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "telegram.chat.get-1783407663586",
+      "type": "action",
+      "position": {
+        "x": 814.7882679180664,
+        "y": -210.00724936387388
+      },
+      "data": {
+        "label": "Telegram Get Chat",
+        "toolId": "telegram.chat.get",
+        "toolData": {
+          "id": "telegram.chat.get",
+          "displayName": "Telegram Get Chat",
+          "category": "Integrations",
+          "provider": "telegram",
+          "operation": "get",
+          "icon": "telegram",
+          "description": "Retrieve latest chat details.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Chat"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "telegram.chat.getMember-1783407664618",
+      "type": "action",
+      "position": {
+        "x": 898.5770202521451,
+        "y": -153.9281631560259
+      },
+      "data": {
+        "label": "Telegram Get Member",
+        "toolId": "telegram.chat.getMember",
+        "toolData": {
+          "id": "telegram.chat.getMember",
+          "displayName": "Telegram Get Member",
+          "category": "Integrations",
+          "provider": "telegram",
+          "operation": "getMember",
+          "icon": "telegram",
+          "description": "Get the details of a chat member",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Chat"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "telegram.chat.leave-1783407665402",
+      "type": "action",
+      "position": {
+        "x": 929.5854561553081,
+        "y": -133.47579053904607
+      },
+      "data": {
+        "label": "Telegram Leave Chat",
+        "toolId": "telegram.chat.leave",
+        "toolData": {
+          "id": "telegram.chat.leave",
+          "displayName": "Telegram Leave Chat",
+          "category": "Integrations",
+          "provider": "telegram",
+          "operation": "leave",
+          "icon": "telegram",
+          "description": "Leave a chat.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Chat"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "telegram.chat.setTitle-1783407667834",
+      "type": "action",
+      "position": {
+        "x": 895.2782504752129,
+        "y": -173.72078181761933
+      },
+      "data": {
+        "label": "Telegram Set Chat Title",
+        "toolId": "telegram.chat.setTitle",
+        "toolData": {
+          "id": "telegram.chat.setTitle",
+          "displayName": "Telegram Set Chat Title",
+          "category": "Integrations",
+          "provider": "telegram",
+          "operation": "setTitle",
+          "icon": "telegram",
+          "description": "Set title of a chat",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Chat"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

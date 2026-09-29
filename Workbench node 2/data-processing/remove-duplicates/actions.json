@@ -1,0 +1,335 @@
+{
+  "nodes": [
+    {
+      "id": "remove_duplicates_clear-1783397239548",
+      "type": "action",
+      "position": {
+        "x": -907.0135431671162,
+        "y": 243.15821903426567
+      },
+      "data": {
+        "label": "Clear Deduplication Records",
+        "toolId": "remove_duplicates_clear",
+        "toolData": {
+          "id": "remove_duplicates_clear",
+          "displayName": "Clear Deduplication Records",
+          "category": "Data  Processing",
+          "provider": "Remove Duplicates",
+          "operation": "clearHistory",
+          "icon": "Trash2",
+          "actionGroup": "ACTIONS",
+          "description": "Clear processed items history",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "removeWithinInput",
+                  "removePrevious",
+                  "clearHistory"
+                ],
+                "default": "removeWithinInput",
+                "description": "Select the operation to perform"
+              },
+              "compare": {
+                "type": "string",
+                "enum": [
+                  "allFields",
+                  "allFieldsExcept",
+                  "selectedFields"
+                ],
+                "default": "allFields",
+                "description": "Select which fields of the input data n8n should compare to check if they're the same"
+              },
+              "fields": {
+                "type": "string",
+                "description": "Input data fields to include or exclude (comma-separated)"
+              },
+              "disableDotNotation": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to avoid using dot notation for child fields"
+              },
+              "removeOtherFields": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to remove any fields that aren't used in the comparison"
+              },
+              "keepItemsWhere": {
+                "type": "string",
+                "enum": [
+                  "valueIsNew",
+                  "valueIsHigher",
+                  "valueIsLaterDate"
+                ],
+                "default": "valueIsNew",
+                "description": "Select how n8n decides which items to keep"
+              },
+              "valueToDedupeOn": {
+                "type": "string",
+                "description": "The input field or fields to compare"
+              },
+              "scope": {
+                "type": "string",
+                "enum": [
+                  "node",
+                  "workflow"
+                ],
+                "default": "node",
+                "description": "Sets how n8n stores and uses the deduplication data"
+              },
+              "historySize": {
+                "type": "number",
+                "default": 10000,
+                "description": "Number of items to store for tracking duplicates"
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "cleanDatabase"
+                ],
+                "default": "cleanDatabase",
+                "description": "How you want to manage the items stored in the database"
+              },
+              "caseSensitive": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether comparison should be case sensitive"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "remove_duplicates_within_input-1783397241452",
+      "type": "action",
+      "position": {
+        "x": -470.4871720121214,
+        "y": 282.566849763536
+      },
+      "data": {
+        "label": "Remove Duplicate Input Items",
+        "toolId": "remove_duplicates_within_input",
+        "toolData": {
+          "id": "remove_duplicates_within_input",
+          "displayName": "Remove Duplicate Input Items",
+          "category": "Data  Processing",
+          "provider": "Remove Duplicates",
+          "operation": "removeWithinInput",
+          "icon": "Filter",
+          "actionGroup": "ACTIONS",
+          "description": "Remove duplicate items in input",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "removeWithinInput",
+                  "removePrevious",
+                  "clearHistory"
+                ],
+                "default": "removeWithinInput",
+                "description": "Select the operation to perform"
+              },
+              "compare": {
+                "type": "string",
+                "enum": [
+                  "allFields",
+                  "allFieldsExcept",
+                  "selectedFields"
+                ],
+                "default": "allFields",
+                "description": "Select which fields of the input data n8n should compare to check if they're the same"
+              },
+              "fields": {
+                "type": "string",
+                "description": "Input data fields to include or exclude (comma-separated)"
+              },
+              "disableDotNotation": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to avoid using dot notation for child fields"
+              },
+              "removeOtherFields": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to remove any fields that aren't used in the comparison"
+              },
+              "keepItemsWhere": {
+                "type": "string",
+                "enum": [
+                  "valueIsNew",
+                  "valueIsHigher",
+                  "valueIsLaterDate"
+                ],
+                "default": "valueIsNew",
+                "description": "Select how n8n decides which items to keep"
+              },
+              "valueToDedupeOn": {
+                "type": "string",
+                "description": "The input field or fields to compare"
+              },
+              "scope": {
+                "type": "string",
+                "enum": [
+                  "node",
+                  "workflow"
+                ],
+                "default": "node",
+                "description": "Sets how n8n stores and uses the deduplication data"
+              },
+              "historySize": {
+                "type": "number",
+                "default": 10000,
+                "description": "Number of items to store for tracking duplicates"
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "cleanDatabase"
+                ],
+                "default": "cleanDatabase",
+                "description": "How you want to manage the items stored in the database"
+              },
+              "caseSensitive": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether comparison should be case sensitive"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "remove_duplicates_previous-1783397243468",
+      "type": "action",
+      "position": {
+        "x": -212.81535570535362,
+        "y": 114.3223108808818
+      },
+      "data": {
+        "label": "Remove Previously Processed Items",
+        "toolId": "remove_duplicates_previous",
+        "toolData": {
+          "id": "remove_duplicates_previous",
+          "displayName": "Remove Previously Processed Items",
+          "category": "Data  Processing",
+          "provider": "Remove Duplicates",
+          "operation": "removePrevious",
+          "icon": "Database",
+          "actionGroup": "ACTIONS",
+          "description": "Remove previously processed items",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "removeWithinInput",
+                  "removePrevious",
+                  "clearHistory"
+                ],
+                "default": "removeWithinInput",
+                "description": "Select the operation to perform"
+              },
+              "compare": {
+                "type": "string",
+                "enum": [
+                  "allFields",
+                  "allFieldsExcept",
+                  "selectedFields"
+                ],
+                "default": "allFields",
+                "description": "Select which fields of the input data n8n should compare to check if they're the same"
+              },
+              "fields": {
+                "type": "string",
+                "description": "Input data fields to include or exclude (comma-separated)"
+              },
+              "disableDotNotation": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to avoid using dot notation for child fields"
+              },
+              "removeOtherFields": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to remove any fields that aren't used in the comparison"
+              },
+              "keepItemsWhere": {
+                "type": "string",
+                "enum": [
+                  "valueIsNew",
+                  "valueIsHigher",
+                  "valueIsLaterDate"
+                ],
+                "default": "valueIsNew",
+                "description": "Select how n8n decides which items to keep"
+              },
+              "valueToDedupeOn": {
+                "type": "string",
+                "description": "The input field or fields to compare"
+              },
+              "scope": {
+                "type": "string",
+                "enum": [
+                  "node",
+                  "workflow"
+                ],
+                "default": "node",
+                "description": "Sets how n8n stores and uses the deduplication data"
+              },
+              "historySize": {
+                "type": "number",
+                "default": 10000,
+                "description": "Number of items to store for tracking duplicates"
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "cleanDatabase"
+                ],
+                "default": "cleanDatabase",
+                "description": "How you want to manage the items stored in the database"
+              },
+              "caseSensitive": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether comparison should be case sensitive"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

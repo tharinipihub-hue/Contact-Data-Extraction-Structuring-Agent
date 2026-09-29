@@ -1,0 +1,1328 @@
+{
+  "nodes": [
+    {
+      "id": "github.file.create-1783407022096",
+      "type": "action",
+      "position": {
+        "x": 1251.0797945848174,
+        "y": 575.6770063583765
+      },
+      "data": {
+        "label": "Create a file",
+        "toolId": "github.file.create",
+        "toolData": {
+          "id": "github.file.create",
+          "displayName": "Create a file",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "create",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Create a new file in a repository with given content",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "ownerMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "name"
+                ]
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repositoryMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "name"
+                ]
+              },
+              "repository": {
+                "type": "string"
+              },
+              "filePath": {
+                "type": "string"
+              },
+              "binaryData": {
+                "type": "boolean",
+                "default": false
+              },
+              "fileContent": {
+                "type": "string"
+              },
+              "binaryPropertyName": {
+                "type": "string"
+              },
+              "commitMessage": {
+                "type": "string"
+              },
+              "additionalParameters": {
+                "type": "object",
+                "properties": {
+                  "author": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "branch": {
+                    "type": "object",
+                    "properties": {
+                      "branch": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "committer": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "filePath",
+              "commitMessage"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "filePath",
+              "displayName": "File Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "docs/README.md",
+              "description": "Path where the file should be created"
+            },
+            {
+              "name": "binaryData",
+              "displayName": "Binary File",
+              "type": "toggle",
+              "default": false,
+              "description": "Whether to use binary data"
+            },
+            {
+              "name": "fileContent",
+              "displayName": "File Content",
+              "type": "string",
+              "required": true,
+              "placeholder": "Enter file content",
+              "description": "Content of the file",
+              "displayOptions": {
+                "show": {
+                  "binaryData": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "binaryPropertyName",
+              "displayName": "Binary Property Name",
+              "type": "string",
+              "default": "data",
+              "placeholder": "data",
+              "description": "Name of the binary property containing file data",
+              "displayOptions": {
+                "show": {
+                  "binaryData": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "commitMessage",
+              "displayName": "Commit Message",
+              "type": "string",
+              "required": true,
+              "placeholder": "Create new file",
+              "description": "Commit message for the file creation"
+            },
+            {
+              "name": "additionalParameters",
+              "displayName": "Additional Parameters",
+              "type": "collection",
+              "default": {},
+              "fields": [
+                {
+                  "name": "author",
+                  "displayName": "Author",
+                  "type": "collection",
+                  "default": {},
+                  "fields": [
+                    {
+                      "name": "name",
+                      "displayName": "Name",
+                      "type": "string",
+                      "placeholder": "John Doe"
+                    },
+                    {
+                      "name": "email",
+                      "displayName": "Email",
+                      "type": "string",
+                      "placeholder": "name@email.com"
+                    }
+                  ]
+                },
+                {
+                  "name": "branch",
+                  "displayName": "Branch",
+                  "type": "collection",
+                  "default": {},
+                  "fields": [
+                    {
+                      "name": "branch",
+                      "displayName": "Branch",
+                      "type": "string",
+                      "placeholder": "main",
+                      "description": "Branch to create the file in"
+                    }
+                  ]
+                },
+                {
+                  "name": "committer",
+                  "displayName": "Committer",
+                  "type": "collection",
+                  "default": {},
+                  "fields": [
+                    {
+                      "name": "name",
+                      "displayName": "Name",
+                      "type": "string",
+                      "placeholder": "John Doe"
+                    },
+                    {
+                      "name": "email",
+                      "displayName": "Email",
+                      "type": "string",
+                      "placeholder": "name@email.com"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "file",
+            "operation": "create"
+          },
+          "subCategory": "File",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "file",
+          "operation": "create"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "github.file.delete-1783407023839",
+      "type": "action",
+      "position": {
+        "x": 1516.9231267402522,
+        "y": 575.6770063583765
+      },
+      "data": {
+        "label": "Delete a file",
+        "toolId": "github.file.delete",
+        "toolData": {
+          "id": "github.file.delete",
+          "displayName": "Delete a file",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "delete",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Remove an existing file from a repository",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "ownerMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "name"
+                ]
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repositoryMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "name"
+                ]
+              },
+              "repository": {
+                "type": "string"
+              },
+              "filePath": {
+                "type": "string"
+              },
+              "commitMessage": {
+                "type": "string"
+              },
+              "additionalParameters": {
+                "type": "object",
+                "properties": {
+                  "author": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "branch": {
+                    "type": "object",
+                    "properties": {
+                      "branch": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "committer": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "filePath",
+              "commitMessage"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "filePath",
+              "displayName": "File Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "docs/README.md",
+              "description": "Path of the file to delete"
+            },
+            {
+              "name": "commitMessage",
+              "displayName": "Commit Message",
+              "type": "string",
+              "required": true,
+              "placeholder": "Delete file",
+              "description": "Commit message for the file deletion"
+            },
+            {
+              "name": "additionalParameters",
+              "displayName": "Additional Parameters",
+              "type": "collection",
+              "default": {},
+              "fields": [
+                {
+                  "name": "author",
+                  "displayName": "Author",
+                  "type": "collection",
+                  "default": {},
+                  "fields": [
+                    {
+                      "name": "name",
+                      "displayName": "Name",
+                      "type": "string",
+                      "placeholder": "John Doe"
+                    },
+                    {
+                      "name": "email",
+                      "displayName": "Email",
+                      "type": "string",
+                      "placeholder": "name@email.com"
+                    }
+                  ]
+                },
+                {
+                  "name": "branch",
+                  "displayName": "Branch",
+                  "type": "collection",
+                  "default": {},
+                  "fields": [
+                    {
+                      "name": "branch",
+                      "displayName": "Branch",
+                      "type": "string",
+                      "placeholder": "main",
+                      "description": "Branch to delete the file from"
+                    }
+                  ]
+                },
+                {
+                  "name": "committer",
+                  "displayName": "Committer",
+                  "type": "collection",
+                  "default": {},
+                  "fields": [
+                    {
+                      "name": "name",
+                      "displayName": "Name",
+                      "type": "string",
+                      "placeholder": "John Doe"
+                    },
+                    {
+                      "name": "email",
+                      "displayName": "Email",
+                      "type": "string",
+                      "placeholder": "name@email.com"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "file",
+            "operation": "delete"
+          },
+          "subCategory": "File"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "file",
+          "operation": "delete"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1516.9231267402522,
+        "y": 575.6770063583765
+      },
+      "dragging": false
+    },
+    {
+      "id": "github.file.edit-1783407026544",
+      "type": "action",
+      "position": {
+        "x": 1773.9470118573552,
+        "y": 573.1571643474244
+      },
+      "data": {
+        "label": "Edit a file",
+        "toolId": "github.file.edit",
+        "toolData": {
+          "id": "github.file.edit",
+          "displayName": "Edit a file",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "edit",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Modify the content of an existing file",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "ownerMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "name"
+                ]
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repositoryMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "name"
+                ]
+              },
+              "repository": {
+                "type": "string"
+              },
+              "filePath": {
+                "type": "string"
+              },
+              "binaryData": {
+                "type": "boolean",
+                "default": false
+              },
+              "fileContent": {
+                "type": "string"
+              },
+              "binaryPropertyName": {
+                "type": "string"
+              },
+              "commitMessage": {
+                "type": "string"
+              },
+              "additionalParameters": {
+                "type": "object",
+                "properties": {
+                  "author": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "branch": {
+                    "type": "object",
+                    "properties": {
+                      "branch": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "committer": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "filePath",
+              "commitMessage"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "filePath",
+              "displayName": "File Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "docs/README.md",
+              "description": "Path of the file to edit"
+            },
+            {
+              "name": "binaryData",
+              "displayName": "Binary File",
+              "type": "toggle",
+              "default": false,
+              "description": "Whether to use binary data"
+            },
+            {
+              "name": "fileContent",
+              "displayName": "File Content",
+              "type": "string",
+              "required": true,
+              "placeholder": "Enter new file content",
+              "description": "New content of the file",
+              "displayOptions": {
+                "show": {
+                  "binaryData": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "binaryPropertyName",
+              "displayName": "Binary Property Name",
+              "type": "string",
+              "default": "data",
+              "placeholder": "data",
+              "description": "Name of the binary property containing file data",
+              "displayOptions": {
+                "show": {
+                  "binaryData": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "commitMessage",
+              "displayName": "Commit Message",
+              "type": "string",
+              "required": true,
+              "placeholder": "Update file",
+              "description": "Commit message for the file edit"
+            },
+            {
+              "name": "additionalParameters",
+              "displayName": "Additional Parameters",
+              "type": "collection",
+              "default": {},
+              "fields": [
+                {
+                  "name": "author",
+                  "displayName": "Author",
+                  "type": "collection",
+                  "default": {},
+                  "fields": [
+                    {
+                      "name": "name",
+                      "displayName": "Name",
+                      "type": "string",
+                      "placeholder": "John Doe"
+                    },
+                    {
+                      "name": "email",
+                      "displayName": "Email",
+                      "type": "string",
+                      "placeholder": "name@email.com"
+                    }
+                  ]
+                },
+                {
+                  "name": "branch",
+                  "displayName": "Branch",
+                  "type": "collection",
+                  "default": {},
+                  "fields": [
+                    {
+                      "name": "branch",
+                      "displayName": "Branch",
+                      "type": "string",
+                      "placeholder": "main",
+                      "description": "Branch containing the file"
+                    }
+                  ]
+                },
+                {
+                  "name": "committer",
+                  "displayName": "Committer",
+                  "type": "collection",
+                  "default": {},
+                  "fields": [
+                    {
+                      "name": "name",
+                      "displayName": "Name",
+                      "type": "string",
+                      "placeholder": "John Doe"
+                    },
+                    {
+                      "name": "email",
+                      "displayName": "Email",
+                      "type": "string",
+                      "placeholder": "name@email.com"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "file",
+            "operation": "edit"
+          },
+          "subCategory": "File"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "file",
+          "operation": "edit"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1773.9470118573552,
+        "y": 573.1571643474244
+      },
+      "dragging": false
+    },
+    {
+      "id": "github.file.get-1783407031432",
+      "type": "action",
+      "position": {
+        "x": 2033.4907389854097,
+        "y": 570.6373223364724
+      },
+      "data": {
+        "label": "Get a file",
+        "toolId": "github.file.get",
+        "toolData": {
+          "id": "github.file.get",
+          "displayName": "Get a file",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "get",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "Fetch the contents or metadata of a file",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "ownerMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "name"
+                ]
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repositoryMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "name"
+                ]
+              },
+              "repository": {
+                "type": "string"
+              },
+              "filePath": {
+                "type": "string"
+              },
+              "asBinaryProperty": {
+                "type": "boolean",
+                "default": false
+              },
+              "binaryPropertyName": {
+                "type": "string"
+              },
+              "additionalParameters": {
+                "type": "object",
+                "properties": {
+                  "reference": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "filePath"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "filePath",
+              "displayName": "File Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "docs/README.md",
+              "description": "Path of the file to get"
+            },
+            {
+              "name": "asBinaryProperty",
+              "displayName": "As Binary Property",
+              "type": "toggle",
+              "default": false,
+              "description": "Whether to return file as binary data"
+            },
+            {
+              "name": "binaryPropertyName",
+              "displayName": "Binary Property Name",
+              "type": "string",
+              "default": "data",
+              "placeholder": "data",
+              "description": "Name for the binary property to store the file",
+              "displayOptions": {
+                "show": {
+                  "asBinaryProperty": [
+                    true
+                  ]
+                }
+              }
+            },
+            {
+              "name": "additionalParameters",
+              "displayName": "Additional Parameters",
+              "type": "collection",
+              "default": {},
+              "fields": [
+                {
+                  "name": "reference",
+                  "displayName": "Reference",
+                  "type": "string",
+                  "placeholder": "main",
+                  "description": "Branch, tag, or commit to get the file from"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "file",
+            "operation": "get"
+          },
+          "subCategory": "File"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "file",
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 2033.4907389854097,
+        "y": 570.6373223364724
+      },
+      "dragging": false
+    },
+    {
+      "id": "github.file.list-1783407035007",
+      "type": "action",
+      "position": {
+        "x": 1785.286300906639,
+        "y": 754.5857891359676
+      },
+      "data": {
+        "label": "List files",
+        "toolId": "github.file.list",
+        "toolData": {
+          "id": "github.file.list",
+          "displayName": "List files",
+          "category": "Integrations",
+          "provider": "github",
+          "operation": "list",
+          "icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+          "description": "List files and folders in a repository path",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "ownerMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "name"
+                ]
+              },
+              "owner": {
+                "type": "string"
+              },
+              "repositoryMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "url",
+                  "name"
+                ]
+              },
+              "repository": {
+                "type": "string"
+              },
+              "filePath": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credentials",
+              "owner",
+              "repository",
+              "filePath"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "ownerMode",
+              "displayName": "Repository Owner",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository owner"
+            },
+            {
+              "name": "owner",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select an Owner...",
+              "description": "The owner of the repository"
+            },
+            {
+              "name": "repositoryMode",
+              "displayName": "Repository Name",
+              "type": "options",
+              "required": true,
+              "default": "list",
+              "options": [
+                {
+                  "name": "From list",
+                  "value": "list"
+                },
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By Name",
+                  "value": "name"
+                }
+              ],
+              "description": "How to specify the repository"
+            },
+            {
+              "name": "repository",
+              "displayName": "",
+              "type": "string",
+              "required": true,
+              "placeholder": "Select a Repository...",
+              "description": "The name of the repository"
+            },
+            {
+              "name": "filePath",
+              "displayName": "File Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "docs/",
+              "description": "Path of the directory to list"
+            },
+            {
+              "name": "additionalParameters",
+              "displayName": "Additional Parameters",
+              "type": "collection",
+              "default": {},
+              "fields": [
+                {
+                  "name": "reference",
+                  "displayName": "Reference",
+                  "type": "string",
+                  "placeholder": "main",
+                  "description": "Branch, tag, or commit to list the files from"
+                }
+              ]
+            }
+          ],
+          "initialData": {
+            "resource": "file",
+            "operation": "list"
+          },
+          "subCategory": "File"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "file",
+          "operation": "list"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

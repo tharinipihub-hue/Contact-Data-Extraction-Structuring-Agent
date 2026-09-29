@@ -1,0 +1,460 @@
+{
+  "nodes": [
+    {
+      "id": "httpRequest-1783398064829",
+      "type": "action",
+      "position": {
+        "x": 248.06419444969103,
+        "y": 180.69640053843386
+      },
+      "data": {
+        "label": "Http Request",
+        "toolId": "httpRequest",
+        "toolData": {
+          "id": "httpRequest",
+          "displayName": "Http Request",
+          "category": "API & HTTP",
+          "icon": "Globe",
+          "description": "Make HTTP API requests to external services.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "method": {
+                "type": "string",
+                "enum": [
+                  "GET",
+                  "POST",
+                  "PUT",
+                  "PATCH",
+                  "DELETE",
+                  "HEAD",
+                  "OPTIONS"
+                ],
+                "default": "GET",
+                "description": "HTTP method to use"
+              },
+              "url": {
+                "type": "string",
+                "description": "URL to send the request to"
+              },
+              "headers": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Headers to include in the request"
+              },
+              "queryParameters": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Query parameters to append to the URL"
+              },
+              "body": {
+                "description": "Request body"
+              },
+              "bodyType": {
+                "type": "string",
+                "enum": [
+                  "json",
+                  "fields"
+                ],
+                "default": "json",
+                "description": "How the body is defined"
+              },
+              "bodyFields": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Body fields for key-value input"
+              },
+              "contentType": {
+                "type": "string",
+                "enum": [
+                  "json",
+                  "form-data",
+                  "form-urlencoded",
+                  "raw"
+                ],
+                "default": "json",
+                "description": "Content type of the request body"
+              },
+              "responseFormat": {
+                "type": "string",
+                "enum": [
+                  "auto",
+                  "json",
+                  "text",
+                  "binary"
+                ],
+                "default": "auto",
+                "description": "Format of the response data"
+              },
+              "authentication": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "header",
+                      "query",
+                      "basic",
+                      "bearer"
+                    ],
+                    "default": "none"
+                  },
+                  "config": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Authentication configuration"
+              },
+              "ignoreResponseCode": {
+                "type": "boolean",
+                "default": false,
+                "description": "If enabled, the node will not fail on non-2xx status codes"
+              },
+              "includeHeaders": {
+                "type": "boolean",
+                "default": false,
+                "description": "If enabled, response headers will be included in the output"
+              },
+              "allowUnauthorized": {
+                "type": "boolean",
+                "default": false,
+                "description": "If enabled, SSL certificate verification will be skipped"
+              },
+              "lowercaseHeaders": {
+                "type": "boolean",
+                "default": true,
+                "description": "If enabled, all header keys will be converted to lowercase"
+              },
+              "timeout": {
+                "type": "number",
+                "default": 300000,
+                "description": "Request timeout in milliseconds"
+              },
+              "outputPropertyName": {
+                "type": "string",
+                "default": "data",
+                "description": "The name of the property to store binary data in"
+              }
+            },
+            "required": [
+              "url"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "auth0HttpRequest-1783398066308",
+      "type": "action",
+      "position": {
+        "x": 723.5322442229437,
+        "y": 237.2205742877017
+      },
+      "data": {
+        "label": "Auth0 HTTP Request",
+        "toolId": "auth0HttpRequest",
+        "toolData": {
+          "id": "auth0HttpRequest",
+          "displayName": "Auth0 HTTP Request",
+          "category": "API & HTTP",
+          "provider": "auth0",
+          "operation": "Auth0 HTTP Request",
+          "icon": "/tools/auth0.svg",
+          "description": "Send authenticated requests to Auth0 APIs",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "method": {
+                "type": "string",
+                "enum": [
+                  "GET",
+                  "POST",
+                  "PUT",
+                  "PATCH",
+                  "DELETE",
+                  "OPTIONS",
+                  "HEAD"
+                ],
+                "default": "GET",
+                "description": "HTTP Method"
+              },
+              "url": {
+                "type": "string",
+                "description": "Target URL"
+              },
+              "credentialId": {
+                "type": "string",
+                "description": "Credential for Auth0"
+              },
+              "sendQueryParameters": {
+                "type": "boolean",
+                "default": false,
+                "description": "Send Query Parameters"
+              },
+              "queryParametersMode": {
+                "type": "string",
+                "enum": [
+                  "fields",
+                  "json"
+                ],
+                "default": "fields",
+                "description": "Query Parameters Mode"
+              },
+              "queryParameters": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Query Parameters"
+              },
+              "sendHeaders": {
+                "type": "boolean",
+                "default": false,
+                "description": "Send Headers"
+              },
+              "headersMode": {
+                "type": "string",
+                "enum": [
+                  "fields",
+                  "json"
+                ],
+                "default": "fields",
+                "description": "Headers Mode"
+              },
+              "headers": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Headers"
+              },
+              "sendBody": {
+                "type": "boolean",
+                "default": false,
+                "description": "Send Body"
+              },
+              "bodyContentType": {
+                "type": "string",
+                "enum": [
+                  "json",
+                  "form-data",
+                  "form-urlencoded",
+                  "raw",
+                  "binary"
+                ],
+                "default": "json",
+                "description": "Body Content Type"
+              },
+              "bodyMode": {
+                "type": "string",
+                "enum": [
+                  "fields",
+                  "json"
+                ],
+                "default": "fields",
+                "description": "Body Mode"
+              },
+              "bodyFields": {
+                "description": "Body Fields"
+              },
+              "body": {
+                "description": "Body"
+              },
+              "rawContentType": {
+                "type": "string",
+                "description": "Raw Content Type"
+              },
+              "outputPropertyName": {
+                "type": "string",
+                "default": "data",
+                "description": "Output Data Property"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "simplify": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Return only the data (Body)"
+                  },
+                  "batching": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                        "default": false
+                      },
+                      "batchSize": {
+                        "type": "number",
+                        "minimum": 1,
+                        "default": 10
+                      },
+                      "delay": {
+                        "type": "number",
+                        "minimum": 0,
+                        "default": 1000,
+                        "description": "Delay between batches in ms"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "ignoreSslIssues": {
+                    "type": "boolean",
+                    "description": "Ignore SSL Issues"
+                  },
+                  "lowercaseHeaders": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Convert all header names to lowercase"
+                  },
+                  "redirects": {
+                    "type": "object",
+                    "properties": {
+                      "follow": {
+                        "type": "boolean",
+                        "default": true
+                      },
+                      "maxRedirects": {
+                        "type": "number",
+                        "default": 5
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "pagination": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                        "default": false
+                      },
+                      "pageParam": {
+                        "type": "string",
+                        "default": "page"
+                      },
+                      "limitParam": {
+                        "type": "string",
+                        "default": "per_page"
+                      },
+                      "limit": {
+                        "type": "number",
+                        "default": 50
+                      },
+                      "mergeResults": {
+                        "type": "boolean",
+                        "default": true
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "proxy": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                        "default": false
+                      },
+                      "host": {
+                        "type": "string"
+                      },
+                      "port": {
+                        "type": "number"
+                      },
+                      "auth": {
+                        "type": "object",
+                        "properties": {
+                          "username": {
+                            "type": "string"
+                          },
+                          "password": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "username",
+                          "password"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "timeout": {
+                    "type": "number",
+                    "default": 300000,
+                    "description": "Request timeout in ms"
+                  },
+                  "sendCredentialsOnCrossOriginRedirect": {
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "response": {
+                    "type": "object",
+                    "properties": {
+                      "includeResponseHeadersAndStatus": {
+                        "type": "boolean",
+                        "default": false
+                      },
+                      "neverError": {
+                        "type": "boolean",
+                        "default": false
+                      },
+                      "responseFormat": {
+                        "type": "string",
+                        "enum": [
+                          "autodetect",
+                          "file",
+                          "json",
+                          "text"
+                        ],
+                        "default": "autodetect"
+                      },
+                      "outputPropertyName": {
+                        "type": "string",
+                        "default": "data"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Options"
+              }
+            },
+            "required": [
+              "url",
+              "credentialId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 723.5322442229437,
+        "y": 237.2205742877017
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

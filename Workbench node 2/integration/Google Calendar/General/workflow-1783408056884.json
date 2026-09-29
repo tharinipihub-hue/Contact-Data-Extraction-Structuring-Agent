@@ -1,0 +1,860 @@
+{
+  "nodes": [
+    {
+      "id": "trigger:google.calendar.event_cancelled-1783408039141",
+      "type": "manual-trigger",
+      "position": {
+        "x": 596.1179521934945,
+        "y": 228.69545958258897
+      },
+      "data": {
+        "label": "Event Cancelled",
+        "toolId": "trigger:google.calendar.event_cancelled",
+        "toolData": {
+          "id": "trigger:google.calendar.event_cancelled",
+          "displayName": "Event Cancelled",
+          "type": "trigger",
+          "category": "Integrations",
+          "provider": "googleCalendar",
+          "operation": "onEventCancelled",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg",
+          "description": "Triggers - Google Calendar event is cancelled",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "onEventCreated",
+                  "onEventStarted",
+                  "onEventCancelled",
+                  "onEventEnded",
+                  "onEventUpdated"
+                ],
+                "default": "onEventStarted",
+                "description": "Operation"
+              },
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "client_email": {
+                    "type": "string"
+                  },
+                  "private_key": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Credential to connect with"
+              },
+              "calendarId": {
+                "type": "string",
+                "default": "primary",
+                "description": "Calendar"
+              },
+              "triggerOn": {
+                "type": "string",
+                "enum": [
+                  "eventCreated",
+                  "eventStarted",
+                  "eventCancelled",
+                  "eventEnded",
+                  "eventUpdated"
+                ],
+                "default": "eventStarted",
+                "description": "Trigger On"
+              },
+              "pollTimes": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "mode": {
+                        "type": "string",
+                        "enum": [
+                          "every",
+                          "custom",
+                          "preset"
+                        ]
+                      },
+                      "preset": {
+                        "type": "string"
+                      },
+                      "minute": {
+                        "type": "number"
+                      },
+                      "hour": {
+                        "type": "number"
+                      },
+                      "weekday": {
+                        "type": "number"
+                      },
+                      "dayOfMonth": {
+                        "type": "number"
+                      },
+                      "every": {
+                        "type": "object",
+                        "properties": {
+                          "value": {
+                            "type": "number"
+                          },
+                          "unit": {
+                            "type": "string",
+                            "enum": [
+                              "hours",
+                              "minutes"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "value",
+                          "unit"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "cronExpression": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "mode"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/properties/pollTimes/anyOf/1"
+                    }
+                  },
+                  {
+                    "type": "array"
+                  }
+                ],
+                "default": "everyMinute",
+                "description": "Poll Times"
+              },
+              "matchTerm": {
+                "type": "string",
+                "description": "Match Term"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "dynamicFields": [
+            {
+              "fieldName": "calendarId",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/googleCalendar/list-calendars",
+              "labelKey": "title",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": true,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 99,
+      "selected": true
+    },
+    {
+      "id": "trigger:google.calendar.event_created-1783408039958",
+      "type": "manual-trigger",
+      "position": {
+        "x": 986.4408933927049,
+        "y": 301.52745766867355
+      },
+      "data": {
+        "label": "Event Created",
+        "toolId": "trigger:google.calendar.event_created",
+        "toolData": {
+          "id": "trigger:google.calendar.event_created",
+          "displayName": "Event Created",
+          "type": "trigger",
+          "category": "Integrations",
+          "provider": "googleCalendar",
+          "operation": "onEventCreated",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg",
+          "description": "Triggers when a new Google Calendar event is created",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "onEventCreated",
+                  "onEventStarted",
+                  "onEventCancelled",
+                  "onEventEnded",
+                  "onEventUpdated"
+                ],
+                "default": "onEventStarted",
+                "description": "Operation"
+              },
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "client_email": {
+                    "type": "string"
+                  },
+                  "private_key": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Credential to connect with"
+              },
+              "calendarId": {
+                "type": "string",
+                "default": "primary",
+                "description": "Calendar"
+              },
+              "triggerOn": {
+                "type": "string",
+                "enum": [
+                  "eventCreated",
+                  "eventStarted",
+                  "eventCancelled",
+                  "eventEnded",
+                  "eventUpdated"
+                ],
+                "default": "eventStarted",
+                "description": "Trigger On"
+              },
+              "pollTimes": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "mode": {
+                        "type": "string",
+                        "enum": [
+                          "every",
+                          "custom",
+                          "preset"
+                        ]
+                      },
+                      "preset": {
+                        "type": "string"
+                      },
+                      "minute": {
+                        "type": "number"
+                      },
+                      "hour": {
+                        "type": "number"
+                      },
+                      "weekday": {
+                        "type": "number"
+                      },
+                      "dayOfMonth": {
+                        "type": "number"
+                      },
+                      "every": {
+                        "type": "object",
+                        "properties": {
+                          "value": {
+                            "type": "number"
+                          },
+                          "unit": {
+                            "type": "string",
+                            "enum": [
+                              "hours",
+                              "minutes"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "value",
+                          "unit"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "cronExpression": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "mode"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/properties/pollTimes/anyOf/1"
+                    }
+                  },
+                  {
+                    "type": "array"
+                  }
+                ],
+                "default": "everyMinute",
+                "description": "Poll Times"
+              },
+              "matchTerm": {
+                "type": "string",
+                "description": "Match Term"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "dynamicFields": [
+            {
+              "fieldName": "calendarId",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/googleCalendar/list-calendars",
+              "labelKey": "title",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": true,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 99,
+      "selected": true
+    },
+    {
+      "id": "trigger:google.calendar.event_ended-1783408040790",
+      "type": "manual-trigger",
+      "position": {
+        "x": 684.5062993853447,
+        "y": 479.71836560744356
+      },
+      "data": {
+        "label": "Event Ended",
+        "toolId": "trigger:google.calendar.event_ended",
+        "toolData": {
+          "id": "trigger:google.calendar.event_ended",
+          "displayName": "Event Ended",
+          "type": "trigger",
+          "category": "Integrations",
+          "provider": "googleCalendar",
+          "operation": "onEventEnded",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg",
+          "description": "Triggers - Google Calendar event ends",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "onEventCreated",
+                  "onEventStarted",
+                  "onEventCancelled",
+                  "onEventEnded",
+                  "onEventUpdated"
+                ],
+                "default": "onEventStarted",
+                "description": "Operation"
+              },
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "client_email": {
+                    "type": "string"
+                  },
+                  "private_key": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Credential to connect with"
+              },
+              "calendarId": {
+                "type": "string",
+                "default": "primary",
+                "description": "Calendar"
+              },
+              "triggerOn": {
+                "type": "string",
+                "enum": [
+                  "eventCreated",
+                  "eventStarted",
+                  "eventCancelled",
+                  "eventEnded",
+                  "eventUpdated"
+                ],
+                "default": "eventStarted",
+                "description": "Trigger On"
+              },
+              "pollTimes": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "mode": {
+                        "type": "string",
+                        "enum": [
+                          "every",
+                          "custom",
+                          "preset"
+                        ]
+                      },
+                      "preset": {
+                        "type": "string"
+                      },
+                      "minute": {
+                        "type": "number"
+                      },
+                      "hour": {
+                        "type": "number"
+                      },
+                      "weekday": {
+                        "type": "number"
+                      },
+                      "dayOfMonth": {
+                        "type": "number"
+                      },
+                      "every": {
+                        "type": "object",
+                        "properties": {
+                          "value": {
+                            "type": "number"
+                          },
+                          "unit": {
+                            "type": "string",
+                            "enum": [
+                              "hours",
+                              "minutes"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "value",
+                          "unit"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "cronExpression": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "mode"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/properties/pollTimes/anyOf/1"
+                    }
+                  },
+                  {
+                    "type": "array"
+                  }
+                ],
+                "default": "everyMinute",
+                "description": "Poll Times"
+              },
+              "matchTerm": {
+                "type": "string",
+                "description": "Match Term"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "dynamicFields": [
+            {
+              "fieldName": "calendarId",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/googleCalendar/list-calendars",
+              "labelKey": "title",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": true,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 99,
+      "selected": true
+    },
+    {
+      "id": "trigger:google.calendar.event_started-1783408041517",
+      "type": "manual-trigger",
+      "position": {
+        "x": 1105.9419387960863,
+        "y": 497.39603504581356
+      },
+      "data": {
+        "label": "Event Started",
+        "toolId": "trigger:google.calendar.event_started",
+        "toolData": {
+          "id": "trigger:google.calendar.event_started",
+          "displayName": "Event Started",
+          "type": "trigger",
+          "category": "Integrations",
+          "provider": "googleCalendar",
+          "operation": "onEventStarted",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg",
+          "description": "Triggers - Google Calendar event is to start",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "onEventCreated",
+                  "onEventStarted",
+                  "onEventCancelled",
+                  "onEventEnded",
+                  "onEventUpdated"
+                ],
+                "default": "onEventStarted",
+                "description": "Operation"
+              },
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "client_email": {
+                    "type": "string"
+                  },
+                  "private_key": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Credential to connect with"
+              },
+              "calendarId": {
+                "type": "string",
+                "default": "primary",
+                "description": "Calendar"
+              },
+              "triggerOn": {
+                "type": "string",
+                "enum": [
+                  "eventCreated",
+                  "eventStarted",
+                  "eventCancelled",
+                  "eventEnded",
+                  "eventUpdated"
+                ],
+                "default": "eventStarted",
+                "description": "Trigger On"
+              },
+              "pollTimes": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "mode": {
+                        "type": "string",
+                        "enum": [
+                          "every",
+                          "custom",
+                          "preset"
+                        ]
+                      },
+                      "preset": {
+                        "type": "string"
+                      },
+                      "minute": {
+                        "type": "number"
+                      },
+                      "hour": {
+                        "type": "number"
+                      },
+                      "weekday": {
+                        "type": "number"
+                      },
+                      "dayOfMonth": {
+                        "type": "number"
+                      },
+                      "every": {
+                        "type": "object",
+                        "properties": {
+                          "value": {
+                            "type": "number"
+                          },
+                          "unit": {
+                            "type": "string",
+                            "enum": [
+                              "hours",
+                              "minutes"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "value",
+                          "unit"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "cronExpression": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "mode"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/properties/pollTimes/anyOf/1"
+                    }
+                  },
+                  {
+                    "type": "array"
+                  }
+                ],
+                "default": "everyMinute",
+                "description": "Poll Times"
+              },
+              "matchTerm": {
+                "type": "string",
+                "description": "Match Term"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "dynamicFields": [
+            {
+              "fieldName": "calendarId",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/googleCalendar/list-calendars",
+              "labelKey": "title",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": true,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 99,
+      "selected": true
+    },
+    {
+      "id": "trigger:google.calendar.event_updated-1783408043615",
+      "type": "manual-trigger",
+      "position": {
+        "x": 1368.2785532614978,
+        "y": 449.31277417344705
+      },
+      "data": {
+        "label": "Event Updated",
+        "toolId": "trigger:google.calendar.event_updated",
+        "toolData": {
+          "id": "trigger:google.calendar.event_updated",
+          "displayName": "Event Updated",
+          "type": "trigger",
+          "category": "Integrations",
+          "provider": "googleCalendar",
+          "operation": "onEventUpdated",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg",
+          "description": "Triggers - Google Calendar event is updated",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "onEventCreated",
+                  "onEventStarted",
+                  "onEventCancelled",
+                  "onEventEnded",
+                  "onEventUpdated"
+                ],
+                "default": "onEventStarted",
+                "description": "Operation"
+              },
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "client_email": {
+                    "type": "string"
+                  },
+                  "private_key": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Credential to connect with"
+              },
+              "calendarId": {
+                "type": "string",
+                "default": "primary",
+                "description": "Calendar"
+              },
+              "triggerOn": {
+                "type": "string",
+                "enum": [
+                  "eventCreated",
+                  "eventStarted",
+                  "eventCancelled",
+                  "eventEnded",
+                  "eventUpdated"
+                ],
+                "default": "eventStarted",
+                "description": "Trigger On"
+              },
+              "pollTimes": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "mode": {
+                        "type": "string",
+                        "enum": [
+                          "every",
+                          "custom",
+                          "preset"
+                        ]
+                      },
+                      "preset": {
+                        "type": "string"
+                      },
+                      "minute": {
+                        "type": "number"
+                      },
+                      "hour": {
+                        "type": "number"
+                      },
+                      "weekday": {
+                        "type": "number"
+                      },
+                      "dayOfMonth": {
+                        "type": "number"
+                      },
+                      "every": {
+                        "type": "object",
+                        "properties": {
+                          "value": {
+                            "type": "number"
+                          },
+                          "unit": {
+                            "type": "string",
+                            "enum": [
+                              "hours",
+                              "minutes"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "value",
+                          "unit"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "cronExpression": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "mode"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/properties/pollTimes/anyOf/1"
+                    }
+                  },
+                  {
+                    "type": "array"
+                  }
+                ],
+                "default": "everyMinute",
+                "description": "Poll Times"
+              },
+              "matchTerm": {
+                "type": "string",
+                "description": "Match Term"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "dynamicFields": [
+            {
+              "fieldName": "calendarId",
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/googleCalendar/list-calendars",
+              "labelKey": "title",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": true,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 99,
+      "selected": true
+    }
+  ],
+  "edges": []
+}

@@ -1,0 +1,675 @@
+{
+  "nodes": [
+    {
+      "id": "google.gmail.thread.addLabel-1783407799855",
+      "type": "action",
+      "position": {
+        "x": 502.83878315179317,
+        "y": 188.15743313977677
+      },
+      "data": {
+        "label": "Add label to thread",
+        "toolId": "google.gmail.thread.addLabel",
+        "toolData": {
+          "id": "google.gmail.thread.addLabel",
+          "displayName": "Add label to thread",
+          "category": "Integrations",
+          "provider": "gmail",
+          "operation": "addLabel",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          "description": "Add labels to a Gmail thread",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "threadId": {
+                "type": "string",
+                "description": "Thread ID (e.g., 172ce2c4a72cc243)"
+              },
+              "labelIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "CATEGORY_FORUMS",
+                    "CATEGORY_PERSONAL",
+                    "CATEGORY_PROMOTIONS",
+                    "CATEGORY_SOCIAL",
+                    "CATEGORY_UPDATES",
+                    "CHAT",
+                    "DRAFT",
+                    "IMPORTANT",
+                    "INBOX",
+                    "SENT",
+                    "SPAM",
+                    "STARRED",
+                    "TRASH",
+                    "UNREAD",
+                    "YELLOW_STAR"
+                  ]
+                },
+                "description": "Label Names or IDs (multiple)"
+              }
+            },
+            "required": [
+              "credentials",
+              "threadId",
+              "labelIds"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "THREAD ACTIONS"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true
+    },
+    {
+      "id": "google.gmail.thread.delete-1783407801612",
+      "type": "action",
+      "position": {
+        "x": 791.3383483859922,
+        "y": 176.13661792168514
+      },
+      "data": {
+        "label": "Delete a thread",
+        "toolId": "google.gmail.thread.delete",
+        "toolData": {
+          "id": "google.gmail.thread.delete",
+          "displayName": "Delete a thread",
+          "category": "Integrations",
+          "provider": "gmail",
+          "operation": "delete",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          "description": "Delete a Gmail thread",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "threadId": {
+                "type": "string",
+                "description": "Thread ID to delete"
+              }
+            },
+            "required": [
+              "credentials",
+              "threadId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "THREAD ACTIONS"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 791.3383483859922,
+        "y": 176.13661792168514
+      },
+      "dragging": false
+    },
+    {
+      "id": "google.gmail.thread.get-1783407806215",
+      "type": "action",
+      "position": {
+        "x": 1065.6368524766026,
+        "y": 173.30542867569625
+      },
+      "data": {
+        "label": "Get a thread",
+        "toolId": "google.gmail.thread.get",
+        "toolData": {
+          "id": "google.gmail.thread.get",
+          "displayName": "Get a thread",
+          "category": "Integrations",
+          "provider": "gmail",
+          "operation": "get",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          "description": "Fetch a Gmail thread",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "threadId": {
+                "type": "string",
+                "description": "Thread ID to fetch"
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return a simplified thread structure"
+              },
+              "returnOnlyMessages": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return only messages array"
+              }
+            },
+            "required": [
+              "credentials",
+              "threadId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "THREAD ACTIONS"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 1065.6368524766026,
+        "y": 173.30542867569625
+      },
+      "dragging": false
+    },
+    {
+      "id": "google.gmail.thread.getMany-1783407806868",
+      "type": "action",
+      "position": {
+        "x": 464.1246870817628,
+        "y": 305.77010552694446
+      },
+      "data": {
+        "label": "Get many threads",
+        "toolId": "google.gmail.thread.getMany",
+        "toolData": {
+          "id": "google.gmail.thread.getMany",
+          "displayName": "Get many threads",
+          "category": "Integrations",
+          "provider": "gmail",
+          "operation": "getMany",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          "description": "List Gmail threads with filters",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return all threads (if false, uses Limit)"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 50,
+                "description": "Number of threads to return (default 50)"
+              },
+              "labelIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "CATEGORY_FORUMS",
+                    "CATEGORY_PERSONAL",
+                    "CATEGORY_PROMOTIONS",
+                    "CATEGORY_SOCIAL",
+                    "CATEGORY_UPDATES",
+                    "CHAT",
+                    "DRAFT",
+                    "IMPORTANT",
+                    "INBOX",
+                    "SENT",
+                    "SPAM",
+                    "STARRED",
+                    "TRASH",
+                    "UNREAD",
+                    "YELLOW_STAR"
+                  ]
+                },
+                "description": "Label ID Names or IDs (multiple)"
+              },
+              "search": {
+                "type": "string",
+                "description": "Search. Placeholder: has:attachment. Use the same format as in the Gmail search box."
+              },
+              "readStatus": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "unread",
+                  "read"
+                ],
+                "default": "all",
+                "description": "Filter emails by whether they have been read or not"
+              },
+              "receivedAfter": {
+                "type": "string",
+                "description": "Received After (ISO date/time)"
+              },
+              "receivedBefore": {
+                "type": "string",
+                "description": "Received Before (ISO date/time)"
+              }
+            },
+            "required": [
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "THREAD ACTIONS"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 464.1246870817628,
+        "y": 305.77010552694446
+      },
+      "dragging": false
+    },
+    {
+      "id": "google.gmail.thread.reply-1783407817964",
+      "type": "action",
+      "position": {
+        "x": 1000.1116244531424,
+        "y": 310.7198529696881
+      },
+      "data": {
+        "label": "Reply to a thread",
+        "toolId": "google.gmail.thread.reply",
+        "toolData": {
+          "id": "google.gmail.thread.reply",
+          "displayName": "Reply to a thread",
+          "category": "Integrations",
+          "provider": "gmail",
+          "operation": "reply",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          "description": "Reply within a Gmail thread",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "threadId": {
+                "type": "string",
+                "description": "Thread ID to reply in"
+              },
+              "messageSelector": {
+                "type": "string",
+                "description": "Message Snippet or ID"
+              },
+              "emailType": {
+                "type": "string",
+                "enum": [
+                  "text",
+                  "html"
+                ],
+                "description": "Email body format - Text or HTML"
+              },
+              "message": {
+                "type": "string",
+                "description": "Reply message content (plain text or HTML depending on emailType)"
+              },
+              "bcc": {
+                "type": "string",
+                "description": "BCC recipients (comma-separated)"
+              },
+              "cc": {
+                "type": "string",
+                "description": "CC recipients (comma-separated)"
+              },
+              "senderName": {
+                "type": "string",
+                "description": "Sender name for the reply"
+              },
+              "replyToSenderOnly": {
+                "type": "boolean",
+                "default": false,
+                "description": "If true, reply only to sender"
+              },
+              "replyToRecipientsOnly": {
+                "type": "boolean",
+                "default": false,
+                "description": "If true, reply only to original recipients"
+              },
+              "appendAttribution": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether to append \"Sent via Agent Builder\" to the email"
+              }
+            },
+            "required": [
+              "credentials",
+              "threadId",
+              "emailType",
+              "message"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "THREAD ACTIONS"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 1000.1116244531424,
+        "y": 310.7198529696881
+      },
+      "dragging": false
+    },
+    {
+      "id": "google.gmail.thread.removeLabel-1783407819229",
+      "type": "action",
+      "position": {
+        "x": 737.0679032101962,
+        "y": 304.3558919718749
+      },
+      "data": {
+        "label": "Remove label from thread",
+        "toolId": "google.gmail.thread.removeLabel",
+        "toolData": {
+          "id": "google.gmail.thread.removeLabel",
+          "displayName": "Remove label from thread",
+          "category": "Integrations",
+          "provider": "gmail",
+          "operation": "removeLabel",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          "description": "Remove labels from a Gmail thread",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "threadId": {
+                "type": "string",
+                "description": "Thread ID (e.g., 172ce2c4a72cc243)"
+              },
+              "labelIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "CATEGORY_FORUMS",
+                    "CATEGORY_PERSONAL",
+                    "CATEGORY_PROMOTIONS",
+                    "CATEGORY_SOCIAL",
+                    "CATEGORY_UPDATES",
+                    "CHAT",
+                    "DRAFT",
+                    "IMPORTANT",
+                    "INBOX",
+                    "SENT",
+                    "SPAM",
+                    "STARRED",
+                    "TRASH",
+                    "UNREAD",
+                    "YELLOW_STAR"
+                  ]
+                },
+                "description": "Label Names or IDs (multiple)"
+              }
+            },
+            "required": [
+              "credentials",
+              "threadId",
+              "labelIds"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "THREAD ACTIONS"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 737.0679032101962,
+        "y": 304.3558919718749
+      },
+      "dragging": false
+    },
+    {
+      "id": "google.gmail.thread.trash-1783407829742",
+      "type": "action",
+      "position": {
+        "x": 415.0986171445853,
+        "y": 490.79637178882206
+      },
+      "data": {
+        "label": "Trash a thread",
+        "toolId": "google.gmail.thread.trash",
+        "toolData": {
+          "id": "google.gmail.thread.trash",
+          "displayName": "Trash a thread",
+          "category": "Integrations",
+          "provider": "gmail",
+          "operation": "trash",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          "description": "Move a Gmail thread to trash",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "threadId": {
+                "type": "string",
+                "description": "Thread ID to trash"
+              }
+            },
+            "required": [
+              "credentials",
+              "threadId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "THREAD ACTIONS"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true
+    },
+    {
+      "id": "google.gmail.thread.untrash-1783407831015",
+      "type": "action",
+      "position": {
+        "x": 932.70077830006,
+        "y": 578.4776122031375
+      },
+      "data": {
+        "label": "Untrash a thread",
+        "toolId": "google.gmail.thread.untrash",
+        "toolData": {
+          "id": "google.gmail.thread.untrash",
+          "displayName": "Untrash a thread",
+          "category": "Integrations",
+          "provider": "gmail",
+          "operation": "untrash",
+          "icon": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          "description": "Restore a Gmail thread from trash",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "threadId": {
+                "type": "string",
+                "description": "Thread ID to untrash"
+              }
+            },
+            "required": [
+              "credentials",
+              "threadId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "THREAD ACTIONS"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 93,
+      "selected": true
+    }
+  ],
+  "edges": []
+}

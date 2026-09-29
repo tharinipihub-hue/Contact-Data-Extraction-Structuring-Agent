@@ -1,0 +1,98 @@
+{
+  "nodes": [
+    {
+      "id": "file-upload.csv-1783399123493",
+      "type": "action",
+      "position": {
+        "x": 1712.2108825890314,
+        "y": 405.1677033589148
+      },
+      "data": {
+        "label": "CSV Upload",
+        "toolId": "file-upload.csv",
+        "toolData": {
+          "id": "file-upload.csv",
+          "displayName": "CSV Upload",
+          "category": "File  Upload  Tool",
+          "provider": "fileUploadTool",
+          "operation": "csv",
+          "icon": "/tools/Upload File node.svg",
+          "description": "Upload a CSV file",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "file": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Upload CSV File"
+              },
+              "kbFileId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Select from Knowledge Base"
+              }
+            },
+            "required": [
+              "file",
+              "kbFileId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false
+    },
+    {
+      "id": "file-upload.pdf-1783399124653",
+      "type": "action",
+      "position": {
+        "x": 1702.1315145452234,
+        "y": 282.9553658277433
+      },
+      "data": {
+        "label": "PDF Upload",
+        "toolId": "file-upload.pdf",
+        "toolData": {
+          "id": "file-upload.pdf",
+          "displayName": "PDF Upload",
+          "category": "File  Upload  Tool",
+          "provider": "fileUploadTool",
+          "operation": "pdf",
+          "icon": "/tools/Upload File node.svg",
+          "description": "Upload a PDF file and make it directly available to the next node. No format conversion - just upload and pass along.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "file": {
+                "type": "string",
+                "description": "Upload PDF File"
+              }
+            },
+            "required": [
+              "file"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false
+    }
+  ],
+  "edges": []
+}

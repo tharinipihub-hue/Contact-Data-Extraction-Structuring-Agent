@@ -1,0 +1,596 @@
+{
+  "nodes": [
+    {
+      "id": "aws.comprehend.text.detectdominantlanguage-1783398442032",
+      "type": "action",
+      "position": {
+        "x": 200.99479262065995,
+        "y": 462.1030902556857
+      },
+      "data": {
+        "label": "Detect Dominant Language",
+        "toolId": "aws.comprehend.text.detectdominantlanguage",
+        "toolData": {
+          "id": "aws.comprehend.text.detectdominantlanguage",
+          "displayName": "Detect Dominant Language",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Detect Dominant Language",
+          "icon": "/tools/aws.png",
+          "actionGroup": "Comprehend",
+          "description": "Detect Dominant Language in Comprehend",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "detectDominantLanguage",
+                  "detectEntities",
+                  "detectSentiment"
+                ],
+                "description": "Detection Operation"
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The input text to analyze"
+              },
+              "languageCode": {
+                "type": "string",
+                "description": "Language code for entities and sentiment detection"
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether to simplify the output"
+              },
+              "credentials": {
+                "description": "AWS credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region (e.g., us-east-1)"
+              }
+            },
+            "required": [
+              "operation",
+              "text"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Text",
+                  "value": "text"
+                }
+              ],
+              "default": "text",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Detect Dominant Language",
+                  "value": "detectDominantLanguage"
+                },
+                {
+                  "name": "Detect Entities",
+                  "value": "detectEntities"
+                },
+                {
+                  "name": "Detect Sentiment",
+                  "value": "detectSentiment"
+                }
+              ],
+              "default": "detectDominantLanguage",
+              "required": true
+            },
+            {
+              "name": "languageCode",
+              "displayName": "Language Code",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Arabic",
+                  "value": "ar"
+                },
+                {
+                  "name": "Chinese",
+                  "value": "zh"
+                },
+                {
+                  "name": "Chinese (T)",
+                  "value": "zh-TW"
+                },
+                {
+                  "name": "English",
+                  "value": "en"
+                },
+                {
+                  "name": "French",
+                  "value": "fr"
+                },
+                {
+                  "name": "German",
+                  "value": "de"
+                },
+                {
+                  "name": "Hindi",
+                  "value": "hi"
+                },
+                {
+                  "name": "Italian",
+                  "value": "it"
+                },
+                {
+                  "name": "Japanese",
+                  "value": "ja"
+                },
+                {
+                  "name": "Korean",
+                  "value": "ko"
+                },
+                {
+                  "name": "Portuguese",
+                  "value": "pt"
+                },
+                {
+                  "name": "Spanish",
+                  "value": "es"
+                }
+              ],
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "detectEntities",
+                    "detectSentiment"
+                  ]
+                }
+              },
+              "description": "The language of the input text."
+            },
+            {
+              "name": "text",
+              "displayName": "Text",
+              "type": "string",
+              "required": true,
+              "description": "The input text to analyze."
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "detectDominantLanguage"
+                  ]
+                }
+              },
+              "description": "Whether to simplify the output to only key information."
+            }
+          ],
+          "initialData": {
+            "operation": "detectDominantLanguage"
+          },
+          "subCategory": "Comprehend",
+          "dynamicFields": []
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "detectDominantLanguage"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.comprehend.text.detectentities-1783398443160",
+      "type": "action",
+      "position": {
+        "x": 296.33675608541387,
+        "y": 636.705240215235
+      },
+      "data": {
+        "label": "Detect Entities",
+        "toolId": "aws.comprehend.text.detectentities",
+        "toolData": {
+          "id": "aws.comprehend.text.detectentities",
+          "displayName": "Detect Entities",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Detect Entities",
+          "icon": "/tools/aws.png",
+          "actionGroup": "Comprehend",
+          "description": "Detect Entities in Comprehend",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "detectDominantLanguage",
+                  "detectEntities",
+                  "detectSentiment"
+                ],
+                "description": "Detection Operation"
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The input text to analyze"
+              },
+              "languageCode": {
+                "type": "string",
+                "description": "Language code for entities and sentiment detection"
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether to simplify the output"
+              },
+              "credentials": {
+                "description": "AWS credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region (e.g., us-east-1)"
+              }
+            },
+            "required": [
+              "operation",
+              "text"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Text",
+                  "value": "text"
+                }
+              ],
+              "default": "text",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Detect Dominant Language",
+                  "value": "detectDominantLanguage"
+                },
+                {
+                  "name": "Detect Entities",
+                  "value": "detectEntities"
+                },
+                {
+                  "name": "Detect Sentiment",
+                  "value": "detectSentiment"
+                }
+              ],
+              "default": "detectEntities",
+              "required": true
+            },
+            {
+              "name": "languageCode",
+              "displayName": "Language Code",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Arabic",
+                  "value": "ar"
+                },
+                {
+                  "name": "Chinese",
+                  "value": "zh"
+                },
+                {
+                  "name": "Chinese (T)",
+                  "value": "zh-TW"
+                },
+                {
+                  "name": "English",
+                  "value": "en"
+                },
+                {
+                  "name": "French",
+                  "value": "fr"
+                },
+                {
+                  "name": "German",
+                  "value": "de"
+                },
+                {
+                  "name": "Hindi",
+                  "value": "hi"
+                },
+                {
+                  "name": "Italian",
+                  "value": "it"
+                },
+                {
+                  "name": "Japanese",
+                  "value": "ja"
+                },
+                {
+                  "name": "Korean",
+                  "value": "ko"
+                },
+                {
+                  "name": "Portuguese",
+                  "value": "pt"
+                },
+                {
+                  "name": "Spanish",
+                  "value": "es"
+                }
+              ],
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "detectEntities",
+                    "detectSentiment"
+                  ]
+                }
+              },
+              "description": "The language of the input text."
+            },
+            {
+              "name": "text",
+              "displayName": "Text",
+              "type": "string",
+              "required": true,
+              "description": "The input text to analyze."
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "detectDominantLanguage"
+                  ]
+                }
+              },
+              "description": "Whether to simplify the output to only key information."
+            }
+          ],
+          "initialData": {
+            "operation": "detectEntities"
+          },
+          "subCategory": "Comprehend",
+          "dynamicFields": []
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "detectEntities"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.comprehend.text.detectsentiment-1783398444384",
+      "type": "action",
+      "position": {
+        "x": 381.3404343551945,
+        "y": 856.1066260196687
+      },
+      "data": {
+        "label": "Detect Sentiment",
+        "toolId": "aws.comprehend.text.detectsentiment",
+        "toolData": {
+          "id": "aws.comprehend.text.detectsentiment",
+          "displayName": "Detect Sentiment",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Detect Sentiment",
+          "icon": "/tools/aws.png",
+          "actionGroup": "Comprehend",
+          "description": "Detect Sentiment in Comprehend",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "detectDominantLanguage",
+                  "detectEntities",
+                  "detectSentiment"
+                ],
+                "description": "Detection Operation"
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The input text to analyze"
+              },
+              "languageCode": {
+                "type": "string",
+                "description": "Language code for entities and sentiment detection"
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether to simplify the output"
+              },
+              "credentials": {
+                "description": "AWS credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region (e.g., us-east-1)"
+              }
+            },
+            "required": [
+              "operation",
+              "text"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Text",
+                  "value": "text"
+                }
+              ],
+              "default": "text",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Detect Dominant Language",
+                  "value": "detectDominantLanguage"
+                },
+                {
+                  "name": "Detect Entities",
+                  "value": "detectEntities"
+                },
+                {
+                  "name": "Detect Sentiment",
+                  "value": "detectSentiment"
+                }
+              ],
+              "default": "detectSentiment",
+              "required": true
+            },
+            {
+              "name": "languageCode",
+              "displayName": "Language Code",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Arabic",
+                  "value": "ar"
+                },
+                {
+                  "name": "Chinese",
+                  "value": "zh"
+                },
+                {
+                  "name": "Chinese (T)",
+                  "value": "zh-TW"
+                },
+                {
+                  "name": "English",
+                  "value": "en"
+                },
+                {
+                  "name": "French",
+                  "value": "fr"
+                },
+                {
+                  "name": "German",
+                  "value": "de"
+                },
+                {
+                  "name": "Hindi",
+                  "value": "hi"
+                },
+                {
+                  "name": "Italian",
+                  "value": "it"
+                },
+                {
+                  "name": "Japanese",
+                  "value": "ja"
+                },
+                {
+                  "name": "Korean",
+                  "value": "ko"
+                },
+                {
+                  "name": "Portuguese",
+                  "value": "pt"
+                },
+                {
+                  "name": "Spanish",
+                  "value": "es"
+                }
+              ],
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "detectEntities",
+                    "detectSentiment"
+                  ]
+                }
+              },
+              "description": "The language of the input text."
+            },
+            {
+              "name": "text",
+              "displayName": "Text",
+              "type": "string",
+              "required": true,
+              "description": "The input text to analyze."
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify",
+              "type": "boolean",
+              "default": true,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "detectDominantLanguage"
+                  ]
+                }
+              },
+              "description": "Whether to simplify the output to only key information."
+            }
+          ],
+          "initialData": {
+            "operation": "detectSentiment"
+          },
+          "subCategory": "Comprehend",
+          "dynamicFields": []
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "detectSentiment"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

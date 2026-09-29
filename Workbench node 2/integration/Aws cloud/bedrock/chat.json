@@ -1,0 +1,169 @@
+{
+  "nodes": [
+    {
+      "id": "awsBedrockChat-1783398161416",
+      "type": "action",
+      "position": {
+        "x": -60.92150815939142,
+        "y": 827.2226912174364
+      },
+      "data": {
+        "label": "AWS Bedrock",
+        "toolId": "awsBedrockChat",
+        "toolData": {
+          "id": "awsBedrockChat",
+          "displayName": "AWS Bedrock",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Chat",
+          "icon": "/tools/awsBedrock.png",
+          "actionGroup": "Bedrock",
+          "description": "Chat with foundation models on AWS Bedrock",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {},
+              "modelSource": {
+                "type": "string",
+                "default": "onDemand"
+              },
+              "model": {
+                "type": "string",
+                "minLength": 1,
+                "default": "zai.glm-5"
+              },
+              "customModelId": {
+                "type": "string"
+              },
+              "prompt": {
+                "type": "string",
+                "minLength": 1
+              },
+              "maxTokens": {
+                "type": "number",
+                "default": 2000
+              },
+              "temperature": {
+                "type": "number",
+                "default": 0.7
+              }
+            },
+            "required": [
+              "prompt"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "modelSource",
+              "displayName": "Model Source",
+              "type": "options",
+              "options": [
+                {
+                  "name": "On-Demand Models",
+                  "value": "onDemand"
+                }
+              ],
+              "default": "onDemand",
+              "required": true
+            },
+            {
+              "name": "model",
+              "displayName": "Model",
+              "type": "options",
+              "options": [
+                {
+                  "name": "GLM 5",
+                  "value": "zai.glm-5"
+                },
+                {
+                  "name": "Mistral 7b instruct",
+                  "value": "mistral.mistral-7b-instruct-v0:2"
+                },
+                {
+                  "name": "Gemma 3 4B IT",
+                  "value": "google.gemma-3-4b-it"
+                },
+                {
+                  "name": "Nemotron Nano 3 30B",
+                  "value": "nvidia.nemotron-nano-3-30b"
+                },
+                {
+                  "name": "Qwen3 235B A22B 2507",
+                  "value": "qwen.qwen3-235b-a22b-2507-v1:0"
+                },
+                {
+                  "name": "Qwen3-Coder-30B-A3B-Instruct",
+                  "value": "qwen.qwen3-coder-30b-a3b-instruct"
+                },
+                {
+                  "name": "Voxtral Small 24B 2507",
+                  "value": "mistral.voxtral-small-24b-2507"
+                },
+                {
+                  "name": "Devstral 2 123B",
+                  "value": "mistral.devstral-2-123b"
+                }
+              ],
+              "default": "zai.glm-5",
+              "required": true
+            },
+            {
+              "name": "customModelId",
+              "displayName": "Custom Model ID / ARN",
+              "type": "string",
+              "default": "",
+              "placeholder": "e.g. arn:aws:bedrock:region:account:foundation-model/model-id",
+              "description": "Provide a specific model ID or ARN if \"Custom\" is selected above",
+              "displayOptions": {
+                "show": {
+                  "model": [
+                    "custom"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "prompt",
+              "displayName": "Prompt (User Message)",
+              "type": "string",
+              "default": "",
+              "description": "The message to send to the model",
+              "required": true,
+              "typeOptions": {
+                "rows": 6
+              }
+            },
+            {
+              "name": "maxTokens",
+              "displayName": "Maximum Number of Tokens",
+              "type": "number",
+              "default": 2000,
+              "description": "The maximum number of tokens to generate in the reply"
+            },
+            {
+              "name": "temperature",
+              "displayName": "Sampling Temperature",
+              "type": "number",
+              "default": 0.7,
+              "description": "Controls randomness: Lower is more deterministic, higher is more creative"
+            }
+          ],
+          "initialData": {
+            "operation": "chat"
+          },
+          "subCategory": "Bedrock"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "chat"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

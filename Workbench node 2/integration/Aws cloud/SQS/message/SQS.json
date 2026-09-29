@@ -1,0 +1,209 @@
+{
+  "nodes": [
+    {
+      "id": "aws.sqs.message.sendmessage-1783405082627",
+      "type": "action",
+      "position": {
+        "x": 928.7352089610524,
+        "y": 531.5336689719477
+      },
+      "data": {
+        "label": "Send Message",
+        "toolId": "aws.sqs.message.sendmessage",
+        "toolData": {
+          "id": "aws.sqs.message.sendmessage",
+          "displayName": "Send Message",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Send Message",
+          "icon": "/tools/sqs.png",
+          "actionGroup": "SQS",
+          "description": "Send Message in SQS",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "sendMessage"
+                ],
+                "description": "SQS Operation"
+              },
+              "queueName": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Queue Name or URL"
+              },
+              "queueType": {
+                "type": "string",
+                "enum": [
+                  "standard",
+                  "fifo"
+                ],
+                "default": "standard",
+                "description": "Queue Type"
+              },
+              "sendInputData": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to send the entire input object as the message body"
+              },
+              "message": {
+                "type": "string",
+                "description": "The message body to send"
+              },
+              "messageGroupId": {
+                "type": "string",
+                "description": "The message group ID (Required for FIFO)"
+              },
+              "messageDeduplicationId": {
+                "type": "string",
+                "description": "The message deduplication ID (Optional for FIFO)"
+              },
+              "delaySeconds": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 900,
+                "default": 0,
+                "description": "The length of time, in seconds, for which to delay a message"
+              },
+              "credentials": {
+                "description": "AWS credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region (e.g., us-east-1)"
+              }
+            },
+            "required": [
+              "operation",
+              "queueName"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Send Message",
+                  "value": "sendMessage"
+                }
+              ],
+              "default": "sendMessage",
+              "required": true
+            },
+            {
+              "name": "queueName",
+              "displayName": "Queue Name or URL",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/sqs/list-queues",
+              "description": "Select your SQS queue from the list."
+            },
+            {
+              "name": "queueType",
+              "displayName": "Queue Type",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Standard",
+                  "value": "standard"
+                },
+                {
+                  "name": "FIFO",
+                  "value": "fifo"
+                }
+              ],
+              "default": "standard",
+              "required": true,
+              "description": "The type of queue you are sending to."
+            },
+            {
+              "name": "sendInputData",
+              "displayName": "Send Input Data",
+              "type": "boolean",
+              "default": false,
+              "description": "Whether to send the incoming JSON object as the message body."
+            },
+            {
+              "name": "message",
+              "displayName": "Message",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "sendInputData": [
+                    false
+                  ]
+                }
+              },
+              "description": "The message body to send to the queue."
+            },
+            {
+              "name": "messageGroupId",
+              "displayName": "Message Group ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "queueType": [
+                    "fifo"
+                  ]
+                }
+              },
+              "description": "The tag that specifies that a message belongs to a specific message group (Required for FIFO)."
+            },
+            {
+              "name": "delaySeconds",
+              "displayName": "Delay Seconds",
+              "type": "number",
+              "default": 0,
+              "displayOptions": {
+                "show": {
+                  "queueType": [
+                    "standard"
+                  ]
+                }
+              },
+              "description": "The duration (in seconds) that the message is delayed before it can be processed (Maximum 900)."
+            },
+            {
+              "name": "messageDeduplicationId",
+              "displayName": "Message Deduplication ID",
+              "type": "string",
+              "displayOptions": {
+                "show": {
+                  "queueType": [
+                    "fifo"
+                  ]
+                }
+              },
+              "description": "The token used for deduplication of sent messages."
+            }
+          ],
+          "initialData": {
+            "operation": "sendMessage"
+          },
+          "subCategory": "SQS",
+          "dynamicFields": []
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "sendMessage"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

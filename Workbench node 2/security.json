@@ -1,0 +1,748 @@
+{
+  "nodes": [
+    {
+      "id": "crypto-1783399188214",
+      "type": "action",
+      "position": {
+        "x": 1343.054027984565,
+        "y": 290.51489186059933
+      },
+      "data": {
+        "label": "Crypto Tools",
+        "toolId": "crypto",
+        "toolData": {
+          "id": "crypto",
+          "displayName": "Crypto Tools",
+          "category": "Security",
+          "provider": "crypto",
+          "icon": "/tools/Crypto icon.svg",
+          "description": "Security and cryptographic operations",
+          "inputSchemaJSON": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "const": "Generate",
+                    "description": "Action"
+                  },
+                  "propertyName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50,
+                    "description": "Property Name"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "ASCII",
+                      "BASE64",
+                      "HEX",
+                      "UUID"
+                    ],
+                    "default": "BASE64",
+                    "description": "Type"
+                  },
+                  "length": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 100,
+                    "default": 10,
+                    "description": "Length"
+                  }
+                },
+                "required": [
+                  "action",
+                  "propertyName"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "const": "Hash",
+                    "description": "Action"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "MD5",
+                      "SHA256",
+                      "SHA3-256",
+                      "SHA3-384",
+                      "SHA3-512",
+                      "SHA385",
+                      "SHA384",
+                      "SHA512"
+                    ],
+                    "default": "SHA256",
+                    "description": "Type"
+                  },
+                  "binaryFile": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Binary File"
+                  },
+                  "value": {
+                    "type": "string",
+                    "description": "Value"
+                  },
+                  "binaryPropertyName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Binary Property Name"
+                  },
+                  "propertyName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50,
+                    "description": "Property Name"
+                  },
+                  "encoding": {
+                    "type": "string",
+                    "enum": [
+                      "BASE64",
+                      "HEX"
+                    ],
+                    "default": "HEX",
+                    "description": "Encoding"
+                  }
+                },
+                "required": [
+                  "action",
+                  "propertyName"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "const": "Hmac",
+                    "description": "Action"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "MD5",
+                      "SHA256",
+                      "SHA3-256",
+                      "SHA3-384",
+                      "SHA3-512",
+                      "SHA385",
+                      "SHA384",
+                      "SHA512"
+                    ],
+                    "default": "SHA256",
+                    "description": "Type"
+                  },
+                  "binaryFile": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Binary File"
+                  },
+                  "value": {
+                    "type": "string",
+                    "description": "Value"
+                  },
+                  "binaryPropertyName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Binary Property Name"
+                  },
+                  "propertyName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50,
+                    "description": "Property Name"
+                  },
+                  "credentialId": {
+                    "type": "string",
+                    "description": "Crypto Credential ID"
+                  },
+                  "secret": {
+                    "type": "string",
+                    "description": "Secret"
+                  },
+                  "encoding": {
+                    "type": "string",
+                    "enum": [
+                      "BASE64",
+                      "HEX"
+                    ],
+                    "default": "HEX",
+                    "description": "Encoding"
+                  }
+                },
+                "required": [
+                  "action",
+                  "propertyName"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "const": "Sign",
+                    "description": "Action"
+                  },
+                  "value": {
+                    "type": "string",
+                    "description": "Value"
+                  },
+                  "propertyName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50,
+                    "description": "Property Name"
+                  },
+                  "algorithm": {
+                    "type": "string",
+                    "enum": [
+                      "RSA-MD5",
+                      "RSA-RIPEMD160",
+                      "RSA-SHA1",
+                      "RSA-SHA1-2",
+                      "RSA-SHA224",
+                      "RSA-SHA256",
+                      "RSA-SHA3-224",
+                      "RSA-SHA3-256",
+                      "RSA-SHA3-384",
+                      "RSA-SHA3-512",
+                      "RSA-SHA384",
+                      "RSA-SHA512",
+                      "RSA-SHA512/224",
+                      "RSA-SHA512/256",
+                      "RSA-SM3",
+                      "blake2b512",
+                      "blake2s256",
+                      "id-rsassa-pkcs1-v1_5-with-sha3-224",
+                      "id-rsassa-pkcs1-v1_5-with-sha3-256",
+                      "id-rsassa-pkcs1-v1_5-with-sha3-384",
+                      "id-rsassa-pkcs1-v1_5-with-sha3-512",
+                      "md5",
+                      "md5-sha1",
+                      "md5WithRSAEncryption",
+                      "ripemd",
+                      "ripemd160",
+                      "ripemd160WithRSA",
+                      "rmd160",
+                      "sha1",
+                      "sha1WithRSAEncryption",
+                      "sha224",
+                      "sha224WithRSAEncryption",
+                      "sha256",
+                      "sha256WithRSAEncryption",
+                      "sha3-224",
+                      "sha3-256",
+                      "sha3-384",
+                      "sha3-512",
+                      "sha384",
+                      "sha384WithRSAEncryption",
+                      "sha512",
+                      "sha512-224",
+                      "sha512-224WithRSAEncryption",
+                      "sha512-256",
+                      "sha512-256WithRSAEncryption",
+                      "sha512WithRSAEncryption",
+                      "shake128",
+                      "shake256",
+                      "sm3",
+                      "sm3WithRSAEncryption",
+                      "ssl3-md5",
+                      "ssl3-sha1"
+                    ],
+                    "default": "RSA-SHA256",
+                    "description": "Algorithm Name or ID"
+                  },
+                  "encoding": {
+                    "type": "string",
+                    "enum": [
+                      "BASE64",
+                      "HEX"
+                    ],
+                    "default": "HEX",
+                    "description": "Encoding"
+                  },
+                  "credentialId": {
+                    "type": "string",
+                    "description": "Crypto Credential ID"
+                  },
+                  "privateKey": {
+                    "type": "string",
+                    "description": "Private Key"
+                  }
+                },
+                "required": [
+                  "action",
+                  "value",
+                  "propertyName"
+                ],
+                "additionalProperties": false
+              }
+            ],
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "jwt-1783399189278",
+      "type": "action",
+      "position": {
+        "x": 1617.716807178332,
+        "y": 289.25497085512336
+      },
+      "data": {
+        "label": "JWT",
+        "toolId": "jwt",
+        "toolData": {
+          "id": "jwt",
+          "displayName": "JWT",
+          "category": "Security",
+          "provider": "jwt",
+          "icon": "/tools/jwt.svg",
+          "description": "Sign, verify and decode JSON Web Tokens",
+          "inputSchemaJSON": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "const": "Sign",
+                    "description": "Action"
+                  },
+                  "payload": {
+                    "type": "string",
+                    "description": "Payload (JSON string)"
+                  },
+                  "credentialId": {
+                    "type": "string",
+                    "description": "Credential ID"
+                  },
+                  "secret": {
+                    "type": "string",
+                    "description": "Secret or Private Key"
+                  },
+                  "algorithm": {
+                    "type": "string",
+                    "enum": [
+                      "HS256",
+                      "HS384",
+                      "HS512",
+                      "RS256",
+                      "RS384",
+                      "RS512",
+                      "ES256",
+                      "ES384",
+                      "ES512",
+                      "PS256",
+                      "PS384",
+                      "PS512",
+                      "none"
+                    ],
+                    "default": "HS256",
+                    "description": "Algorithm"
+                  },
+                  "expiresIn": {
+                    "type": "string",
+                    "description": "Expires In (e.g. 1h, 7d)"
+                  },
+                  "notBefore": {
+                    "type": "string",
+                    "description": "Not Before (e.g. 10m)"
+                  },
+                  "audience": {
+                    "type": "string",
+                    "description": "Audience"
+                  },
+                  "issuer": {
+                    "type": "string",
+                    "description": "Issuer"
+                  },
+                  "subject": {
+                    "type": "string",
+                    "description": "Subject"
+                  },
+                  "propertyName": {
+                    "type": "string",
+                    "default": "token",
+                    "description": "Property Name"
+                  }
+                },
+                "required": [
+                  "action",
+                  "payload"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "const": "Verify",
+                    "description": "Action"
+                  },
+                  "token": {
+                    "type": "string",
+                    "description": "JWT Token"
+                  },
+                  "credentialId": {
+                    "type": "string",
+                    "description": "Credential ID"
+                  },
+                  "secret": {
+                    "type": "string",
+                    "description": "Secret or Public Key"
+                  },
+                  "algorithms": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Allowed Algorithms"
+                  },
+                  "audience": {
+                    "type": "string",
+                    "description": "Expected Audience"
+                  },
+                  "issuer": {
+                    "type": "string",
+                    "description": "Expected Issuer"
+                  },
+                  "subject": {
+                    "type": "string",
+                    "description": "Expected Subject"
+                  },
+                  "ignoreExpiration": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Ignore Expiration"
+                  },
+                  "ignoreNotBefore": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Ignore Not Before"
+                  },
+                  "propertyName": {
+                    "type": "string",
+                    "default": "verified",
+                    "description": "Property Name"
+                  }
+                },
+                "required": [
+                  "action",
+                  "token"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "const": "Decode",
+                    "description": "Action"
+                  },
+                  "token": {
+                    "type": "string",
+                    "description": "JWT Token"
+                  },
+                  "complete": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Complete (Include Header & Signature)"
+                  },
+                  "propertyName": {
+                    "type": "string",
+                    "default": "decoded",
+                    "description": "Property Name"
+                  }
+                },
+                "required": [
+                  "action",
+                  "token"
+                ],
+                "additionalProperties": false
+              }
+            ],
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1617.716807178332,
+        "y": 289.25497085512336
+      },
+      "dragging": false
+    },
+    {
+      "id": "sanitization-1783399190564",
+      "type": "action",
+      "position": {
+        "x": 1904.9787964268587,
+        "y": 289.2549708551233
+      },
+      "data": {
+        "label": "Sanitization Node",
+        "toolId": "sanitization",
+        "toolData": {
+          "id": "sanitization",
+          "displayName": "Sanitization Node",
+          "category": "Security",
+          "provider": "security",
+          "icon": "/tools/Sanitization.png",
+          "description": "Security node for text sanitization and PII detection",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string",
+                "const": "Sanitize Text",
+                "description": "Operation"
+              },
+              "text": {
+                "type": "string",
+                "description": "Text To Check"
+              },
+              "guardrails": {
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "Personal Data (PII)"
+                        },
+                        "config": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "ALL",
+                                "Selected"
+                              ],
+                              "default": "ALL"
+                            },
+                            "entities": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "Credit Card",
+                                  "Crypto",
+                                  "Date Time",
+                                  "Email Address",
+                                  "IBAN Code",
+                                  "IP Address",
+                                  "Location",
+                                  "Phone Number",
+                                  "Medical License",
+                                  "US Bank Number",
+                                  "US Driver License",
+                                  "US ITIN",
+                                  "US Passport",
+                                  "US SSN",
+                                  "UK NHS",
+                                  "UK NINO",
+                                  "ES NIF",
+                                  "ES NIE",
+                                  "IT Fiscal Code",
+                                  "IT Driver License",
+                                  "IT VAT Code",
+                                  "IT Passport",
+                                  "IT Identity Card",
+                                  "PL PESEL",
+                                  "SG NRIC FIN",
+                                  "SG UEN",
+                                  "AU ABN",
+                                  "AU ACN",
+                                  "AU TFN",
+                                  "AU Medicare",
+                                  "IN PAN",
+                                  "IN AADHAAR",
+                                  "IN Vehicle Registration",
+                                  "IN Voter",
+                                  "IN Passport",
+                                  "FI Personal Identity Code"
+                                ]
+                              }
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "config"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "Secret Keys"
+                        },
+                        "config": {
+                          "type": "object",
+                          "properties": {
+                            "permissiveness": {
+                              "type": "string",
+                              "enum": [
+                                "Balanced",
+                                "Strict",
+                                "Relaxed"
+                              ],
+                              "default": "Balanced"
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "config"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "URLs"
+                        },
+                        "config": {
+                          "type": "object",
+                          "properties": {
+                            "blockAllExcept": {
+                              "type": "string"
+                            },
+                            "allowedSchemes": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "https",
+                                  "http",
+                                  "ftp",
+                                  "data",
+                                  "javascript",
+                                  "vbscript",
+                                  "mailto"
+                                ]
+                              },
+                              "default": []
+                            },
+                            "sanitizeUserInfo": {
+                              "type": "boolean",
+                              "default": true
+                            },
+                            "allowSubdomains": {
+                              "type": "boolean",
+                              "default": true
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "config"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "Custom Regex"
+                        },
+                        "config": {
+                          "type": "object",
+                          "properties": {
+                            "patterns": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "regex": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  }
+                                },
+                                "required": [
+                                  "regex"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "default": []
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "config"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                "description": "Guardrails"
+              }
+            },
+            "required": [
+              "action",
+              "text",
+              "guardrails"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 1904.9787964268587,
+        "y": 289.2549708551233
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

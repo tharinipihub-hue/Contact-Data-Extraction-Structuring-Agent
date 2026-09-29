@@ -1,0 +1,1017 @@
+{
+  "nodes": [
+    {
+      "id": "postgres.delete-1783398710749",
+      "type": "action",
+      "position": {
+        "x": 553.4931500820724,
+        "y": -4.27164912576142
+      },
+      "data": {
+        "label": "Delete Rows",
+        "toolId": "postgres.delete",
+        "toolData": {
+          "id": "postgres.delete",
+          "displayName": "Delete Rows",
+          "category": "Memory & State",
+          "provider": "postgres",
+          "operation": "delete",
+          "icon": "Database",
+          "description": "Delete rows from a PostgreSQL table",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "operation": {
+                "type": "string",
+                "const": "delete",
+                "default": "delete"
+              },
+              "schemaMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "name"
+                ],
+                "default": "list"
+              },
+              "schema": {
+                "type": "string",
+                "minLength": 1,
+                "default": "public"
+              },
+              "tableMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "name"
+                ],
+                "default": "list"
+              },
+              "table": {
+                "type": "string",
+                "minLength": 1
+              },
+              "command": {
+                "type": "string",
+                "enum": [
+                  "delete",
+                  "truncate",
+                  "drop"
+                ],
+                "default": "delete"
+              },
+              "conditions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "column": {
+                      "type": "string"
+                    },
+                    "operator": {
+                      "type": "string",
+                      "enum": [
+                        "=",
+                        "!=",
+                        "LIKE",
+                        "<",
+                        ">=",
+                        "<=",
+                        "IS NULL",
+                        "IS NOT NULL"
+                      ]
+                    },
+                    "value": {}
+                  },
+                  "required": [
+                    "column",
+                    "operator"
+                  ],
+                  "additionalProperties": false
+                },
+                "default": [],
+                "description": "Select Rows"
+              },
+              "combineConditions": {
+                "type": "string",
+                "enum": [
+                  "AND",
+                  "OR"
+                ],
+                "default": "AND"
+              },
+              "restartSequences": {
+                "type": "boolean",
+                "default": false,
+                "description": "Restart Sequences"
+              },
+              "cascade": {
+                "type": "boolean",
+                "default": false,
+                "description": "Cascade"
+              },
+              "queryBatching": {
+                "type": "string",
+                "enum": [
+                  "single",
+                  "independently",
+                  "transaction"
+                ],
+                "default": "single",
+                "description": "Query Batching"
+              },
+              "queryTimeout": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "description": "Connection timeout in seconds"
+              },
+              "idleTimeout": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 0,
+                "description": "Delay closing idle connection in seconds"
+              },
+              "replaceEmptyStringsWithNull": {
+                "type": "boolean",
+                "default": false,
+                "description": "Replace empty string values with NULL"
+              },
+              "outputLargeNumbersAsText": {
+                "type": "boolean",
+                "default": false,
+                "description": "Output BIGINT/NUMERIC as text"
+              }
+            },
+            "required": [
+              "credentialId",
+              "table"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true
+    },
+    {
+      "id": "postgres.executeQuery-1783398712845",
+      "type": "action",
+      "position": {
+        "x": 819.8816111807638,
+        "y": -16.459356496289786
+      },
+      "data": {
+        "label": "Execute Query",
+        "toolId": "postgres.executeQuery",
+        "toolData": {
+          "id": "postgres.executeQuery",
+          "displayName": "Execute Query",
+          "category": "Memory & State",
+          "provider": "postgres",
+          "operation": "executeQuery",
+          "icon": "Database",
+          "description": "Execute a raw SQL query",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "queryTimeout": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "description": "Connection timeout in seconds"
+              },
+              "idleTimeout": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 0,
+                "description": "Delay closing idle connection in seconds"
+              },
+              "replaceEmptyStringsWithNull": {
+                "type": "boolean",
+                "default": false,
+                "description": "Replace empty string values with NULL"
+              },
+              "outputLargeNumbersAsText": {
+                "type": "boolean",
+                "default": false,
+                "description": "Output BIGINT/NUMERIC as text"
+              },
+              "queryBatching": {
+                "type": "string",
+                "enum": [
+                  "single",
+                  "independently",
+                  "transaction"
+                ],
+                "default": "single",
+                "description": "Query Batching"
+              },
+              "query": {
+                "type": "string",
+                "description": "SQL query to execute"
+              },
+              "queryParameters": {
+                "type": "array",
+                "default": [],
+                "description": "Parameters for prepared statements"
+              }
+            },
+            "required": [
+              "credentialId",
+              "query"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 819.8816111807638,
+        "y": -16.459356496289786
+      },
+      "dragging": false
+    },
+    {
+      "id": "postgres.upsert-1783398714462",
+      "type": "action",
+      "position": {
+        "x": 1166.360720714356,
+        "y": -12.977154390424545
+      },
+      "data": {
+        "label": "Insert or Update",
+        "toolId": "postgres.upsert",
+        "toolData": {
+          "id": "postgres.upsert",
+          "displayName": "Insert or Update",
+          "category": "Memory & State",
+          "provider": "postgres",
+          "operation": "upsert",
+          "icon": "Database",
+          "description": "Insert or update rows in a PostgreSQL table",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "schemaMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "name"
+                ],
+                "default": "list"
+              },
+              "schema": {
+                "type": "string",
+                "minLength": 1,
+                "default": "public"
+              },
+              "tableMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "name"
+                ],
+                "default": "list"
+              },
+              "table": {
+                "type": "string",
+                "minLength": 1
+              },
+              "queryBatching": {
+                "type": "string",
+                "enum": [
+                  "single",
+                  "independently",
+                  "transaction"
+                ],
+                "default": "single",
+                "description": "Query Batching"
+              },
+              "queryTimeout": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "description": "Connection timeout in seconds"
+              },
+              "idleTimeout": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 0,
+                "description": "Delay closing idle connection in seconds"
+              },
+              "replaceEmptyStringsWithNull": {
+                "type": "boolean",
+                "default": false,
+                "description": "Replace empty string values with NULL"
+              },
+              "outputLargeNumbersAsText": {
+                "type": "boolean",
+                "default": false,
+                "description": "Output BIGINT/NUMERIC as text"
+              },
+              "columnsMode": {
+                "type": "string",
+                "enum": [
+                  "manually",
+                  "automatically"
+                ],
+                "default": "manually"
+              },
+              "columns": {
+                "type": "object",
+                "additionalProperties": {},
+                "default": {},
+                "description": "Mapping of columns and values"
+              },
+              "upsertKeys": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "description": "Columns to use as unique key"
+              },
+              "outputColumns": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": [
+                  "*"
+                ],
+                "description": "Columns to return"
+              }
+            },
+            "required": [
+              "credentialId",
+              "table",
+              "upsertKeys"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 1166.360720714356,
+        "y": -12.977154390424545
+      },
+      "dragging": false
+    },
+    {
+      "id": "postgres.insert-1783398719877",
+      "type": "action",
+      "position": {
+        "x": 1446.6779902365085,
+        "y": -21.68265965508766
+      },
+      "data": {
+        "label": "Insert Row",
+        "toolId": "postgres.insert",
+        "toolData": {
+          "id": "postgres.insert",
+          "displayName": "Insert Row",
+          "category": "Memory & State",
+          "provider": "postgres",
+          "operation": "insert",
+          "icon": "Database",
+          "description": "Insert a new row into a PostgreSQL table",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "schemaMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "name"
+                ],
+                "default": "list"
+              },
+              "schema": {
+                "type": "string",
+                "minLength": 1,
+                "default": "public"
+              },
+              "tableMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "name"
+                ],
+                "default": "list"
+              },
+              "table": {
+                "type": "string",
+                "minLength": 1
+              },
+              "queryBatching": {
+                "type": "string",
+                "enum": [
+                  "single",
+                  "independently",
+                  "transaction"
+                ],
+                "default": "single",
+                "description": "Query Batching"
+              },
+              "queryTimeout": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "description": "Connection timeout in seconds"
+              },
+              "idleTimeout": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 0,
+                "description": "Delay closing idle connection in seconds"
+              },
+              "replaceEmptyStringsWithNull": {
+                "type": "boolean",
+                "default": false,
+                "description": "Replace empty string values with NULL"
+              },
+              "outputLargeNumbersAsText": {
+                "type": "boolean",
+                "default": false,
+                "description": "Output BIGINT/NUMERIC as text"
+              },
+              "columnsMode": {
+                "type": "string",
+                "enum": [
+                  "manually",
+                  "automatically"
+                ],
+                "default": "manually"
+              },
+              "columns": {
+                "type": "object",
+                "additionalProperties": {},
+                "default": {},
+                "description": "Mapping of columns and values"
+              },
+              "outputColumns": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": [
+                  "*"
+                ],
+                "description": "Columns to return after insert"
+              },
+              "skipOnConflict": {
+                "type": "boolean",
+                "default": false,
+                "description": "Skip on conflict instead of error"
+              }
+            },
+            "required": [
+              "credentialId",
+              "table"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 1446.6779902365085,
+        "y": -21.68265965508766
+      },
+      "dragging": false
+    },
+    {
+      "id": "postgres.trigger-1783398723862",
+      "type": "manual-trigger",
+      "position": {
+        "x": 1683.4677334353455,
+        "y": -19.941558602155027
+      },
+      "data": {
+        "label": "Postgres Trigger",
+        "toolId": "postgres.trigger",
+        "toolData": {
+          "id": "postgres.trigger",
+          "displayName": "Postgres Trigger",
+          "category": "Memory & State",
+          "provider": "postgres",
+          "operation": "trigger",
+          "icon": "Database",
+          "description": "Listen for PostgreSQL table change events (INSERT, UPDATE, DELETE)",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "triggerMode": {
+                "type": "string",
+                "enum": [
+                  "createTrigger",
+                  "listenTrigger"
+                ],
+                "default": "createTrigger",
+                "description": "Listen For"
+              },
+              "schemaMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "name"
+                ],
+                "default": "list"
+              },
+              "schema": {
+                "type": "string",
+                "default": "public"
+              },
+              "tableMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "name"
+                ],
+                "default": "list"
+              },
+              "table": {
+                "type": "string"
+              },
+              "listenFor": {
+                "type": "string",
+                "enum": [
+                  "insert",
+                  "update",
+                  "delete",
+                  "all"
+                ],
+                "default": "insert",
+                "description": "Event to listen for"
+              },
+              "channelName": {
+                "type": "string",
+                "description": "Channel name"
+              },
+              "functionName": {
+                "type": "string",
+                "description": "Function name"
+              },
+              "triggerName": {
+                "type": "string",
+                "description": "Trigger name"
+              },
+              "replaceIfExists": {
+                "type": "boolean",
+                "default": false,
+                "description": "Replace if Exists"
+              },
+              "queryTimeout": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "description": "Connection timeout in seconds"
+              },
+              "idleTimeout": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 0,
+                "description": "Delay closing idle connection in seconds"
+              },
+              "listenTimeout": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "default": 30,
+                "description": "Seconds to wait for an event during test execution"
+              }
+            },
+            "required": [
+              "credentialId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": true,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 100,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1683.4677334353455,
+        "y": -19.941558602155027
+      },
+      "dragging": false
+    },
+    {
+      "id": "postgres.select-1783398725525",
+      "type": "action",
+      "position": {
+        "x": 854.7036322394165,
+        "y": 176.8028603792315
+      },
+      "data": {
+        "label": "Select Rows",
+        "toolId": "postgres.select",
+        "toolData": {
+          "id": "postgres.select",
+          "displayName": "Select Rows",
+          "category": "Memory & State",
+          "provider": "postgres",
+          "operation": "select",
+          "icon": "Database",
+          "description": "Fetch rows from a PostgreSQL table with filtering and sorting",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "schemaMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "name"
+                ],
+                "default": "list"
+              },
+              "schema": {
+                "type": "string",
+                "minLength": 1,
+                "default": "public"
+              },
+              "tableMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "name"
+                ],
+                "default": "list"
+              },
+              "table": {
+                "type": "string",
+                "minLength": 1
+              },
+              "queryBatching": {
+                "type": "string",
+                "enum": [
+                  "single",
+                  "independently",
+                  "transaction"
+                ],
+                "default": "single",
+                "description": "Query Batching"
+              },
+              "queryTimeout": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "description": "Connection timeout in seconds"
+              },
+              "idleTimeout": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 0,
+                "description": "Delay closing idle connection in seconds"
+              },
+              "replaceEmptyStringsWithNull": {
+                "type": "boolean",
+                "default": false,
+                "description": "Replace empty string values with NULL"
+              },
+              "outputLargeNumbersAsText": {
+                "type": "boolean",
+                "default": false,
+                "description": "Output BIGINT/NUMERIC as text"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": true,
+                "description": "Return all rows or limited"
+              },
+              "limit": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "default": 50,
+                "description": "Limit number of rows"
+              },
+              "conditions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "column": {
+                      "type": "string"
+                    },
+                    "operator": {
+                      "type": "string",
+                      "enum": [
+                        "=",
+                        "!=",
+                        "LIKE",
+                        ">",
+                        "<",
+                        ">=",
+                        "<=",
+                        "IS NULL",
+                        "IS NOT NULL"
+                      ]
+                    },
+                    "value": {}
+                  },
+                  "required": [
+                    "column",
+                    "operator"
+                  ],
+                  "additionalProperties": false
+                },
+                "default": [],
+                "description": "WHERE conditions"
+              },
+              "combineConditions": {
+                "type": "string",
+                "enum": [
+                  "AND",
+                  "OR"
+                ],
+                "default": "AND"
+              },
+              "sorts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "column": {
+                      "type": "string"
+                    },
+                    "direction": {
+                      "type": "string",
+                      "enum": [
+                        "ASC",
+                        "DESC"
+                      ],
+                      "default": "ASC"
+                    }
+                  },
+                  "required": [
+                    "column"
+                  ],
+                  "additionalProperties": false
+                },
+                "default": [],
+                "description": "ORDER BY clauses"
+              },
+              "outputColumns": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": [
+                  "*"
+                ],
+                "description": "Columns to return"
+              }
+            },
+            "required": [
+              "credentialId",
+              "table"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 854.7036322394165,
+        "y": 176.8028603792315
+      },
+      "dragging": false
+    },
+    {
+      "id": "postgres.update-1783398726965",
+      "type": "action",
+      "position": {
+        "x": 1147.2086091320973,
+        "y": 155.90964774404
+      },
+      "data": {
+        "label": "Update Rows",
+        "toolId": "postgres.update",
+        "toolData": {
+          "id": "postgres.update",
+          "displayName": "Update Rows",
+          "category": "Memory & State",
+          "provider": "postgres",
+          "operation": "update",
+          "icon": "Database",
+          "description": "Update existing rows in a PostgreSQL table",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "schemaMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "name"
+                ],
+                "default": "list"
+              },
+              "schema": {
+                "type": "string",
+                "minLength": 1,
+                "default": "public"
+              },
+              "tableMode": {
+                "type": "string",
+                "enum": [
+                  "list",
+                  "name"
+                ],
+                "default": "list"
+              },
+              "table": {
+                "type": "string",
+                "minLength": 1
+              },
+              "queryBatching": {
+                "type": "string",
+                "enum": [
+                  "single",
+                  "independently",
+                  "transaction"
+                ],
+                "default": "single",
+                "description": "Query Batching"
+              },
+              "queryTimeout": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "description": "Connection timeout in seconds"
+              },
+              "idleTimeout": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 0,
+                "description": "Delay closing idle connection in seconds"
+              },
+              "replaceEmptyStringsWithNull": {
+                "type": "boolean",
+                "default": false,
+                "description": "Replace empty string values with NULL"
+              },
+              "outputLargeNumbersAsText": {
+                "type": "boolean",
+                "default": false,
+                "description": "Output BIGINT/NUMERIC as text"
+              },
+              "columnsMode": {
+                "type": "string",
+                "enum": [
+                  "manually",
+                  "automatically"
+                ],
+                "default": "manually"
+              },
+              "columns": {
+                "type": "object",
+                "additionalProperties": {},
+                "default": {},
+                "description": "Columns and values to update"
+              },
+              "matchColumns": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": [],
+                "description": "Columns to use for matching/WHERE clause"
+              },
+              "conditions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "column": {
+                      "type": "string"
+                    },
+                    "operator": {
+                      "type": "string",
+                      "enum": [
+                        "=",
+                        "!=",
+                        "LIKE",
+                        ">",
+                        "<",
+                        ">=",
+                        "<=",
+                        "IS NULL",
+                        "IS NOT NULL"
+                      ]
+                    },
+                    "value": {}
+                  },
+                  "required": [
+                    "column",
+                    "operator"
+                  ],
+                  "additionalProperties": false
+                },
+                "default": [],
+                "description": "WHERE conditions"
+              },
+              "combineConditions": {
+                "type": "string",
+                "enum": [
+                  "AND",
+                  "OR"
+                ],
+                "default": "AND"
+              },
+              "outputColumns": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": [
+                  "*"
+                ],
+                "description": "Columns to return after update"
+              }
+            },
+            "required": [
+              "credentialId",
+              "table"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 1147.2086091320973,
+        "y": 155.90964774404
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

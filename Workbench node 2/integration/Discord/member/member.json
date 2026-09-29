@@ -1,0 +1,586 @@
+{
+  "nodes": [
+    {
+      "id": "discord_member_role_add-1783406902908",
+      "type": "action",
+      "position": {
+        "x": 2623.1861099573402,
+        "y": 867.1071849146817
+      },
+      "data": {
+        "label": "Add Role to Member",
+        "toolId": "discord_member_role_add",
+        "toolData": {
+          "id": "discord_member_role_add",
+          "displayName": "Add Role to Member",
+          "category": "Integrations",
+          "provider": "discord",
+          "operation": "Role Add",
+          "icon": "discord",
+          "description": "Add a role to a member",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "guildId": {
+                "type": "string",
+                "description": "Server"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Channel",
+                  "Message"
+                ],
+                "default": "Member",
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Update",
+                  "Send"
+                ],
+                "default": "Role Add",
+                "description": "Operation"
+              },
+              "channelId": {
+                "type": "string",
+                "description": "The ID of the channel"
+              },
+              "messageId": {
+                "type": "string",
+                "description": "The ID of the message"
+              },
+              "discordUserId": {
+                "type": "string",
+                "description": "The ID of the user"
+              },
+              "roleId": {
+                "type": "string",
+                "description": "The ID of the role"
+              },
+              "sendTo": {
+                "type": "string",
+                "enum": [
+                  "Channel",
+                  "User"
+                ],
+                "default": "Channel",
+                "description": "Send To"
+              },
+              "content": {
+                "type": "string",
+                "description": "Message Content"
+              },
+              "emoji": {
+                "type": "string",
+                "description": "Emoji"
+              },
+              "flags": {
+                "type": "number",
+                "description": "Flags"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit"
+              },
+              "after": {
+                "type": "string",
+                "description": "After (User ID)"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return All"
+              },
+              "name": {
+                "type": "string",
+                "description": "Name"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "Guild Text",
+                  "Guild Voice",
+                  "Guild Category",
+                  "Guild Announcement",
+                  "Guild Stage",
+                  "Guild Forum",
+                  "Guild Media"
+                ],
+                "description": "Type",
+                "default": "Guild Text"
+              },
+              "parentId": {
+                "type": "string",
+                "description": "The ID of the category (Parent)"
+              },
+              "topic": {
+                "type": "string",
+                "description": "Topic"
+              },
+              "nsfw": {
+                "type": "boolean",
+                "description": "Age-restricted (NSFW)"
+              },
+              "rate_limit_per_user": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 21600,
+                "description": "Slow Mode (Seconds)"
+              },
+              "position": {
+                "type": "number",
+                "description": "Position"
+              },
+              "user_limit": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 99,
+                "description": "User Limit"
+              },
+              "bitrate": {
+                "type": "number",
+                "minimum": 8,
+                "maximum": 384,
+                "description": "Bitrate (kbps)"
+              }
+            },
+            "required": [
+              "guildId",
+              "resource",
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Member",
+          "dynamicFields": [
+            {
+              "fieldName": "guildId",
+              "label": "Server",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/discord/list-guilds",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "parentId",
+              "label": "Category",
+              "dependsOn": [
+                "credentialId",
+                "guildId"
+              ],
+              "fetchEndpoint": "/api/tools/discord/list-categories",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "discord_member_get_many-1783406903908",
+      "type": "action",
+      "position": {
+        "x": 2598.1861099573402,
+        "y": 1182.1071849146815
+      },
+      "data": {
+        "label": "Get Many Members",
+        "toolId": "discord_member_get_many",
+        "toolData": {
+          "id": "discord_member_get_many",
+          "displayName": "Get Many Members",
+          "category": "Integrations",
+          "provider": "discord",
+          "operation": "Get Many",
+          "icon": "discord",
+          "description": "Retrieve the members of a server",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "guildId": {
+                "type": "string",
+                "description": "Server"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Channel",
+                  "Message"
+                ],
+                "default": "Member",
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Update",
+                  "Send"
+                ],
+                "default": "Get Many",
+                "description": "Operation"
+              },
+              "channelId": {
+                "type": "string",
+                "description": "The ID of the channel"
+              },
+              "messageId": {
+                "type": "string",
+                "description": "The ID of the message"
+              },
+              "discordUserId": {
+                "type": "string",
+                "description": "The ID of the user"
+              },
+              "roleId": {
+                "type": "string",
+                "description": "The ID of the role"
+              },
+              "sendTo": {
+                "type": "string",
+                "enum": [
+                  "Channel",
+                  "User"
+                ],
+                "default": "Channel",
+                "description": "Send To"
+              },
+              "content": {
+                "type": "string",
+                "description": "Message Content"
+              },
+              "emoji": {
+                "type": "string",
+                "description": "Emoji"
+              },
+              "flags": {
+                "type": "number",
+                "description": "Flags"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit"
+              },
+              "after": {
+                "type": "string",
+                "description": "After (User ID)"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return All"
+              },
+              "name": {
+                "type": "string",
+                "description": "Name"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "Guild Text",
+                  "Guild Voice",
+                  "Guild Category",
+                  "Guild Announcement",
+                  "Guild Stage",
+                  "Guild Forum",
+                  "Guild Media"
+                ],
+                "description": "Type",
+                "default": "Guild Text"
+              },
+              "parentId": {
+                "type": "string",
+                "description": "The ID of the category (Parent)"
+              },
+              "topic": {
+                "type": "string",
+                "description": "Topic"
+              },
+              "nsfw": {
+                "type": "boolean",
+                "description": "Age-restricted (NSFW)"
+              },
+              "rate_limit_per_user": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 21600,
+                "description": "Slow Mode (Seconds)"
+              },
+              "position": {
+                "type": "number",
+                "description": "Position"
+              },
+              "user_limit": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 99,
+                "description": "User Limit"
+              },
+              "bitrate": {
+                "type": "number",
+                "minimum": 8,
+                "maximum": 384,
+                "description": "Bitrate (kbps)"
+              }
+            },
+            "required": [
+              "guildId",
+              "resource"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Member",
+          "dynamicFields": [
+            {
+              "fieldName": "guildId",
+              "label": "Server",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/discord/list-guilds",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "parentId",
+              "label": "Category",
+              "dependsOn": [
+                "credentialId",
+                "guildId"
+              ],
+              "fetchEndpoint": "/api/tools/discord/list-categories",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 2598.1861099573402,
+        "y": 1182.1071849146815
+      },
+      "dragging": false
+    },
+    {
+      "id": "discord_member_role_remove-1783406905188",
+      "type": "action",
+      "position": {
+        "x": 2615.6861099573407,
+        "y": 1032.1071849146817
+      },
+      "data": {
+        "label": "Remove Role from Member",
+        "toolId": "discord_member_role_remove",
+        "toolData": {
+          "id": "discord_member_role_remove",
+          "displayName": "Remove Role from Member",
+          "category": "Integrations",
+          "provider": "discord",
+          "operation": "Role Remove",
+          "icon": "discord",
+          "description": "Remove a role from a member",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "guildId": {
+                "type": "string",
+                "description": "Server"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Channel",
+                  "Message"
+                ],
+                "default": "Member",
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Create",
+                  "Delete",
+                  "Get",
+                  "Get Many",
+                  "Update",
+                  "Send"
+                ],
+                "default": "Role Remove",
+                "description": "Operation"
+              },
+              "channelId": {
+                "type": "string",
+                "description": "The ID of the channel"
+              },
+              "messageId": {
+                "type": "string",
+                "description": "The ID of the message"
+              },
+              "discordUserId": {
+                "type": "string",
+                "description": "The ID of the user"
+              },
+              "roleId": {
+                "type": "string",
+                "description": "The ID of the role"
+              },
+              "sendTo": {
+                "type": "string",
+                "enum": [
+                  "Channel",
+                  "User"
+                ],
+                "default": "Channel",
+                "description": "Send To"
+              },
+              "content": {
+                "type": "string",
+                "description": "Message Content"
+              },
+              "emoji": {
+                "type": "string",
+                "description": "Emoji"
+              },
+              "flags": {
+                "type": "number",
+                "description": "Flags"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Limit"
+              },
+              "after": {
+                "type": "string",
+                "description": "After (User ID)"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return All"
+              },
+              "name": {
+                "type": "string",
+                "description": "Name"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "Guild Text",
+                  "Guild Voice",
+                  "Guild Category",
+                  "Guild Announcement",
+                  "Guild Stage",
+                  "Guild Forum",
+                  "Guild Media"
+                ],
+                "description": "Type",
+                "default": "Guild Text"
+              },
+              "parentId": {
+                "type": "string",
+                "description": "The ID of the category (Parent)"
+              },
+              "topic": {
+                "type": "string",
+                "description": "Topic"
+              },
+              "nsfw": {
+                "type": "boolean",
+                "description": "Age-restricted (NSFW)"
+              },
+              "rate_limit_per_user": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 21600,
+                "description": "Slow Mode (Seconds)"
+              },
+              "position": {
+                "type": "number",
+                "description": "Position"
+              },
+              "user_limit": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 99,
+                "description": "User Limit"
+              },
+              "bitrate": {
+                "type": "number",
+                "minimum": 8,
+                "maximum": 384,
+                "description": "Bitrate (kbps)"
+              }
+            },
+            "required": [
+              "guildId",
+              "resource",
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Member",
+          "dynamicFields": [
+            {
+              "fieldName": "guildId",
+              "label": "Server",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/discord/list-guilds",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "parentId",
+              "label": "Category",
+              "dependsOn": [
+                "credentialId",
+                "guildId"
+              ],
+              "fetchEndpoint": "/api/tools/discord/list-categories",
+              "labelKey": "name",
+              "valueKey": "id"
+            }
+          ]
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2615.6861099573407,
+        "y": 1032.1071849146817
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

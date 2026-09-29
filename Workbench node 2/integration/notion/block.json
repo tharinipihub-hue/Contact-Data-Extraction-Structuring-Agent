@@ -1,0 +1,1147 @@
+{
+  "nodes": [
+    {
+      "id": "notion.block.appendAfter-1783407439112",
+      "type": "action",
+      "position": {
+        "x": 1195.191565661236,
+        "y": 524.0513865540671
+      },
+      "data": {
+        "label": "Append a block",
+        "toolId": "notion.block.appendAfter",
+        "toolData": {
+          "id": "notion.block.appendAfter",
+          "displayName": "Append a block",
+          "category": "Integrations",
+          "provider": "notion",
+          "operation": "appendAfter",
+          "icon": "notion",
+          "description": "Add child blocks to a block",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "blockIdMode": {
+                "type": "string",
+                "enum": [
+                  "url",
+                  "id"
+                ]
+              },
+              "blockId": {
+                "type": "string"
+              },
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "blocks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "richText": {
+                      "type": "boolean"
+                    },
+                    "textContent": {
+                      "type": "string"
+                    },
+                    "textSegments": {},
+                    "isToggleable": {
+                      "type": "boolean"
+                    },
+                    "checked": {
+                      "type": "boolean"
+                    },
+                    "language": {
+                      "type": "string"
+                    },
+                    "caption": {
+                      "type": "string"
+                    },
+                    "icon": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string"
+                    },
+                    "sourceType": {
+                      "type": "string",
+                      "enum": [
+                        "url",
+                        "upload"
+                      ]
+                    },
+                    "children": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/properties/blocks/items"
+                      }
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "blockIdMode",
+              "blockId",
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "blockIdMode",
+              "displayName": "Block",
+              "type": "options",
+              "required": true,
+              "default": "url",
+              "grid": "col-span-4",
+              "options": [
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By ID",
+                  "value": "id"
+                }
+              ]
+            },
+            {
+              "name": "blockId",
+              "displayName": "Block",
+              "hideLabel": true,
+              "type": "string",
+              "required": true,
+              "grid": "col-span-8",
+              "placeholder": "e.g. https://www.notion.so/...",
+              "description": "The ID or URL of the block to append after"
+            },
+            {
+              "name": "blocks",
+              "displayName": "Blocks",
+              "type": "array",
+              "default": [],
+              "placeholder": "Add Block",
+              "fields": [
+                {
+                  "name": "type",
+                  "displayName": "Type Name or ID",
+                  "type": "options",
+                  "required": true,
+                  "default": "paragraph",
+                  "options": [
+                    {
+                      "name": "Paragraph",
+                      "value": "paragraph"
+                    },
+                    {
+                      "name": "Heading 1",
+                      "value": "heading_1"
+                    },
+                    {
+                      "name": "Heading 2",
+                      "value": "heading_2"
+                    },
+                    {
+                      "name": "Heading 3",
+                      "value": "heading_3"
+                    },
+                    {
+                      "name": "Toggle",
+                      "value": "toggle"
+                    },
+                    {
+                      "name": "To-Do",
+                      "value": "to_do"
+                    },
+                    {
+                      "name": "Bulleted List Item",
+                      "value": "bulleted_list_item"
+                    },
+                    {
+                      "name": "Numbered List Item",
+                      "value": "numbered_list_item"
+                    },
+                    {
+                      "name": "Quote",
+                      "value": "quote"
+                    },
+                    {
+                      "name": "Callout",
+                      "value": "callout"
+                    },
+                    {
+                      "name": "Code",
+                      "value": "code"
+                    },
+                    {
+                      "name": "Equation",
+                      "value": "equation"
+                    },
+                    {
+                      "name": "Divider",
+                      "value": "divider"
+                    },
+                    {
+                      "name": "Table of Contents",
+                      "value": "table_of_contents"
+                    },
+                    {
+                      "name": "Breadcrumb",
+                      "value": "breadcrumb"
+                    },
+                    {
+                      "name": "Image",
+                      "value": "image"
+                    },
+                    {
+                      "name": "Video",
+                      "value": "video"
+                    },
+                    {
+                      "name": "File",
+                      "value": "file"
+                    },
+                    {
+                      "name": "PDF",
+                      "value": "pdf"
+                    },
+                    {
+                      "name": "Bookmark",
+                      "value": "bookmark"
+                    },
+                    {
+                      "name": "Embed",
+                      "value": "embed"
+                    },
+                    {
+                      "name": "Link to Page",
+                      "value": "link_to_page"
+                    },
+                    {
+                      "name": "Table",
+                      "value": "table"
+                    },
+                    {
+                      "name": "Table Row",
+                      "value": "table_row"
+                    }
+                  ]
+                },
+                {
+                  "name": "richText",
+                  "displayName": "Rich Text",
+                  "type": "toggle",
+                  "default": false,
+                  "displayOptions": {
+                    "hide": {
+                      "type": [
+                        "image",
+                        "video",
+                        "file",
+                        "pdf",
+                        "divider",
+                        "table_of_contents",
+                        "breadcrumb",
+                        "equation",
+                        "bookmark",
+                        "embed",
+                        "link_to_page",
+                        "table"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "textContent",
+                  "displayName": "Text",
+                  "type": "string",
+                  "format": "text",
+                  "default": "",
+                  "placeholder": "Enter content...",
+                  "displayOptions": {
+                    "show": {
+                      "richText": [
+                        false
+                      ]
+                    },
+                    "hide": {
+                      "type": [
+                        "image",
+                        "video",
+                        "file",
+                        "pdf",
+                        "divider",
+                        "table_of_contents",
+                        "breadcrumb",
+                        "equation",
+                        "bookmark",
+                        "embed",
+                        "link_to_page",
+                        "table"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "textSegments",
+                  "displayName": "Text",
+                  "type": "array",
+                  "default": [],
+                  "placeholder": "Add Text",
+                  "fields": [
+                    {
+                      "name": "type",
+                      "displayName": "Type",
+                      "type": "options",
+                      "required": true,
+                      "default": "text",
+                      "options": [
+                        {
+                          "name": "Equation",
+                          "value": "equation"
+                        },
+                        {
+                          "name": "Mention",
+                          "value": "mention"
+                        },
+                        {
+                          "name": "Text",
+                          "value": "text"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "expression",
+                      "displayName": "Expression",
+                      "type": "string",
+                      "required": true,
+                      "default": "",
+                      "placeholder": "Enter expression...",
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "equation"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "mentionType",
+                      "displayName": "Mention Type",
+                      "type": "options",
+                      "required": true,
+                      "default": "database",
+                      "options": [
+                        {
+                          "name": "Database",
+                          "value": "database"
+                        },
+                        {
+                          "name": "Date",
+                          "value": "date"
+                        },
+                        {
+                          "name": "Page",
+                          "value": "page"
+                        },
+                        {
+                          "name": "User",
+                          "value": "user"
+                        }
+                      ],
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "mention"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "databaseSelectionMethod",
+                      "displayName": "Database",
+                      "type": "options",
+                      "default": "list",
+                      "grid": "col-span-4",
+                      "options": [
+                        {
+                          "name": "From List",
+                          "value": "list"
+                        },
+                        {
+                          "name": "By URL",
+                          "value": "url"
+                        },
+                        {
+                          "name": "By ID",
+                          "value": "id"
+                        }
+                      ],
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "mention"
+                          ],
+                          "mentionType": [
+                            "database"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "databaseId",
+                      "displayName": "Database",
+                      "hideLabel": true,
+                      "type": "string",
+                      "required": true,
+                      "grid": "col-span-8",
+                      "placeholder": "Enter ID or URL...",
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "mention"
+                          ],
+                          "mentionType": [
+                            "database"
+                          ],
+                          "databaseSelectionMethod": [
+                            "url",
+                            "id"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "databaseId",
+                      "displayName": "Database",
+                      "hideLabel": true,
+                      "type": "options",
+                      "required": true,
+                      "grid": "col-span-8",
+                      "placeholder": "Select a Database...",
+                      "fetchEndpoint": "/api/tools/notion/list-databases",
+                      "dependsOn": [
+                        "credentials"
+                      ],
+                      "labelKey": "title",
+                      "valueKey": "id",
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "mention"
+                          ],
+                          "mentionType": [
+                            "database"
+                          ],
+                          "databaseSelectionMethod": [
+                            "list"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "dateRange",
+                      "displayName": "Range",
+                      "type": "toggle",
+                      "default": false,
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "mention"
+                          ],
+                          "mentionType": [
+                            "date"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "date",
+                      "displayName": "Date",
+                      "type": "dateTime",
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "mention"
+                          ],
+                          "mentionType": [
+                            "date"
+                          ],
+                          "dateRange": [
+                            false
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "dateStart",
+                      "displayName": "Date Start",
+                      "type": "dateTime",
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "mention"
+                          ],
+                          "mentionType": [
+                            "date"
+                          ],
+                          "dateRange": [
+                            true
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "dateEnd",
+                      "displayName": "Date End",
+                      "type": "dateTime",
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "mention"
+                          ],
+                          "mentionType": [
+                            "date"
+                          ],
+                          "dateRange": [
+                            true
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "pageId",
+                      "displayName": "Page ID",
+                      "type": "string",
+                      "required": true,
+                      "default": "",
+                      "placeholder": "Enter Page ID...",
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "mention"
+                          ],
+                          "mentionType": [
+                            "page"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "userId",
+                      "displayName": "User Name or ID",
+                      "type": "options",
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "mention"
+                          ],
+                          "mentionType": [
+                            "user"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "text",
+                      "displayName": "Text",
+                      "type": "string",
+                      "default": "",
+                      "placeholder": "Enter text...",
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "text"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "isLink",
+                      "displayName": "Is Link",
+                      "type": "toggle",
+                      "default": false,
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "text"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "linkUrl",
+                      "displayName": "Text Link",
+                      "type": "string",
+                      "default": "",
+                      "placeholder": "https://...",
+                      "displayOptions": {
+                        "show": {
+                          "type": [
+                            "text"
+                          ],
+                          "isLink": [
+                            true
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "annotations",
+                      "displayName": "Annotations",
+                      "type": "collection",
+                      "placeholder": "Add Annotation",
+                      "isCollectionItem": true,
+                      "default": {},
+                      "fields": [
+                        {
+                          "name": "bold",
+                          "displayName": "Bold",
+                          "type": "toggle",
+                          "default": false
+                        },
+                        {
+                          "name": "italic",
+                          "displayName": "Italic",
+                          "type": "toggle",
+                          "default": false
+                        },
+                        {
+                          "name": "strikethrough",
+                          "displayName": "Strikethrough",
+                          "type": "toggle",
+                          "default": false
+                        },
+                        {
+                          "name": "underline",
+                          "displayName": "Underline",
+                          "type": "toggle",
+                          "default": false
+                        },
+                        {
+                          "name": "code",
+                          "displayName": "Code",
+                          "type": "toggle",
+                          "default": false
+                        },
+                        {
+                          "name": "color",
+                          "displayName": "Color",
+                          "type": "options",
+                          "default": "default",
+                          "options": [
+                            {
+                              "name": "Default",
+                              "value": "default"
+                            },
+                            {
+                              "name": "Gray",
+                              "value": "gray"
+                            },
+                            {
+                              "name": "Brown",
+                              "value": "brown"
+                            },
+                            {
+                              "name": "Orange",
+                              "value": "orange"
+                            },
+                            {
+                              "name": "Yellow",
+                              "value": "yellow"
+                            },
+                            {
+                              "name": "Green",
+                              "value": "green"
+                            },
+                            {
+                              "name": "Blue",
+                              "value": "blue"
+                            },
+                            {
+                              "name": "Purple",
+                              "value": "purple"
+                            },
+                            {
+                              "name": "Pink",
+                              "value": "pink"
+                            },
+                            {
+                              "name": "Red",
+                              "value": "red"
+                            },
+                            {
+                              "name": "Gray Background",
+                              "value": "gray_background"
+                            },
+                            {
+                              "name": "Brown Background",
+                              "value": "brown_background"
+                            },
+                            {
+                              "name": "Orange Background",
+                              "value": "orange_background"
+                            },
+                            {
+                              "name": "Yellow Background",
+                              "value": "yellow_background"
+                            },
+                            {
+                              "name": "Green Background",
+                              "value": "green_background"
+                            },
+                            {
+                              "name": "Blue Background",
+                              "value": "blue_background"
+                            },
+                            {
+                              "name": "Purple Background",
+                              "value": "purple_background"
+                            },
+                            {
+                              "name": "Pink Background",
+                              "value": "pink_background"
+                            },
+                            {
+                              "name": "Red Background",
+                              "value": "red_background"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "displayOptions": {
+                    "show": {
+                      "richText": [
+                        true
+                      ]
+                    },
+                    "hide": {
+                      "type": [
+                        "image",
+                        "video",
+                        "file",
+                        "pdf",
+                        "divider",
+                        "table_of_contents",
+                        "breadcrumb",
+                        "equation",
+                        "bookmark",
+                        "embed",
+                        "link_to_page",
+                        "table"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "isToggleable",
+                  "displayName": "Is Toggleable",
+                  "type": "toggle",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "heading_1",
+                        "heading_2",
+                        "heading_3"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "checked",
+                  "displayName": "Checked",
+                  "type": "toggle",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "to_do"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "url",
+                  "displayName": "URL",
+                  "type": "string",
+                  "default": "",
+                  "required": true,
+                  "placeholder": "https://...",
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "image",
+                        "video",
+                        "file",
+                        "pdf",
+                        "embed",
+                        "bookmark"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "caption",
+                  "displayName": "Caption",
+                  "type": "string",
+                  "default": "",
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "image",
+                        "video",
+                        "file",
+                        "pdf",
+                        "code",
+                        "bookmark"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "language",
+                  "displayName": "Language",
+                  "type": "options",
+                  "default": "plain text",
+                  "options": [
+                    {
+                      "name": "Plain Text",
+                      "value": "plain text"
+                    },
+                    {
+                      "name": "JavaScript",
+                      "value": "javascript"
+                    },
+                    {
+                      "name": "TypeScript",
+                      "value": "typescript"
+                    },
+                    {
+                      "name": "Python",
+                      "value": "python"
+                    },
+                    {
+                      "name": "Java",
+                      "value": "java"
+                    },
+                    {
+                      "name": "C++",
+                      "value": "c++"
+                    },
+                    {
+                      "name": "HTML",
+                      "value": "html"
+                    },
+                    {
+                      "name": "CSS",
+                      "value": "css"
+                    },
+                    {
+                      "name": "SQL",
+                      "value": "sql"
+                    },
+                    {
+                      "name": "JSON",
+                      "value": "json"
+                    },
+                    {
+                      "name": "Markdown",
+                      "value": "markdown"
+                    }
+                  ],
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "code"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "expression",
+                  "displayName": "Expression",
+                  "type": "string",
+                  "default": "",
+                  "placeholder": "e^{i\\pi} + 1 = 0",
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "equation"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "icon",
+                  "displayName": "Icon",
+                  "type": "string",
+                  "default": "💡",
+                  "placeholder": "Emoji or Image URL",
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "callout"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "linkToPageId",
+                  "displayName": "Page ID",
+                  "type": "string",
+                  "default": "",
+                  "placeholder": "Enter page ID...",
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "link_to_page"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "tableWidth",
+                  "displayName": "Table Width",
+                  "type": "number",
+                  "default": 2,
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "table"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "hasColumnHeader",
+                  "displayName": "Has Column Header",
+                  "type": "toggle",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "table"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "hasRowHeader",
+                  "displayName": "Has Row Header",
+                  "type": "toggle",
+                  "default": false,
+                  "displayOptions": {
+                    "show": {
+                      "type": [
+                        "table"
+                      ]
+                    }
+                  }
+                }
+              ],
+              "description": "The blocks to append"
+            }
+          ],
+          "initialData": {
+            "resource": "block",
+            "operation": "appendAfter"
+          },
+          "subCategory": "Block",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "block",
+          "operation": "appendAfter"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "notion.block.getChildBlocks-1783407440432",
+      "type": "action",
+      "position": {
+        "x": 1691.4053657470338,
+        "y": 583.2488223537763
+      },
+      "data": {
+        "label": "Get many child blocks",
+        "toolId": "notion.block.getChildBlocks",
+        "toolData": {
+          "id": "notion.block.getChildBlocks",
+          "displayName": "Get many child blocks",
+          "category": "Integrations",
+          "provider": "notion",
+          "operation": "getChildBlocks",
+          "icon": "notion",
+          "description": "Get all child blocks of a block",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "blockIdMode": {
+                "type": "string",
+                "enum": [
+                  "url",
+                  "id"
+                ]
+              },
+              "blockId": {
+                "type": "string"
+              },
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry_date": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "access_token"
+                ],
+                "additionalProperties": false
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false
+              },
+              "limit": {
+                "type": "number",
+                "default": 50
+              },
+              "alsoFetchNestedBlocks": {
+                "type": "boolean",
+                "default": false
+              },
+              "simplify": {
+                "type": "boolean",
+                "default": true
+              }
+            },
+            "required": [
+              "blockIdMode",
+              "blockId",
+              "credentials"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "blockIdMode",
+              "displayName": "Block",
+              "type": "options",
+              "required": true,
+              "default": "url",
+              "grid": "col-span-4",
+              "options": [
+                {
+                  "name": "By URL",
+                  "value": "url"
+                },
+                {
+                  "name": "By ID",
+                  "value": "id"
+                }
+              ]
+            },
+            {
+              "name": "blockId",
+              "displayName": "Block",
+              "hideLabel": true,
+              "type": "string",
+              "required": true,
+              "grid": "col-span-8",
+              "placeholder": "e.g. https://www.notion.so/...",
+              "description": "The ID of the parent block whose children you want to retrieve"
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "toggle",
+              "default": false,
+              "description": "Whether to return all child blocks"
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 50,
+              "description": "Maximum number of child blocks to return",
+              "displayOptions": {
+                "show": {
+                  "returnAll": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "name": "alsoFetchNestedBlocks",
+              "displayName": "Also Fetch Nested Blocks",
+              "type": "toggle",
+              "default": false,
+              "description": "Whether to fetch nested blocks recursively"
+            },
+            {
+              "name": "simplify",
+              "displayName": "Simplify Output",
+              "type": "toggle",
+              "default": true,
+              "description": "Whether to return a simplified version of the response"
+            }
+          ],
+          "initialData": {
+            "resource": "block",
+            "operation": "getChildBlocks"
+          },
+          "subCategory": "Block"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "resource": "block",
+          "operation": "getChildBlocks"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

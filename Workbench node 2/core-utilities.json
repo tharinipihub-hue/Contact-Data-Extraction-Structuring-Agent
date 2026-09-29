@@ -1,0 +1,478 @@
+{
+  "nodes": [
+    {
+      "id": "core.datetime-1783397521330",
+      "type": "action",
+      "position": {
+        "x": -1131.339595010655,
+        "y": 115.8380274473922
+      },
+      "data": {
+        "label": "Date & Time",
+        "toolId": "core.datetime",
+        "toolData": {
+          "id": "core.datetime",
+          "displayName": "Date & Time",
+          "category": "Core  Utilities",
+          "provider": "core",
+          "operation": "datetime",
+          "description": "Generate and format date values",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "getCurrentDate",
+                  "addToDate",
+                  "subtractFromDate",
+                  "extractDatePart",
+                  "formatDate",
+                  "getTimeBetween",
+                  "roundDate"
+                ],
+                "description": "Select the date/time operation to perform"
+              },
+              "outputFieldName": {
+                "type": "string",
+                "default": "date",
+                "description": "Name of the output field"
+              },
+              "includeInputFields": {
+                "type": "boolean",
+                "description": "Include all input fields in the output"
+              },
+              "includeCurrentTime": {
+                "type": "boolean",
+                "description": "Include current time (for getCurrentDate)"
+              },
+              "timezone": {
+                "type": "string",
+                "description": "Timezone for the operation (e.g., America/New_York)"
+              },
+              "dateToAddTo": {
+                "description": "Date to add time to"
+              },
+              "dateToSubtractFrom": {
+                "description": "Date to subtract time from"
+              },
+              "timeUnit": {
+                "type": "string",
+                "enum": [
+                  "years",
+                  "quarters",
+                  "months",
+                  "weeks",
+                  "days",
+                  "hours",
+                  "minutes",
+                  "seconds",
+                  "milliseconds"
+                ],
+                "description": "Time unit to add/subtract"
+              },
+              "timeUnitSingular": {
+                "type": "string",
+                "enum": [
+                  "year",
+                  "quarter",
+                  "month",
+                  "week",
+                  "day",
+                  "hour",
+                  "minute",
+                  "second",
+                  "millisecond"
+                ],
+                "description": "Time unit (singular form)"
+              },
+              "duration": {
+                "type": "number",
+                "default": 1,
+                "description": "Duration to add/subtract"
+              },
+              "date": {
+                "description": "Date to extract part from or format"
+              },
+              "datePart": {
+                "type": "string",
+                "enum": [
+                  "year",
+                  "month",
+                  "week",
+                  "day",
+                  "hour",
+                  "minute",
+                  "second"
+                ],
+                "description": "Part of the date to extract"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "MM/DD/YYYY",
+                  "YYYY/MM/DD",
+                  "MMMM DD YYYY",
+                  "MM-DD-YYYY",
+                  "YYYY-MM-DD",
+                  "unix",
+                  "unixMs"
+                ],
+                "description": "Output format for the date"
+              },
+              "customFormat": {
+                "type": "string",
+                "description": "Custom date format string"
+              },
+              "fromDateFormat": {
+                "type": "string",
+                "description": "Input date format (for parsing)"
+              },
+              "useWorkflowTimezone": {
+                "type": "boolean",
+                "description": "Use workflow timezone for formatting"
+              },
+              "startDate": {
+                "description": "Start date for time difference"
+              },
+              "endDate": {
+                "description": "End date for time difference"
+              },
+              "units": {
+                "anyOf": [
+                  {
+                    "$ref": "#/properties/timeUnitSingular"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/properties/timeUnitSingular"
+                    }
+                  }
+                ],
+                "description": "Units for time difference output"
+              },
+              "outputAsISOString": {
+                "type": "boolean",
+                "default": false,
+                "description": "Output as ISO string instead of number"
+              },
+              "roundMode": {
+                "type": "string",
+                "enum": [
+                  "roundDown",
+                  "roundUp",
+                  "toNearest"
+                ],
+                "description": "Rounding mode"
+              },
+              "roundToUnit": {
+                "$ref": "#/properties/timeUnitSingular",
+                "description": "Unit to round to"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "core.limit-1783397522621",
+      "type": "action",
+      "position": {
+        "x": -713.0018226537851,
+        "y": 156.76237474317296
+      },
+      "data": {
+        "label": "Limit Results",
+        "toolId": "core.limit",
+        "toolData": {
+          "id": "core.limit",
+          "displayName": "Limit Results",
+          "category": "Core  Utilities",
+          "provider": "core",
+          "operation": "limit",
+          "description": "Limit number of items",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "items": {
+                "description": "Input items; can be an array of objects or a single object"
+              },
+              "maxItems": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "description": "Enter the maximum number of items that should be kept. If the input data contains more than this value, items are removed."
+              },
+              "keep": {
+                "type": "string",
+                "enum": [
+                  "first",
+                  "last"
+                ],
+                "default": "first",
+                "description": "If items must be removed, select where to keep input items from: First Items (beginning of data) or Last Items (end of data)"
+              }
+            },
+            "required": [
+              "maxItems"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "rename.key-1783397524172",
+      "type": "action",
+      "position": {
+        "x": -355.2927129573311,
+        "y": 170.40382384176652
+      },
+      "data": {
+        "label": "Rename Fields",
+        "toolId": "rename.key",
+        "toolData": {
+          "id": "rename.key",
+          "displayName": "Rename Fields",
+          "category": "Core  Utilities",
+          "provider": "core",
+          "operation": "renameKey",
+          "icon": "/tools/Rename Field node.svg",
+          "description": "Rename data fields dynamically",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "keys": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "currentKey": {
+                      "type": "string",
+                      "description": "Current Key Name"
+                    },
+                    "newKey": {
+                      "type": "string",
+                      "description": "New Key Name"
+                    }
+                  },
+                  "required": [
+                    "currentKey",
+                    "newKey"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Keys"
+              },
+              "additionalOptions": {
+                "type": "object",
+                "properties": {
+                  "regex": {
+                    "type": "object",
+                    "properties": {
+                      "pattern": {
+                        "type": "string",
+                        "description": "Regular Expression"
+                      },
+                      "replaceWith": {
+                        "type": "string",
+                        "description": "Replace With"
+                      },
+                      "options": {
+                        "type": "object",
+                        "properties": {
+                          "caseInsensitive": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Case Insensitive"
+                          },
+                          "maxDepth": {
+                            "type": "integer",
+                            "default": -1,
+                            "description": "Max Depth"
+                          }
+                        },
+                        "additionalProperties": false,
+                        "description": "Options"
+                      }
+                    },
+                    "required": [
+                      "pattern",
+                      "replaceWith"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Regex"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Additional Options"
+              }
+            },
+            "required": [
+              "keys"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": -355.2927129573311,
+        "y": 170.40382384176652
+      },
+      "dragging": false
+    },
+    {
+      "id": "core.set-1783397525516",
+      "type": "action",
+      "position": {
+        "x": -593.2602138994637,
+        "y": 379.5727100202015
+      },
+      "data": {
+        "label": "Set Fields",
+        "toolId": "core.set",
+        "toolData": {
+          "id": "core.set",
+          "displayName": "Set Fields",
+          "category": "Core  Utilities",
+          "provider": "core",
+          "operation": "set",
+          "description": "Set or update fields",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "manual",
+                  "json"
+                ],
+                "default": "manual",
+                "description": "Select Manual Mapping or JSON Output"
+              },
+              "assignments": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Field name"
+                    },
+                    "value": {
+                      "description": "Field value (Fixed or Expression)"
+                    },
+                    "valueType": {
+                      "type": "string",
+                      "enum": [
+                        "fixed",
+                        "expression"
+                      ],
+                      "default": "expression",
+                      "description": "Whether field value is fixed or an expression"
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "Data type of the field"
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Fields to set when using Manual Mapping"
+              },
+              "jsonValue": {
+                "type": "string",
+                "description": "JSON to merge into the output when using JSON Output mode"
+              },
+              "includeOtherInputFields": {
+                "type": "boolean",
+                "default": false,
+                "description": "Also include unchanged fields from the input"
+              },
+              "inputFieldsToInclude": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "selected",
+                  "allExcept"
+                ],
+                "default": "all",
+                "description": "Choose which input data to include in the output data"
+              },
+              "fieldsToInclude": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "List of input fields to include when Input Fields to Include is Selected"
+              },
+              "fieldsToExclude": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "List of input fields to exclude when Input Fields to Include is All Except"
+              },
+              "includeBinaryData": {
+                "type": "boolean",
+                "default": true,
+                "description": "Include binary data in the output"
+              },
+              "ignoreTypeConversionErrors": {
+                "type": "boolean",
+                "default": false,
+                "description": "Ignore some data type errors when mapping fields (Manual Mapping only)"
+              },
+              "supportDotNotation": {
+                "type": "boolean",
+                "default": true,
+                "description": "If enabled, dotted names create nested objects (e.g. number.one → { number: { one: value } })"
+              },
+              "items": {
+                "type": "array",
+                "description": "Array of items to process (for multi-item execution)"
+              },
+              "$inputItem": {
+                "description": "Single item to process (for backward compatibility)"
+              }
+            },
+            "additionalProperties": true,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

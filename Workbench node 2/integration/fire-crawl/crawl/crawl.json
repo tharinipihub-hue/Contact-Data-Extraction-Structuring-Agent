@@ -1,0 +1,620 @@
+{
+  "nodes": [
+    {
+      "id": "firecrawl_crawl-1783407121621",
+      "type": "action",
+      "position": {
+        "x": 2825.6861099573402,
+        "y": 372.10718491468225
+      },
+      "data": {
+        "label": "Crawl",
+        "toolId": "firecrawl_crawl",
+        "toolData": {
+          "id": "firecrawl_crawl",
+          "displayName": "Crawl",
+          "category": "Integrations",
+          "provider": "firecrawl",
+          "operation": "crawl",
+          "icon": "/tools/firecrawl-logo.png",
+          "description": "Extract content from multiple pages",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "apiKey": {
+                    "type": "string",
+                    "description": "Firecrawl API Key"
+                  }
+                },
+                "required": [
+                  "apiKey"
+                ],
+                "additionalProperties": false,
+                "description": "Firecrawl API Credential"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Crawling",
+                  "Scraping",
+                  "Mapping"
+                ],
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Crawl",
+                  "Get Status",
+                  "Scrape",
+                  "Map"
+                ],
+                "description": "Operation"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "description": "The URL to process"
+              },
+              "excludePaths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Paths to exclude from the crawl"
+              },
+              "includePaths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Paths to include in the crawl"
+              },
+              "maxDepth": {
+                "type": "number",
+                "default": 2,
+                "description": "Maximum depth to crawl"
+              },
+              "limit": {
+                "type": "number",
+                "default": 10,
+                "description": "Maximum number of pages to crawl"
+              },
+              "formats": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "markdown",
+                    "html",
+                    "rawHtml",
+                    "screenshot",
+                    "links",
+                    "images",
+                    "summary",
+                    "branding"
+                  ]
+                },
+                "default": [
+                  "markdown"
+                ],
+                "description": "The formats to include"
+              },
+              "onlyMainContent": {
+                "type": "boolean",
+                "default": true,
+                "description": "Only return the main content"
+              },
+              "waitFor": {
+                "type": "number",
+                "default": 0,
+                "description": "Wait time (ms)"
+              },
+              "id": {
+                "type": "string",
+                "description": "Crawl ID"
+              },
+              "waitForCompletion": {
+                "type": "boolean",
+                "default": false,
+                "description": "Wait until the crawl is finished"
+              },
+              "timeout": {
+                "type": "number",
+                "default": 300,
+                "description": "Maximum wait time (s)"
+              },
+              "search": {
+                "type": "string",
+                "description": "Search query for mapping links"
+              }
+            },
+            "required": [
+              "credentials",
+              "resource",
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Crawl",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "firecrawl_crawl_status-1783407123428",
+      "type": "action",
+      "position": {
+        "x": 2835.6861099573402,
+        "y": 524.6071849146822
+      },
+      "data": {
+        "label": "Get Crawl Status",
+        "toolId": "firecrawl_crawl_status",
+        "toolData": {
+          "id": "firecrawl_crawl_status",
+          "displayName": "Get Crawl Status",
+          "category": "Integrations",
+          "provider": "firecrawl",
+          "operation": "crawlStatus",
+          "icon": "/tools/firecrawl-logo.png",
+          "description": "Check progress of crawl job",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "apiKey": {
+                    "type": "string",
+                    "description": "Firecrawl API Key"
+                  }
+                },
+                "required": [
+                  "apiKey"
+                ],
+                "additionalProperties": false,
+                "description": "Firecrawl API Credential"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Crawling",
+                  "Scraping",
+                  "Mapping"
+                ],
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Crawl",
+                  "Get Status",
+                  "Scrape",
+                  "Map"
+                ],
+                "description": "Operation"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "description": "The URL to process"
+              },
+              "excludePaths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Paths to exclude from the crawl"
+              },
+              "includePaths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Paths to include in the crawl"
+              },
+              "maxDepth": {
+                "type": "number",
+                "default": 2,
+                "description": "Maximum depth to crawl"
+              },
+              "limit": {
+                "type": "number",
+                "default": 10,
+                "description": "Maximum number of pages to crawl"
+              },
+              "formats": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "markdown",
+                    "html",
+                    "rawHtml",
+                    "screenshot",
+                    "links",
+                    "images",
+                    "summary",
+                    "branding"
+                  ]
+                },
+                "default": [
+                  "markdown"
+                ],
+                "description": "The formats to include"
+              },
+              "onlyMainContent": {
+                "type": "boolean",
+                "default": true,
+                "description": "Only return the main content"
+              },
+              "waitFor": {
+                "type": "number",
+                "default": 0,
+                "description": "Wait time (ms)"
+              },
+              "id": {
+                "type": "string",
+                "description": "Crawl ID"
+              },
+              "waitForCompletion": {
+                "type": "boolean",
+                "default": false,
+                "description": "Wait until the crawl is finished"
+              },
+              "timeout": {
+                "type": "number",
+                "default": 300,
+                "description": "Maximum wait time (s)"
+              },
+              "search": {
+                "type": "string",
+                "description": "Search query for mapping links"
+              }
+            },
+            "required": [
+              "credentials",
+              "resource",
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Crawl"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2835.6861099573402,
+        "y": 524.6071849146822
+      },
+      "dragging": false
+    },
+    {
+      "id": "firecrawl_map-1783407126068",
+      "type": "action",
+      "position": {
+        "x": 2835.6861099573407,
+        "y": 644.6071849146821
+      },
+      "data": {
+        "label": "Map",
+        "toolId": "firecrawl_map",
+        "toolData": {
+          "id": "firecrawl_map",
+          "displayName": "Map",
+          "category": "Integrations",
+          "provider": "firecrawl",
+          "operation": "map",
+          "icon": "/tools/firecrawl-logo.png",
+          "description": "Discover all URLs on website",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "apiKey": {
+                    "type": "string",
+                    "description": "Firecrawl API Key"
+                  }
+                },
+                "required": [
+                  "apiKey"
+                ],
+                "additionalProperties": false,
+                "description": "Firecrawl API Credential"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Crawling",
+                  "Scraping",
+                  "Mapping"
+                ],
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Crawl",
+                  "Get Status",
+                  "Scrape",
+                  "Map"
+                ],
+                "description": "Operation"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "description": "The URL to process"
+              },
+              "excludePaths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Paths to exclude from the crawl"
+              },
+              "includePaths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Paths to include in the crawl"
+              },
+              "maxDepth": {
+                "type": "number",
+                "default": 2,
+                "description": "Maximum depth to crawl"
+              },
+              "limit": {
+                "type": "number",
+                "default": 10,
+                "description": "Maximum number of pages to crawl"
+              },
+              "formats": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "markdown",
+                    "html",
+                    "rawHtml",
+                    "screenshot",
+                    "links",
+                    "images",
+                    "summary",
+                    "branding"
+                  ]
+                },
+                "default": [
+                  "markdown"
+                ],
+                "description": "The formats to include"
+              },
+              "onlyMainContent": {
+                "type": "boolean",
+                "default": true,
+                "description": "Only return the main content"
+              },
+              "waitFor": {
+                "type": "number",
+                "default": 0,
+                "description": "Wait time (ms)"
+              },
+              "id": {
+                "type": "string",
+                "description": "Crawl ID"
+              },
+              "waitForCompletion": {
+                "type": "boolean",
+                "default": false,
+                "description": "Wait until the crawl is finished"
+              },
+              "timeout": {
+                "type": "number",
+                "default": 300,
+                "description": "Maximum wait time (s)"
+              },
+              "search": {
+                "type": "string",
+                "description": "Search query for mapping links"
+              }
+            },
+            "required": [
+              "credentials",
+              "resource",
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Crawl"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2835.6861099573407,
+        "y": 644.6071849146821
+      },
+      "dragging": false
+    },
+    {
+      "id": "firecrawl_scrape-1783407129069",
+      "type": "action",
+      "position": {
+        "x": 2838.1861099573402,
+        "y": 779.607184914682
+      },
+      "data": {
+        "label": "Scrape",
+        "toolId": "firecrawl_scrape",
+        "toolData": {
+          "id": "firecrawl_scrape",
+          "displayName": "Scrape",
+          "category": "Integrations",
+          "provider": "firecrawl",
+          "operation": "scrape",
+          "icon": "/tools/firecrawl-logo.png",
+          "description": "Extract structured data from webpage",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "type": "object",
+                "properties": {
+                  "apiKey": {
+                    "type": "string",
+                    "description": "Firecrawl API Key"
+                  }
+                },
+                "required": [
+                  "apiKey"
+                ],
+                "additionalProperties": false,
+                "description": "Firecrawl API Credential"
+              },
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "Crawling",
+                  "Scraping",
+                  "Mapping"
+                ],
+                "description": "Resource"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "Crawl",
+                  "Get Status",
+                  "Scrape",
+                  "Map"
+                ],
+                "description": "Operation"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "description": "The URL to process"
+              },
+              "excludePaths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Paths to exclude from the crawl"
+              },
+              "includePaths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Paths to include in the crawl"
+              },
+              "maxDepth": {
+                "type": "number",
+                "default": 2,
+                "description": "Maximum depth to crawl"
+              },
+              "limit": {
+                "type": "number",
+                "default": 10,
+                "description": "Maximum number of pages to crawl"
+              },
+              "formats": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "markdown",
+                    "html",
+                    "rawHtml",
+                    "screenshot",
+                    "links",
+                    "images",
+                    "summary",
+                    "branding"
+                  ]
+                },
+                "default": [
+                  "markdown"
+                ],
+                "description": "The formats to include"
+              },
+              "onlyMainContent": {
+                "type": "boolean",
+                "default": true,
+                "description": "Only return the main content"
+              },
+              "waitFor": {
+                "type": "number",
+                "default": 0,
+                "description": "Wait time (ms)"
+              },
+              "id": {
+                "type": "string",
+                "description": "Crawl ID"
+              },
+              "waitForCompletion": {
+                "type": "boolean",
+                "default": false,
+                "description": "Wait until the crawl is finished"
+              },
+              "timeout": {
+                "type": "number",
+                "default": 300,
+                "description": "Maximum wait time (s)"
+              },
+              "search": {
+                "type": "string",
+                "description": "Search query for mapping links"
+              }
+            },
+            "required": [
+              "credentials",
+              "resource",
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Crawl"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 2838.1861099573402,
+        "y": 779.607184914682
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

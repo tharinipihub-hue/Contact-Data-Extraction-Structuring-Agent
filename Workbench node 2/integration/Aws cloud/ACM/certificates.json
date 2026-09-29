@@ -1,0 +1,915 @@
+{
+  "nodes": [
+    {
+      "id": "aws.acm.certificate.delete-1783398088953",
+      "type": "action",
+      "position": {
+        "x": 51.241517762378045,
+        "y": 784.7826273551452
+      },
+      "data": {
+        "label": "Delete",
+        "toolId": "aws.acm.certificate.delete",
+        "toolData": {
+          "id": "aws.acm.certificate.delete",
+          "displayName": "Delete",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Delete",
+          "icon": "/tools/acm.png",
+          "actionGroup": "AWS Certificate Manager",
+          "description": "Delete in AWS Certificate Manager",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "get",
+                  "getMany",
+                  "delete",
+                  "renew",
+                  "getMetadata"
+                ],
+                "description": "Certificate Operation"
+              },
+              "certificateArn": {
+                "type": "string",
+                "description": "Certificate ARN"
+              },
+              "certificateStatuses": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Filter certificates by status (e.g. PENDING_VALIDATION, ISSUED, INACTIVE, EXPIRED, VALIDATION_TIMED_OUT, REVOKED, FAILED)"
+              },
+              "includes": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Includes for searching certificates"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return all certificates"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Maximum number of certificates to return (default 10)"
+              },
+              "credentials": {
+                "description": "AWS ACM credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region (e.g., us-east-1, eu-central-1)"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Certificate",
+                  "value": "certificate"
+                }
+              ],
+              "default": "certificate",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Get Metadata",
+                  "value": "getMetadata"
+                },
+                {
+                  "name": "Renew",
+                  "value": "renew"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                }
+              ],
+              "default": "delete",
+              "required": true
+            },
+            {
+              "name": "certificateArn",
+              "displayName": "Certificate",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/acm/list-certificates",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "delete",
+                    "renew",
+                    "getMetadata"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all certificates."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 10,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "Maximum number of certificates to return."
+            }
+          ],
+          "initialData": {
+            "operation": "delete"
+          },
+          "subCategory": "AWS Certificate Manager",
+          "dynamicFields": []
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "delete"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.acm.certificate.get-1783398090176",
+      "type": "action",
+      "position": {
+        "x": 69.43011656050282,
+        "y": 1036.3915773958713
+      },
+      "data": {
+        "label": "Get",
+        "toolId": "aws.acm.certificate.get",
+        "toolData": {
+          "id": "aws.acm.certificate.get",
+          "displayName": "Get",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Get",
+          "icon": "/tools/acm.png",
+          "actionGroup": "AWS Certificate Manager",
+          "description": "Get in AWS Certificate Manager",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "get",
+                  "getMany",
+                  "delete",
+                  "renew",
+                  "getMetadata"
+                ],
+                "description": "Certificate Operation"
+              },
+              "certificateArn": {
+                "type": "string",
+                "description": "Certificate ARN"
+              },
+              "certificateStatuses": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Filter certificates by status (e.g. PENDING_VALIDATION, ISSUED, INACTIVE, EXPIRED, VALIDATION_TIMED_OUT, REVOKED, FAILED)"
+              },
+              "includes": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Includes for searching certificates"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return all certificates"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Maximum number of certificates to return (default 10)"
+              },
+              "credentials": {
+                "description": "AWS ACM credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region (e.g., us-east-1, eu-central-1)"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Certificate",
+                  "value": "certificate"
+                }
+              ],
+              "default": "certificate",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Get Metadata",
+                  "value": "getMetadata"
+                },
+                {
+                  "name": "Renew",
+                  "value": "renew"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                }
+              ],
+              "default": "get",
+              "required": true
+            },
+            {
+              "name": "certificateArn",
+              "displayName": "Certificate",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/acm/list-certificates",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "delete",
+                    "renew",
+                    "getMetadata"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all certificates."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 10,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "Maximum number of certificates to return."
+            }
+          ],
+          "initialData": {
+            "operation": "get"
+          },
+          "subCategory": "AWS Certificate Manager",
+          "dynamicFields": []
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "get"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.acm.certificate.getmany-1783398091336",
+      "type": "action",
+      "position": {
+        "x": 30.02148583123247,
+        "y": 1327.4091581658677
+      },
+      "data": {
+        "label": "Get Many",
+        "toolId": "aws.acm.certificate.getmany",
+        "toolData": {
+          "id": "aws.acm.certificate.getmany",
+          "displayName": "Get Many",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Get Many",
+          "icon": "/tools/acm.png",
+          "actionGroup": "AWS Certificate Manager",
+          "description": "Get Many in AWS Certificate Manager",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "get",
+                  "getMany",
+                  "delete",
+                  "renew",
+                  "getMetadata"
+                ],
+                "description": "Certificate Operation"
+              },
+              "certificateArn": {
+                "type": "string",
+                "description": "Certificate ARN"
+              },
+              "certificateStatuses": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Filter certificates by status (e.g. PENDING_VALIDATION, ISSUED, INACTIVE, EXPIRED, VALIDATION_TIMED_OUT, REVOKED, FAILED)"
+              },
+              "includes": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Includes for searching certificates"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return all certificates"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Maximum number of certificates to return (default 10)"
+              },
+              "credentials": {
+                "description": "AWS ACM credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region (e.g., us-east-1, eu-central-1)"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Certificate",
+                  "value": "certificate"
+                }
+              ],
+              "default": "certificate",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Get Metadata",
+                  "value": "getMetadata"
+                },
+                {
+                  "name": "Renew",
+                  "value": "renew"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                }
+              ],
+              "default": "getMany",
+              "required": true
+            },
+            {
+              "name": "certificateArn",
+              "displayName": "Certificate",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/acm/list-certificates",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "delete",
+                    "renew",
+                    "getMetadata"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all certificates."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 10,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "Maximum number of certificates to return."
+            }
+          ],
+          "initialData": {
+            "operation": "getMany"
+          },
+          "subCategory": "AWS Certificate Manager",
+          "dynamicFields": []
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "getMany"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.acm.certificate.getmetadata-1783398093528",
+      "type": "action",
+      "position": {
+        "x": 784.8483359534107,
+        "y": 769.6254616900412
+      },
+      "data": {
+        "label": "Get Metadata",
+        "toolId": "aws.acm.certificate.getmetadata",
+        "toolData": {
+          "id": "aws.acm.certificate.getmetadata",
+          "displayName": "Get Metadata",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Get Metadata",
+          "icon": "/tools/acm.png",
+          "actionGroup": "AWS Certificate Manager",
+          "description": "Get Metadata in AWS Certificate Manager",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "get",
+                  "getMany",
+                  "delete",
+                  "renew",
+                  "getMetadata"
+                ],
+                "description": "Certificate Operation"
+              },
+              "certificateArn": {
+                "type": "string",
+                "description": "Certificate ARN"
+              },
+              "certificateStatuses": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Filter certificates by status (e.g. PENDING_VALIDATION, ISSUED, INACTIVE, EXPIRED, VALIDATION_TIMED_OUT, REVOKED, FAILED)"
+              },
+              "includes": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Includes for searching certificates"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return all certificates"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Maximum number of certificates to return (default 10)"
+              },
+              "credentials": {
+                "description": "AWS ACM credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region (e.g., us-east-1, eu-central-1)"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Certificate",
+                  "value": "certificate"
+                }
+              ],
+              "default": "certificate",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Get Metadata",
+                  "value": "getMetadata"
+                },
+                {
+                  "name": "Renew",
+                  "value": "renew"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                }
+              ],
+              "default": "getMetadata",
+              "required": true
+            },
+            {
+              "name": "certificateArn",
+              "displayName": "Certificate",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/acm/list-certificates",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "delete",
+                    "renew",
+                    "getMetadata"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all certificates."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 10,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "Maximum number of certificates to return."
+            }
+          ],
+          "initialData": {
+            "operation": "getMetadata"
+          },
+          "subCategory": "AWS Certificate Manager",
+          "dynamicFields": []
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "getMetadata"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "aws.acm.certificate.renew-1783398094608",
+      "type": "action",
+      "position": {
+        "x": 824.2569666826811,
+        "y": 1118.2402719874328
+      },
+      "data": {
+        "label": "Renew",
+        "toolId": "aws.acm.certificate.renew",
+        "toolData": {
+          "id": "aws.acm.certificate.renew",
+          "displayName": "Renew",
+          "category": "Integrations",
+          "provider": "aws",
+          "operation": "Renew",
+          "icon": "/tools/acm.png",
+          "actionGroup": "AWS Certificate Manager",
+          "description": "Renew in AWS Certificate Manager",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "get",
+                  "getMany",
+                  "delete",
+                  "renew",
+                  "getMetadata"
+                ],
+                "description": "Certificate Operation"
+              },
+              "certificateArn": {
+                "type": "string",
+                "description": "Certificate ARN"
+              },
+              "certificateStatuses": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Filter certificates by status (e.g. PENDING_VALIDATION, ISSUED, INACTIVE, EXPIRED, VALIDATION_TIMED_OUT, REVOKED, FAILED)"
+              },
+              "includes": {
+                "type": "object",
+                "additionalProperties": {},
+                "description": "Includes for searching certificates"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "description": "Return all certificates"
+              },
+              "limit": {
+                "type": "number",
+                "description": "Maximum number of certificates to return (default 10)"
+              },
+              "credentials": {
+                "description": "AWS ACM credentials"
+              },
+              "region": {
+                "type": "string",
+                "description": "AWS Region (e.g., us-east-1, eu-central-1)"
+              }
+            },
+            "required": [
+              "operation"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Certificate",
+                  "value": "certificate"
+                }
+              ],
+              "default": "certificate",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Get",
+                  "value": "get"
+                },
+                {
+                  "name": "Get Many",
+                  "value": "getMany"
+                },
+                {
+                  "name": "Get Metadata",
+                  "value": "getMetadata"
+                },
+                {
+                  "name": "Renew",
+                  "value": "renew"
+                },
+                {
+                  "name": "Delete",
+                  "value": "delete"
+                }
+              ],
+              "default": "renew",
+              "required": true
+            },
+            {
+              "name": "certificateArn",
+              "displayName": "Certificate",
+              "type": "options",
+              "options": [],
+              "required": true,
+              "dependsOn": [
+                "credentials"
+              ],
+              "fetchEndpoint": "/api/tools/acm/list-certificates",
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "get",
+                    "delete",
+                    "renew",
+                    "getMetadata"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "returnAll",
+              "displayName": "Return All",
+              "type": "boolean",
+              "default": false,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ]
+                }
+              },
+              "description": "Whether to return all certificates."
+            },
+            {
+              "name": "limit",
+              "displayName": "Limit",
+              "type": "number",
+              "default": 10,
+              "displayOptions": {
+                "show": {
+                  "operation": [
+                    "getMany"
+                  ],
+                  "returnAll": [
+                    false
+                  ]
+                }
+              },
+              "description": "Maximum number of certificates to return."
+            }
+          ],
+          "initialData": {
+            "operation": "renew"
+          },
+          "subCategory": "AWS Certificate Manager",
+          "dynamicFields": []
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "renew"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

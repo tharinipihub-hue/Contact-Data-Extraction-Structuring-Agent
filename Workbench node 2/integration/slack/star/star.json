@@ -1,0 +1,104 @@
+{
+  "nodes": [
+    {
+      "id": "slack.star.add-1783408291180",
+      "type": "action",
+      "position": {
+        "x": 3071.1762924932063,
+        "y": -348.15571606115753
+      },
+      "data": {
+        "label": "Slack Add Star",
+        "toolId": "slack.star.add",
+        "toolData": {
+          "id": "slack.star.add",
+          "displayName": "Slack Add Star",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Add",
+          "icon": "slack",
+          "description": "Star a message or file.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Star"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "slack.star.getMany-1783408292324",
+      "type": "action",
+      "position": {
+        "x": 3243.589051933764,
+        "y": -162.4804366636341
+      },
+      "data": {
+        "label": "Slack List Stars",
+        "toolId": "slack.star.getMany",
+        "toolData": {
+          "id": "slack.star.getMany",
+          "displayName": "Slack List Stars",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Get Many",
+          "icon": "slack",
+          "description": "List starred items.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Star"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "slack.star.remove-1783408293444",
+      "type": "action",
+      "position": {
+        "x": 3046.5458982874125,
+        "y": 57.298465480373245
+      },
+      "data": {
+        "label": "Slack Remove Star",
+        "toolId": "slack.star.remove",
+        "toolData": {
+          "id": "slack.star.remove",
+          "displayName": "Slack Remove Star",
+          "category": "Integrations",
+          "provider": "slack",
+          "operation": "Remove",
+          "icon": "slack",
+          "description": "Remove a star.",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Star"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

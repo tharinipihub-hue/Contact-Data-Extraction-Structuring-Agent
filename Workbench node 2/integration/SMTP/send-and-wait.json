@@ -1,0 +1,285 @@
+{
+  "nodes": [
+    {
+      "id": "smtp-wait-1783408101544",
+      "type": "action",
+      "position": {
+        "x": 702.9599724800636,
+        "y": -253.2211334416861
+      },
+      "data": {
+        "label": "Send and Wait",
+        "toolId": "smtp-wait",
+        "toolData": {
+          "id": "smtp-wait",
+          "displayName": "Send and Wait",
+          "category": "Integrations",
+          "provider": "smtp",
+          "icon": "/tools/smpt.svg",
+          "description": "Send emails via SMTP and wait for a response",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "const": "Send and Wait for Response",
+                "description": "Operation"
+              },
+              "fromEmail": {
+                "type": "string",
+                "format": "email",
+                "description": "From Email"
+              },
+              "toEmail": {
+                "type": "string",
+                "description": "To Email(s)"
+              },
+              "subject": {
+                "type": "string",
+                "description": "Subject"
+              },
+              "emailFormat": {
+                "type": "string",
+                "enum": [
+                  "text",
+                  "html",
+                  "both"
+                ],
+                "default": "text",
+                "description": "Email Format"
+              },
+              "text": {
+                "type": "string",
+                "description": "Text"
+              },
+              "html": {
+                "type": "string",
+                "description": "HTML"
+              },
+              "responseType": {
+                "type": "string",
+                "enum": [
+                  "Free Text",
+                  "Approval",
+                  "Custom Form"
+                ],
+                "default": "Free Text",
+                "description": "Response Type"
+              },
+              "approvalConfigured": {
+                "type": "boolean"
+              },
+              "approvalType": {
+                "type": "string",
+                "enum": [
+                  "Approve Only",
+                  "Approve and Disapprove"
+                ],
+                "default": "Approve Only"
+              },
+              "approveLabel": {
+                "type": "string",
+                "default": "Approve"
+              },
+              "approveStyle": {
+                "type": "string",
+                "enum": [
+                  "Primary",
+                  "Secondary"
+                ],
+                "default": "Primary"
+              },
+              "disapproveLabel": {
+                "type": "string",
+                "default": "Decline"
+              },
+              "disapproveStyle": {
+                "type": "string",
+                "enum": [
+                  "Primary",
+                  "Secondary"
+                ],
+                "default": "Secondary"
+              },
+              "defineForm": {
+                "type": "string",
+                "enum": [
+                  "Fields Below",
+                  "JSON"
+                ],
+                "default": "Fields Below",
+                "description": "Define Form"
+              },
+              "formJson": {
+                "type": "string",
+                "description": "Form JSON"
+              },
+              "formElements": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldName": {
+                      "type": "string",
+                      "description": "Field Name"
+                    },
+                    "elementType": {
+                      "type": "string",
+                      "enum": [
+                        "Checkboxes",
+                        "Dropdown",
+                        "Email",
+                        "File",
+                        "Hidden Field",
+                        "Number",
+                        "Password",
+                        "Radio Buttons",
+                        "Text Input",
+                        "Textarea"
+                      ],
+                      "default": "Text Input",
+                      "description": "Element Type"
+                    },
+                    "placeholder": {
+                      "type": "string",
+                      "description": "Placeholder"
+                    },
+                    "defaultValue": {
+                      "type": "string",
+                      "description": "Default Value"
+                    },
+                    "required": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "Required Field"
+                    },
+                    "options": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string",
+                            "description": "Option Label"
+                          },
+                          "value": {
+                            "type": "string",
+                            "description": "Option Value"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "default": [],
+                      "description": "Options"
+                    }
+                  },
+                  "required": [
+                    "fieldName"
+                  ],
+                  "additionalProperties": false
+                },
+                "default": [],
+                "description": "Form Elements"
+              },
+              "ccEmail": {
+                "type": "string",
+                "description": "CC Email(s)"
+              },
+              "bccEmail": {
+                "type": "string",
+                "description": "BCC Email(s)"
+              },
+              "replyTo": {
+                "type": "string",
+                "description": "Reply To"
+              },
+              "ignoreSSL": {
+                "type": "boolean",
+                "default": false,
+                "description": "Ignore SSL Issues"
+              },
+              "attachments": {
+                "description": "Attachments"
+              },
+              "messageButtonLabel": {
+                "type": "string",
+                "description": "Message Button Label"
+              },
+              "formTitle": {
+                "type": "string",
+                "description": "Response Form Title"
+              },
+              "formDescription": {
+                "type": "string",
+                "description": "Response Form Description"
+              },
+              "formButtonLabel": {
+                "type": "string",
+                "description": "Response Form Button Label"
+              },
+              "formCustomStyling": {
+                "type": "string",
+                "description": "Response Form Custom Styling"
+              },
+              "limitWaitTime": {
+                "type": "boolean",
+                "description": "Limit Wait Time"
+              },
+              "limitWaitType": {
+                "type": "string",
+                "enum": [
+                  "interval",
+                  "absolute"
+                ],
+                "default": "interval"
+              },
+              "limitWaitAmount": {
+                "type": "number",
+                "default": 60
+              },
+              "limitWaitUnit": {
+                "type": "string",
+                "enum": [
+                  "minutes",
+                  "hours",
+                  "days"
+                ],
+                "default": "minutes"
+              },
+              "limitWaitDateTime": {
+                "type": "string"
+              },
+              "credentialId": {
+                "type": "string",
+                "description": "Credential ID"
+              }
+            },
+            "required": [
+              "operation",
+              "fromEmail",
+              "toEmail"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 702.9599724800636,
+        "y": -253.2211334416861
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}

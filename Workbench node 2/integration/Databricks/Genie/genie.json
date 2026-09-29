@@ -1,0 +1,1571 @@
+{
+  "nodes": [
+    {
+      "id": "databricks.genie.createconversationmessage-1783405691180",
+      "type": "action",
+      "position": {
+        "x": 727.4636243421771,
+        "y": 404.2341435270579
+      },
+      "data": {
+        "label": "Create Conversation Message",
+        "toolId": "databricks.genie.createconversationmessage",
+        "toolData": {
+          "id": "databricks.genie.createconversationmessage",
+          "displayName": "Create Conversation Message",
+          "category": "Integrations",
+          "provider": "databricks",
+          "operation": "Create Conversation Message",
+          "icon": "https://www.databricks.com/sites/default/files/2021-10/db-nav-logo.svg",
+          "actionGroup": "Genie",
+          "description": "Create Conversation Message in Genie",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "genie"
+                ],
+                "default": "genie"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "startConversation",
+                  "createConversationMessage",
+                  "getConversationMessage",
+                  "executeMessageSqlQuery",
+                  "getQueryResults",
+                  "getGenieSpace"
+                ]
+              },
+              "spaceId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "initialMessage": {
+                "type": "string"
+              },
+              "conversationId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "messageId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "attachmentId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "credentials": {
+                "description": "Databricks credentials"
+              }
+            },
+            "required": [
+              "operation",
+              "spaceId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Genie",
+                  "value": "genie"
+                }
+              ],
+              "default": "genie",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Start Conversation",
+                  "value": "startConversation"
+                },
+                {
+                  "name": "Create Conversation Message",
+                  "value": "createConversationMessage"
+                },
+                {
+                  "name": "Get Conversation Message",
+                  "value": "getConversationMessage"
+                },
+                {
+                  "name": "Execute Message SQL Query",
+                  "value": "executeMessageSqlQuery"
+                },
+                {
+                  "name": "Get Query Results",
+                  "value": "getQueryResults"
+                },
+                {
+                  "name": "Get Genie Space",
+                  "value": "getGenieSpace"
+                }
+              ],
+              "default": "createConversationMessage",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "spaceId",
+              "displayName": "Space ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "startConversation",
+                    "createConversationMessage",
+                    "getConversationMessage",
+                    "executeMessageSqlQuery",
+                    "getQueryResults",
+                    "getGenieSpace"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "initialMessage",
+              "displayName": "Initial Message",
+              "type": "string",
+              "format": "text",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "startConversation"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "conversationId",
+              "displayName": "Conversation ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "createConversationMessage",
+                    "getConversationMessage",
+                    "executeMessageSqlQuery",
+                    "getQueryResults"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "message",
+              "displayName": "Message",
+              "type": "string",
+              "format": "text",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "createConversationMessage"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "messageId",
+              "displayName": "Message ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "getConversationMessage",
+                    "executeMessageSqlQuery",
+                    "getQueryResults"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "attachmentId",
+              "displayName": "Attachment ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "executeMessageSqlQuery",
+                    "getQueryResults"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "createConversationMessage",
+            "resource": "genie"
+          },
+          "subCategory": "Genie"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "createConversationMessage",
+          "resource": "genie"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "databricks.genie.executemessagesqlquery-1783405692443",
+      "type": "action",
+      "position": {
+        "x": 1083.4636243421774,
+        "y": 714.234143527058
+      },
+      "data": {
+        "label": "Execute Message SQL Query",
+        "toolId": "databricks.genie.executemessagesqlquery",
+        "toolData": {
+          "id": "databricks.genie.executemessagesqlquery",
+          "displayName": "Execute Message SQL Query",
+          "category": "Integrations",
+          "provider": "databricks",
+          "operation": "Execute Message SQL Query",
+          "icon": "https://www.databricks.com/sites/default/files/2021-10/db-nav-logo.svg",
+          "actionGroup": "Genie",
+          "description": "Execute Message SQL Query in Genie",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "genie"
+                ],
+                "default": "genie"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "startConversation",
+                  "createConversationMessage",
+                  "getConversationMessage",
+                  "executeMessageSqlQuery",
+                  "getQueryResults",
+                  "getGenieSpace"
+                ]
+              },
+              "spaceId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "initialMessage": {
+                "type": "string"
+              },
+              "conversationId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "messageId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "attachmentId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "credentials": {
+                "description": "Databricks credentials"
+              }
+            },
+            "required": [
+              "operation",
+              "spaceId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Genie",
+                  "value": "genie"
+                }
+              ],
+              "default": "genie",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Start Conversation",
+                  "value": "startConversation"
+                },
+                {
+                  "name": "Create Conversation Message",
+                  "value": "createConversationMessage"
+                },
+                {
+                  "name": "Get Conversation Message",
+                  "value": "getConversationMessage"
+                },
+                {
+                  "name": "Execute Message SQL Query",
+                  "value": "executeMessageSqlQuery"
+                },
+                {
+                  "name": "Get Query Results",
+                  "value": "getQueryResults"
+                },
+                {
+                  "name": "Get Genie Space",
+                  "value": "getGenieSpace"
+                }
+              ],
+              "default": "executeMessageSqlQuery",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "spaceId",
+              "displayName": "Space ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "startConversation",
+                    "createConversationMessage",
+                    "getConversationMessage",
+                    "executeMessageSqlQuery",
+                    "getQueryResults",
+                    "getGenieSpace"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "initialMessage",
+              "displayName": "Initial Message",
+              "type": "string",
+              "format": "text",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "startConversation"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "conversationId",
+              "displayName": "Conversation ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "createConversationMessage",
+                    "getConversationMessage",
+                    "executeMessageSqlQuery",
+                    "getQueryResults"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "message",
+              "displayName": "Message",
+              "type": "string",
+              "format": "text",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "createConversationMessage"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "messageId",
+              "displayName": "Message ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "getConversationMessage",
+                    "executeMessageSqlQuery",
+                    "getQueryResults"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "attachmentId",
+              "displayName": "Attachment ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "executeMessageSqlQuery",
+                    "getQueryResults"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "executeMessageSqlQuery",
+            "resource": "genie"
+          },
+          "subCategory": "Genie"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "executeMessageSqlQuery",
+          "resource": "genie"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "databricks.genie.getconversationmessage-1783405693787",
+      "type": "action",
+      "position": {
+        "x": 1603.4636243421774,
+        "y": 532.234143527058
+      },
+      "data": {
+        "label": "Get Conversation Message",
+        "toolId": "databricks.genie.getconversationmessage",
+        "toolData": {
+          "id": "databricks.genie.getconversationmessage",
+          "displayName": "Get Conversation Message",
+          "category": "Integrations",
+          "provider": "databricks",
+          "operation": "Get Conversation Message",
+          "icon": "https://www.databricks.com/sites/default/files/2021-10/db-nav-logo.svg",
+          "actionGroup": "Genie",
+          "description": "Get Conversation Message in Genie",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "genie"
+                ],
+                "default": "genie"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "startConversation",
+                  "createConversationMessage",
+                  "getConversationMessage",
+                  "executeMessageSqlQuery",
+                  "getQueryResults",
+                  "getGenieSpace"
+                ]
+              },
+              "spaceId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "initialMessage": {
+                "type": "string"
+              },
+              "conversationId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "messageId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "attachmentId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "credentials": {
+                "description": "Databricks credentials"
+              }
+            },
+            "required": [
+              "operation",
+              "spaceId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Genie",
+                  "value": "genie"
+                }
+              ],
+              "default": "genie",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Start Conversation",
+                  "value": "startConversation"
+                },
+                {
+                  "name": "Create Conversation Message",
+                  "value": "createConversationMessage"
+                },
+                {
+                  "name": "Get Conversation Message",
+                  "value": "getConversationMessage"
+                },
+                {
+                  "name": "Execute Message SQL Query",
+                  "value": "executeMessageSqlQuery"
+                },
+                {
+                  "name": "Get Query Results",
+                  "value": "getQueryResults"
+                },
+                {
+                  "name": "Get Genie Space",
+                  "value": "getGenieSpace"
+                }
+              ],
+              "default": "getConversationMessage",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "spaceId",
+              "displayName": "Space ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "startConversation",
+                    "createConversationMessage",
+                    "getConversationMessage",
+                    "executeMessageSqlQuery",
+                    "getQueryResults",
+                    "getGenieSpace"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "initialMessage",
+              "displayName": "Initial Message",
+              "type": "string",
+              "format": "text",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "startConversation"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "conversationId",
+              "displayName": "Conversation ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "createConversationMessage",
+                    "getConversationMessage",
+                    "executeMessageSqlQuery",
+                    "getQueryResults"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "message",
+              "displayName": "Message",
+              "type": "string",
+              "format": "text",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "createConversationMessage"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "messageId",
+              "displayName": "Message ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "getConversationMessage",
+                    "executeMessageSqlQuery",
+                    "getQueryResults"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "attachmentId",
+              "displayName": "Attachment ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "executeMessageSqlQuery",
+                    "getQueryResults"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "getConversationMessage",
+            "resource": "genie"
+          },
+          "subCategory": "Genie"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "getConversationMessage",
+          "resource": "genie"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "databricks.genie.getgeniespace-1783405695484",
+      "type": "action",
+      "position": {
+        "x": 1475.4636243421774,
+        "y": 352.2341435270579
+      },
+      "data": {
+        "label": "Get Genie Space",
+        "toolId": "databricks.genie.getgeniespace",
+        "toolData": {
+          "id": "databricks.genie.getgeniespace",
+          "displayName": "Get Genie Space",
+          "category": "Integrations",
+          "provider": "databricks",
+          "operation": "Get Genie Space",
+          "icon": "https://www.databricks.com/sites/default/files/2021-10/db-nav-logo.svg",
+          "actionGroup": "Genie",
+          "description": "Get Genie Space in Genie",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "genie"
+                ],
+                "default": "genie"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "startConversation",
+                  "createConversationMessage",
+                  "getConversationMessage",
+                  "executeMessageSqlQuery",
+                  "getQueryResults",
+                  "getGenieSpace"
+                ]
+              },
+              "spaceId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "initialMessage": {
+                "type": "string"
+              },
+              "conversationId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "messageId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "attachmentId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "credentials": {
+                "description": "Databricks credentials"
+              }
+            },
+            "required": [
+              "operation",
+              "spaceId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Genie",
+                  "value": "genie"
+                }
+              ],
+              "default": "genie",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Start Conversation",
+                  "value": "startConversation"
+                },
+                {
+                  "name": "Create Conversation Message",
+                  "value": "createConversationMessage"
+                },
+                {
+                  "name": "Get Conversation Message",
+                  "value": "getConversationMessage"
+                },
+                {
+                  "name": "Execute Message SQL Query",
+                  "value": "executeMessageSqlQuery"
+                },
+                {
+                  "name": "Get Query Results",
+                  "value": "getQueryResults"
+                },
+                {
+                  "name": "Get Genie Space",
+                  "value": "getGenieSpace"
+                }
+              ],
+              "default": "getGenieSpace",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "spaceId",
+              "displayName": "Space ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "startConversation",
+                    "createConversationMessage",
+                    "getConversationMessage",
+                    "executeMessageSqlQuery",
+                    "getQueryResults",
+                    "getGenieSpace"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "initialMessage",
+              "displayName": "Initial Message",
+              "type": "string",
+              "format": "text",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "startConversation"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "conversationId",
+              "displayName": "Conversation ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "createConversationMessage",
+                    "getConversationMessage",
+                    "executeMessageSqlQuery",
+                    "getQueryResults"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "message",
+              "displayName": "Message",
+              "type": "string",
+              "format": "text",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "createConversationMessage"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "messageId",
+              "displayName": "Message ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "getConversationMessage",
+                    "executeMessageSqlQuery",
+                    "getQueryResults"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "attachmentId",
+              "displayName": "Attachment ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "executeMessageSqlQuery",
+                    "getQueryResults"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "getGenieSpace",
+            "resource": "genie"
+          },
+          "subCategory": "Genie"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "getGenieSpace",
+          "resource": "genie"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "databricks.genie.getqueryresults-1783405697435",
+      "type": "action",
+      "position": {
+        "x": 1459.4636243421774,
+        "y": 946.2341435270581
+      },
+      "data": {
+        "label": "Get Query Results",
+        "toolId": "databricks.genie.getqueryresults",
+        "toolData": {
+          "id": "databricks.genie.getqueryresults",
+          "displayName": "Get Query Results",
+          "category": "Integrations",
+          "provider": "databricks",
+          "operation": "Get Query Results",
+          "icon": "https://www.databricks.com/sites/default/files/2021-10/db-nav-logo.svg",
+          "actionGroup": "Genie",
+          "description": "Get Query Results in Genie",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "genie"
+                ],
+                "default": "genie"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "startConversation",
+                  "createConversationMessage",
+                  "getConversationMessage",
+                  "executeMessageSqlQuery",
+                  "getQueryResults",
+                  "getGenieSpace"
+                ]
+              },
+              "spaceId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "initialMessage": {
+                "type": "string"
+              },
+              "conversationId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "messageId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "attachmentId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "credentials": {
+                "description": "Databricks credentials"
+              }
+            },
+            "required": [
+              "operation",
+              "spaceId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Genie",
+                  "value": "genie"
+                }
+              ],
+              "default": "genie",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Start Conversation",
+                  "value": "startConversation"
+                },
+                {
+                  "name": "Create Conversation Message",
+                  "value": "createConversationMessage"
+                },
+                {
+                  "name": "Get Conversation Message",
+                  "value": "getConversationMessage"
+                },
+                {
+                  "name": "Execute Message SQL Query",
+                  "value": "executeMessageSqlQuery"
+                },
+                {
+                  "name": "Get Query Results",
+                  "value": "getQueryResults"
+                },
+                {
+                  "name": "Get Genie Space",
+                  "value": "getGenieSpace"
+                }
+              ],
+              "default": "getQueryResults",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "spaceId",
+              "displayName": "Space ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "startConversation",
+                    "createConversationMessage",
+                    "getConversationMessage",
+                    "executeMessageSqlQuery",
+                    "getQueryResults",
+                    "getGenieSpace"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "initialMessage",
+              "displayName": "Initial Message",
+              "type": "string",
+              "format": "text",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "startConversation"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "conversationId",
+              "displayName": "Conversation ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "createConversationMessage",
+                    "getConversationMessage",
+                    "executeMessageSqlQuery",
+                    "getQueryResults"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "message",
+              "displayName": "Message",
+              "type": "string",
+              "format": "text",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "createConversationMessage"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "messageId",
+              "displayName": "Message ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "getConversationMessage",
+                    "executeMessageSqlQuery",
+                    "getQueryResults"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "attachmentId",
+              "displayName": "Attachment ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "executeMessageSqlQuery",
+                    "getQueryResults"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "getQueryResults",
+            "resource": "genie"
+          },
+          "subCategory": "Genie"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "getQueryResults",
+          "resource": "genie"
+        }
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "databricks.genie.startconversation-1783405698619",
+      "type": "action",
+      "position": {
+        "x": 1897.4636243421776,
+        "y": 838.234143527058
+      },
+      "data": {
+        "label": "Start Conversation",
+        "toolId": "databricks.genie.startconversation",
+        "toolData": {
+          "id": "databricks.genie.startconversation",
+          "displayName": "Start Conversation",
+          "category": "Integrations",
+          "provider": "databricks",
+          "operation": "Start Conversation",
+          "icon": "https://www.databricks.com/sites/default/files/2021-10/db-nav-logo.svg",
+          "actionGroup": "Genie",
+          "description": "Start Conversation in Genie",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "genie"
+                ],
+                "default": "genie"
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "startConversation",
+                  "createConversationMessage",
+                  "getConversationMessage",
+                  "executeMessageSqlQuery",
+                  "getQueryResults",
+                  "getGenieSpace"
+                ]
+              },
+              "spaceId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "initialMessage": {
+                "type": "string"
+              },
+              "conversationId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "messageId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "attachmentId": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "credentials": {
+                "description": "Databricks credentials"
+              }
+            },
+            "required": [
+              "operation",
+              "spaceId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "fields": [
+            {
+              "name": "resource",
+              "displayName": "Resource",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Genie",
+                  "value": "genie"
+                }
+              ],
+              "default": "genie",
+              "required": true
+            },
+            {
+              "name": "operation",
+              "displayName": "Operation",
+              "type": "options",
+              "options": [
+                {
+                  "name": "Start Conversation",
+                  "value": "startConversation"
+                },
+                {
+                  "name": "Create Conversation Message",
+                  "value": "createConversationMessage"
+                },
+                {
+                  "name": "Get Conversation Message",
+                  "value": "getConversationMessage"
+                },
+                {
+                  "name": "Execute Message SQL Query",
+                  "value": "executeMessageSqlQuery"
+                },
+                {
+                  "name": "Get Query Results",
+                  "value": "getQueryResults"
+                },
+                {
+                  "name": "Get Genie Space",
+                  "value": "getGenieSpace"
+                }
+              ],
+              "default": "startConversation",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "spaceId",
+              "displayName": "Space ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "startConversation",
+                    "createConversationMessage",
+                    "getConversationMessage",
+                    "executeMessageSqlQuery",
+                    "getQueryResults",
+                    "getGenieSpace"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "initialMessage",
+              "displayName": "Initial Message",
+              "type": "string",
+              "format": "text",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "startConversation"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "conversationId",
+              "displayName": "Conversation ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "createConversationMessage",
+                    "getConversationMessage",
+                    "executeMessageSqlQuery",
+                    "getQueryResults"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "message",
+              "displayName": "Message",
+              "type": "string",
+              "format": "text",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "createConversationMessage"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "messageId",
+              "displayName": "Message ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "getConversationMessage",
+                    "executeMessageSqlQuery",
+                    "getQueryResults"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "attachmentId",
+              "displayName": "Attachment ID",
+              "type": "string",
+              "required": true,
+              "displayOptions": {
+                "show": {
+                  "resource": [
+                    "genie"
+                  ],
+                  "operation": [
+                    "executeMessageSqlQuery",
+                    "getQueryResults"
+                  ]
+                }
+              }
+            }
+          ],
+          "initialData": {
+            "operation": "startConversation",
+            "resource": "genie"
+          },
+          "subCategory": "Genie"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {
+          "operation": "startConversation",
+          "resource": "genie"
+        }
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

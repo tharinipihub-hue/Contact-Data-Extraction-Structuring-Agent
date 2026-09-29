@@ -1,0 +1,171 @@
+{
+  "nodes": [
+    {
+      "id": "zoom.meeting.create-1783406658730",
+      "type": "action",
+      "position": {
+        "x": 327,
+        "y": 236
+      },
+      "data": {
+        "label": "Zoom Create Meeting",
+        "toolId": "zoom.meeting.create",
+        "toolData": {
+          "id": "zoom.meeting.create",
+          "displayName": "Zoom Create Meeting",
+          "category": "Integrations",
+          "provider": "zoom",
+          "operation": "Create",
+          "icon": "zoom",
+          "description": "Create a new Zoom meeting",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Meeting",
+          "featured": true
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoom.meeting.delete-1783406680579",
+      "type": "action",
+      "position": {
+        "x": 431.75,
+        "y": 353.75
+      },
+      "data": {
+        "label": "Zoom Delete Meeting",
+        "toolId": "zoom.meeting.delete",
+        "toolData": {
+          "id": "zoom.meeting.delete",
+          "displayName": "Zoom Delete Meeting",
+          "category": "Integrations",
+          "provider": "zoom",
+          "operation": "Delete",
+          "icon": "zoom",
+          "description": "Delete a Zoom meeting",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Meeting"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoom.meeting.get-1783406686942",
+      "type": "action",
+      "position": {
+        "x": 1372.618260739118,
+        "y": 259.7082029294051
+      },
+      "data": {
+        "label": "Zoom Get Meeting",
+        "toolId": "zoom.meeting.get",
+        "toolData": {
+          "id": "zoom.meeting.get",
+          "displayName": "Zoom Get Meeting",
+          "category": "Integrations",
+          "provider": "zoom",
+          "operation": "Get",
+          "icon": "zoom",
+          "description": "Get details of a Zoom meeting",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Meeting"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoom.meeting.getMany-1783406688395",
+      "type": "action",
+      "position": {
+        "x": 1193.763705890891,
+        "y": 614.3858794928384
+      },
+      "data": {
+        "label": "Zoom List Meetings",
+        "toolId": "zoom.meeting.getMany",
+        "toolData": {
+          "id": "zoom.meeting.getMany",
+          "displayName": "Zoom List Meetings",
+          "category": "Integrations",
+          "provider": "zoom",
+          "operation": "Get Many",
+          "icon": "zoom",
+          "description": "List Zoom meetings for a user",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Meeting"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoom.meeting.update-1783406690491",
+      "type": "action",
+      "position": {
+        "x": 990.6576859784977,
+        "y": 150.5766101406564
+      },
+      "data": {
+        "label": "Zoom Update Meeting",
+        "toolId": "zoom.meeting.update",
+        "toolData": {
+          "id": "zoom.meeting.update",
+          "displayName": "Zoom Update Meeting",
+          "category": "Integrations",
+          "provider": "zoom",
+          "operation": "Update",
+          "icon": "zoom",
+          "description": "Update a Zoom meeting",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": {},
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Meeting"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

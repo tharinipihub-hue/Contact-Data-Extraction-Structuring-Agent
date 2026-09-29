@@ -1,0 +1,562 @@
+{
+  "nodes": [
+    {
+      "id": "zoho.crm.deal.create-1783406830104",
+      "type": "action",
+      "position": {
+        "x": 87.29061233830012,
+        "y": -225.32109835392245
+      },
+      "data": {
+        "label": "Create Deal",
+        "toolId": "zoho.crm.deal.create",
+        "toolData": {
+          "id": "zoho.crm.deal.create",
+          "displayName": "Create Deal",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoDealCreate",
+          "icon": "zoho",
+          "description": "Create a new deal in Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "Deal_Name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Deal Name"
+              },
+              "Stage": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "Qualification",
+                      "Needs Analysis",
+                      "Value Proposition",
+                      "Identify Decision Makers",
+                      "Proposal/Price Quote",
+                      "Negotiation/Review",
+                      "Closed Won",
+                      "Closed Lost",
+                      "Closed Lost to Competition"
+                    ]
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "description": "Stage Name or ID"
+              },
+              "Amount": {
+                "type": "number",
+                "description": "Amount"
+              },
+              "Closing_Date": {
+                "type": "string",
+                "description": "Closing Date (YYYY-MM-DD)"
+              },
+              "Currency": {
+                "type": "string",
+                "description": "Currency (ISO Code)"
+              },
+              "Description": {
+                "type": "string",
+                "description": "Description"
+              },
+              "Lead_Conversion_Time": {
+                "type": "integer",
+                "description": "Lead Conversion Time (Days)"
+              },
+              "Next_Step": {
+                "type": "string",
+                "description": "Next Step"
+              },
+              "Overall_Sales_Duration": {
+                "type": "integer",
+                "description": "Overall Sales Duration (Days)"
+              },
+              "Probability": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100,
+                "description": "Probability (0-100)"
+              },
+              "Sales_Cycle_Duration": {
+                "type": "integer",
+                "description": "Sales Cycle Duration (Days)"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "Deal_Name",
+              "Stage"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.deal.upsert-1783406831205",
+      "type": "action",
+      "position": {
+        "x": 917.9032907859986,
+        "y": -94.96947363402816
+      },
+      "data": {
+        "label": "Create or Update Deal",
+        "toolId": "zoho.crm.deal.upsert",
+        "toolData": {
+          "id": "zoho.crm.deal.upsert",
+          "displayName": "Create or Update Deal",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoDealUpsert",
+          "icon": "zoho",
+          "description": "Create or update a deal (upsert)",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "Deal_Name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Deal Name"
+              },
+              "Stage": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "Qualification",
+                      "Needs Analysis",
+                      "Value Proposition",
+                      "Identify Decision Makers",
+                      "Proposal/Price Quote",
+                      "Negotiation/Review",
+                      "Closed Won",
+                      "Closed Lost",
+                      "Closed Lost to Competition"
+                    ]
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "description": "Stage Name or ID"
+              },
+              "Amount": {
+                "type": "number",
+                "description": "Amount"
+              },
+              "Closing_Date": {
+                "type": "string",
+                "description": "Closing Date (YYYY-MM-DD)"
+              },
+              "Currency": {
+                "type": "string",
+                "description": "Currency (ISO Code)"
+              },
+              "Description": {
+                "type": "string",
+                "description": "Description"
+              },
+              "Lead_Conversion_Time": {
+                "type": "integer",
+                "description": "Lead Conversion Time (Days)"
+              },
+              "Next_Step": {
+                "type": "string",
+                "description": "Next Step"
+              },
+              "Overall_Sales_Duration": {
+                "type": "integer",
+                "description": "Overall Sales Duration (Days)"
+              },
+              "Probability": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100,
+                "description": "Probability (0-100)"
+              },
+              "Sales_Cycle_Duration": {
+                "type": "integer",
+                "description": "Sales Cycle Duration (Days)"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "Deal_Name",
+              "Stage"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.deal.delete-1783406832571",
+      "type": "action",
+      "position": {
+        "x": 899.7146919878738,
+        "y": -231.38396461996405
+      },
+      "data": {
+        "label": "Delete Deal",
+        "toolId": "zoho.crm.deal.delete",
+        "toolData": {
+          "id": "zoho.crm.deal.delete",
+          "displayName": "Delete Deal",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoDealDelete",
+          "icon": "zoho",
+          "description": "Delete a deal from Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "dealId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Deal ID"
+              }
+            },
+            "required": [
+              "dealId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.deal.get-1783406833994",
+      "type": "action",
+      "position": {
+        "x": 466.21975396589977,
+        "y": 159.67090953971882
+      },
+      "data": {
+        "label": "Get Deal",
+        "toolId": "zoho.crm.deal.get",
+        "toolData": {
+          "id": "zoho.crm.deal.get",
+          "displayName": "Get Deal",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoDealGet",
+          "icon": "zoho",
+          "description": "Retrieve a specific deal by ID",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "dealId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Deal ID"
+              }
+            },
+            "required": [
+              "dealId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.deal.getMany-1783406835498",
+      "type": "action",
+      "position": {
+        "x": 1296.8324324135983,
+        "y": 150.5766101406564
+      },
+      "data": {
+        "label": "Get Many Deals",
+        "toolId": "zoho.crm.deal.getMany",
+        "toolData": {
+          "id": "zoho.crm.deal.getMany",
+          "displayName": "Get Many Deals",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoDealGetMany",
+          "icon": "zoho",
+          "description": "Retrieve multiple deals with filtering",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "returnAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to return all results or limit"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 50,
+                "description": "Maximum number of records to return"
+              },
+              "approved": {
+                "type": "boolean",
+                "description": "Filter by approved status"
+              },
+              "converted": {
+                "type": "boolean",
+                "description": "Filter by converted status"
+              },
+              "includeChild": {
+                "type": "boolean",
+                "description": "Include child records"
+              },
+              "territoryId": {
+                "type": "string",
+                "description": "Territory ID filter"
+              },
+              "fields": {
+                "type": "string",
+                "description": "Comma-separated list of fields to return"
+              },
+              "sortBy": {
+                "type": "string",
+                "description": "Field to sort by"
+              },
+              "sortOrder": {
+                "type": "string",
+                "enum": [
+                  "asc",
+                  "desc"
+                ],
+                "description": "Sort Order (Ascending / Descending)"
+              }
+            },
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "perItem"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    },
+    {
+      "id": "zoho.crm.deal.update-1783406836891",
+      "type": "action",
+      "position": {
+        "x": 1527.221350523179,
+        "y": -158.6295694274649
+      },
+      "data": {
+        "label": "Update Deal",
+        "toolId": "zoho.crm.deal.update",
+        "toolData": {
+          "id": "zoho.crm.deal.update",
+          "displayName": "Update Deal",
+          "category": "Integrations",
+          "provider": "zoho_crm",
+          "operation": "zohoDealUpdate",
+          "icon": "zoho",
+          "description": "Update an existing deal in Zoho CRM",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Zoho CRM credential to use"
+              },
+              "dealId": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Deal ID"
+              },
+              "Deal_Name": {
+                "type": "string",
+                "description": "Deal Name"
+              },
+              "Stage": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "Qualification",
+                      "Needs Analysis",
+                      "Value Proposition",
+                      "Identify Decision Makers",
+                      "Proposal/Price Quote",
+                      "Negotiation/Review",
+                      "Closed Won",
+                      "Closed Lost",
+                      "Closed Lost to Competition"
+                    ]
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "description": "Stage Name or ID"
+              },
+              "Amount": {
+                "type": "number",
+                "description": "Amount"
+              },
+              "Closing_Date": {
+                "type": "string",
+                "description": "Closing Date (YYYY-MM-DD)"
+              },
+              "Currency": {
+                "type": "string",
+                "description": "Currency (ISO Code)"
+              },
+              "Description": {
+                "type": "string",
+                "description": "Description"
+              },
+              "Lead_Conversion_Time": {
+                "type": "integer",
+                "description": "Lead Conversion Time (Days)"
+              },
+              "Next_Step": {
+                "type": "string",
+                "description": "Next Step"
+              },
+              "Overall_Sales_Duration": {
+                "type": "integer",
+                "description": "Overall Sales Duration (Days)"
+              },
+              "Probability": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100,
+                "description": "Probability (0-100)"
+              },
+              "Sales_Cycle_Duration": {
+                "type": "integer",
+                "description": "Sales Cycle Duration (Days)"
+              },
+              "customFields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fieldId": {
+                      "type": "string",
+                      "description": "Custom Field ID"
+                    },
+                    "value": {
+                      "description": "Custom Field Value"
+                    }
+                  },
+                  "required": [
+                    "fieldId"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Custom Fields"
+              }
+            },
+            "required": [
+              "dealId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "executionMode": "batch"
+        },
+        "isTrigger": false,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 94
+    }
+  ],
+  "edges": []
+}

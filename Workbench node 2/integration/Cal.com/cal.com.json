@@ -1,0 +1,313 @@
+{
+  "nodes": [
+    {
+      "id": "cal.com.booking.trigger-1783405418779",
+      "type": "manual-trigger",
+      "position": {
+        "x": 1075.637355521819,
+        "y": 424.1891973889302
+      },
+      "data": {
+        "label": "Booking Trigger",
+        "toolId": "cal.com.booking.trigger",
+        "toolData": {
+          "id": "cal.com.booking.trigger",
+          "displayName": "Booking Trigger",
+          "category": "Integrations",
+          "provider": "cal.com",
+          "icon": "https://cal.com/logo.svg",
+          "description": "Triggers when a new booking is created in Cal.com",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Cal.com credential ID"
+              },
+              "userId": {
+                "type": "string",
+                "description": "User ID for credential isolation"
+              },
+              "eventTypeId": {
+                "type": "number",
+                "description": "Filter by specific event type ID"
+              }
+            },
+            "required": [
+              "credentialId",
+              "userId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Cal.com",
+          "dynamicFields": [
+            {
+              "fieldName": "credentialId",
+              "label": "Credential to connect with",
+              "dependsOn": [],
+              "fetchEndpoint": "/api/tools/cal.com/credentials",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "eventTypeId",
+              "label": "Event Type (Optional)",
+              "type": "options",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/cal.com/event-types",
+              "labelKey": "name",
+              "valueKey": "id",
+              "description": "Filter by specific event type. Leave empty for all events."
+            }
+          ]
+        },
+        "isTrigger": true,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 100,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1075.637355521819,
+        "y": 424.1891973889302
+      },
+      "dragging": false
+    },
+    {
+      "id": "cal.com.cancellation.trigger-1783405420043",
+      "type": "manual-trigger",
+      "position": {
+        "x": 1080.9423635046057,
+        "y": 534.8365067441893
+      },
+      "data": {
+        "label": "Cancellation Trigger",
+        "toolId": "cal.com.cancellation.trigger",
+        "toolData": {
+          "id": "cal.com.cancellation.trigger",
+          "displayName": "Cancellation Trigger",
+          "category": "Integrations",
+          "provider": "cal.com",
+          "icon": "https://cal.com/logo.svg",
+          "description": "Triggers when a booking is cancelled in Cal.com",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Cal.com credential ID"
+              },
+              "userId": {
+                "type": "string",
+                "description": "User ID for credential isolation"
+              },
+              "eventTypeId": {
+                "type": "number",
+                "description": "Filter by specific event type ID"
+              }
+            },
+            "required": [
+              "credentialId",
+              "userId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Cal.com",
+          "dynamicFields": [
+            {
+              "fieldName": "credentialId",
+              "label": "Credential to connect with",
+              "dependsOn": [],
+              "fetchEndpoint": "/api/tools/cal.com/credentials",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "eventTypeId",
+              "label": "Event Type (Optional)",
+              "type": "options",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/cal.com/event-types",
+              "labelKey": "name",
+              "valueKey": "id",
+              "description": "Filter by specific event type. Leave empty for all cancellations."
+            }
+          ]
+        },
+        "isTrigger": true,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 100,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1080.9423635046057,
+        "y": 534.8365067441893
+      },
+      "dragging": false
+    },
+    {
+      "id": "cal.com.meeting-ended.trigger-1783405424364",
+      "type": "manual-trigger",
+      "position": {
+        "x": 1084.7316549208817,
+        "y": 646.9995326659588
+      },
+      "data": {
+        "label": "Meeting Ended Trigger",
+        "toolId": "cal.com.meeting-ended.trigger",
+        "toolData": {
+          "id": "cal.com.meeting-ended.trigger",
+          "displayName": "Meeting Ended Trigger",
+          "category": "Integrations",
+          "provider": "cal.com",
+          "icon": "https://cal.com/logo.svg",
+          "description": "Triggers when a meeting ends in Cal.com",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Cal.com credential ID"
+              },
+              "userId": {
+                "type": "string",
+                "description": "User ID for credential isolation"
+              },
+              "eventTypeId": {
+                "type": "number",
+                "description": "Filter by specific event type ID"
+              }
+            },
+            "required": [
+              "credentialId",
+              "userId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Cal.com",
+          "dynamicFields": [
+            {
+              "fieldName": "credentialId",
+              "label": "Credential to connect with",
+              "dependsOn": [],
+              "fetchEndpoint": "/api/tools/cal.com/credentials",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "eventTypeId",
+              "label": "Event Type (Optional)",
+              "type": "options",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/cal.com/event-types",
+              "labelKey": "name",
+              "valueKey": "id",
+              "description": "Filter by specific event type. Leave empty for all ended meetings."
+            }
+          ]
+        },
+        "isTrigger": true,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 100,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1084.7316549208817,
+        "y": 646.9995326659588
+      },
+      "dragging": false
+    },
+    {
+      "id": "cal.com.reschedule.trigger-1783405426732",
+      "type": "manual-trigger",
+      "position": {
+        "x": 1085.4895132041368,
+        "y": 755.3732671714523
+      },
+      "data": {
+        "label": "Reschedule Trigger",
+        "toolId": "cal.com.reschedule.trigger",
+        "toolData": {
+          "id": "cal.com.reschedule.trigger",
+          "displayName": "Reschedule Trigger",
+          "category": "Integrations",
+          "provider": "cal.com",
+          "icon": "https://cal.com/logo.svg",
+          "description": "Triggers when a booking is rescheduled in Cal.com",
+          "inputSchemaJSON": {
+            "type": "object",
+            "properties": {
+              "credentialId": {
+                "type": "string",
+                "description": "Cal.com credential ID"
+              },
+              "userId": {
+                "type": "string",
+                "description": "User ID for credential isolation"
+              },
+              "eventTypeId": {
+                "type": "number",
+                "description": "Filter by specific event type ID"
+              }
+            },
+            "required": [
+              "credentialId",
+              "userId"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "subCategory": "Cal.com",
+          "dynamicFields": [
+            {
+              "fieldName": "credentialId",
+              "label": "Credential to connect with",
+              "dependsOn": [],
+              "fetchEndpoint": "/api/tools/cal.com/credentials",
+              "labelKey": "name",
+              "valueKey": "id"
+            },
+            {
+              "fieldName": "eventTypeId",
+              "label": "Event Type (Optional)",
+              "type": "options",
+              "dependsOn": [
+                "credentialId"
+              ],
+              "fetchEndpoint": "/api/tools/cal.com/event-types",
+              "labelKey": "name",
+              "valueKey": "id",
+              "description": "Filter by specific event type. Leave empty for all reschedules."
+            }
+          ]
+        },
+        "isTrigger": true,
+        "isPrimaryTrigger": false,
+        "inputs": {}
+      },
+      "width": 220,
+      "height": 100,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1085.4895132041368,
+        "y": 755.3732671714523
+      },
+      "dragging": false
+    }
+  ],
+  "edges": []
+}
