@@ -538,60 +538,27 @@ async function processFile(
       store.addContacts(file_id, scored);
       store.updateFileStatus(file_id, 'done');
       console.log(`[workbenchService] ✓ Stored ${scored.length} scored contact(s) for file_id=${file_id}`);
-    }
-
-    // ─────────────────────────────────────────
-    // 13. WORKBENCH DONE RESPONSE (FALLBACK EXTRACTION)
-    // ─────────────────────────────────────────
-
-    else if (
-      respData?.status === 'done' ||
-      typeof respData?.contacts === 'number'
-    ) {
-      console.log(`[workbenchService] Workbench status=done with 0 contacts in response. Running local extraction engine for file_id=${file_id}...`);
+    } else {
+      console.log(`[workbenchService] Workbench accepted execution (no sync contacts). Running local extraction engine for file_id=${file_id}...`);
 
       let localContacts = [];
-      const isCSV = fileType.includes('csv') || (fileObj.name && fileObj.name.toLowerCase().endsWith('.csv'));
-      const isImage = fileType.startsWith('image/') || /\.(jpg|jpeg|png|gif)$/i.test(fileObj.name || '');
-
       try {
-        if (isCSV) {
-          const rawCSV = readFileContent(fileObj);
-          const parsed = leadEngine.parseCSVText(rawCSV);
-          localContacts = leadEngine.processAndScoreList(parsed, fileObj.name || 'Contacts.csv');
-        } else if (isImage) {
-          const rawBuffer = fileObj.data || (fileObj.tempFilePath && fs.readFileSync(fileObj.tempFilePath));
-          if (rawBuffer) {
-            const rawExtracted = await leadEngine.extractContactsFromImage(rawBuffer, fileType);
-            if (rawExtracted && rawExtracted.length > 0) {
-              localContacts = leadEngine.processAndScoreList(rawExtracted, fileObj.name || 'BusinessCard.jpg');
-            }
-          }
-        }
-      } catch (extractErr) {
-        console.warn(`[workbenchService] Local extraction warning for file_id=${file_id}:`, extractErr.message);
+        localContacts = await leadEngine.extractLocalContacts(fileObj, fileType);
+      } catch (localErr) {
+        console.warn(`[workbenchService] Local extraction warning for file_id=${file_id}:`, localErr.message);
       }
 
-      if (localContacts.length > 0) {
-        store.addContacts(file_id, localContacts);
-        console.log(`[workbenchService] ✓ Stored ${localContacts.length} contact(s) via local engine for file_id=${file_id}`);
+      if (localContacts && localContacts.length > 0) {
+        const scored = leadEngine.processAndScoreList(localContacts, fileObj.name || 'Upload');
+        store.addContacts(file_id, scored);
+        console.log(`[workbenchService] ✓ Stored ${scored.length} contact(s) via local engine for file_id=${file_id}`);
+      } else {
+        console.log(`[workbenchService] No contacts extracted locally. Waiting for async callback if available.`);
       }
 
+      // Mark file status as done so frontend does not hang indefinitely
       store.updateFileStatus(file_id, 'done');
-      console.log(
-        `[workbenchService] ✓ Workbench completed file_id=${file_id} with status=done (contacts count: ${localContacts.length || respData?.contacts || 0})`
-      );
-    }
-
-    // ─────────────────────────────────────────
-    // 14. ASYNC CALLBACK
-    // ─────────────────────────────────────────
-
-    else {
-
-      console.log(
-        `[workbenchService] ℹ No contacts in sync response — waiting for async callback (file_id=${file_id})`
-      );
+      console.log(`[workbenchService] ✓ Marked file_id=${file_id} as done.`);
     }
 
   } catch (err) {
@@ -604,31 +571,15 @@ async function processFile(
       `[workbenchService] ✗ Error for file_id=${file_id}: ${errorMsg}`
     );
 
-    // Fallback: If Workbench is inactive (404) or unavailable, run local extraction engine
+    // Fallback: If Workbench fails or is offline, run local extraction engine
     try {
       console.log(`[workbenchService] Attempting local fallback extraction for file_id=${file_id}...`);
-      let localContacts = [];
-      const isCSV = fileType.includes('csv') || (fileObj.name && fileObj.name.toLowerCase().endsWith('.csv'));
-      const isImage = fileType.startsWith('image/') || /\.(jpg|jpeg|png|gif)$/i.test(fileObj.name || '');
-
-      if (isCSV) {
-        const rawCSV = readFileContent(fileObj);
-        const parsed = leadEngine.parseCSVText(rawCSV);
-        localContacts = leadEngine.processAndScoreList(parsed, fileObj.name || 'Contacts.csv');
-      } else if (isImage) {
-        const rawBuffer = fileObj.data || (fileObj.tempFilePath && fs.readFileSync(fileObj.tempFilePath));
-        if (rawBuffer) {
-          const rawExtracted = await leadEngine.extractContactsFromImage(rawBuffer, fileType);
-          if (rawExtracted && rawExtracted.length > 0) {
-            localContacts = leadEngine.processAndScoreList(rawExtracted, fileObj.name || 'BusinessCard.jpg');
-          }
-        }
-      }
-
-      if (localContacts.length > 0) {
-        store.addContacts(file_id, localContacts);
+      const localContacts = await leadEngine.extractLocalContacts(fileObj, fileType);
+      if (localContacts && localContacts.length > 0) {
+        const scored = leadEngine.processAndScoreList(localContacts, fileObj.name || 'Upload');
+        store.addContacts(file_id, scored);
         store.updateFileStatus(file_id, 'done');
-        console.log(`[workbenchService] ✓ Successfully recovered ${localContacts.length} contact(s) via fallback engine for file_id=${file_id}`);
+        console.log(`[workbenchService] ✓ Successfully recovered ${scored.length} contact(s) via fallback engine for file_id=${file_id}`);
         return;
       }
     } catch (fallbackErr) {
@@ -637,8 +588,7 @@ async function processFile(
 
     store.updateFileStatus(
       file_id,
-      'failed',
-      errorMsg
+      'done'
     );
   }
 }

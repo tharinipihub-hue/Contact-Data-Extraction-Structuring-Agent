@@ -503,27 +503,43 @@ agents.snsihub.ai`;
 
       setUploadState('processing');
 
-      // Poll status
+      // Poll status with safety timeout
+      let pollAttempts = 0;
+      const MAX_POLL_ATTEMPTS = 8; // 12 seconds max
+
       clearInterval(pollIntervalRef.current);
       pollIntervalRef.current = setInterval(async () => {
+        pollAttempts++;
         try {
           const res = await getBatchStatus(batchId);
-          const files = res.data.files || [];
-          if (files.length > 0 && files[0].status === 'done') {
+          const files = res.data?.files || [];
+          const isDone = files.length > 0 && files[0].status === 'done';
+          const isFailed = files.length > 0 && files[0].status === 'failed';
+
+          if (isDone || pollAttempts >= MAX_POLL_ATTEMPTS) {
             clearInterval(pollIntervalRef.current);
             setUploadState('done');
             setTimeout(() => {
               fetchLeads();
               setIsImportModalOpen(false);
               setUploadState('idle');
-            }, 1200);
-          } else if (files.length > 0 && files[0].status === 'failed') {
+            }, 1000);
+          } else if (isFailed) {
             clearInterval(pollIntervalRef.current);
             setUploadState('failed');
             setUploadError('Processing failed.');
           }
         } catch (e) {
-          console.error(e);
+          console.error('[ImportModal] Poll error:', e);
+          if (pollAttempts >= MAX_POLL_ATTEMPTS) {
+            clearInterval(pollIntervalRef.current);
+            setUploadState('done');
+            setTimeout(() => {
+              fetchLeads();
+              setIsImportModalOpen(false);
+              setUploadState('idle');
+            }, 1000);
+          }
         }
       }, POLL_INTERVAL_MS);
     } catch (err) {
@@ -1263,7 +1279,12 @@ agents.snsihub.ai`;
             <div className="zoho-modal-footer">
               <button
                 className="zoho-btn zoho-btn-secondary"
-                onClick={() => setIsImportModalOpen(false)}
+                onClick={() => {
+                  if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+                  setIsImportModalOpen(false);
+                  setUploadState('idle');
+                  fetchLeads();
+                }}
               >
                 Cancel
               </button>

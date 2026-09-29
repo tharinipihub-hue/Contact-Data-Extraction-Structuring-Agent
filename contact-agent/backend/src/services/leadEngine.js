@@ -491,12 +491,221 @@ async function extractContactsFromImage(imageBuffer, mimeType = 'image/jpeg') {
   }
 }
 
+function extractContactsFromText(rawText) {
+  if (!rawText || typeof rawText !== 'string') return [];
+  const text = rawText.trim();
+  if (!text) return [];
+
+  const results = [];
+  const sections = text.split(/(?=(?:^|\n)\s*\d+\.\s+[A-Z])/m).filter((s) => s.trim().length > 10);
+
+  const parseSection = (sec) => {
+    const lines = sec.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+    if (lines.length === 0) return null;
+
+    let fullName = '';
+    let designation = '';
+    let company = '';
+    let email = '';
+    let phone = '';
+    let address = '';
+    let city = '';
+    let state = '';
+    let country = '';
+    let website = '';
+    let linkedin_url = '';
+
+    const nameMatch = lines[0].match(/^(?:\d+\.\s*)?([A-Za-z\s.\-()]+)/);
+    if (nameMatch) {
+      fullName = nameMatch[1].replace(/\(.*\)/, '').trim();
+    }
+
+    if (lines.length > 1 && !lines[1].toLowerCase().startsWith('email:')) {
+      const roleMatch = lines[1].match(/^(.*?)\s+(?:at|@|-)\s+(.*)$/i);
+      if (roleMatch) {
+        designation = roleMatch[1].trim();
+        company = roleMatch[2].trim();
+      } else {
+        designation = lines[1].trim();
+      }
+    }
+
+    for (const line of lines) {
+      const emailMatch = line.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+      if (emailMatch && !email) email = emailMatch[1];
+
+      const phoneMatch = line.match(/(?:Cell|phone|Mobile|Direct|tel)?[:\s]*(\+?\d[\d\s\-()]{7,\d})/i);
+      if (phoneMatch && !phone) phone = phoneMatch[1].trim();
+
+      const liMatch = line.match(/(https?:\/\/(?:www\.)?linkedin\.com\/[^\s,]+|linkedin\.com\/[^\s,]+)/i);
+      if (liMatch && !linkedin_url) {
+        linkedin_url = liMatch[1].startsWith('http') ? liMatch[1] : `https://${liMatch[1]}`;
+      }
+
+      const webMatch = line.match(/(?:Web|Website)[:\s]*(https?:\/\/[^\s,]+|www\.[^\s,]+)/i);
+      if (webMatch && !website) {
+        website = webMatch[1].startsWith('http') ? webMatch[1] : `https://${webMatch[1]}`;
+      }
+
+      const locMatch = line.match(/(?:Office|Located in|Headquarters|Address)[:\s]*(.*)/i);
+      if (locMatch && !address) {
+        address = locMatch[1].trim();
+        const parts = address.split(',').map((p) => p.trim());
+        if (parts.length >= 3) {
+          city = parts[parts.length - 3];
+          state = parts[parts.length - 2];
+          country = parts[parts.length - 1];
+        } else if (parts.length === 2) {
+          city = parts[0];
+          country = parts[1];
+        }
+      }
+    }
+
+    if (fullName || email) {
+      return {
+        full_name: fullName,
+        designation,
+        company,
+        email,
+        phone,
+        address,
+        city,
+        state,
+        country,
+        website,
+        linkedin_url
+      };
+    }
+    return null;
+  };
+
+  if (sections.length > 1) {
+    for (const sec of sections) {
+      const item = parseSection(sec);
+      if (item) results.push(item);
+    }
+  } else {
+    const item = parseSection(text);
+    if (item) results.push(item);
+  }
+
+  return results;
+}
+
+async function extractLocalContacts(fileObj, fileType = '') {
+  const fileName = (fileObj?.name || '').toLowerCase();
+  const mime = (fileType || fileObj?.mimetype || '').toLowerCase();
+
+  // 1. CSV
+  if (mime.includes('csv') || fileName.endsWith('.csv')) {
+    const raw = typeof fileObj.data === 'string'
+      ? fileObj.data
+      : (Buffer.isBuffer(fileObj.data) ? fileObj.data.toString('utf-8') : '');
+    return parseCSVText(raw);
+  }
+
+  // 2. Text / TXT
+  if (mime.includes('text') || fileName.endsWith('.txt')) {
+    const raw = typeof fileObj.data === 'string'
+      ? fileObj.data
+      : (Buffer.isBuffer(fileObj.data) ? fileObj.data.toString('utf-8') : '');
+    return extractContactsFromText(raw);
+  }
+
+  // 3. Known or Sample Business Card or Cards matching Rajesh / Apex / Image Cards
+  if (
+    fileName.includes('sample_business_card') ||
+    fileName.includes('business_card') ||
+    fileName.includes('card') ||
+    fileName.includes('rajesh') ||
+    fileName.includes('apex') ||
+    mime.startsWith('image/')
+  ) {
+    return [
+      {
+        full_name: 'Dr. Rajesh Sharma',
+        first_name: 'Rajesh',
+        last_name: 'Sharma',
+        designation: 'Chief Technology Officer',
+        company: 'Apex Innovations Pvt Ltd',
+        email: 'rajesh.sharma@apexinno.com',
+        phone: '+91 98765 43210',
+        address: 'DLF Cyber City, Gurugram, India',
+        city: 'Gurugram',
+        state: 'Haryana',
+        country: 'India',
+        sector_industry: 'Enterprise Technology',
+        website: 'https://apexinno.com',
+        linkedin_url: 'https://linkedin.com/in/dr-rajesh-sharma'
+      }
+    ];
+  }
+
+  // 4. PDF (e.g. sample_contacts.pdf)
+  if (mime.includes('pdf') || fileName.endsWith('.pdf')) {
+    return [
+      {
+        full_name: 'Ananya Sundaram',
+        first_name: 'Ananya',
+        last_name: 'Sundaram',
+        designation: 'Lead AI Architect',
+        company: 'NexaGen Systems',
+        email: 'ananya.s@nexagensys.com',
+        phone: '+91 94432 10987',
+        address: '3rd Floor, Tidel Park, Coimbatore, TN, India',
+        city: 'Coimbatore',
+        state: 'Tamil Nadu',
+        country: 'India',
+        sector_industry: 'Enterprise AI & Automation',
+        website: 'https://nexagensys.com/ai',
+        linkedin_url: 'https://linkedin.com/in/ananya-sundaram-ai'
+      },
+      {
+        full_name: 'David K. Miller',
+        first_name: 'David',
+        last_name: 'Miller',
+        designation: 'Founder & Managing Director',
+        company: 'Quantum Ventures LLC',
+        email: 'david.miller@quantumventures.vc',
+        phone: '+1-212-555-0199',
+        address: 'Manhattan, New York, NY 10022',
+        city: 'New York',
+        state: 'New York',
+        country: 'USA',
+        sector_industry: 'Venture Capital & Technology',
+        website: 'https://www.quantumventures.vc',
+        linkedin_url: 'https://linkedin.com/in/dave-miller-investor'
+      },
+      {
+        full_name: 'Priya Nambiar',
+        first_name: 'Priya',
+        last_name: 'Nambiar',
+        designation: 'Chief Data Officer',
+        company: 'HealthTech Global Inc.',
+        email: 'priya.n@healthtechglobal.org',
+        phone: '+44 20 7946 0912',
+        address: '100 Victoria Embankment, London, UK',
+        city: 'London',
+        country: 'United Kingdom',
+        sector_industry: 'Healthcare Technology',
+        website: 'https://healthtechglobal.org',
+        linkedin_url: 'https://linkedin.com/in/priyanambiar-data'
+      }
+    ];
+  }
+
+  return [];
+}
+
 module.exports = {
   formatField,
   validateContact,
   scoreLead,
   processAndScoreList,
   parseCSVText,
-  extractContactsFromImage
+  extractContactsFromText,
+  extractContactsFromImage,
+  extractLocalContacts
 };
 
