@@ -14,15 +14,22 @@ const fs = require('fs');
 const uploadRoutes = require('./routes/upload');
 const statusRoutes = require('./routes/status');
 const contactRoutes = require('./routes/contacts');
+const nurtureContactsRoutes = require('./routes/nurtureContacts');
 const webhookRoutes = require('./routes/webhook');
 const retryRoutes = require('./routes/retry');
 const filesRoutes = require('./routes/files');
+const campaignsRoutes = require('./routes/campaigns');
+const salesRoutes = require('./routes/sales');
+const nurtureWebhookRoutes = require('./routes/nurtureWebhook');
+const nurtureStore = require('./services/nurtureStore');
+const { renderPreferencePage } = require('./views/preferencesView');
 
 // ── App setup ─────────────────────────────────────────────────────────────────
 
 const app = express();
 
 const PORT = process.env.PORT || 4000;
+const HOST = '0.0.0.0';
 
 // Ensure upload directory exists
 const UPLOAD_DIR = path.resolve(
@@ -88,10 +95,25 @@ app.use(
   statusRoutes
 );
 
-app.use(
-  '/contacts',
-  contactRoutes
-);
+app.use('/contacts', contactRoutes);
+
+
+// Nurturing contacts share the legacy /api/contacts shape without changing
+// the existing extraction CRM responses. The nurturing view calls /api.
+app.use('/api/contacts', nurtureContactsRoutes);
+app.use('/api/campaigns', campaignsRoutes);
+app.use('/api/sales', salesRoutes);
+app.use('/api/webhook', nurtureWebhookRoutes);
+app.get(['/preferences', '/unsubscribe'], (req, res) => {
+  const key = req.query.id || req.query.contact_id || req.query.email;
+  const contact = key ? (nurtureStore.getContactById(key) || nurtureStore.getContacts().find(c => String(c.email || '').toLowerCase() === String(key).toLowerCase())) : null;
+  const isUnsubscribe = req.path === '/unsubscribe';
+  if (isUnsubscribe && contact) {
+    const result = nurtureStore.updateContactPreferences(contact.id, { opt_in: false, reason: 'One-click unsubscribe link' });
+    if (result) nurtureStore.addAuditLog({ event_type: 'Client Opt-Out (Unsubscribe)', contact_name: `${contact.name} (${contact.company})`, details: 'Client opted out using the deployed unsubscribe link.', status: 'Opted Out' });
+  }
+  res.type('html').send(renderPreferencePage(contact, isUnsubscribe));
+});
 
 app.use(
   '/webhook',
@@ -138,8 +160,11 @@ if (fs.existsSync(frontendBuildPath)) {
       req.path.startsWith('/status') ||
       req.path.startsWith('/upload') ||
       req.path.startsWith('/webhook') ||
+      req.path.startsWith('/api') ||
       req.path.startsWith('/retry') ||
       req.path.startsWith('/health')
+      || req.path === '/preferences'
+      || req.path === '/unsubscribe'
     ) {
       return next();
     }
@@ -186,23 +211,10 @@ app.use(
 
 const server = app.listen(
   PORT,
+  HOST,
   () => {
     console.log(
-      `[server] Contact Agent backend running on http://localhost:${PORT}`
-    );
-
-    console.log(
-      `[server] Workbench webhook URL : ${
-        process.env.WORKBENCH_WEBHOOK_URL ||
-        '(not set)'
-      }`
-    );
-
-    console.log(
-      `[server] Callback URL          : ${
-        process.env.BACKEND_CALLBACK_URL ||
-        '(not set)'
-      }`
+      `[server] Contact Agent backend listening on ${HOST}:${PORT}`
     );
 
     console.log(

@@ -90,14 +90,14 @@ function evaluateSeniority(rawTitle) {
 
   // Secretary handling:
   if (/\bsecretary\b/i.test(t)) {
-    if (/\b(chief secretary|principal secretary|secretary to government)\b/i.test(t)) {
-      return { points: 40, label: 'Apex government leadership (Secretary to Govt)' };
+    if (/\b(chief secretary|cabinet secretary)\b/i.test(t)) {
+      return { points: 40, label: 'Apex government leadership (Cabinet / Chief Secretary)' };
     }
-    return { points: 35, label: 'Institutional / Corporate Secretary' };
+    return { points: 35, label: 'Senior leadership / Secretary to Government' };
   }
 
   // 4. Senior Leadership & Department Heads (35 pts)
-  if (/\b(head of|head|provost|controller|registrar|commissioner|secretary to government)\b/i.test(t)) {
+  if (/\b(head of|head|provost|controller|registrar|commissioner|secretary to government|joint secretary|additional secretary)\b/i.test(t)) {
     return { points: 35, label: 'Senior executive / department head' };
   }
 
@@ -700,7 +700,11 @@ async function extractLocalContacts(fileObj, fileType = '') {
 
 module.exports = {
   formatField,
+  cleanPhoneNumber,
   validateContact,
+  evaluateSeniority,
+  evaluateSector,
+  evaluateReachability,
   scoreLead,
   processAndScoreList,
   parseCSVText,

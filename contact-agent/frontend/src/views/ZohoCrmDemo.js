@@ -33,6 +33,7 @@ import { getContacts, uploadFiles, getBatchStatus, updateContactStatus, createCo
 import { GOOGLE_SHEETS_URL, POLL_INTERVAL_MS } from '../config';
 import { getLeadTier, fetchDirectFromGoogleSheets } from './LeadWorkspace';
 import { deduplicateContactList } from '../utils/dedup';
+import DigitalNurturingView from './DigitalNurturingView';
 import './ZohoCrmDemo.css';
 
 const GOOGLE_SHEETS_CSV_DIRECT =
@@ -78,6 +79,9 @@ function formatSourceType(source) {
 }
 
 function ZohoCrmDemo() {
+  // Active Agent tab: 'leads' (Contact Data Extraction) | 'nurturing' (Digital Nurturing Agent)
+  const [activeAgentTab, setActiveAgentTab] = useState('leads');
+
   // Leads data
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -555,54 +559,68 @@ agents.snsihub.ai`;
         <div className="zoho-nav-left">
           <div className="zoho-logo-wrap">
             <span style={{ fontWeight: 700, color: '#ffffff', letterSpacing: '-0.01em', fontSize: 14 }}>
-              Contact Data Extraction & Structuring Agent
+              {activeAgentTab === 'leads' ? 'Contact Data Extraction & Structuring Agent' : 'Digital Nurturing Agent'}
             </span>
           </div>
 
           <div className="zoho-nav-tabs">
-            <button className="zoho-nav-tab active">Leads</button>
+            <button
+              className={`zoho-nav-tab ${activeAgentTab === 'leads' ? 'active' : ''}`}
+              onClick={() => setActiveAgentTab('leads')}
+            >
+              Leads
+            </button>
+            <button
+              className={`zoho-nav-tab ${activeAgentTab === 'nurturing' ? 'active' : ''}`}
+              onClick={() => setActiveAgentTab('nurturing')}
+            >
+              Digital Nurturing Agent
+            </button>
           </div>
         </div>
 
         <div className="zoho-nav-center">
-          <div className="zoho-search-box">
-            <Search size={14} color="#94a3b8" />
-            <input
-              type="text"
-              className="zoho-search-input"
-              placeholder="Search extracted leads (e.g. Sundar, Nykaa, CEO)..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
+          {activeAgentTab === 'leads' && (
+            <div className="zoho-search-box">
+              <Search size={14} color="#94a3b8" />
+              <input
+                type="text"
+                className="zoho-search-input"
+                placeholder="Search extracted leads (e.g. Sundar, Nykaa, CEO)..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          )}
         </div>
 
         <div className="zoho-nav-right">
-          <button
-            className="zoho-btn zoho-btn-primary"
-            style={{ padding: '4px 10px', fontSize: 11 }}
-            onClick={() => setIsImportModalOpen(true)}
-          >
-            <Plus size={13} /> Import Leads
-          </button>
+          {activeAgentTab === 'leads' && (
+            <button
+              className="zoho-btn zoho-btn-primary"
+              style={{ padding: '4px 10px', fontSize: 11 }}
+              onClick={() => setIsImportModalOpen(true)}
+            >
+              <Plus size={13} /> Import Leads
+            </button>
+          )}
 
           <div className="zoho-profile-wrap" ref={profileMenuRef}>
             <div
               className="zoho-user-avatar"
               onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-              title="SNS Square Agent Profile & Operations"
+              title="Testing Workspace & Operations"
             >
-              SN
+              TS
             </div>
 
             {isProfileMenuOpen && (
               <div className="zoho-profile-menu">
                 <div className="zoho-profile-header">
-                  <div className="zoho-profile-avatar-lg">SN</div>
+                  <div className="zoho-profile-avatar-lg">TS</div>
                   <div>
-                    <div className="zoho-profile-name">SNS Square Administrator</div>
-                    <div className="zoho-profile-email">admin@snsihub.ai</div>
-                    <span className="zoho-profile-role-badge">Lead Ops &bull; AI Agent</span>
+                    <div className="zoho-profile-name">Testing Workspace</div>
+                    <span className="zoho-profile-role-badge">Testing Mode &bull; AI Agent</span>
                   </div>
                 </div>
 
@@ -670,8 +688,16 @@ agents.snsihub.ai`;
         </div>
       </nav>
 
-      {/* ── Module Sub-Header (Views & Actions) ── */}
-      <div className="zoho-subbar">
+      {/* ── Active Agent Page Conditional Rendering ── */}
+      {activeAgentTab === 'nurturing' ? (
+        <DigitalNurturingView
+          extractedLeads={leads}
+          onSwitchToExtraction={() => setActiveAgentTab('leads')}
+        />
+      ) : (
+        <>
+          {/* ── Module Sub-Header (Views & Actions) ── */}
+          <div className="zoho-subbar">
         <div className="zoho-subbar-left">
           <div className="zoho-module-selector">
             <span className="zoho-module-title">Leads</span>
@@ -1620,6 +1646,8 @@ agents.snsihub.ai`;
             </button>
           </div>
         </div>
+      )}
+        </>
       )}
     </div>
   );

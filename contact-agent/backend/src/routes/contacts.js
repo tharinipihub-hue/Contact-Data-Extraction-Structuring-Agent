@@ -16,7 +16,7 @@ const router = express.Router();
 
 // ── GET /contacts ─────────────────────────────────────────────────────────────
 router.get('/', async (req, res) => {
-  const { batch_id, source } = req.query;
+  const { batch_id } = req.query;
 
   // If specific batch requested from local uploads
   if (batch_id) {
@@ -119,5 +119,6 @@ router.post('/', (req, res) => {
   store.addContacts('manual_leads', [newContact]);
   return res.status(201).json({ ok: true, contact: newContact });
 });
+
 
 module.exports = router;

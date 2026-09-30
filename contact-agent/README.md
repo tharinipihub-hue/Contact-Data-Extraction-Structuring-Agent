@@ -175,6 +175,91 @@ Each extracted contact has these fields:
 
 ---
 
+## Lead Scoring & Qualification Engine Specification
+
+The system incorporates an Enterprise Lead Scoring & Qualification Engine modeled after Zoho CRM Enterprise standards. It evaluates every extracted contact using an objective, multi-factor point model with strict guardrails and execution ordering.
+
+### 1. Rule Execution Order
+
+To prevent logical collisions (e.g. an AI company CEO who qualifies for both an Apex Floor of 85 and a Competitor Override of 20), rules are strictly evaluated in the following sequential order:
+
+1. **Step 1: Competitor Override Check**
+   - If contact belongs to a direct AI competitor or vendor (excluding educational institutions, universities, and healthcare trusts), the contact is immediately assigned:
+     - **Score**: `20` (Cold / Low Priority)
+     - **Rationale**: `"Direct AI company / role overlap; competitor clash with our AI offerings. Assigned to Cold priority."`
+     - **Action**: Deprioritized to avoid market conflict.
+     - *All subsequent scoring steps are bypassed.*
+2. **Step 2: Base Points Calculation**
+   $$\text{Base Score} = \text{Seniority Points} + \text{Sector Points} + \text{Available Channels Points}$$
+3. **Step 3: Non-Decision-Maker Cap**
+   - If `Seniority <= 5` (Interns, Students, Clerks, Unspecified Roles):
+     $$\text{Score} = \min(\text{Score}, 39) \quad (\text{Guaranteed Cold})$$
+4. **Step 4: Apex Executive Floor**
+   - If `Seniority == 40` (Board Trustees, Chairmen, CEOs, MDs, Chancellors, Ministers, Cabinet/Chief Secretaries):
+     $$\text{Score} = \max(\text{Score}, 85) \quad (\text{Guaranteed Hot})$$
+5. **Step 5: Mid-Level Hot Gate**
+   - The Hot Tier ($\ge 70$) is strictly reserved for apex decision-makers (`Seniority >= 35`).
+   - If `Seniority < 35` (Managers, Department Leads, Professors, Faculty, Staff):
+     $$\text{Score} = \min(\text{Score}, 69) \quad (\text{Guaranteed Warm Max})$$
+6. **Step 6: Final Tier Assignment**
+   - Final score bounded to $[0, 100]$.
+   - Tier assigned:
+     - **Hot (High Priority)**: $70\text{–}100$
+     - **Warm (Medium Priority)**: $40\text{–}69$
+     - **Cold (Low Priority)**: $0\text{–}39$
+
+---
+
+### 2. Point Breakdown Tables
+
+#### A. Seniority & Decision-Making Authority (Max 40 Pts)
+
+| Tier Level | Points | Included Titles & Roles |
+|:---|:---:|:---|
+| **Apex Institutional / Corporate / Govt Leadership** | **40** | Trustee, Chairman, Chairperson, Correspondent, Director, Managing Director, Chancellor, Principal (Institution Head), Dean, President, Founder, Co-Founder, CEO, CTO, CFO, COO, CRO, CIO, Owner, Partner, Minister, Cabinet Secretary, Chief Secretary |
+| **Senior Administrative & Govt Leadership** | **35** | Vice President (VP, SVP, EVP, AVP), Assistant/Associate/Deputy Director, Joint Director, Provost, Controller, Registrar, Commissioner, Secretary to Government, Joint Secretary, Head of Department |
+| **Managerial Roles** | **25** | Manager, Lead, Supervisor, Coordinator, HOD, Product Owner, Process Owner, Scrum Master |
+| **Specialist & Academic Faculty** | **20** | Professor, Associate Professor, Assistant Professor, Faculty, Lecturer, Reader, Principal Engineer/Architect, Domain Specialist, Consultant, Analyst |
+| **Professional Staff Role** | **15** | Officer, Executive, Associate, Assistant, Staff, Representative, Personal Secretary, Executive Secretary |
+| **Non-Decision Maker / Entry / Unspecified** | **5** | Intern, Internship, Student, Trainee, Apprentice, Peon, Attendant, Clerk, Unspecified Title |
+
+#### B. Sector & Industry Relevance (Max 30 Pts)
+
+| Sector Classification | Points | Matching Criteria |
+|:---|:---:|:---|
+| **Target Sector** | **30** | Higher Education, Universities, Engineering/Tech Colleges, Schools, Trusts, Software/SaaS/IT, Healthcare/Pharma, Retail/Apparel/Fashion, Banking/Finance, SNS Institutions |
+| **Government & Public Administration** | **20** | Ministries, Government Departments, Public Administration, Municipal Corporations, PSUs, State/Central Secretariats |
+| **Standard Commercial Organization** | **20** | Standard corporate entities, manufacturing, logistics, services outside priority target sectors |
+| **Missing / Unspecified Sector** | **5** | Document contains no company or sector information |
+
+#### C. Available Channels & Reachability (Max 30 Pts)
+
+*Zero hallucination standard: Channels are labeled **"Available channels"** based strictly on extracted contact data.*
+
+| Channel Type | Points | Validation & Scoring Criteria |
+|:---|:---:|:---|
+| **Official / Corporate Email** | **15** | Valid RFC-compliant email on a corporate/custom domain |
+| **Personal Freemail** | **8** | Valid email from personal domains (`@gmail`, `@yahoo`, `@outlook`, `@hotmail`, `@icloud`, `@rediffmail`, `@aol`) |
+| **Cleaned Phone Number** | **10** | Indian standard 8–11 digit phone number (strips `+91`, country code, trunk prefixes `0`) |
+| **LinkedIn URL or Physical Address** | **5** | Valid LinkedIn profile URL or physical postal/office address |
+
+---
+
+### 3. Concrete Benchmark Examples
+
+| Contact Name | Title & Company | Seniority (S) | Sector (I) | Available Channels (C) | Base Calculation | Applied Rules | Final Score | Tier |
+|:---|:---|:---:|:---:|:---:|:---:|:---|:---:|:---:|
+| **Ashish Dikshit** | Managing Director, Aditya Birla Fashion & Retail | 40 | 30 | Corporate Email (15) + Phone (10) = 25 | $40 + 30 + 25 = 95$ | Base score exceeds floor (95 > 85) | **95** | **Hot** |
+| **Engineering Intern** | Intern, SNS College of Technology | 5 | 30 | Corporate Email (15) + Phone (10) + LinkedIn (5) = 30 | $5 + 30 + 30 = 65$ | **Non-DM Cap**: $\min(65, 39) = 39$ | **39** | **Cold** |
+| **Marketing Manager** | Manager, Tech Solutions Inc | 25 | 30 | Corporate Email (15) + Phone (10) = 25 | $25 + 30 + 25 = 80$ | **Hot Gate**: Seniority $25 < 35 \rightarrow \min(80, 69) = 69$ | **69** | **Warm** |
+| **University Professor** | Professor, Delhi University | 20 | 30 | Corporate Email (15) + Phone (10) + LinkedIn (5) = 30 | $20 + 30 + 30 = 80$ | **Hot Gate**: Seniority $20 < 35 \rightarrow \min(80, 69) = 69$ | **69** | **Warm** |
+| **AI Startup CEO** | Chief Executive Officer, NextGen AI Solutions | 40 | 30 | Corporate Email (15) + Phone (10) = 25 | Bypassed | **Competitor Override**: Direct AI market clash | **20** | **Cold** |
+| **Apex Leader (No Channels)** | Chairman, Global Retail Corp | 40 | 30 | None (0) | $40 + 30 + 0 = 70$ | **Apex Floor**: $\max(70, 85) = 85$. Action: *"No contact channel available; research contact details prior to outreach."* | **85** | **Hot** |
+| **Union Minister** | Minister, Ministry of Education | 40 | 20 | Official Email (15) = 15 | $40 + 20 + 15 = 75$ | **Apex Floor**: $\max(75, 85) = 85$ | **85** | **Hot** |
+| **Secretary to Govt** | Secretary to Government, Public Works Dept | 35 | 20 | None (0) | $35 + 20 + 0 = 55$ | Eligible for Hot if reachability $\ge 15$ | **55** | **Warm** |
+
+---
+
 ## Testing with Postman
 
 1. Import `postman_collection.json` into Postman

@@ -353,11 +353,6 @@ async function processFile(
     );
 
     console.log(
-      '[workbenchService] URL:',
-      webhookUrl
-    );
-
-    console.log(
       '[workbenchService] file_id:',
       file_id
     );
@@ -390,21 +385,6 @@ async function processFile(
     console.log(
       '[workbenchService] file_content empty:',
       fileContent === ''
-    );
-
-    console.log(
-      '[workbenchService] file_content starts:',
-      fileContent.substring(0, 30)
-    );
-
-    console.log(
-      '[workbenchService] file_content ends:',
-      fileContent.substring(
-        Math.max(
-          0,
-          fileContent.length - 30
-        )
-      )
     );
 
     console.log(
@@ -491,10 +471,7 @@ async function processFile(
     );
 
     console.log(
-      '[workbenchService] Raw response:',
-      JSON.stringify(
-        response.data
-      ).slice(0, 1000)
+      `[workbenchService] Workbench response received for file_id=${file_id}`
     );
 
     // ─────────────────────────────────────────

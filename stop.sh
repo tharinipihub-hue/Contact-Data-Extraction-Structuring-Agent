@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-echo "Stopping services on ports 3000 and 4000..."
-lsof -ti :3000 | xargs kill -9 2>/dev/null
-lsof -ti :4000 | xargs kill -9 2>/dev/null
-echo "All services stopped."
+echo "Stop the foreground server with Ctrl+C. Render manages service shutdown with SIGTERM."
