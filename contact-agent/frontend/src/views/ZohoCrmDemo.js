@@ -627,17 +627,17 @@ agents.snsihub.ai`;
                 <div className="zoho-profile-body">
                   <div className="zoho-profile-status-card">
                     <div className="zoho-profile-status-row">
-                      <span style={{ color: '#64748b' }}>Google Sheets:</span>
+                      <span style={{ color: '#64748b' }}>Contact Records:</span>
                       <span style={{ fontWeight: 600, color: '#16a34a', display: 'flex', alignItems: 'center' }}>
                         <span className="zoho-status-indicator indicator-green"></span>
-                        Connected ({totalCount} Leads)
+                        {totalCount} Leads Available
                       </span>
                     </div>
                     <div className="zoho-profile-status-row">
-                      <span style={{ color: '#64748b' }}>SNS Agent Webhook:</span>
+                      <span style={{ color: '#64748b' }}>Application API:</span>
                       <span style={{ fontWeight: 600, color: '#16a34a', display: 'flex', alignItems: 'center' }}>
                         <span className="zoho-status-indicator indicator-green"></span>
-                        Active (Port 4000)
+                        Same-Origin Endpoint
                       </span>
                     </div>
                     <div className="zoho-profile-status-row">

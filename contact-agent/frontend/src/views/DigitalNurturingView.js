@@ -292,7 +292,6 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
         success: confirmed,
         elapsed,
         source: res.data?.source,
-        targetUrl: res.data?.targetUrl || null,
         status: confirmed ? 'Workbench generated preview content' : 'Workbench did not confirm generated content',
         data: res.data?.preview
       });
@@ -330,7 +329,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
     setTimeout(() => setNotification(null), 5000);
   };
 
-  // Initial Load & Real-Time Sync from backend (port 4001)
+  // Load current nurturing data from the same-origin application API.
   useEffect(() => {
     loadData();
     const handleFocus = () => loadData();
@@ -3586,7 +3585,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                 <div style={{ background: '#f8fafc', padding: 12, borderRadius: 8, border: '1px solid #e2e8f0' }}>
                   <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b' }}>Nurturing Workbench Webhook</div>
                   <div style={{ fontSize: 12, fontWeight: 600, color: '#2563eb', marginTop: 4, wordBreak: 'break-all' }}>
-                    {webhookTestResult?.targetUrl || 'Configured server-side with NURTURE_WORKBENCH_WEBHOOK_URL'}
+                    Configured server-side with NURTURE_WORKBENCH_WEBHOOK_URL
                   </div>
                   <span className={`dn-badge ${webhookTestResult?.success ? 'dn-badge-green' : 'dn-badge-amber'}`} style={{ marginTop: 6 }}>
                     {webhookTestResult?.success ? 'Verified by generated content response' : 'Not verified in this session'}
@@ -3624,7 +3623,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                   </div>
                   <div style={{ fontSize: 12, color: webhookTestResult.success ? '#14532d' : '#7f1d1d' }}>
                     {webhookTestResult.success
-                      ? `Successfully called ${webhookTestResult.targetUrl}. Workbench workflow executed with status: "${webhookTestResult.status}".`
+                      ? `SNS Workbench returned generated content with status: "${webhookTestResult.status}".`
                       : webhookTestResult.error}
                   </div>
                 </div>

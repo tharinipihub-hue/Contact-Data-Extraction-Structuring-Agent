@@ -129,8 +129,7 @@ app.use(
 // Example:
 // GET /files/<file_id>
 //
-// This is used by Mistral OCR to access the actual
-// uploaded business-card image through the ngrok URL.
+// Public file endpoint for Workbench workflow configurations that fetch uploads.
 app.use(
   '/files',
   filesRoutes
