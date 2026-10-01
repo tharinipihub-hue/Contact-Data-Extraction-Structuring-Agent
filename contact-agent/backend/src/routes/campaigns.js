@@ -94,9 +94,19 @@ function getUnsubscribeBaseUrl(req) {
   if (process.env.PUBLIC_APP_URL) {
     return process.env.PUBLIC_APP_URL.replace(/\/+$/, '');
   }
-  const host = req ? (req.headers['x-forwarded-host'] || req.headers.host) : null;
+  let host = req ? (req.headers['x-forwarded-host'] || req.headers.host) : null;
   const proto = req ? (req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http')) : 'http';
+  if (host && /^(localhost|127\.0\.0\.1):3000$/i.test(host)) {
+    host = host.replace(/:3000$/i, ':4000');
+  }
   return host ? `${proto}://${host}` : '';
+}
+
+function useConfiguredPreferenceLinks(emailBody, unsubscribeUrl, preferencesUrl) {
+  return String(emailBody || '').replace(
+    /https?:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?\/(unsubscribe|preferences)(?:\?[^\s"'<>]*)?/gi,
+    (_match, page) => page.toLowerCase() === 'unsubscribe' ? unsubscribeUrl : preferencesUrl
+  );
 }
 
 function extractWorkbenchAiContent(data) {
@@ -334,7 +344,7 @@ router.post('/generate', async (req, res) => {
       const previewData = {
         ...((result.data?.nurtured_contact || result.data?.result || result.data) || {}),
         subject: extracted.subject,
-        email_body: extracted.email_body,
+        email_body: useConfiguredPreferenceLinks(extracted.email_body, unsubUrl, prefUrl),
         personalization_summary: extracted.personalization_summary || 'Generated via SNS Workbench',
         content_source: 'workbench'
       };

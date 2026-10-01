@@ -59,7 +59,11 @@ import {
 import './DigitalNurturingView.css';
 
 const API_BASE = '/api';
-const APP_ORIGIN = typeof window !== 'undefined' ? window.location.origin : '';
+const APP_ORIGIN = typeof window === 'undefined' ? '' : (
+  window.location.hostname === 'localhost' && window.location.port === '3000'
+    ? 'http://localhost:4000'
+    : window.location.origin
+);
 const NURTURE_CONTACTS_URL = `${API_BASE}/contacts`;
 const NURTURE_SHEET_MANAGEMENT_URL = process.env.REACT_APP_NURTURE_SHEET_MANAGEMENT_URL || '';
 
