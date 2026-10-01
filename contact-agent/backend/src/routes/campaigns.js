@@ -210,48 +210,6 @@ function extractWorkbenchAiContent(data) {
   return null;
 }
 
-function buildIntelligentPreview({ contact, activeSector, developerInput, occasion, campaign_name, topic, campaign_type }) {
-  const textToCheck = `${developerInput} ${occasion || ''} ${campaign_name || ''} ${topic || ''}`;
-  const isMilestone = /\b(founders?('s)?(\s+day)?|foundation\s+day|company\s+anniversary|annual\s+day|corporate\s+milestone|company\s+milestone|jubilee)\b|celebrat(ed|ing)\s+(our\s+)?(anniversary|found(ers?|ing)|milestone)/i.test(textToCheck);
-  const isFestival = campaign_type === 'festival_wish' || campaign_type === 'Festival / Occasion Wish';
-  const isWelcome = campaign_type === 'welcome' || campaign_type === 'Welcome Message';
-  const isPromotional = campaign_type === 'promotional' || campaign_type === 'Promotional / Strategic Update';
-
-  if (isMilestone) {
-    const milestoneTitle = (occasion && /\b(founders?('s)?(\s+day)?|foundation\s+day|company\s+anniversary|annual\s+day|corporate\s+milestone|company\s+milestone|jubilee)\b/i.test(occasion)) ? occasion : 'Company Milestone';
-    return {
-      subject: `Celebrating SNS Square ${milestoneTitle}: Thank You for Partnering with Us, ${contact.name}`,
-      email_body: `Dear ${contact.name},\n\nWe at SNS Square recently celebrated our ${milestoneTitle}!\n\nAs we commemorate this company milestone, we want to express our sincere appreciation to valued partners like ${contact.company}.\n\n${developerInput}\n\nOur platform advancements and continuous growth are made possible through the collaboration and trust of forward-thinking leaders like you.\n\nThank you for partnering with us. We look forward to continuing our impactful work together.\n\nSNS Square Multi-Agent Platform`,
-      whatsapp_message: `Dear ${contact.name}, we at SNS Square recently celebrated our ${milestoneTitle}! ${developerInput} Thank you for your continued partnership and trust.`
-    };
-  } else if (isFestival) {
-    const occasionName = occasion || 'Festive Season';
-    return {
-      subject: `Warm ${occasionName} Greetings from SNS Square`,
-      email_body: `Dear ${contact.name},\n\nOn behalf of everyone at SNS Square, we send our warmest greetings for ${occasionName} to you, your team, and your family at ${contact.company}.\n\n${developerInput}\n\nMay this celebratory season bring joy, health, and prosperity to you and your organization.\n\nSNS Square Multi-Agent Platform`,
-      whatsapp_message: `Warm ${occasionName} greetings from SNS Square! ${developerInput} Wishing you and everyone at ${contact.company} joy and success this season!`
-    };
-  } else if (isWelcome) {
-    return {
-      subject: `Welcome to SNS Square: Strategic Partnership with ${contact.company}`,
-      email_body: `Dear ${contact.name},\n\nWelcome to SNS Square! We are delighted to partner with ${contact.company}.\n\n${developerInput}\n\nOur dedicated account engineering team is here to support end-to-end integration across the SNS Square Agent Workbench, Google Sheets synchronization, and multichannel communication pipelines.\n\nWe look forward to an impactful collaboration.\n\nSNS Square Multi-Agent Platform`,
-      whatsapp_message: `Welcome to SNS Square! We are excited to collaborate with your team at ${contact.company}. ${developerInput}`
-    };
-  } else if (isPromotional) {
-    return {
-      subject: `SNS Square Strategic Update: Next-Generation Capabilities`,
-      email_body: `Dear ${contact.name},\n\nWe are pleased to share an update on next-generation capabilities from the SNS Square Multi-Agent Platform.\n\n${developerInput}\n\nIn recent deployments across ${contact.sector || 'Enterprise'} organizations, teams have established unified data governance and automated lead capture with sub-second response times.\n\nReply directly if you would like an engineering demonstration tailored for ${contact.company}.\n\nSNS Square Multi-Agent Platform`,
-      whatsapp_message: `Hi ${contact.name}! Discover the latest enterprise feature updates from SNS Square: ${developerInput}`
-    };
-  } else {
-    return {
-      subject: `${contact.sector || 'Technology'} Intelligence Briefing: Enterprise Multi-Agent Workflows`,
-      email_body: `Dear ${contact.name},\n\nAs leadership at ${contact.company}, keeping ahead in the rapidly evolving ${contact.sector || 'Technology'} landscape is paramount.\n\nOur advisory team at SNS Square has compiled exclusive operational benchmarks examining how organizations are deploying autonomous agent pipelines to streamline workflows and eliminate manual data bottlenecks.\n\n${developerInput}\n\nWould you be open to an introductory 15-minute sync next week to review these findings?\n\nSNS Square Multi-Agent Platform`,
-      whatsapp_message: `Hi ${contact.name}! Here is your tailored ${contact.sector || 'Technology'} briefing for ${contact.company}. ${developerInput}`
-    };
-  }
-}
-
 // Generate content & preview strictly using SNS Workbench Webhook (with Groq GPT-OSS-120B)
 router.post('/test-webhook', async (_req, res) => {
   try {
@@ -280,39 +238,35 @@ router.post('/generate', async (req, res) => {
     targetContact = nurtureStore.getContactById(contact_id);
   }
 
-  const allContacts = nurtureStore.getContacts();
-  const requestedIds = Array.isArray(contacts) ? new Set(contacts.map(c => c.id).filter(Boolean)) : null;
-  let recipientContacts = Array.isArray(contacts)
-    ? allContacts.filter(c => requestedIds.has(c.id))
-    : allContacts;
-  recipientContacts = recipientContacts.filter(c => c.opt_in === true);
+  const brief = String(req.body.developer_input || req.body.topic || req.body.brief || '').trim();
+  if (!brief) {
+    return res.status(400).json({ success: false, error: 'Campaign brief is required.' });
+  }
+  if (!Array.isArray(contacts) || contacts.length === 0) {
+    return res.status(400).json({ success: false, error: 'Select at least one opted-in audience contact before generating campaign content.' });
+  }
 
-  if (contact_id && (!targetContact || targetContact.opt_in !== true)) {
+  const allContacts = nurtureStore.getContacts();
+  const requestedIds = new Set(contacts.map(c => (typeof c === 'string' ? c : c?.id)).filter(Boolean));
+  const recipientContacts = allContacts.filter(c => requestedIds.has(c.id));
+  if (recipientContacts.length !== requestedIds.size) {
+    return res.status(400).json({ success: false, error: 'One or more selected audience contacts could not be found. Refresh the audience and try again.' });
+  }
+  if (recipientContacts.some(c => c.opt_in !== true)) {
+    return res.status(400).json({ success: false, error: 'The selected audience includes a contact without active opt-in consent.' });
+  }
+  if (contact_id && (!targetContact || targetContact.opt_in !== true || !requestedIds.has(targetContact.id))) {
     return res.status(400).json({ success: false, error: 'The selected contact has not opted in to nurturing communications.' });
   }
 
-  if (targetContact) {
-    recipientContacts = [targetContact];
-  }
-
-  if (recipientContacts.length === 0) {
-    return res.status(400).json({ success: false, error: 'No opted-in contacts are available for campaign generation. Sync or import contacts and record consent first.' });
-  }
-
-  const activeSector = sector || targetContact?.sector || targetContact?.industry || 'Technology';
-  const brief = (req.body.developer_input || req.body.topic || req.body.brief || '').trim();
-
-  if (!brief) {
-    return res.status(400).json({
-      success: false,
-      error: 'Campaign brief is required'
-    });
-  }
+  const activeContact = targetContact || recipientContacts[0];
+  const activeSector = sector || activeContact?.sector || activeContact?.industry || 'Technology';
 
   const developerInput = brief;
 
+
   const unsubBase = getUnsubscribeBaseUrl(req);
-  const targetId = targetContact?.id || recipientContacts[0].id;
+  const targetId = activeContact.id;
   const unsubUrl = `${unsubBase}/unsubscribe?id=${targetId}`;
   const prefUrl = `${unsubBase}/preferences?id=${targetId}`;
 
@@ -328,7 +282,7 @@ router.post('/generate', async (req, res) => {
     from_email: process.env.NURTURE_SENDER_EMAIL || '',
     sender_email: process.env.NURTURE_SENDER_EMAIL || '',
     contacts: recipientContacts,
-    active_contact: targetContact || recipientContacts[0],
+    active_contact: activeContact,
     unsubscribe_url: unsubUrl,
     preferences_url: prefUrl
   };
@@ -348,11 +302,6 @@ router.post('/generate', async (req, res) => {
         personalization_summary: extracted.personalization_summary || 'Generated via SNS Workbench',
         content_source: 'workbench'
       };
-
-      if (!previewData.whatsapp_message) {
-        const firstName = targetContact?.name?.split(' ')[0] || recipientContacts[0]?.name?.split(' ')[0] || 'Client';
-        previewData.whatsapp_message = `Hi ${firstName}, here is your strategic briefing: ${extracted.subject}. (Reply STOP to opt out)`;
-      }
 
       console.log('[Campaigns /generate] Successfully extracted Workbench content. Returning content_source: workbench');
       return res.json({
@@ -398,20 +347,24 @@ router.post('/dispatch', async (req, res) => {
     }
 
     const requestedContacts = req.body.contacts;
-    const requestedContactIds = Array.isArray(requestedContacts) ? new Set(requestedContacts.map(c => c.id).filter(Boolean)) : null;
-    let targetAudienceContacts = nurtureStore.getContacts().filter(c =>
-      c.opt_in === true && (!Array.isArray(requestedContacts) || requestedContactIds.has(c.id))
-    );
-
-    if (targetContactId && (!targetContact || targetContact.opt_in !== true)) {
-      return res.status(400).json({ success: false, error: 'The selected contact has not opted in to nurturing communications.' });
+    if (!Array.isArray(requestedContacts) || requestedContacts.length === 0) {
+      return res.status(400).json({ success: false, error: 'Select at least one opted-in audience contact before dispatching.' });
+    }
+    const requestedContactIds = new Set(requestedContacts.map(c => (typeof c === 'string' ? c : c?.id)).filter(Boolean));
+    let targetAudienceContacts = nurtureStore.getContacts().filter(c => requestedContactIds.has(c.id));
+    if (targetAudienceContacts.length !== requestedContactIds.size) {
+      return res.status(400).json({ success: false, error: 'One or more selected audience contacts could not be found. Refresh the audience and try again.' });
+    }
+    if (targetAudienceContacts.some(c => c.opt_in !== true)) {
+      return res.status(400).json({ success: false, error: 'The selected audience includes a contact without active opt-in consent.' });
+    }
+    if (targetContactId && (!targetContact || targetContact.opt_in !== true || !requestedContactIds.has(targetContact.id))) {
+      return res.status(400).json({ success: false, error: 'The selected contact is not part of the opted-in campaign audience.' });
     }
 
-    if (targetContact) {
-      targetAudienceContacts = [targetContact];
-    } else if (sector && sector !== 'All Sectors') {
+    if (!targetContact && sector && sector !== 'All Sectors') {
       const sectorFiltered = targetAudienceContacts.filter(c => (c.sector || c.industry) === sector);
-      if (sectorFiltered.length > 0) targetAudienceContacts = sectorFiltered;
+      targetAudienceContacts = sectorFiltered;
     }
 
     if (targetAudienceContacts.length === 0) {
@@ -419,7 +372,12 @@ router.post('/dispatch', async (req, res) => {
     }
 
     const activeSector = sector || targetContact?.sector || targetContact?.industry || 'Technology';
-    const finalDeveloperInput = developer_input || topic || occasion || `${activeSector} Industry Intelligence Briefing`;
+    const finalDeveloperInput = developer_input || topic || occasion || '';
+    const finalSubject = String(content?.subject || '').trim();
+    const finalBody = String(content?.email_body || '').trim();
+    if (!finalSubject || !finalBody) {
+      return res.status(400).json({ success: false, error: 'Campaign subject and content are required before dispatch.' });
+    }
 
     let finalImageUrl = image_url || content?.image_url || ''; 
     let publicImageUrl = null;
@@ -438,7 +396,7 @@ router.post('/dispatch', async (req, res) => {
     const unsubUrl = `${unsubBase}/unsubscribe?id=${primaryContactId}`;
     const prefUrl = `${unsubBase}/preferences?id=${primaryContactId}`;
 
-    let rawBody = content?.email_body || '';
+    let rawBody = finalBody;
     let finalEmailBody = rawBody;
 
     // Replace stale unsubscribe/preferences hosts with the current application origin.
@@ -514,9 +472,8 @@ router.post('/dispatch', async (req, res) => {
         response.delivery_confirmed === true ||
         response.email_sent === true ||
         response.sent === true ||
-        response.delivery_status === 'Delivered' ||
-        response.status === 'sent' ||
-        response.status === 'delivered'
+        String(response.delivery_status || '').toLowerCase() === 'delivered' ||
+        ['sent', 'delivered'].includes(String(response.status || '').toLowerCase())
       )
     );
     if (!deliveryConfirmed) {
