@@ -263,7 +263,15 @@ router.post('/generate', async (req, res) => {
   const activeSector = sector || activeContact?.sector || activeContact?.industry || 'Technology';
 
   const developerInput = brief;
-
+  const normalizedCampaignType = String(campaign_type || 'newsletter').toLowerCase();
+  const campaignGuidance = normalizedCampaignType === 'welcome' || normalizedCampaignType === 'welcome message'
+    ? [
+        'CAMPAIGN TYPE: Welcome and onboarding email for a new client.',
+        'Write a genuine, warm welcome to the recipient and their company. Briefly introduce SNS Square and give one practical next step for onboarding or getting started.',
+        'Use the supplied campaign brief as context for the welcome; do not turn it into a generic executive update, newsletter, announcement, or strategy briefing.',
+        'Do not use headings such as KEY ANNOUNCEMENT or STRATEGIC IMPACT. Keep the message concise and specific to the recipient.'
+      ].join(' ')
+    : '';
 
   const unsubBase = getUnsubscribeBaseUrl(req);
   const targetId = activeContact.id;
@@ -274,8 +282,9 @@ router.post('/generate', async (req, res) => {
     action: 'generate_preview',
     campaign_name: campaign_name || `${activeSector} Campaign: ${brief.slice(0, 40)}`,
     campaign_type: campaign_type || 'newsletter',
-    developer_input: developerInput,
-    occasion: developerInput,
+    developer_input: campaignGuidance ? `${campaignGuidance}\n\nCLIENT BRIEF: ${developerInput}` : developerInput,
+    campaign_brief: developerInput,
+    ...(occasion ? { occasion } : {}),
     sector: activeSector,
     target_segment: target_audience || `${activeSector} Sector Clients`,
     channel: channel || 'email',
@@ -360,11 +369,6 @@ router.post('/dispatch', async (req, res) => {
     }
     if (targetContactId && (!targetContact || targetContact.opt_in !== true || !requestedContactIds.has(targetContact.id))) {
       return res.status(400).json({ success: false, error: 'The selected contact is not part of the opted-in campaign audience.' });
-    }
-
-    if (!targetContact && sector && sector !== 'All Sectors') {
-      const sectorFiltered = targetAudienceContacts.filter(c => (c.sector || c.industry) === sector);
-      targetAudienceContacts = sectorFiltered;
     }
 
     if (targetAudienceContacts.length === 0) {
