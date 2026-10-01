@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import DOMPurify from 'dompurify';
 import {
   Users,
   LayoutDashboard,
@@ -61,6 +62,145 @@ const API_BASE = '/api';
 const APP_ORIGIN = typeof window !== 'undefined' ? window.location.origin : '';
 const NURTURE_CONTACTS_URL = `${API_BASE}/contacts`;
 const NURTURE_SHEET_MANAGEMENT_URL = process.env.REACT_APP_NURTURE_SHEET_MANAGEMENT_URL || '';
+
+const UNSAFE_EMAIL_TAGS = new Set(['SCRIPT', 'STYLE', 'IFRAME', 'OBJECT', 'EMBED', 'SVG', 'FORM', 'TEMPLATE', 'NOSCRIPT']);
+
+function safeEmailHref(value) {
+  const href = String(value || '').trim();
+  if (!href || /\s/.test(href)) return null;
+  try {
+    const url = new URL(href, typeof window !== 'undefined' ? window.location.origin : 'https://example.invalid');
+    if (!['http:', 'https:', 'mailto:'].includes(url.protocol)) return null;
+    if (url.protocol === 'mailto:' && !href.toLowerCase().startsWith('mailto:')) return null;
+    return url.href;
+  } catch (_err) {
+    return null;
+  }
+}
+
+function htmlEmailToMarkdown(source) {
+  const fragment = DOMPurify.sanitize(source, {
+    ALLOWED_TAGS: ['a', 'article', 'b', 'blockquote', 'br', 'code', 'div', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'i', 'li', 'ol', 'p', 'section', 'span', 'strong', 'ul'],
+    ALLOWED_ATTR: ['href'],
+    ALLOW_DATA_ATTR: false,
+    RETURN_DOM_FRAGMENT: true
+  });
+  const renderNode = (node) => {
+    if (node.nodeType === Node.TEXT_NODE) return node.nodeValue || '';
+    if (node.nodeType !== Node.ELEMENT_NODE) return '';
+    const tag = node.tagName;
+    if (UNSAFE_EMAIL_TAGS.has(tag)) return '';
+    const children = Array.from(node.childNodes).map(renderNode).join('');
+    if (tag === 'BR') return '\n';
+    if (tag === 'STRONG' || tag === 'B') return `**${children}**`;
+    if (tag === 'EM' || tag === 'I') return `*${children}*`;
+    if (tag === 'CODE') return `\`${children}\``;
+    if (/^H[1-6]$/.test(tag)) return `\n\n${'#'.repeat(Number(tag[1]))} ${children.trim()}\n\n`;
+    if (tag === 'LI') {
+      const list = node.parentElement;
+      const siblings = list ? Array.from(list.children).filter((child) => child.tagName === 'LI') : [];
+      const index = siblings.indexOf(node);
+      const marker = list?.tagName === 'OL' ? `${index + 1}. ` : '- ';
+      return `${marker}${children.trim()}\n`;
+    }
+    if (tag === 'A') {
+      const href = safeEmailHref(node.getAttribute('href'));
+      return href ? `[${children}](${href})` : children;
+    }
+    if (['P', 'DIV', 'SECTION', 'ARTICLE', 'UL', 'OL', 'BLOCKQUOTE', 'TR'].includes(tag)) return `\n\n${children.trim()}\n\n`;
+    return children;
+  };
+  return Array.from(fragment.childNodes).map(renderNode).join('').replace(/\n[ \t]+/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+
+function emailPreviewSourceText(value) {
+  if (!value) return '';
+  let source = String(value);
+  // Decode HTML entities as text only; escaping literal '<' prevents the parser
+  // from interpreting markup or loading resources during this normalization.
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const decoded = new DOMParser().parseFromString(source.replace(/</g, '&lt;'), 'text/html').body.textContent || '';
+    if (decoded === source) break;
+    source = decoded;
+  }
+  return /<\/?[a-z][^>]*>/i.test(source) ? htmlEmailToMarkdown(source) : source;
+}
+
+function renderEmailInline(text, keyPrefix) {
+  const pattern = /(\*\*[^*]+\*\*|__[^_]+__|\*[^*\n]+\*|_[^_\n]+_|~~[^~]+~~|`[^`]+`|\[([^\]]+)\]\(([^)]+)\))/g;
+  const parts = [];
+  let cursor = 0;
+  let match;
+  while ((match = pattern.exec(text))) {
+    if (match.index > cursor) parts.push(text.slice(cursor, match.index));
+    const token = match[0];
+    const key = `${keyPrefix}-${match.index}`;
+    if (token.startsWith('[')) {
+      const href = safeEmailHref(match[3]);
+      parts.push(href
+        ? <a key={key} href={href} target="_blank" rel="noopener noreferrer">{match[2]}</a>
+        : match[2]);
+    } else if (token.startsWith('**') || token.startsWith('__')) {
+      parts.push(<strong key={key}>{token.slice(2, -2)}</strong>);
+    } else if (token.startsWith('~~')) {
+      parts.push(<del key={key}>{token.slice(2, -2)}</del>);
+    } else if (token.startsWith('`')) {
+      parts.push(<code key={key}>{token.slice(1, -1)}</code>);
+    } else {
+      parts.push(<em key={key}>{token.slice(1, -1)}</em>);
+    }
+    cursor = pattern.lastIndex;
+  }
+  if (cursor < text.length) parts.push(text.slice(cursor));
+  return parts;
+}
+
+function EmailBodyPreview({ content }) {
+  const text = emailPreviewSourceText(content);
+  const lines = text.split('\n');
+  const blocks = [];
+  let paragraph = [];
+  const flushParagraph = () => {
+    if (paragraph.length) blocks.push({ type: 'paragraph', lines: paragraph });
+    paragraph = [];
+  };
+
+  lines.forEach((line) => {
+    const trimmed = line.trim();
+    if (!trimmed) { flushParagraph(); return; }
+    const heading = trimmed.match(/^#{1,6}\s+(.+)$/);
+    const unordered = trimmed.match(/^[-*+]\s+(.+)$/);
+    const ordered = trimmed.match(/^\d+[.)]\s+(.+)$/);
+    if (heading || unordered || ordered) {
+      flushParagraph();
+      const type = heading ? 'heading' : ordered ? 'ordered' : 'unordered';
+      const previous = blocks[blocks.length - 1];
+      if ((type === 'ordered' || type === 'unordered') && previous?.type === type) previous.items.push((heading || unordered || ordered)[1]);
+      else if (type === 'ordered' || type === 'unordered') blocks.push({ type, items: [(unordered || ordered)[1]] });
+      else blocks.push({ type, level: heading[0].match(/^#+/)[0].length, text: heading[1] });
+      return;
+    }
+    paragraph.push(trimmed);
+  });
+  flushParagraph();
+
+  return (
+    <div className="dn-email-content">
+      {blocks.map((block, index) => {
+        if (block.type === 'unordered' || block.type === 'ordered') {
+          const List = block.type === 'ordered' ? 'ol' : 'ul';
+          return <List key={index}>{block.items.map((item, itemIndex) => <li key={itemIndex}>{renderEmailInline(item, `${index}-${itemIndex}`)}</li>)}</List>;
+        }
+        if (block.type === 'heading') {
+          const Heading = `h${Math.min(block.level, 4)}`;
+          return <Heading key={index}>{renderEmailInline(block.text, `heading-${index}`)}</Heading>;
+        }
+        return <p key={index}>{block.lines.map((line, lineIndex) => <React.Fragment key={lineIndex}>{lineIndex > 0 && <br />}{renderEmailInline(line, `${index}-${lineIndex}`)}</React.Fragment>)}</p>;
+      })}
+    </div>
+  );
+}
+
 const WORKBENCH_PIPELINE_NODES = [
   { id: 'webhook-trigger', number: '01', name: 'Client Nurturing Webhook Trigger', type: 'webhook', desc: 'Receives lead payload, sector tags, and campaign type' },
   { id: 'code-ingest', number: '02', name: 'Ingest Client Context & Deduplicate', type: 'code.execute', desc: 'Validates email/phone, verifies Opt-In status, synthesizes history' },
@@ -2896,9 +3036,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                           />
                         </div>
                       ) : (
-                        <div style={{ whiteSpace: 'pre-wrap' }}>
-                          {wizardEditedBody || wizardGeneratedContent.email_body}
-                        </div>
+                        <EmailBodyPreview content={wizardEditedBody || wizardGeneratedContent.email_body} />
                       )}
                     </div>
 
