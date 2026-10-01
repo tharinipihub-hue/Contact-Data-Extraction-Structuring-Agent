@@ -498,7 +498,17 @@ router.post('/dispatch', async (req, res) => {
     // Strictly trigger SNS Workbench workflow
     const result = await workbenchService.triggerNurturingWorkflow(payload);
 
-    const deliveryConfirmed = result.data?.success !== false && (result.data?.delivery_confirmed === true || result.data?.email_sent === true || result.data?.sent === true || result.data?.delivery_status === 'Delivered' || result.data?.status === 'sent' || result.data?.status === 'delivered');
+    const deliveryResponses = [result.data, result.data?.result, result.data?.data, result.data?.data?.result].filter(Boolean);
+    const deliveryConfirmed = result.data?.success !== false && deliveryResponses.some(response =>
+      response.success !== false && (
+        response.delivery_confirmed === true ||
+        response.email_sent === true ||
+        response.sent === true ||
+        response.delivery_status === 'Delivered' ||
+        response.status === 'sent' ||
+        response.status === 'delivered'
+      )
+    );
     if (!deliveryConfirmed) {
       return res.status(502).json({ success: false, error: 'Workbench responded without confirming campaign delivery.', requires_workbench: true, workbench_response: result.data });
     }
