@@ -338,15 +338,17 @@ class NurtureStore {
       const cname = c.name || existing?.name || matchInitial?.name;
 
       // Check persistent opt-out overrides first
-      let optIn = false;
+      // New contacts default to opted in; explicit sheet values and saved user
+      // overrides (including opt-outs) take precedence.
+      let optIn = true;
       if (this.optOverrides[cid] !== undefined) {
         optIn = Boolean(this.optOverrides[cid]);
       } else if (cname && this.optOverrides[cname] !== undefined) {
         optIn = Boolean(this.optOverrides[cname]);
-      } else if (existing && existing.opt_in !== undefined) {
-        optIn = Boolean(existing.opt_in);
-      } else if (c.opt_in !== undefined) {
+      } else if (c.opt_in !== undefined && c.opt_in !== null) {
         optIn = Boolean(c.opt_in);
+      } else if (existing?.status === 'Opted Out') {
+        optIn = false;
       }
 
       return {

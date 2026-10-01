@@ -189,6 +189,10 @@ async function fetchContactsFromSheet() {
     const validationStatus = cleanVal(row['Validation Status'] || row['Validation Status  '] || 'Valid');
     const duplicateStatus = cleanVal(row['Duplicate Status'] || 'UNIQUE');
     const scoringRationale = cleanVal(row['Scoring Rationale']);
+    const rawConsent = String(row['Opt-In'] ?? row['Opt In'] ?? row.Consent ?? '').trim().toLowerCase();
+    const sheetOptIn = ['false', 'no', '0', 'opted out', 'unsubscribe', 'unsubscribed'].includes(rawConsent)
+      ? false
+      : ['true', 'yes', '1', 'opted in', 'subscribed'].includes(rawConsent) ? true : undefined;
     const scored = scoreLead({
       full_name: fullName,
       designation,
@@ -244,7 +248,8 @@ async function fetchContactsFromSheet() {
       lead_score: leadScore,
       lead_tier: leadTier,
       scoring_rationale: finalRationale,
-      sales_summary: finalSummary
+      sales_summary: finalSummary,
+      opt_in: sheetOptIn
     });
   }
 

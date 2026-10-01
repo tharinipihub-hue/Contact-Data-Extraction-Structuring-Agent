@@ -476,12 +476,15 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
   // Load current nurturing data from the same-origin application API.
   useEffect(() => {
     loadData();
+    handleSyncSheets();
     const handleFocus = () => loadData();
     window.addEventListener('focus', handleFocus);
     const syncInterval = setInterval(loadData, 4000);
+    const sheetSyncInterval = setInterval(handleSyncSheets, 60000);
     return () => {
       window.removeEventListener('focus', handleFocus);
       clearInterval(syncInterval);
+      clearInterval(sheetSyncInterval);
     };
   }, []);
 

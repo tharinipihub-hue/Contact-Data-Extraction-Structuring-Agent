@@ -24,8 +24,8 @@ router.post('/import', (req, res) => {
     company: String(contact.company || ''),
     email: String(contact.email || ''),
     phone: String(contact.phone || ''),
-    opt_in: false,
-    status: 'Pending Consent'
+    opt_in: contact.opt_in === undefined || contact.opt_in === null ? true : Boolean(contact.opt_in),
+    status: contact.opt_in === false ? 'Opted Out' : 'Active'
   })).filter(contact => contact.id && contact.name);
   if (contacts.length === 0) {
     return res.status(400).json({ success: false, error: 'Imported contacts must include an id and name.' });
