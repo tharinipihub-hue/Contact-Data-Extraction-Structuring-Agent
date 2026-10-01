@@ -2,7 +2,13 @@
 
 const fs = require('fs');
 const path = require('path');
-const NURTURE_DATA_DIR = path.resolve(process.env.NURTURE_DATA_DIR || path.join(__dirname, '../../nurture-data'));
+const DEFAULT_NURTURE_DATA_DIR = path.join(__dirname, '../../nurture-data');
+const IS_RENDER = Boolean(process.env.RENDER);
+const CONFIGURED_NURTURE_DATA_DIR = process.env.NURTURE_DATA_DIR || (IS_RENDER ? '/var/data' : DEFAULT_NURTURE_DATA_DIR);
+const NURTURE_DATA_DIR = path.resolve(CONFIGURED_NURTURE_DATA_DIR);
+if (process.env.NODE_ENV === 'production' && NURTURE_DATA_DIR === path.resolve(DEFAULT_NURTURE_DATA_DIR)) {
+  throw new Error('NURTURE_DATA_DIR resolves to the ephemeral application checkout. Configure it to the Render persistent disk mount (Blueprint uses /var/data).');
+}
 const OPT_OVERRIDES_FILE = path.join(NURTURE_DATA_DIR, 'opt_overrides.json');
 const CAMPAIGNS_FILE = path.join(NURTURE_DATA_DIR, 'campaigns.json');
 const CONTACTS_FILE = path.join(NURTURE_DATA_DIR, 'contacts.json');
@@ -38,32 +44,28 @@ class NurtureStore {
   }
 
   loadCampaigns() {
-    try {
-      if (fs.existsSync(CAMPAIGNS_FILE)) {
-        const raw = fs.readFileSync(CAMPAIGNS_FILE, 'utf8');
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) return parsed;
-      }
-    } catch (e) {}
-    return [...INITIAL_CAMPAIGNS];
+    if (!fs.existsSync(CAMPAIGNS_FILE)) return [...INITIAL_CAMPAIGNS];
+    const parsed = JSON.parse(fs.readFileSync(CAMPAIGNS_FILE, 'utf8'));
+    if (!Array.isArray(parsed)) throw new Error(`Campaign store must contain an array: ${CAMPAIGNS_FILE}`);
+    return parsed;
+  }
+
+  loadJsonArray(file, label) {
+    if (!fs.existsSync(file)) return [];
+    const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+    if (!Array.isArray(parsed)) throw new Error(`${label} store must contain an array: ${file}`);
+    return parsed;
   }
 
   saveCampaigns() {
-    try {
-      fs.mkdirSync(NURTURE_DATA_DIR, { recursive: true });
-      fs.writeFileSync(CAMPAIGNS_FILE, JSON.stringify(this.campaigns, null, 2), 'utf8');
-    } catch (e) {}
+    fs.mkdirSync(NURTURE_DATA_DIR, { recursive: true });
+    const temporaryFile = `${CAMPAIGNS_FILE}.tmp`;
+    fs.writeFileSync(temporaryFile, JSON.stringify(this.campaigns, null, 2), 'utf8');
+    fs.renameSync(temporaryFile, CAMPAIGNS_FILE);
   }
 
   loadSalesHandoffs() {
-    try {
-      if (fs.existsSync(SALES_FILE)) {
-        const raw = fs.readFileSync(SALES_FILE, 'utf8');
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) return parsed;
-      }
-    } catch (e) {}
-    return [];
+    return this.loadJsonArray(SALES_FILE, 'Sales handoff');
   }
 
   saveSalesHandoffs() {
@@ -74,21 +76,14 @@ class NurtureStore {
   }
 
   loadAuditLogs() {
-    try {
-      if (fs.existsSync(AUDIT_LOGS_FILE)) {
-        const raw = fs.readFileSync(AUDIT_LOGS_FILE, 'utf8');
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) return parsed;
-      }
-    } catch (e) {}
-    return [];
+    return this.loadJsonArray(AUDIT_LOGS_FILE, 'Audit log');
   }
 
   saveAuditLogs() {
-    try {
-      fs.mkdirSync(NURTURE_DATA_DIR, { recursive: true });
-      fs.writeFileSync(AUDIT_LOGS_FILE, JSON.stringify(this.auditLogs, null, 2), 'utf8');
-    } catch (e) {}
+    fs.mkdirSync(NURTURE_DATA_DIR, { recursive: true });
+    const temporaryFile = `${AUDIT_LOGS_FILE}.tmp`;
+    fs.writeFileSync(temporaryFile, JSON.stringify(this.auditLogs, null, 2), 'utf8');
+    fs.renameSync(temporaryFile, AUDIT_LOGS_FILE);
   }
 
   constructor() {
@@ -97,6 +92,7 @@ class NurtureStore {
     this.campaigns = this.loadCampaigns();
     this.salesHandoffs = this.loadSalesHandoffs();
     this.auditLogs = this.loadAuditLogs();
+    this.dataDirectory = NURTURE_DATA_DIR;
     try {
       const savedEvents = JSON.parse(fs.readFileSync(path.join(NURTURE_DATA_DIR, 'opt_events.json'), 'utf8'));
       this.optEvents = Array.isArray(savedEvents) ? savedEvents : [];
@@ -150,7 +146,10 @@ class NurtureStore {
   }
 
   saveContacts() {
-    try { fs.mkdirSync(NURTURE_DATA_DIR, { recursive: true }); fs.writeFileSync(CONTACTS_FILE, JSON.stringify(this.contacts, null, 2)); } catch (_) {}
+    fs.mkdirSync(NURTURE_DATA_DIR, { recursive: true });
+    const temporaryFile = `${CONTACTS_FILE}.tmp`;
+    fs.writeFileSync(temporaryFile, JSON.stringify(this.contacts, null, 2));
+    fs.renameSync(temporaryFile, CONTACTS_FILE);
   }
 
   getContacts() {
@@ -375,22 +374,28 @@ class NurtureStore {
     return this.campaigns;
   }
 
-  saveCampaigns() {
-    try { fs.mkdirSync(NURTURE_DATA_DIR, { recursive: true }); fs.writeFileSync(CAMPAIGNS_FILE, JSON.stringify(this.campaigns, null, 2)); } catch (_) {}
-  }
-
   addCampaign(campaign) {
     this.campaigns.unshift(campaign);
-    this.saveCampaigns();
+    try {
+      this.saveCampaigns();
+    } catch (error) {
+      this.campaigns.shift();
+      throw error;
+    }
     return campaign;
   }
 
   deleteCampaign(id) {
     const idx = this.campaigns.findIndex(c => c.id === id);
     if (idx !== -1) {
-      const removed = this.campaigns.splice(idx, 1);
-      this.saveCampaigns();
-      return removed[0];
+      const [removed] = this.campaigns.splice(idx, 1);
+      try {
+        this.saveCampaigns();
+      } catch (error) {
+        this.campaigns.splice(idx, 0, removed);
+        throw error;
+      }
+      return removed;
     }
     return null;
   }
@@ -401,7 +406,12 @@ class NurtureStore {
 
   addSalesHandoff(handoff) {
     this.salesHandoffs.unshift(handoff);
-    this.saveSalesHandoffs();
+    try {
+      this.saveSalesHandoffs();
+    } catch (error) {
+      this.salesHandoffs.shift();
+      throw error;
+    }
     return handoff;
   }
 
@@ -419,6 +429,7 @@ class NurtureStore {
 
   addAuditLog(entry) {
     if (!this.auditLogs) this.auditLogs = [];
+    const previous = [...this.auditLogs];
     const log = {
       id: entry.id || `LOG-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       timestamp: entry.timestamp || new Date().toISOString(),
@@ -430,7 +441,12 @@ class NurtureStore {
     };
     this.auditLogs.unshift(log);
     if (this.auditLogs.length > 50) this.auditLogs = this.auditLogs.slice(0, 50);
-    this.saveAuditLogs();
+    try {
+      this.saveAuditLogs();
+    } catch (error) {
+      this.auditLogs = previous;
+      throw error;
+    }
     return log;
   }
 
@@ -451,8 +467,14 @@ class NurtureStore {
   updateCampaign(id, updates = {}) {
     const campaign = this.campaigns.find(item => item.id === id);
     if (!campaign) return null;
+    const previous = { ...campaign };
     Object.assign(campaign, updates);
-    this.saveCampaigns();
+    try {
+      this.saveCampaigns();
+    } catch (error) {
+      Object.assign(campaign, previous);
+      throw error;
+    }
     return campaign;
   }
 }

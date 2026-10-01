@@ -7,12 +7,11 @@ const workbenchService = require('../services/nurtureWorkbenchService');
 
 // Get all campaigns
 router.get('/', (req, res) => {
-  res.json({
-    success: true,
-    campaigns: nurtureStore.getCampaigns(),
-    audit_logs: nurtureStore.getAuditLogs(),
-    stats: nurtureStore.getStats()
-  });
+  try {
+    res.json({ success: true, campaigns: nurtureStore.getCampaigns(), audit_logs: nurtureStore.getAuditLogs(), stats: nurtureStore.getStats() });
+  } catch (err) {
+    res.status(500).json({ success: false, error: `Could not load campaigns: ${err.message}` });
+  }
 });
 
 // Get recent telemetry audit logs
@@ -25,17 +24,13 @@ router.get('/audit-logs', (req, res) => {
 
 // Delete a campaign
 router.delete('/:id', (req, res) => {
-  const deleted = nurtureStore.deleteCampaign(req.params.id);
-  if (!deleted) {
-    return res.status(404).json({ success: false, error: 'Campaign not found' });
+  try {
+    const deleted = nurtureStore.deleteCampaign(req.params.id);
+    if (!deleted) return res.status(404).json({ success: false, error: 'Campaign not found' });
+    res.json({ success: true, message: 'Campaign deleted successfully', campaign: deleted, campaigns: nurtureStore.getCampaigns(), stats: nurtureStore.getStats() });
+  } catch (err) {
+    res.status(500).json({ success: false, error: `Could not delete campaign: ${err.message}` });
   }
-  res.json({
-    success: true,
-    message: 'Campaign deleted successfully',
-    campaign: deleted,
-    campaigns: nurtureStore.getCampaigns(),
-    stats: nurtureStore.getStats()
-  });
 });
 
 async function uploadToFreeImage(sourceDataOrPath) {
@@ -263,6 +258,15 @@ router.post('/generate', async (req, res) => {
   const activeSector = sector || activeContact?.sector || activeContact?.industry || 'Technology';
 
   const developerInput = brief;
+  const normalizedCampaignType = String(campaign_type || 'newsletter').toLowerCase();
+  const campaignGuidance = normalizedCampaignType === 'welcome' || normalizedCampaignType === 'welcome message'
+    ? [
+        'CAMPAIGN TYPE: Welcome and onboarding email for a new client.',
+        'Write a genuine, warm welcome to the recipient and their company. Briefly introduce SNS Square and give one practical next step for onboarding or getting started.',
+        'Use the supplied campaign brief as context for the welcome; do not turn it into a generic executive update, newsletter, announcement, or strategy briefing.',
+        'Do not use headings such as KEY ANNOUNCEMENT or STRATEGIC IMPACT. Keep the message concise and specific to the recipient.'
+      ].join(' ')
+    : '';
 
 
   const unsubBase = getUnsubscribeBaseUrl(req);
@@ -274,8 +278,9 @@ router.post('/generate', async (req, res) => {
     action: 'generate_preview',
     campaign_name: campaign_name || `${activeSector} Campaign: ${brief.slice(0, 40)}`,
     campaign_type: campaign_type || 'newsletter',
-    developer_input: developerInput,
-    occasion: developerInput,
+    developer_input: campaignGuidance ? `${campaignGuidance}\n\nCLIENT BRIEF: ${developerInput}` : developerInput,
+    campaign_brief: developerInput,
+    ...(occasion ? { occasion } : {}),
     sector: activeSector,
     target_segment: target_audience || `${activeSector} Sector Clients`,
     channel: channel || 'email',
@@ -295,6 +300,9 @@ router.post('/generate', async (req, res) => {
     const extracted = extractWorkbenchAiContent(result.data);
 
     if (extracted && extracted.subject && extracted.email_body && result.data?.success !== false) {
+      const campaignId = req.body.campaign_id || `CMP-${require('crypto').randomUUID()}`;
+      const previous = nurtureStore.getCampaigns().find(campaign => campaign.id === campaignId);
+      const now = new Date().toISOString();
       const previewData = {
         ...((result.data?.nurtured_contact || result.data?.result || result.data) || {}),
         subject: extracted.subject,
@@ -303,6 +311,41 @@ router.post('/generate', async (req, res) => {
         content_source: 'workbench'
       };
 
+      const generatedCampaign = {
+        ...(previous || {}),
+        id: campaignId,
+        name: campaign_name || `${activeSector} Campaign: ${brief.slice(0, 40)}`,
+        type: campaign_type || 'newsletter',
+        type_key: String(campaign_type || 'newsletter').toLowerCase().replace(/\s+/g, '_'),
+        sector: activeSector,
+        occasion: occasion || '',
+        brief: developerInput,
+        audience: target_audience || `${activeSector} Sector Clients`,
+        target_audience: target_audience || `${activeSector} Sector Clients`,
+        contact_ids: recipientContacts.map(contact => contact.id),
+        recipient_contacts: recipientContacts.map(({ id, name, company, email }) => ({ id, name, company, email })),
+        subject: previewData.subject,
+        email_body: previewData.email_body,
+        whatsapp_message: previewData.whatsapp_message || '',
+        content_source: 'workbench',
+        workbench_source: result.targetUrl,
+        workbench_response: result.data,
+        status: 'Draft',
+        delivery_status: 'Not dispatched',
+        channels: [channel || 'Email'],
+        recipients: recipientContacts.length,
+        recipients_count: recipientContacts.length,
+        metrics: previous?.metrics || { sent: 0, delivered: 0, opened: 0, clicked: 0, replied: 0, unsubscribed: 0 },
+        created_at: previous?.created_at || now,
+        updated_at: now,
+        created_date: previous?.created_date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        sent_at: previous?.sent_at || null,
+        sent_date: previous?.sent_date || '—'
+      };
+      if (previous) nurtureStore.updateCampaign(campaignId, generatedCampaign);
+      else nurtureStore.addCampaign(generatedCampaign);
+      previewData.campaign_id = campaignId;
+
       console.log('[Campaigns /generate] Successfully extracted Workbench content. Returning content_source: workbench');
       return res.json({
         success: true,
@@ -310,6 +353,7 @@ router.post('/generate', async (req, res) => {
         content_source: 'workbench',
         targetUrl: result.targetUrl,
         preview: previewData,
+        campaign: generatedCampaign,
         campaign_data: result.data
       });
     }
@@ -326,6 +370,7 @@ router.post('/dispatch', async (req, res) => {
   try {
     const {
       campaign_name,
+      campaign_id,
       campaign_type,
       occasion,
       topic,
@@ -462,7 +507,7 @@ router.post('/dispatch', async (req, res) => {
     const result = await workbenchService.triggerNurturingWorkflow(payload);
 
     const deliveryResponses = [result.data, result.data?.result, result.data?.data, result.data?.data?.result].filter(Boolean);
-    const deliveryConfirmed = result.data?.success !== false && deliveryResponses.some(response =>
+    const deliveryConfirmed = result.data?.success !== false && !deliveryResponses.some(response => response.success === false) && deliveryResponses.some(response =>
       response.success !== false && (
         response.delivery_confirmed === true ||
         response.email_sent === true ||
@@ -501,8 +546,11 @@ router.post('/dispatch', async (req, res) => {
       ? `Scheduled (${scheduled_at || 'Upcoming'})` 
       : new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
+    const now = new Date().toISOString();
+    const existingCampaign = campaign_id ? nurtureStore.getCampaigns().find(campaign => campaign.id === campaign_id) : null;
     const newCampaign = {
-      id: `CMP-${Date.now().toString().slice(-4)}`,
+      ...(existingCampaign || {}),
+      id: existingCampaign?.id || `CMP-${require('crypto').randomUUID()}`,
       name: payload.campaign_name,
       type: payload.campaign_type || 'Newsletter',
       type_key: (payload.campaign_type || 'newsletter').toLowerCase().replace(/\s+/g, '_'),
@@ -512,8 +560,8 @@ router.post('/dispatch', async (req, res) => {
       target_audience: payload.target_segment || `${activeSector} Clients`,
       created_date: createdDateStr,
       sent_date: sentDateStr,
-      recipients: workbenchMetrics.total_recipients || recipientCount,
-      recipients_count: workbenchMetrics.total_recipients || recipientCount,
+      recipients: workbenchMetrics.total_recipients,
+      recipients_count: workbenchMetrics.total_recipients,
       channels: channels || ['Email', 'WhatsApp'],
       status: schedule_type === 'schedule' ? 'Scheduled' : 'Sent',
       engagement: '—',
@@ -522,17 +570,29 @@ router.post('/dispatch', async (req, res) => {
       subject: payload.subject,
       email_body: payload.email_body,
       whatsapp_message: payload.whatsapp_message,
+      brief: finalDeveloperInput,
+      contact_ids: targetAudienceContacts.map(contact => contact.id),
+      recipient_contacts: targetAudienceContacts.map(({ id, name, company, email }) => ({ id, name, company, email })),
+      content_source: 'workbench',
+      workbench_response: result.data,
+      delivery_status: 'Workbench confirmed dispatch',
+      created_at: existingCampaign?.created_at || now,
+      updated_at: now,
       image_url: publicImageUrl || req.body.image_url || req.body.content?.image_url || null,
       metrics: workbenchMetrics,
       workbench_source: result.targetUrl
     };
 
-    nurtureStore.addCampaign(newCampaign);
+    if (existingCampaign) nurtureStore.updateCampaign(existingCampaign.id, newCampaign);
+    else nurtureStore.addCampaign(newCampaign);
 
-    const hasActualReply = Boolean(result.data?.nurtured_contact?.client_response);
-    const classifiedIntent = hasActualReply ? (result.data?.nurtured_contact?.classified_intent || result.data?.intent || 'Replied') : 'Awaiting Response';
+    const replyData = result.data?.nurtured_contact || result.data?.data?.nurtured_contact || result.data?.result?.nurtured_contact;
+    const hasActualReply = Boolean(replyData?.client_response);
+    const classifiedIntent = hasActualReply ? (replyData?.classified_intent || result.data?.intent || 'Replied') : 'Awaiting Response';
 
     // Update client engagements for all targeted contacts factually
+    const priorContacts = targetAudienceContacts.map(contact => ({ contact, snapshot: JSON.parse(JSON.stringify(contact)) }));
+    const persistedCampaignSnapshot = existingCampaign ? { ...existingCampaign } : null;
     targetAudienceContacts.forEach(contact => {
       contact.client_engagements = contact.client_engagements || [];
       contact.client_engagements.unshift({
@@ -556,37 +616,52 @@ router.post('/dispatch', async (req, res) => {
       }
     });
 
-    nurtureStore.saveContacts();
-
-    // Sales Handoff ONLY if actual reply exists
-    const salesHandoffLead = (hasActualReply && (result.data?.sales_handoff_lead || result.data?.result?.sales_handoff_lead)) ? (result.data?.sales_handoff_lead || result.data?.result?.sales_handoff_lead) : null;
-    if (salesHandoffLead) {
-      nurtureStore.addSalesHandoff(salesHandoffLead);
+    try {
+      // Save confirmed Workbench campaign history first; then persist contact links.
+      nurtureStore.saveContacts();
+    } catch (error) {
+      priorContacts.forEach(({ contact, snapshot }) => Object.assign(contact, snapshot));
+      try { nurtureStore.saveContacts(); } catch (rollbackError) { console.error('[Campaigns /dispatch] Could not restore contact data:', rollbackError.message); }
+      if (existingCampaign) nurtureStore.updateCampaign(existingCampaign.id, persistedCampaignSnapshot);
+      else nurtureStore.deleteCampaign(newCampaign.id);
+      throw error;
     }
 
     // Factual Campaign Delivery Logger Audit Log
     const targetName = targetContact ? `${targetContact.name} (${targetContact.company})` : `${recipientCount} Client(s)`;
-    nurtureStore.addAuditLog({
+    const newAuditEntries = [{
       event_type: 'Campaign Delivery Logger',
       contact_name: targetName,
       details: `Workbench confirmed the dispatch operation for "${newCampaign.name}" (${newCampaign.type}) to ${targetContact?.email || 'selected contacts'}. Timestamp: ${sentDateStr}`,
       status: 'Sent'
-    });
-
+    }];
     if (hasActualReply) {
-      nurtureStore.addAuditLog({
-        event_type: 'Groq Intent Classification',
-        contact_name: targetName,
-        details: `Client response classified as ${classifiedIntent}`,
-        status: 'Qualified'
-      });
-      if (salesHandoffLead) {
-        nurtureStore.addAuditLog({
-          event_type: 'Sales Handoff Trigger',
-          contact_name: targetName,
-          details: `Inbound response triggered sales handoff for ${targetContact?.name || 'Client'}`,
-          status: 'Hot Lead'
-        });
+      newAuditEntries.push({ event_type: 'Groq Intent Classification', contact_name: targetName, details: `Client response classified as ${classifiedIntent}`, status: 'Qualified' });
+    }
+
+    const priorAuditLogs = [...nurtureStore.getAuditLogs()];
+    try {
+      newAuditEntries.forEach(entry => nurtureStore.addAuditLog(entry));
+    } catch (error) {
+      nurtureStore.auditLogs = priorAuditLogs;
+      try { nurtureStore.saveAuditLogs(); } catch (rollbackError) { console.error('[Campaigns /dispatch] Could not restore audit logs:', rollbackError.message); }
+      priorContacts.forEach(({ contact, snapshot }) => Object.assign(contact, snapshot));
+      try { nurtureStore.saveContacts(); } catch (rollbackError) { console.error('[Campaigns /dispatch] Could not restore contact data:', rollbackError.message); }
+      if (existingCampaign) nurtureStore.updateCampaign(existingCampaign.id, persistedCampaignSnapshot);
+      else nurtureStore.deleteCampaign(newCampaign.id);
+      throw error;
+    }
+
+    // Sales handoff is independent from delivery history and only reflects an
+    // actual Workbench-reported reply and lead payload.
+    const salesHandoffLead = hasActualReply
+      ? (result.data?.sales_handoff_lead || result.data?.result?.sales_handoff_lead || result.data?.data?.sales_handoff_lead || null)
+      : null;
+    if (salesHandoffLead) {
+      try {
+        nurtureStore.addSalesHandoff(salesHandoffLead);
+      } catch (error) {
+        console.error('[Campaigns /dispatch] Could not persist sales handoff:', error.message);
       }
     }
 
@@ -629,8 +704,9 @@ router.post('/draft', (req, res) => {
     } = req.body;
 
     const createdDateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const now = new Date().toISOString();
     const newCampaign = {
-      id: `CMP-${Date.now().toString().slice(-4)}`,
+      id: `CMP-${require('crypto').randomUUID()}`,
       name: campaign_name || 'Draft Campaign',
       type: campaign_type || 'Newsletter',
       type_key: (campaign_type || 'newsletter').toLowerCase().replace(/\s+/g, '_'),
@@ -649,6 +725,11 @@ router.post('/draft', (req, res) => {
       sent_at: null,
       subject: content?.subject || '',
       email_body: content?.email_body || '',
+      brief: req.body.topic || '',
+      contact_ids: [],
+      recipient_contacts: [],
+      created_at: now,
+      updated_at: now,
       whatsapp_message: content?.whatsapp_message || '',
       image_url: image_url || content?.image_url || null,
       metrics: {
@@ -669,14 +750,14 @@ router.post('/draft', (req, res) => {
       campaign: newCampaign
     });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    res.status(500).json({ success: false, error: `Could not save campaign: ${err.message}` });
   }
 });
 
 // Update an existing campaign (e.g. updating a draft)
 router.put('/:id', (req, res) => {
   try {
-    const campaign = nurtureStore.updateCampaign(req.params.id, req.body);
+    const campaign = nurtureStore.updateCampaign(req.params.id, { ...req.body, updated_at: new Date().toISOString() });
     if (!campaign) {
       return res.status(404).json({ success: false, error: 'Campaign not found' });
     }
@@ -686,7 +767,7 @@ router.put('/:id', (req, res) => {
       campaign
     });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    res.status(500).json({ success: false, error: `Could not update campaign: ${err.message}` });
   }
 });
 

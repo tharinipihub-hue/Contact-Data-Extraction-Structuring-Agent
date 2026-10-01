@@ -395,6 +395,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
   const [campaignTypeFilter, setCampaignTypeFilter] = useState('All');
   const [campaignStatusFilter, setCampaignStatusFilter] = useState('All');
   const [campaignSearch, setCampaignSearch] = useState('');
+  const [deletingCampaignId, setDeletingCampaignId] = useState(null);
 
   // Content Generator State
   const [selectedContactId, setSelectedContactId] = useState('');
@@ -432,6 +433,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
       }, { timeout: 12000 });
       const elapsed = Date.now() - start;
       const confirmed = res.data?.success === true && res.data?.content_source === 'workbench' && Boolean(res.data?.preview?.subject || res.data?.preview?.email_body);
+      if (confirmed) await loadData();
       setWebhookTestResult({
         success: confirmed,
         elapsed,
@@ -604,6 +606,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
 
     try {
       let preview = null;
+      let generatedCampaign = null;
       try {
         const res = await axios.post(`${API_BASE}/campaigns/generate`, {
           campaign_name: campaignName,
@@ -616,6 +619,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
         }, { timeout: 30000 });
 
         if (res.data?.success === true && res.data?.content_source === 'workbench' && res.data?.preview && (res.data.preview.subject || res.data.preview.email_body)) {
+          generatedCampaign = res.data.campaign || null;
           preview = {
             subject: res.data.preview.subject || '',
             email_body: res.data.preview.email_body || '',
@@ -639,6 +643,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
         sector: sector,
         topic: topic,
         contact: contact,
+        campaign_id: generatedCampaign?.id,
         subject: preview.subject,
         email_body: preview.email_body,
         whatsapp_message: preview.whatsapp_message,
@@ -664,6 +669,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
       setActiveTab('create_campaign');
 
       if (preview.content_source === 'workbench') {
+        await loadData();
         showNotification(`AI Personalization completed via SNS Workbench.`);
       } else {
         showNotification('SNS Workbench did not confirm campaign generation.', true);
@@ -813,6 +819,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
     setWizardIsGenerating(true);
     try {
       let preview = null;
+      let generatedCampaign = null;
       try {
         const res = await axios.post(`${API_BASE}/campaigns/generate`, {
           campaign_name: wizardCampaignName,
@@ -830,6 +837,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
         }, { timeout: 30000 });
 
         if (res.data?.success === true && res.data?.content_source === 'workbench' && res.data?.preview && (res.data.preview.email_body || res.data.preview.subject)) {
+          generatedCampaign = res.data.campaign || null;
           preview = {
             ...res.data.preview,
             content_source: res.data.content_source || res.data.preview.content_source || 'workbench'
@@ -845,10 +853,12 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
       }
 
       setWizardGeneratedContent(preview);
+      if (generatedCampaign?.id) setWizardGeneratedContent({ ...preview, campaign_id: generatedCampaign.id });
       setWizardEditedSubject(preview.subject || '');
       setWizardEditedBody(preview.email_body || '');
       setWizardStep(5);
       if (preview.content_source === 'workbench') {
+        await loadData();
         showNotification(`AI Personalization completed via SNS Workbench.`);
       } else {
         showNotification('SNS Workbench did not confirm campaign generation.', true);
@@ -879,6 +889,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
       let dispatchRes = null;
       try {
         dispatchRes = await axios.post(`${API_BASE}/campaigns/dispatch`, {
+          campaign_id: wizardGeneratedContent.campaign_id,
           campaign_name: wizardCampaignName,
           campaign_type: wizardCampaignType,
           topic: wizardBrief,
@@ -989,6 +1000,21 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
     }
   };
 
+  const handleDeleteCampaign = async (campaign) => {
+    if (!window.confirm(`Delete campaign "${campaign.name}"? This will permanently remove its campaign history.`)) return;
+    setDeletingCampaignId(campaign.id);
+    try {
+      const response = await axios.delete(`${API_BASE}/campaigns/${encodeURIComponent(campaign.id)}`, { timeout: 10000 });
+      if (!response.data?.success) throw new Error(response.data?.error || 'The backend did not confirm deletion.');
+      await loadData();
+      showNotification(`Campaign "${campaign.name}" deleted.`);
+    } catch (err) {
+      showNotification(`Could not delete campaign: ${err.response?.data?.error || err.message}`, true);
+    } finally {
+      setDeletingCampaignId(null);
+    }
+  };
+
   // Resume Draft in Wizard
   const handleResumeDraft = (draft) => {
     setEditingDraftId(draft.id);
@@ -1050,6 +1076,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
       let dispatchRes = null;
       try {
         dispatchRes = await axios.post(`${API_BASE}/campaigns/dispatch`, {
+          campaign_id: generatedOutput.campaign_id,
           campaign_name: generatedOutput.campaign_name,
           campaign_type: generatedOutput.campaign_type,
           topic: generatedOutput.topic,
@@ -3328,6 +3355,14 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                                 >
                                   View Copy
                                 </button>
+                                <button
+                                  className="dn-btn dn-btn-secondary dn-btn-sm"
+                                  onClick={() => handleDeleteCampaign(cmp)}
+                                  disabled={deletingCampaignId === cmp.id}
+                                  title="Delete this campaign and its stored history"
+                                >
+                                  {deletingCampaignId === cmp.id ? 'Deleting…' : 'Delete'}
+                                </button>
                               </div>
                             </td>
                           </tr>
@@ -3534,7 +3569,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
             </div>
 
             {(() => {
-              const sentCampaigns = campaigns.filter(c => c.status === 'Sent');
+              const sentCampaigns = campaigns.filter(c => c.status === 'Sent' && c.delivery_status === 'Workbench confirmed dispatch');
               const totalWorkbenchReportedSends = sentCampaigns.reduce((acc, c) => acc + (Number.isFinite(c.metrics?.sent) ? c.metrics.sent : 0), 0);
               const realOptOutCount = optNotifications.filter(e => e.type === 'opt_out').length;
 

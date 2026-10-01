@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: contact-data-extraction-agent
+    runtime: node
+    rootDir: contact-agent/backend
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NURTURE_DATA_DIR
+        value: /var/data
+    disk:
+      name: contact-agent-data
+      mountPath: /var/data
+      sizeGB: 1

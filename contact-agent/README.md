@@ -300,7 +300,13 @@ The following **cannot be done from the backend** and must be configured directl
 
 ## Development Notes
 
-- **In-memory store**: The backend uses in-memory Maps. All data is lost on restart. For production, replace with MongoDB, PostgreSQL, or Redis.
+### Digital nurturing campaign persistence
+
+Campaigns, nurturing contacts, and engagement history are stored by the backend under `NURTURE_DATA_DIR`. Local development defaults to `contact-agent/backend/nurture-data`. This directory is ignored by Git and must not be treated as deployment storage.
+
+The repository's `render.yaml` declares a 1 GB persistent disk mounted at `/var/data` and configures `NURTURE_DATA_DIR=/var/data`. Render deployments created from this Blueprint therefore store campaign data on the disk. Existing Render services created outside the Blueprint may need the same disk attached in the Dashboard; copy any existing production data to that disk before first use. The backend refuses to run with the checkout-local data path in production, and verifies that Render's configured path is on `/var/data`.
+
+- **Nurturing data**: Campaigns, nurturing contacts, and engagement history use JSON files under `NURTURE_DATA_DIR`; production requires this to be on durable storage as described above.
 - **File storage**: Files are not persisted to disk by default (processed in-memory as base64). For production, add AWS S3 or local disk storage.
 - **Concurrency**: Files in a batch are sent to Workbench concurrently. Workbench may have rate limits depending on your plan.
 - **Polling**: Frontend polls every 3 seconds. For SSE/WebSocket upgrade, add `socket.io` to the backend and emit events from the callback route.
