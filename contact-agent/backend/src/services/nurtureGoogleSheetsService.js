@@ -1,30 +1,26 @@
 'use strict';
 
 const store = require('./nurtureStore');
-const leadSheets = require('./googleSheetsService');
+const PAST_CLIENTS_SHEET_ID = '1LffI4BEX2T1mdBIvy45gvauzqny8wPTCX3FaGvYVx2c';
+const DEFAULT_PAST_CLIENTS_CSV_URL = `https://docs.google.com/spreadsheets/d/${PAST_CLIENTS_SHEET_ID}/export?format=csv`;
+
+function getPastClientsCsvUrl() {
+  const envUrl = (process.env.NURTURE_GOOGLE_SHEETS_CSV_URL || '').trim();
+  if (!envUrl) return DEFAULT_PAST_CLIENTS_CSV_URL;
+
+  // Convert standard edit/sharing URLs to direct CSV export
+  const match = envUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+  if (match && match[1]) {
+    return `https://docs.google.com/spreadsheets/d/${match[1]}/export?format=csv`;
+  }
+  return envUrl;
+}
 
 function parseConsent(value) {
   const consent = String(value ?? '').trim().toLowerCase();
   if (['false', 'no', '0', 'opted out', 'unsubscribe', 'unsubscribed'].includes(consent)) return false;
   if (['true', 'yes', '1', 'opted in', 'subscribed'].includes(consent)) return true;
   return undefined;
-}
-
-function toNurtureContact(contact) {
-  return {
-    ...contact,
-    id: String(contact.id || ''),
-    name: contact.full_name || contact.name || contact.email || '',
-    company: contact.company || '',
-    email: contact.email || '',
-    phone: contact.phone || '',
-    designation: contact.designation || '',
-    sector: contact.sector_industry || contact.sector || contact.industry || 'Technology',
-    industry: contact.sector_industry || contact.sector || contact.industry || 'Technology',
-    location: contact.address || [contact.city, contact.state, contact.country].filter(Boolean).join(', '),
-    opt_in: contact.opt_in === undefined ? true : contact.opt_in,
-    status: contact.opt_in === false ? 'Opted Out' : 'Active'
-  };
 }
 
 function parseCsv(text) {
@@ -54,7 +50,7 @@ function parseCsv(text) {
     const key = `${name.toLowerCase()}::${company.toLowerCase()}`;
     if (seen.has(key)) { duplicates++; continue; }
     seen.add(key);
-    const sector = o['Sector / Industry'] || o.Industry || o.Sector || 'Technology';
+    const sector = o['Sector / Industry'] || o['Sector/Industry'] || o.Industry || o.Sector || 'Technology';
     const optIn = parseConsent(o['Opt-In'] ?? o['Opt In'] ?? o.Consent);
     contacts.push({
       id: `CNT-${String(contacts.length + 1).padStart(3, '0')}`,
@@ -65,10 +61,10 @@ function parseCsv(text) {
       phone: o.Phone || '',
       sector,
       industry: sector,
-      client_type: o['Client Type'] || '',
-      previous_interaction: o['Previous Interaction'] || '',
+      client_type: o['Client Type'] || 'Past Client',
+      previous_interaction: o['Previous Interaction'] || 'Active enterprise partnership',
       status: optIn === false ? 'Opted Out' : (o.Status || 'Active'),
-      opt_in: optIn,
+      opt_in: optIn !== undefined ? optIn : true,
       location: o.Location || [o.City, o.State, o.Country].filter(Boolean).join(', '),
       city: o.City || '', state: o.State || '', country: o.Country || '',
       known_interests: o['Known Interests'] || ''
@@ -79,30 +75,21 @@ function parseCsv(text) {
 }
 
 async function syncFromSheets() {
-  const url = process.env.NURTURE_GOOGLE_SHEETS_CSV_URL;
+  const url = getPastClientsCsvUrl();
   try {
-    let contacts;
-    let source;
-    if (url) {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`Sheets returned HTTP ${response.status}`);
-      contacts = parseCsv(await response.text());
-      source = 'google_sheets';
-    } else {
-      // Reuse the same live Sheets connector as the Leads screen when no
-      // nurture-specific CSV URL is configured.
-      contacts = (await leadSheets.fetchContactsFromSheet()).map(toNurtureContact).filter(contact => contact.id && contact.name);
-      source = 'google_sheets';
-    }
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Google Sheets returned HTTP ${response.status}`);
+    const csvContent = await response.text();
+    const contacts = parseCsv(csvContent);
     if (contacts.length) {
       store.setContacts(contacts);
-      return { count: contacts.length, duplicates_removed: contacts.duplicatesRemoved || 0, source };
+      return { count: contacts.length, duplicates_removed: contacts.duplicatesRemoved || 0, source: 'past_clients_google_sheets' };
     }
   } catch (err) {
-    console.warn('[nurtureSheets] Live sync unavailable; retaining the existing contact store:', err.message);
+    console.warn('[nurtureSheets] Live Past Clients sync unavailable; retaining existing store:', err.message);
   }
   const contacts = store.getContacts();
   return { count: contacts.length, duplicates_removed: 0, source: 'existing_store' };
 }
 
-module.exports = { syncFromSheets, parseCsv };
+module.exports = { syncFromSheets, parseCsv, getPastClientsCsvUrl, PAST_CLIENTS_SHEET_ID };

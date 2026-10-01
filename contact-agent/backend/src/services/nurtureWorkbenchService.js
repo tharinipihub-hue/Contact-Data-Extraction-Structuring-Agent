@@ -15,7 +15,7 @@ class WorkbenchService {
     return process.env.NURTURE_WORKBENCH_WEBHOOK_URL || this.webhookUrl;
   }
 
-  async testNurturingWebhook() {
+  async testNurturingWebhook(contact) {
     const targetUrl = this.getWebhookUrl();
     if (!targetUrl) {
       const error = new Error('NURTURE_WORKBENCH_WEBHOOK_URL is not configured');
@@ -24,16 +24,37 @@ class WorkbenchService {
     }
 
     const parsedTarget = new URL(targetUrl);
+    let testContact = contact;
+    if (!testContact || testContact.opt_in !== true) {
+      try {
+        const store = require('./nurtureStore');
+        testContact = store.getContacts().find(c => c.opt_in === true);
+      } catch (_) {}
+    }
+    if (!testContact) {
+      testContact = {
+        id: 'CNT-001',
+        name: 'Arjun Mehta',
+        company: 'BrightEdge Solutions',
+        designation: 'Marketing Manager',
+        email: 'thariniparthasarathy1804@gmail.com',
+        sector: 'Technology',
+        industry: 'Technology',
+        opt_in: true
+      };
+    }
+
     const payload = {
-      action: 'connection_test',
-      campaign_name: 'SNS Workbench Connection Test',
-      campaign_type: 'connection_test',
-      developer_input: 'Connectivity check only. Do not generate or dispatch campaign communications.',
-      sector: 'Technology',
-      target_segment: 'Synthetic test record',
+      action: 'generate_preview',
+      campaign_name: 'SNS Workbench Webhook Health Verification',
+      campaign_type: 'newsletter',
+      developer_input: 'Live connectivity and AI campaign generation test via SNS Workbench.',
+      campaign_brief: 'Live connectivity and AI campaign generation test via SNS Workbench.',
+      sector: testContact.sector || testContact.industry || 'Technology',
+      target_segment: `${testContact.sector || 'Technology'} Sector Clients`,
       channel: 'email',
-      contacts: [{ id: 'SYNTHETIC-CONNECTION-TEST', name: 'Workbench Test', company: 'SNS Square', sector: 'Technology', opt_in: false }],
-      active_contact: { id: 'SYNTHETIC-CONNECTION-TEST', name: 'Workbench Test', company: 'SNS Square', sector: 'Technology', opt_in: false }
+      contacts: [testContact],
+      active_contact: testContact
     };
     const startedAt = Date.now();
     let response;
@@ -58,7 +79,7 @@ class WorkbenchService {
     catch (_err) { responseData = responseText.slice(0, 1000); }
 
     const durationMs = Date.now() - startedAt;
-    const success = response.status >= 200 && response.status < 300;
+    const success = response.status >= 200 && response.status < 300 && responseData?.success !== false;
     console.info(`[NurturingWebhookTest] POST ${parsedTarget.host}${parsedTarget.pathname} status=${response.status} durationMs=${durationMs} success=${success}`);
     return {
       success,

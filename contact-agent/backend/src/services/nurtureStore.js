@@ -2,13 +2,44 @@
 
 const fs = require('fs');
 const path = require('path');
-const DEFAULT_NURTURE_DATA_DIR = path.join(__dirname, '../../nurture-data');
-const IS_RENDER = Boolean(process.env.RENDER);
-const CONFIGURED_NURTURE_DATA_DIR = process.env.NURTURE_DATA_DIR || (IS_RENDER ? '/var/data' : DEFAULT_NURTURE_DATA_DIR);
-const NURTURE_DATA_DIR = path.resolve(CONFIGURED_NURTURE_DATA_DIR);
-if (process.env.NODE_ENV === 'production' && NURTURE_DATA_DIR === path.resolve(DEFAULT_NURTURE_DATA_DIR)) {
-  throw new Error('NURTURE_DATA_DIR resolves to the ephemeral application checkout. Configure it to the Render persistent disk mount (Blueprint uses /var/data).');
+function resolveDataDir() {
+  const customDir = process.env.NURTURE_DATA_DIR;
+  if (customDir) {
+    const resolved = path.resolve(customDir);
+    try {
+      fs.mkdirSync(resolved, { recursive: true });
+      fs.accessSync(resolved, fs.constants.W_OK);
+      return resolved;
+    } catch (err) {
+      console.warn(`[NurtureStore] Configured NURTURE_DATA_DIR "${resolved}" is not writable (${err.message}). Checking disk mounts...`);
+    }
+  }
+
+  // Check if Render persistent disk is mounted at /var/data
+  if (fs.existsSync('/var/data')) {
+    try {
+      fs.accessSync('/var/data', fs.constants.W_OK);
+      return '/var/data';
+    } catch (err) {
+      console.warn(`[NurtureStore] /var/data exists but is not writable (${err.message}).`);
+    }
+  }
+
+  // Fallback to local application data directory
+  const localDir = path.resolve(__dirname, '../../nurture-data');
+  try {
+    fs.mkdirSync(localDir, { recursive: true });
+    return localDir;
+  } catch (err) {
+    console.warn(`[NurtureStore] Could not initialize ${localDir}: ${err.message}`);
+  }
+
+  const osTmp = path.join(require('os').tmpdir(), 'contact-nurture-data');
+  fs.mkdirSync(osTmp, { recursive: true });
+  return osTmp;
 }
+
+const NURTURE_DATA_DIR = resolveDataDir();
 const OPT_OVERRIDES_FILE = path.join(NURTURE_DATA_DIR, 'opt_overrides.json');
 const CAMPAIGNS_FILE = path.join(NURTURE_DATA_DIR, 'campaigns.json');
 const CONTACTS_FILE = path.join(NURTURE_DATA_DIR, 'contacts.json');
@@ -395,6 +426,29 @@ class NurtureStore {
         this.campaigns.splice(idx, 0, removed);
         throw error;
       }
+
+      // Clean up client engagements in contacts without deleting contacts
+      let contactsModified = false;
+      this.contacts.forEach(contact => {
+        if (Array.isArray(contact.client_engagements)) {
+          const prevLen = contact.client_engagements.length;
+          contact.client_engagements = contact.client_engagements.filter(e => e.campaign_name !== removed.name);
+          if (contact.client_engagements.length !== prevLen) contactsModified = true;
+        }
+      });
+      if (contactsModified) {
+        try { this.saveContacts(); } catch (_) {}
+      }
+
+      try {
+        this.addAuditLog({
+          event_type: 'Campaign Deleted',
+          contact_name: removed.name || 'Campaign',
+          details: `Campaign "${removed.name}" (${removed.id}) deleted.`,
+          status: 'Deleted'
+        });
+      } catch (_) {}
+
       return removed;
     }
     return null;

@@ -5,7 +5,16 @@ const store = require('../services/nurtureStore');
 const sheets = require('../services/nurtureGoogleSheetsService');
 const router = express.Router();
 
-router.get('/', (_req, res) => res.json({ success: true, stats: store.getStats(), contacts: store.getContacts() }));
+router.get('/', async (_req, res) => {
+  let contacts = store.getContacts();
+  if (!contacts || contacts.length === 0) {
+    try {
+      await sheets.syncFromSheets();
+      contacts = store.getContacts();
+    } catch (_) {}
+  }
+  res.json({ success: true, stats: store.getStats(), contacts: store.getContacts() });
+});
 router.post('/sync', async (_req, res, next) => {
   try {
     const result = await sheets.syncFromSheets();

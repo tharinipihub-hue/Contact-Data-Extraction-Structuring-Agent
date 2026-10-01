@@ -219,6 +219,12 @@ const server = app.listen(
     console.log(
       `[server] Upload directory      : ${UPLOAD_DIR}`
     );
+
+    // Initial Past Clients synchronization from dedicated Google Sheet
+    const nurtureSheetsService = require('./services/nurtureGoogleSheetsService');
+    nurtureSheetsService.syncFromSheets()
+      .then(res => console.log(`[server] Initial Past Clients sync: ${res.count} contacts loaded from ${res.source}.`))
+      .catch(err => console.warn(`[server] Initial Past Clients sync notice: ${err.message}`));
   }
 );
 

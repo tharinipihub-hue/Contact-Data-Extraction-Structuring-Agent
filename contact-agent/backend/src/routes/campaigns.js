@@ -206,9 +206,13 @@ function extractWorkbenchAiContent(data) {
 }
 
 // Generate content & preview strictly using SNS Workbench Webhook (with Groq GPT-OSS-120B)
-router.post('/test-webhook', async (_req, res) => {
+router.post('/test-webhook', async (req, res) => {
   try {
-    const result = await workbenchService.testNurturingWebhook();
+    let testContact = null;
+    if (req.body?.contact_id) {
+      testContact = nurtureStore.getContactById(req.body.contact_id);
+    }
+    const result = await workbenchService.testNurturingWebhook(testContact);
     return res.status(result.status >= 200 && result.status < 300 ? 200 : 502).json(result);
   } catch (err) {
     return res.status(err.status || 502).json({ success: false, error: err.message, status: err.status || 502 });
@@ -237,12 +241,17 @@ router.post('/generate', async (req, res) => {
   if (!brief) {
     return res.status(400).json({ success: false, error: 'Campaign brief is required.' });
   }
-  if (!Array.isArray(contacts) || contacts.length === 0) {
+
+  let requestedContactList = Array.isArray(contacts) && contacts.length > 0 ? contacts : [];
+  if (requestedContactList.length === 0 && (contact_id || targetContact)) {
+    requestedContactList = [targetContact || contact_id];
+  }
+  if (requestedContactList.length === 0) {
     return res.status(400).json({ success: false, error: 'Select at least one opted-in audience contact before generating campaign content.' });
   }
 
   const allContacts = nurtureStore.getContacts();
-  const requestedIds = new Set(contacts.map(c => (typeof c === 'string' ? c : c?.id)).filter(Boolean));
+  const requestedIds = new Set(requestedContactList.map(c => (typeof c === 'string' ? c : c?.id)).filter(Boolean));
   const recipientContacts = allContacts.filter(c => requestedIds.has(c.id));
   if (recipientContacts.length !== requestedIds.size) {
     return res.status(400).json({ success: false, error: 'One or more selected audience contacts could not be found. Refresh the audience and try again.' });
@@ -391,7 +400,10 @@ router.post('/dispatch', async (req, res) => {
       targetContact = nurtureStore.getContactById(targetContactId);
     }
 
-    const requestedContacts = req.body.contacts;
+    let requestedContacts = req.body.contacts;
+    if ((!Array.isArray(requestedContacts) || requestedContacts.length === 0) && (targetContactId || targetContact)) {
+      requestedContacts = [targetContact || targetContactId];
+    }
     if (!Array.isArray(requestedContacts) || requestedContacts.length === 0) {
       return res.status(400).json({ success: false, error: 'Select at least one opted-in audience contact before dispatching.' });
     }
@@ -413,8 +425,8 @@ router.post('/dispatch', async (req, res) => {
 
     const activeSector = sector || targetContact?.sector || targetContact?.industry || 'Technology';
     const finalDeveloperInput = developer_input || topic || occasion || '';
-    const finalSubject = String(content?.subject || '').trim();
-    const finalBody = String(content?.email_body || '').trim();
+    const finalSubject = String(content?.subject || req.body.subject || '').trim();
+    const finalBody = String(content?.email_body || req.body.email_body || content?.body || req.body.body || '').trim();
     if (!finalSubject || !finalBody) {
       return res.status(400).json({ success: false, error: 'Campaign subject and content are required before dispatch.' });
     }
@@ -513,7 +525,7 @@ router.post('/dispatch', async (req, res) => {
         response.email_sent === true ||
         response.sent === true ||
         String(response.delivery_status || '').toLowerCase() === 'delivered' ||
-        ['sent', 'delivered'].includes(String(response.status || '').toLowerCase())
+        ['sent', 'delivered', 'completed'].includes(String(response.status || '').toLowerCase())
       )
     );
     if (!deliveryConfirmed) {

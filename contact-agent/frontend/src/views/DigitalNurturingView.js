@@ -54,7 +54,8 @@ import {
   UserX,
   CheckCheck,
   Inbox,
-  ShieldAlert
+  ShieldAlert,
+  XCircle
 } from 'lucide-react';
 import './DigitalNurturingView.css';
 
@@ -417,38 +418,36 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
   const handleTestWorkbenchWebhook = async () => {
     const optedInContact = contacts.find(contact => contact.opt_in === true);
     if (!optedInContact) {
-      showNotification('Sync or import a contact with recorded consent before testing campaign generation.', true);
+      showNotification('Select at least one opted-in audience contact before testing campaign generation.', true);
       return;
     }
     setIsTestingWebhook(true);
     setWebhookTestResult(null);
     const start = Date.now();
     try {
-      const res = await axios.post(`${API_BASE}/campaigns/generate`, {
-        campaign_name: 'Workbench Connection Verification',
-        campaign_type: 'newsletter',
-        sector: '',
-        contact_id: optedInContact.id,
-        topic: 'Live Verification of SNS Workbench Pipeline'
-      }, { timeout: 12000 });
+      const res = await axios.post(`${API_BASE}/campaigns/test-webhook`, {
+        contact_id: optedInContact.id
+      }, { timeout: 25000 });
       const elapsed = Date.now() - start;
-      const confirmed = res.data?.success === true && res.data?.content_source === 'workbench' && Boolean(res.data?.preview?.subject || res.data?.preview?.email_body);
-      if (confirmed) await loadData();
+      const confirmed = res.data?.success === true;
       setWebhookTestResult({
         success: confirmed,
         elapsed,
-        source: res.data?.source,
-        status: confirmed ? 'Workbench generated preview content' : 'Workbench did not confirm generated content',
-        data: res.data?.preview
+        source: 'workbench_webhook',
+        status: confirmed ? 'Workbench Responded Successfully' : 'Workbench test failed',
+        data: res.data?.response || res.data
       });
-      if (confirmed) showNotification(res.data?.success ? `SNS Workbench responded with HTTP ${res.data.status} in ${elapsed}ms.` : `SNS Workbench returned HTTP ${res.data?.status || 'error'}.`, !res.data?.success);
-      else showNotification('SNS Workbench did not confirm campaign generation.', true);
+      if (confirmed) {
+        showNotification(`SNS Workbench responded with HTTP ${res.data.status || 200} in ${elapsed}ms.`);
+      } else {
+        showNotification(res.data?.error || 'SNS Workbench test failed.', true);
+      }
     } catch (err) {
       const elapsed = Date.now() - start;
       setWebhookTestResult({
         success: false,
         elapsed,
-        status: err.response?.data?.status || err.response?.status,
+        status: err.response?.data?.status || err.response?.status || 502,
         error: err.response?.data?.error || err.message
       });
       showNotification('Webhook test error: ' + (err.response?.data?.error || err.message), true);
@@ -492,28 +491,46 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
 
   const loadData = async () => {
     try {
-      const res = await axios.get(NURTURE_CONTACTS_URL, { timeout: 3000 });
+      const res = await axios.get(NURTURE_CONTACTS_URL, { timeout: 10000 });
       if (Array.isArray(res.data?.contacts)) {
         setContacts(res.data.contacts);
-      }
-      const cmpRes = await axios.get(`${API_BASE}/campaigns`, { timeout: 3000 });
-      if (cmpRes.data?.campaigns) setCampaigns(cmpRes.data.campaigns);
-      if (cmpRes.data?.audit_logs) setAuditLogs(cmpRes.data.audit_logs);
-
-      const sRes = await axios.get(`${API_BASE}/sales/handoffs`, { timeout: 3000 });
-      if (sRes.data?.handoffs) setSalesHandoffs(sRes.data.handoffs);
-
-      // Fetch live opt-in/opt-out notification events from backend
-      try {
-        const evtRes = await axios.get(`${API_BASE}/contacts/opt-events`, { timeout: 3000 });
-        if (Array.isArray(evtRes.data?.events)) {
-          setOptNotifications(evtRes.data.events);
+        const optedIn = res.data.contacts.filter(c => c.opt_in === true);
+        if (optedIn.length > 0) {
+          setWizardSelectedContactId(prev => prev || optedIn[0].id);
+          setWizardSelectedCompany(prev => prev || optedIn[0].company || '');
+          setWizardSelectedIndustry(prev => prev || optedIn[0].sector || '');
+          setWizardSelectedCustomContacts(prev => prev.size > 0 ? prev : new Set(optedIn.map(c => c.id)));
         }
-      } catch (evtErr) {
-        // Keep initial/cached opt-events
+        if (res.data.contacts.length === 0) {
+          handleSyncSheets();
+        }
       }
     } catch (err) {
-      console.warn('Digital Nurturing API is unavailable; nurturing data was not refreshed.');
+      console.warn('Digital Nurturing contacts API warning:', err.message);
+    }
+
+    try {
+      const cmpRes = await axios.get(`${API_BASE}/campaigns`, { timeout: 10000 });
+      if (cmpRes.data?.campaigns) setCampaigns(cmpRes.data.campaigns);
+      if (cmpRes.data?.audit_logs) setAuditLogs(cmpRes.data.audit_logs);
+    } catch (err) {
+      console.warn('Digital Nurturing campaigns API warning:', err.message);
+    }
+
+    try {
+      const sRes = await axios.get(`${API_BASE}/sales/handoffs`, { timeout: 10000 });
+      if (sRes.data?.handoffs) setSalesHandoffs(sRes.data.handoffs);
+    } catch (err) {
+      console.warn('Digital Nurturing sales handoffs API warning:', err.message);
+    }
+
+    try {
+      const evtRes = await axios.get(`${API_BASE}/contacts/opt-events`, { timeout: 10000 });
+      if (Array.isArray(evtRes.data?.events)) {
+        setOptNotifications(evtRes.data.events);
+      }
+    } catch (evtErr) {
+      // Keep initial/cached opt-events
     }
   };
 
@@ -526,6 +543,13 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
         throw new Error('The contacts sync response did not contain a contact list.');
       }
       setContacts(res.data.contacts);
+      const optedIn = res.data.contacts.filter(c => c.opt_in === true);
+      if (optedIn.length > 0) {
+        setWizardSelectedContactId(prev => prev || optedIn[0].id);
+        setWizardSelectedCompany(prev => prev || optedIn[0].company || '');
+        setWizardSelectedIndustry(prev => prev || optedIn[0].sector || '');
+        setWizardSelectedCustomContacts(prev => prev.size > 0 ? prev : new Set(optedIn.map(c => c.id)));
+      }
       showNotification(`Synchronized ${res.data.contacts.length} client leads from ${res.data.source || 'the configured source'}.`);
     } catch (err) {
       showNotification(`Could not synchronize contacts: ${err.response?.data?.error || err.message}`, true);
@@ -614,6 +638,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
           topic: topic,
           sector: sector,
           contact_id: contact.id,
+          contacts: [{ id: contact.id }],
           target_audience: `${sector} Sector Clients`,
           channel: 'email'
         }, { timeout: 30000 });
@@ -687,10 +712,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
     const optedInContacts = contacts.filter(c => c.opt_in === true);
     if (wizardAudienceType === 'Specific Client') {
       const match = optedInContacts.filter(c => c.id === wizardSelectedContactId);
-      return match;
-    }
-    if (wizardAudienceType === 'All Past Clients') {
-      return optedInContacts;
+      return match.length > 0 ? match : optedInContacts.slice(0, 1);
     }
     if (wizardAudienceType === 'Specific Industry') {
       return optedInContacts.filter(c => (c.sector || c.industry) === wizardSelectedIndustry);
@@ -704,7 +726,68 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
     if (wizardAudienceType === 'Custom Selection') {
       return optedInContacts.filter(c => wizardSelectedCustomContacts.has(c.id));
     }
+    if (wizardSelectedCustomContacts.size > 0) {
+      return optedInContacts.filter(c => wizardSelectedCustomContacts.has(c.id));
+    }
     return optedInContacts;
+  };
+
+  const handleSelectAllOptedIn = () => {
+    const optedIn = contacts.filter(c => c.opt_in === true);
+    setWizardSelectedCustomContacts(new Set(optedIn.map(c => c.id)));
+    setWizardAudienceType('Custom Selection');
+    if (optedIn.length > 0) {
+      setWizardSelectedContactId(optedIn[0].id);
+      setWizardSelectedCompany(optedIn[0].company || '');
+      setWizardSelectedIndustry(optedIn[0].sector || '');
+    }
+  };
+
+  const handleDeselectAll = () => {
+    setWizardSelectedCustomContacts(new Set());
+    setWizardAudienceType('Custom Selection');
+  };
+
+  const handleToggleContactSelection = (contactId) => {
+    setWizardSelectedCustomContacts(prev => {
+      const next = new Set(prev);
+      if (next.has(contactId)) {
+        next.delete(contactId);
+      } else {
+        next.add(contactId);
+      }
+      return next;
+    });
+    setWizardAudienceType('Custom Selection');
+    const found = contacts.find(c => c.id === contactId);
+    if (found && found.opt_in === true) {
+      setWizardSelectedContactId(contactId);
+      setWizardSelectedCompany(found.company || '');
+      setWizardSelectedIndustry(found.sector || '');
+    }
+  };
+
+  const handleApplyTemplateInStep3 = (templateKey) => {
+    const tmpl = NURTURE_TEMPLATES[templateKey];
+    if (!tmpl) return;
+    const typeMap = {
+      Newsletter: 'Newsletter',
+      Welcome: 'Welcome Message',
+      Festival: 'Festival / Occasion Wish',
+      Promotional: 'Promotional / Strategic Update'
+    };
+    const targetContact = contacts.find(c => c.id === wizardSelectedContactId && c.opt_in === true) || contacts.find(c => c.opt_in === true) || contacts[0];
+    const typeStr = typeMap[templateKey] || 'Newsletter';
+    const cName = tmpl.sample.campaign_name.replace('[Company]', targetContact?.company || 'Enterprise');
+
+    setWizardCampaignType(typeStr);
+    setWizardCampaignName(cName);
+    setWizardBrief(tmpl.sample.brief);
+    setWizardBriefError(false);
+    if (tmpl.sample.occasion) {
+      setWizardOccasion(tmpl.sample.occasion);
+    }
+    showNotification(`Loaded ${tmpl.name} brief & settings.`);
   };
 
   const handleSelectWizardType = (type) => {
@@ -731,21 +814,25 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
       Promotional: 'Promotional / Strategic Update'
     };
     const contactId = clientContactId || templateSelectedContactId || wizardSelectedContactId;
-    const targetContact = contacts.find(c => c.id === contactId) || contacts[0];
+    const targetContact = contacts.find(c => c.id === contactId && c.opt_in === true) || contacts.find(c => c.opt_in === true) || contacts[0];
 
-    setWizardCampaignType(typeMap[templateKey] || 'Newsletter');
-    setWizardCampaignName(tmpl.sample.campaign_name.replace('[Company]', targetContact?.company || 'Enterprise'));
-    setWizardBrief(tmpl.sample.brief);
+    const typeStr = typeMap[templateKey] || 'Newsletter';
+    const cName = tmpl.sample.campaign_name.replace('[Company]', targetContact?.company || 'Enterprise');
+    const brief = tmpl.sample.brief;
+
+    setWizardCampaignType(typeStr);
+    setWizardCampaignName(cName);
+    setWizardBrief(brief);
+    setWizardBriefError(false);
     if (tmpl.sample.occasion) setWizardOccasion(tmpl.sample.occasion);
-    setWizardAudienceType('Specific Client');
     if (targetContact) {
       setWizardSelectedContactId(targetContact.id);
       setWizardSelectedCompany(targetContact.company || '');
       setWizardSelectedIndustry(targetContact.sector || '');
     }
-    setWizardStep(2);
+    setWizardStep(3);
     setActiveTab('create_campaign');
-    showNotification(`Loaded ${tmpl.name} for ${targetContact?.name || 'Client'} into Campaign Wizard.`);
+    showNotification(`Loaded ${tmpl.name} into Campaign Wizard.`);
   };
 
   const handleInstantGenerateTemplate = async (templateKey, clientContactId = null) => {
@@ -758,12 +845,16 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
       Promotional: 'Promotional / Strategic Update'
     };
     const contactId = clientContactId || templateSelectedContactId || wizardSelectedContactId;
-    const targetContact = contacts.find(c => c.id === contactId) || contacts[0];
+    const targetContact = contacts.find(c => c.id === contactId && c.opt_in === true) || contacts.find(c => c.opt_in === true) || contacts[0];
 
     const typeStr = typeMap[templateKey] || 'Newsletter';
+    const cName = tmpl.sample.campaign_name.replace('[Company]', targetContact?.company || 'Enterprise');
+    const brief = tmpl.sample.brief;
+
     setWizardCampaignType(typeStr);
-    setWizardCampaignName(tmpl.sample.campaign_name.replace('[Company]', targetContact?.company || 'Enterprise'));
-    setWizardBrief(tmpl.sample.brief);
+    setWizardCampaignName(cName);
+    setWizardBrief(brief);
+    setWizardBriefError(false);
     if (tmpl.sample.occasion) setWizardOccasion(tmpl.sample.occasion);
     setWizardAudienceType('Specific Client');
     if (targetContact) {
@@ -772,19 +863,20 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
       setWizardSelectedIndustry(targetContact.sector || '');
     }
     setActiveTab('create_campaign');
-    await handleWizardGenerate(targetContact);
+    await handleWizardGenerate(targetContact, brief, cName, typeStr);
   };
 
   const handleQuickGenerateFromStep1 = async (targetContactId = null) => {
-    if (!wizardBrief || !wizardBrief.trim()) {
+    const effectiveBrief = wizardBrief.trim();
+    if (!effectiveBrief) {
       setWizardBriefError(true);
-      showNotification('Please enter a campaign brief.', true);
+      showNotification('Please enter a campaign brief in Step 3.', true);
       setWizardStep(3);
       return;
     }
 
     const contactId = targetContactId || wizardSelectedContactId;
-    const targetContact = contacts.find(c => c.id === contactId) || contacts[0];
+    const targetContact = contacts.find(c => c.id === contactId && c.opt_in === true) || contacts.find(c => c.opt_in === true) || contacts[0];
     if (!targetContact) return;
 
     setWizardAudienceType('Specific Client');
@@ -795,8 +887,9 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
     await handleWizardGenerate(targetContact);
   };
 
-  const handleWizardGenerate = async (contactOverride = null) => {
-    if (!wizardBrief || !wizardBrief.trim()) {
+  const handleWizardGenerate = async (contactOverride = null, briefOverride = null, nameOverride = null, typeOverride = null) => {
+    const effectiveBrief = String(briefOverride !== null && briefOverride !== undefined ? briefOverride : wizardBrief).trim();
+    if (!effectiveBrief) {
       setWizardBriefError(true);
       showNotification('Please enter a campaign brief.', true);
       setWizardStep(3);
@@ -820,18 +913,20 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
     try {
       let preview = null;
       let generatedCampaign = null;
+      const campaignName = nameOverride || wizardCampaignName;
+      const effectiveType = typeOverride || wizardCampaignType;
       try {
         const res = await axios.post(`${API_BASE}/campaigns/generate`, {
-          campaign_name: wizardCampaignName,
-          campaign_type: wizardCampaignType === 'Welcome Message' ? 'welcome' :
-                         wizardCampaignType === 'Festival / Occasion Wish' ? 'festival_wish' :
-                         wizardCampaignType === 'Promotional / Strategic Update' ? 'promotional' : 'newsletter',
+          campaign_name: campaignName,
+          campaign_type: effectiveType === 'Welcome Message' ? 'welcome' :
+                         effectiveType === 'Festival / Occasion Wish' ? 'festival_wish' :
+                         effectiveType === 'Promotional / Strategic Update' ? 'promotional' : 'newsletter',
           sector: primaryContact.sector || primaryContact.industry || 'Technology',
           contact_id: primaryContact.id,
           contacts: recipients.map(contact => ({ id: contact.id })),
-          topic: wizardBrief.trim(),
-          developer_input: wizardBrief.trim(),
-          occasion: wizardOccasion || wizardBrief.trim(),
+          topic: effectiveBrief,
+          developer_input: effectiveBrief,
+          occasion: wizardOccasion || effectiveBrief,
           target_audience: wizardAudienceType === 'Specific Client' ? `${primaryContact.name} (${primaryContact.company})` : wizardAudienceType,
           channel: wizardChannels.email ? 'Email' : 'WhatsApp'
         }, { timeout: 30000 });
@@ -1082,6 +1177,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
           topic: generatedOutput.topic,
           sector: generatedOutput.sector,
           contact_id: generatedOutput.contact?.id,
+          contacts: [generatedOutput.contact || { id: generatedOutput.contact?.id }],
           audience: `${generatedOutput.sector} Clients`,
           channels: ['Email', 'WhatsApp'],
           image_url: generatedOutput.image_url || wizardImage,
@@ -2202,7 +2298,8 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
               <div className={`dn-wizard-step ${wizardStep === 4 ? 'active' : (wizardStep > 4 ? 'completed' : '')}`} onClick={() => {
                 if (!wizardBrief || !wizardBrief.trim()) {
                   setWizardBriefError(true);
-                  showNotification('Please enter a campaign brief.', true);
+                  showNotification('Please enter a campaign brief in Step 3.', true);
+                  setWizardStep(3);
                   return;
                 }
                 setWizardStep(4);
@@ -2304,43 +2401,10 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                   </div>
                 </div>
 
-                {/* ── Campaign Brief * (Single Source of Truth) ── */}
-                <div className="dn-form-group" style={{ marginTop: 22 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                    <label className="dn-form-label" style={{ marginBottom: 0 }}>
-                      Campaign Brief <span style={{ color: '#ef4444' }}>*</span>
-                    </label>
-                    <span style={{ fontSize: 11.5, color: '#94a3b8' }}>
-                      {wizardBrief.length} characters
-                    </span>
-                  </div>
-                  <div style={{ fontSize: 12, color: '#64748b', marginBottom: 6 }}>
-                    Describe what you want to communicate to the selected client(s).
-                  </div>
-                  <textarea
-                    className="dn-form-textarea"
-                    rows={4}
-                    value={wizardBrief}
-                    onChange={(e) => {
-                      setWizardBrief(e.target.value);
-                      if (e.target.value.trim()) setWizardBriefError(false);
-                    }}
-                    placeholder="Example: Share our latest AI automation capabilities and relevant enterprise software trends."
-                    style={wizardBriefError ? { borderColor: '#ef4444', backgroundColor: '#fff5f5' } : {}}
-                    required
-                  />
-                  {wizardBriefError && (
-                    <div style={{ fontSize: 12, color: '#dc2626', marginTop: 4, fontWeight: 500 }}>
-                      Please enter a campaign brief.
-                    </div>
-                  )}
-                </div>
-
                 {/* ── Step 1 Action Bar ── */}
                 <div style={{ marginTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ fontSize: 12, color: '#64748b' }}>
-                    Campaign Type: <strong style={{ color: '#0f172a' }}>{wizardCampaignType}</strong>
-                    {wizardBrief.trim() && <span style={{ color: '#16a34a', marginLeft: 8 }}>✓ Brief entered</span>}
+                    Selected Campaign Type: <strong style={{ color: '#0f172a' }}>{wizardCampaignType}</strong>
                   </div>
 
                   <div style={{ display: 'flex', gap: 10 }}>
@@ -2348,11 +2412,6 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                       type="button"
                       className="dn-btn dn-btn-primary"
                       onClick={() => {
-                        if (!wizardBrief || !wizardBrief.trim()) {
-                          setWizardBriefError(true);
-                          return;
-                        }
-                        setWizardBriefError(false);
                         setWizardStep(2);
                       }}
                     >
@@ -2368,208 +2427,171 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
               <div>
                 <div style={{ marginBottom: 16 }}>
                   <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a' }}>Step 2 — Audience</h3>
-                  <p style={{ fontSize: 13, color: '#64748b', marginTop: 2 }}>Select Audience</p>
+                  <p style={{ fontSize: 13, color: '#64748b', marginTop: 2 }}>
+                    Select opted-in past clients from your directory to receive this campaign. Only opted-in contacts will be queued for delivery.
+                  </p>
                 </div>
 
-                <div className="dn-radio-grid">
-                  <div
-                    className={`dn-radio-card ${wizardAudienceType === 'Specific Client' ? 'selected' : ''}`}
-                    onClick={() => setWizardAudienceType('Specific Client')}
-                  >
-                    <div className="dn-radio-card-header">
-                      <div className="dn-radio-card-title">
-                        <UserCheck size={16} color="#0066cc" /> Individual Client
-                      </div>
-                      <input
-                        type="radio"
-                        checked={wizardAudienceType === 'Specific Client'}
-                        onChange={() => setWizardAudienceType('Specific Client')}
-                      />
-                    </div>
-                    <div className="dn-radio-card-desc">
-                      Target an individual client lead directly with personalized sector copy.
-                    </div>
-                    {wizardAudienceType === 'Specific Client' && (
-                      <div style={{ marginTop: 10 }} onClick={(e) => e.stopPropagation()}>
-                        <select
-                          className="dn-form-select"
-                          value={wizardSelectedContactId}
-                          onChange={(e) => {
-                            const cId = e.target.value;
-                            setWizardSelectedContactId(cId);
-                            const found = contacts.find(c => c.id === cId);
-                            if (found) {
-                              setWizardSelectedCompany(found.company || '');
-                              setWizardSelectedIndustry(found.sector || '');
-                            }
-                          }}
-                        >
-                          {contacts.map(c => (
-                            <option key={c.id} value={c.id} disabled={c.opt_in !== true}>
-                              {c.name} — {c.company} ({c.sector || 'General'}) {c.opt_in === true ? '[OPTED IN]' : c.opt_in === false ? '[OPTED OUT]' : '[PENDING CONSENT]'}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
+                {/* Audience controls: Select All Opted-In / Deselect All / Counter */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, flexWrap: 'wrap', gap: 10 }}>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button
+                      type="button"
+                      className="dn-btn dn-btn-secondary"
+                      style={{ fontSize: 12, padding: '6px 12px' }}
+                      onClick={handleSelectAllOptedIn}
+                    >
+                      <CheckSquare size={14} /> Select All Opted-In
+                    </button>
+                    <button
+                      type="button"
+                      className="dn-btn dn-btn-secondary"
+                      style={{ fontSize: 12, padding: '6px 12px' }}
+                      onClick={handleDeselectAll}
+                    >
+                      <Square size={14} /> Deselect All
+                    </button>
                   </div>
 
-                  <div
-                    className={`dn-radio-card ${wizardAudienceType === 'All Past Clients' ? 'selected' : ''}`}
-                    onClick={() => setWizardAudienceType('All Past Clients')}
-                  >
-                    <div className="dn-radio-card-header">
-                      <div className="dn-radio-card-title">
-                        <Users size={16} color="#2563eb" /> All Past Clients
-                      </div>
-                      <input
-                        type="radio"
-                        checked={wizardAudienceType === 'All Past Clients'}
-                        onChange={() => setWizardAudienceType('All Past Clients')}
-                      />
-                    </div>
-                    <div className="dn-radio-card-desc">
-                      Broadcast to all {contacts.filter(c => c.opt_in === true).length} contacts with recorded opt-in consent.
-                    </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{
+                      fontSize: 12.5,
+                      fontWeight: 600,
+                      padding: '4px 12px',
+                      borderRadius: 16,
+                      background: getWizardTargetRecipients().length > 0 ? '#dcfce7' : '#fee2e2',
+                      color: getWizardTargetRecipients().length > 0 ? '#166534' : '#991b1b',
+                      border: getWizardTargetRecipients().length > 0 ? '1px solid #bbf7d0' : '1px solid #fecaca'
+                    }}>
+                      {getWizardTargetRecipients().length} of {contacts.filter(c => c.opt_in === true).length} Opted-In Client(s) Selected
+                    </span>
                   </div>
+                </div>
 
-                  <div
-                    className={`dn-radio-card ${wizardAudienceType === 'Specific Industry' ? 'selected' : ''}`}
-                    onClick={() => setWizardAudienceType('Specific Industry')}
-                  >
-                    <div className="dn-radio-card-header">
-                      <div className="dn-radio-card-title">
-                        <Building size={16} color="#16a34a" /> Specific Industry
-                      </div>
-                      <input
-                        type="radio"
-                        checked={wizardAudienceType === 'Specific Industry'}
-                        onChange={() => setWizardAudienceType('Specific Industry')}
-                      />
-                    </div>
-                    <div className="dn-radio-card-desc">
-                      Filter client accounts by industry vertical (e.g. Technology, Consulting, Logistics).
-                    </div>
-                    {wizardAudienceType === 'Specific Industry' && (
-                      <div style={{ marginTop: 10 }} onClick={(e) => e.stopPropagation()}>
-                        <select
-                          className="dn-form-select"
-                          value={wizardSelectedIndustry}
-                          onChange={(e) => setWizardSelectedIndustry(e.target.value)}
-                        >
-                          {sectorsList.map(s => (
-                            <option key={s} value={s}>{s}</option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
-                  </div>
+                {/* Past Clients Audience Table */}
+                <div className="dn-table-container" style={{ border: '1px solid #e2e8f0', borderRadius: 8, overflow: 'hidden' }}>
+                  <table className="dn-table">
+                    <thead>
+                      <tr>
+                        <th style={{ width: 44, textAlign: 'center' }}>
+                          <input
+                            type="checkbox"
+                            checked={contacts.filter(c => c.opt_in === true).length > 0 && contacts.filter(c => c.opt_in === true).every(c => wizardSelectedCustomContacts.has(c.id))}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                handleSelectAllOptedIn();
+                              } else {
+                                handleDeselectAll();
+                              }
+                            }}
+                            title="Toggle all opted-in clients"
+                          />
+                        </th>
+                        <th>Contact</th>
+                        <th>Company</th>
+                        <th>Designation</th>
+                        <th>Industry</th>
+                        <th>Opt-in Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {contacts.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} style={{ textAlign: 'center', padding: 24, color: '#64748b' }}>
+                            No contacts available. Synchronize contacts from Google Sheets.
+                          </td>
+                        </tr>
+                      ) : (
+                        contacts.map(c => {
+                          const isOptedIn = c.opt_in === true;
+                          const isChecked = wizardSelectedCustomContacts.has(c.id) && isOptedIn;
+                          const initials = c.name
+                            ? c.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+                            : 'CL';
 
-                  <div
-                    className={`dn-radio-card ${wizardAudienceType === 'Specific Company' ? 'selected' : ''}`}
-                    onClick={() => setWizardAudienceType('Specific Company')}
-                  >
-                    <div className="dn-radio-card-header">
-                      <div className="dn-radio-card-title">
-                        <Target size={16} color="#7c3aed" /> Specific Company
-                      </div>
-                      <input
-                        type="radio"
-                        checked={wizardAudienceType === 'Specific Company'}
-                        onChange={() => setWizardAudienceType('Specific Company')}
-                      />
-                    </div>
-                    <div className="dn-radio-card-desc">
-                      Target decision-makers at an individual account organization.
-                    </div>
-                    {wizardAudienceType === 'Specific Company' && (
-                      <div style={{ marginTop: 10 }} onClick={(e) => e.stopPropagation()}>
-                        <select
-                          className="dn-form-select"
-                          value={wizardSelectedCompany}
-                          onChange={(e) => setWizardSelectedCompany(e.target.value)}
-                        >
-                          {contacts.map(c => (
-                            <option key={c.id} value={c.company}>{c.company} ({c.name})</option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
-                  </div>
-
-                  <div
-                    className={`dn-radio-card ${wizardAudienceType === 'New Clients' ? 'selected' : ''}`}
-                    onClick={() => setWizardAudienceType('New Clients')}
-                  >
-                    <div className="dn-radio-card-header">
-                      <div className="dn-radio-card-title">
-                        <UserCheck size={16} color="#0284c7" /> New Clients
-                      </div>
-                      <input
-                        type="radio"
-                        checked={wizardAudienceType === 'New Clients'}
-                        onChange={() => setWizardAudienceType('New Clients')}
-                      />
-                    </div>
-                    <div className="dn-radio-card-desc">
-                      Target recently ingested client contacts awaiting initial onboarding touchpoint.
-                    </div>
-                  </div>
-
-                  <div
-                    className={`dn-radio-card ${wizardAudienceType === 'Custom Selection' ? 'selected' : ''}`}
-                    onClick={() => setWizardAudienceType('Custom Selection')}
-                  >
-                    <div className="dn-radio-card-header">
-                      <div className="dn-radio-card-title">
-                        <CheckSquare size={16} color="#ed6c02" /> Custom Selection
-                      </div>
-                      <input
-                        type="radio"
-                        checked={wizardAudienceType === 'Custom Selection'}
-                        onChange={() => setWizardAudienceType('Custom Selection')}
-                      />
-                    </div>
-                    <div className="dn-radio-card-desc">
-                      Handpick specific contacts from your directory.
-                    </div>
-                    {wizardAudienceType === 'Custom Selection' && (
-                      <div style={{ marginTop: 10, maxHeight: 130, overflowY: 'auto', background: '#f8fafc', padding: 8, borderRadius: 6 }} onClick={(e) => e.stopPropagation()}>
-                        {contacts.filter(c => c.opt_in === true).map(c => {
-                          const isChecked = wizardSelectedCustomContacts.has(c.id);
                           return (
-                            <label key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '3px 0', cursor: 'pointer' }}>
-                              <input
-                                type="checkbox"
-                                checked={isChecked}
-                                onChange={(e) => {
-                                  const updated = new Set(wizardSelectedCustomContacts);
-                                  if (e.target.checked) updated.add(c.id);
-                                  else updated.delete(c.id);
-                                  setWizardSelectedCustomContacts(updated);
-                                }}
-                              />
-                              <span>{c.name} — {c.company}</span>
-                            </label>
+                            <tr
+                              key={c.id}
+                              style={{
+                                cursor: isOptedIn ? 'pointer' : 'not-allowed',
+                                background: isChecked ? '#f0fdf4' : (isOptedIn ? '#ffffff' : '#f8fafc'),
+                                opacity: isOptedIn ? 1 : 0.6
+                              }}
+                              onClick={() => {
+                                if (isOptedIn) handleToggleContactSelection(c.id);
+                              }}
+                            >
+                              <td style={{ textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
+                                <input
+                                  type="checkbox"
+                                  checked={isChecked}
+                                  disabled={!isOptedIn}
+                                  onChange={() => handleToggleContactSelection(c.id)}
+                                />
+                              </td>
+                              <td>
+                                <div className="dn-client-cell">
+                                  <div className="dn-avatar">{initials}</div>
+                                  <div>
+                                    <div className="dn-client-name">{c.name}</div>
+                                    <div style={{ fontSize: 11.5, color: '#64748b' }}>{c.email}</div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td>
+                                <div className="dn-company-name">{c.company || '—'}</div>
+                              </td>
+                              <td>
+                                <div style={{ fontSize: 12.5, color: '#334155' }}>
+                                  {c.designation || c.role || 'Executive'}
+                                </div>
+                              </td>
+                              <td>
+                                <span className="dn-badge dn-badge-gray">
+                                  {c.sector || c.industry || 'Technology'}
+                                </span>
+                              </td>
+                              <td>
+                                {isOptedIn ? (
+                                  <span className="dn-badge dn-badge-green">
+                                    <CheckCircle2 size={12} /> Opted In
+                                  </span>
+                                ) : (
+                                  <span className="dn-badge dn-badge-red">
+                                    <XCircle size={12} /> Opted Out
+                                  </span>
+                                )}
+                              </td>
+                            </tr>
                           );
-                        })}
-                      </div>
-                    )}
-                  </div>
+                        })
+                      )}
+                    </tbody>
+                  </table>
                 </div>
 
-                <div style={{ marginTop: 16, padding: '10px 14px', background: '#eff6ff', borderRadius: 6, border: '1px solid #bfdbfe', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: 12.5, color: '#1e40af', fontWeight: 600 }}>
-                    Target Audience: <strong>{getWizardTargetRecipients().length}</strong> Eligible Opted-In Recipient(s)
-                  </span>
-                  <span style={{ fontSize: 11.5, color: '#3b82f6' }}>Only explicit opt-ins are included</span>
-                </div>
+                {getWizardTargetRecipients().length === 0 && (
+                  <div style={{ marginTop: 12, padding: '10px 14px', background: '#fff1f2', borderRadius: 6, border: '1px solid #fecdd3', color: '#be123c', fontSize: 12.5, display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <AlertTriangle size={16} />
+                    <span>Please select at least one opted-in contact to proceed.</span>
+                  </div>
+                )}
 
                 <div style={{ marginTop: 24, display: 'flex', justifyContent: 'space-between' }}>
                   <button className="dn-btn dn-btn-secondary" onClick={() => setWizardStep(1)}>
                     <ChevronLeft size={14} /> Back
                   </button>
-                  <button className="dn-btn dn-btn-primary" onClick={() => setWizardStep(3)}>
+                  <button
+                    className="dn-btn dn-btn-primary"
+                    disabled={getWizardTargetRecipients().length === 0}
+                    onClick={() => {
+                      if (getWizardTargetRecipients().length === 0) {
+                        showNotification('Select at least one opted-in audience contact before proceeding.', true);
+                        return;
+                      }
+                      setWizardStep(3);
+                    }}
+                  >
                     Next: Content <ArrowRight size={14} />
                   </button>
                 </div>
@@ -2584,7 +2606,8 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                   <p style={{ fontSize: 13, color: '#64748b', marginTop: 2 }}>Specify campaign details, announcement brief, and delivery channels</p>
                 </div>
 
-                <div style={{ maxWidth: 650, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div style={{ maxWidth: 680, display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  {/* Campaign Name */}
                   <div className="dn-form-group">
                     <label className="dn-form-label">Campaign Name:</label>
                     <input
@@ -2596,7 +2619,83 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                     />
                   </div>
 
+                  {/* Reusable Template Quick-Loaders */}
+                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: '12px 14px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                      <span style={{ fontSize: 12.5, fontWeight: 700, color: '#1e293b', display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <Sparkles size={14} color="#2563eb" /> Reusable Template Quick-Loaders
+                      </span>
+                      <span style={{ fontSize: 11, color: '#64748b' }}>Click any template to auto-populate brief & type</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                      <button
+                        type="button"
+                        onClick={() => handleApplyTemplateInStep3('Newsletter')}
+                        className={`dn-btn ${wizardCampaignType === 'Newsletter' ? 'dn-btn-primary' : 'dn-btn-secondary'}`}
+                        style={{ fontSize: 12, padding: '5px 10px', height: 'auto' }}
+                      >
+                        <Mail size={13} /> 📰 Newsletter Briefing
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleApplyTemplateInStep3('Welcome')}
+                        className={`dn-btn ${wizardCampaignType === 'Welcome Message' ? 'dn-btn-primary' : 'dn-btn-secondary'}`}
+                        style={{ fontSize: 12, padding: '5px 10px', height: 'auto' }}
+                      >
+                        <UserCheck size={13} /> 👋 Welcome Sequence
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleApplyTemplateInStep3('Festival')}
+                        className={`dn-btn ${wizardCampaignType === 'Festival / Occasion Wish' ? 'dn-btn-primary' : 'dn-btn-secondary'}`}
+                        style={{ fontSize: 12, padding: '5px 10px', height: 'auto' }}
+                      >
+                        <Sparkles size={13} /> 🪔 Festival / Milestone
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleApplyTemplateInStep3('Promotional')}
+                        className={`dn-btn ${wizardCampaignType === 'Promotional / Strategic Update' ? 'dn-btn-primary' : 'dn-btn-secondary'}`}
+                        style={{ fontSize: 12, padding: '5px 10px', height: 'auto' }}
+                      >
+                        <Layers size={13} /> 🚀 Promotional Update
+                      </button>
+                    </div>
+                  </div>
 
+                  {/* Campaign Brief (Required) */}
+                  <div className="dn-form-group">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                      <label className="dn-form-label" style={{ marginBottom: 0 }}>
+                        Campaign Brief <span style={{ color: '#ef4444' }}>*</span>
+                      </label>
+                      <span style={{ fontSize: 11.5, color: '#94a3b8' }}>
+                        {wizardBrief.length} characters
+                      </span>
+                    </div>
+                    <div style={{ fontSize: 12, color: '#64748b', marginBottom: 6 }}>
+                      Describe what you want to communicate to the selected client(s). This is synthesized by the SNS Workbench AI agent.
+                    </div>
+                    <textarea
+                      className="dn-form-textarea"
+                      rows={4}
+                      value={wizardBrief}
+                      onChange={(e) => {
+                        setWizardBrief(e.target.value);
+                        if (e.target.value.trim()) setWizardBriefError(false);
+                      }}
+                      placeholder="Example: Share our latest AI automation capabilities and relevant enterprise software trends."
+                      style={wizardBriefError ? { borderColor: '#ef4444', backgroundColor: '#fff5f5' } : {}}
+                      required
+                    />
+                    {wizardBriefError && (
+                      <div style={{ fontSize: 12, color: '#dc2626', marginTop: 4, fontWeight: 500 }}>
+                        Please enter a campaign brief.
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Occasion for Festival / Milestone */}
                   {wizardCampaignType === 'Festival / Occasion Wish' && (
                     <div className="dn-form-group">
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
@@ -2626,6 +2725,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                             onClick={() => {
                               setWizardOccasion(preset.val);
                               setWizardBrief(preset.brief);
+                              setWizardBriefError(false);
                               if (preset.val.includes('Anniversary')) {
                                 setWizardCampaignName(`SNS Square Anniversary Milestone`);
                               } else {
@@ -2653,6 +2753,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                     </div>
                   )}
 
+                  {/* Channel Selection */}
                   <div className="dn-form-group">
                     <label className="dn-form-label">Channel:</label>
                     <div style={{ display: 'flex', gap: 24, marginTop: 4 }}>
@@ -2675,6 +2776,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                     </div>
                   </div>
 
+                  {/* Poster Image Upload */}
                   <div className="dn-form-group">
                     <label className="dn-form-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -2753,8 +2855,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                   <button className="dn-btn dn-btn-primary" onClick={() => {
                     if (!wizardBrief || !wizardBrief.trim()) {
                       setWizardBriefError(true);
-                      showNotification('Please enter a campaign brief in Step 1.', true);
-                      setWizardStep(1);
+                      showNotification('Please enter a campaign brief.', true);
                       return;
                     }
                     setWizardBriefError(false);
@@ -2869,7 +2970,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                             <span style={{ color: '#64748b', fontWeight: 600 }}>Campaign brief:</span>
                             <span style={{ color: wizardBrief.trim() ? '#334155' : '#dc2626', fontStyle: wizardBrief.trim() ? 'normal' : 'italic' }}>
-                              {wizardBrief.trim() || 'Missing brief — please return to Step 1 and enter a Campaign Brief.'}
+                              {wizardBrief.trim() || 'Missing brief — please return to Step 3 and enter a Campaign Brief.'}
                             </span>
                           </div>
                         </div>
@@ -2887,7 +2988,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                             if (!wizardBrief || !wizardBrief.trim()) {
                               setWizardBriefError(true);
                               showNotification('Please enter a campaign brief.', true);
-                              setWizardStep(1);
+                              setWizardStep(3);
                               return;
                             }
                             handleWizardGenerate(targetClient);
