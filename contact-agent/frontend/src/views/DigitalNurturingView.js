@@ -795,13 +795,15 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
     }
 
     const recipients = getWizardTargetRecipients();
-    const primaryContact =
-      contactOverride ||
-      contacts.find(c => c.id === wizardSelectedContactId) ||
-      recipients[0] ||
-      contacts[0];
-    if (!primaryContact) {
-      showNotification('Synchronize or select a real contact before generating a campaign.', true);
+    if (recipients.length === 0) {
+      showNotification('Select at least one opted-in audience contact before generating a campaign.', true);
+      return;
+    }
+    const primaryContact = contactOverride || (wizardAudienceType === 'Specific Client'
+      ? recipients.find(c => c.id === wizardSelectedContactId)
+      : recipients[0]);
+    if (!primaryContact || !recipients.some(c => c.id === primaryContact.id)) {
+      showNotification('The selected contact is not part of the opted-in campaign audience.', true);
       return;
     }
     setWizardSelectedContactId(primaryContact.id);
@@ -816,6 +818,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                          wizardCampaignType === 'Promotional / Strategic Update' ? 'promotional' : 'newsletter',
           sector: primaryContact.sector || primaryContact.industry || 'Technology',
           contact_id: primaryContact.id,
+          contacts: recipients.map(contact => ({ id: contact.id })),
           topic: wizardBrief.trim(),
           developer_input: wizardBrief.trim(),
           occasion: wizardOccasion || wizardBrief.trim(),
@@ -857,6 +860,10 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
   const handleWizardDispatch = async () => {
     if (!wizardGeneratedContent) return;
     const recipients = getWizardTargetRecipients();
+    if (recipients.length === 0) {
+      showNotification('Select at least one opted-in audience contact before dispatching.', true);
+      return;
+    }
     const targetContact = wizardAudienceType === 'Specific Client'
       ? (contacts.find(c => c.id === wizardSelectedContactId) || recipients[0])
       : (recipients.length === 1 ? recipients[0] : null);
@@ -4039,8 +4046,10 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
 
               <div style={{ marginBottom: 16 }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Email Body</div>
-                <div style={{ fontSize: 12.5, color: '#334155', background: '#ffffff', padding: 14, borderRadius: 6, border: '1px solid #e2e8f0', marginTop: 4, whiteSpace: 'pre-wrap', maxHeight: 220, overflowY: 'auto' }}>
-                  {selectedCampaignForPreview.email_body || 'No email copy recorded.'}
+                <div style={{ fontSize: 12.5, color: '#334155', background: '#ffffff', padding: 14, borderRadius: 6, border: '1px solid #e2e8f0', marginTop: 4, maxHeight: 320, overflowY: 'auto' }}>
+                  {selectedCampaignForPreview.email_body
+                    ? <EmailBodyPreview content={selectedCampaignForPreview.email_body} />
+                    : 'No email copy recorded.'}
                 </div>
               </div>
 
