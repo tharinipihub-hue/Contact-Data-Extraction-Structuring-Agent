@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import ZohoCrmDemo from './views/ZohoCrmDemo';
+import ErrorBoundary from './components/ErrorBoundary';
 
 /**
  * App – root component.
@@ -9,9 +10,12 @@ import ZohoCrmDemo from './views/ZohoCrmDemo';
 function App() {
   return (
     <div className="app-shell">
-      <ZohoCrmDemo />
+      <ErrorBoundary fallbackTitle="Enterprise CRM Application Error">
+        <ZohoCrmDemo />
+      </ErrorBoundary>
     </div>
   );
 }
 
 export default App;
+

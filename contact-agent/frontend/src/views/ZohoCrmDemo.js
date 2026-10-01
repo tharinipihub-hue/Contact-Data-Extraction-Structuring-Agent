@@ -34,6 +34,7 @@ import { GOOGLE_SHEETS_URL, POLL_INTERVAL_MS } from '../config';
 import { getLeadTier, fetchDirectFromGoogleSheets } from './LeadWorkspace';
 import { deduplicateContactList } from '../utils/dedup';
 import DigitalNurturingView from './DigitalNurturingView';
+import ErrorBoundary from '../components/ErrorBoundary';
 import './ZohoCrmDemo.css';
 
 const GOOGLE_SHEETS_CSV_DIRECT =
@@ -690,10 +691,12 @@ agents.snsihub.ai`;
 
       {/* ── Active Agent Page Conditional Rendering ── */}
       {activeAgentTab === 'nurturing' ? (
-        <DigitalNurturingView
-          extractedLeads={leads}
-          onSwitchToExtraction={() => setActiveAgentTab('leads')}
-        />
+        <ErrorBoundary fallbackTitle="Digital Client Nurturing Agent View">
+          <DigitalNurturingView
+            extractedLeads={leads}
+            onSwitchToExtraction={() => setActiveAgentTab('leads')}
+          />
+        </ErrorBoundary>
       ) : (
         <>
           {/* ── Module Sub-Header (Views & Actions) ── */}

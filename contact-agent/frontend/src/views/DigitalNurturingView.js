@@ -511,15 +511,15 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
 
     try {
       const cmpRes = await axios.get(`${API_BASE}/campaigns`, { timeout: 10000 });
-      if (cmpRes.data?.campaigns) setCampaigns(cmpRes.data.campaigns);
-      if (cmpRes.data?.audit_logs) setAuditLogs(cmpRes.data.audit_logs);
+      if (Array.isArray(cmpRes.data?.campaigns)) setCampaigns(cmpRes.data.campaigns);
+      if (Array.isArray(cmpRes.data?.audit_logs)) setAuditLogs(cmpRes.data.audit_logs);
     } catch (err) {
       console.warn('Digital Nurturing campaigns API warning:', err.message);
     }
 
     try {
       const sRes = await axios.get(`${API_BASE}/sales/handoffs`, { timeout: 10000 });
-      if (sRes.data?.handoffs) setSalesHandoffs(sRes.data.handoffs);
+      if (Array.isArray(sRes.data?.handoffs)) setSalesHandoffs(sRes.data.handoffs);
     } catch (err) {
       console.warn('Digital Nurturing sales handoffs API warning:', err.message);
     }
@@ -1043,25 +1043,36 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
         throw new Error(dispatchRes?.data?.error || 'Workbench did not confirm campaign delivery.');
       }
 
-      if (dispatchRes?.data?.campaigns) {
+      if (Array.isArray(dispatchRes?.data?.campaigns)) {
         setCampaigns(dispatchRes.data.campaigns);
       }
-      if (dispatchRes?.data?.contacts) {
+      if (Array.isArray(dispatchRes?.data?.contacts)) {
         setContacts(dispatchRes.data.contacts);
       }
-      if (dispatchRes?.data?.sales_handoffs) {
+      if (Array.isArray(dispatchRes?.data?.sales_handoffs)) {
         setSalesHandoffs(dispatchRes.data.sales_handoffs);
       }
-      if (dispatchRes?.data?.audit_logs) {
+      if (Array.isArray(dispatchRes?.data?.audit_logs)) {
         setAuditLogs(dispatchRes.data.audit_logs);
       }
 
       // Immediately sync fresh data from backend store
-      await loadData();
-      setEditingDraftId(null);
+      try {
+        await loadData();
+      } catch (loadErr) {
+        console.warn('[handleWizardDispatch] Post-dispatch loadData warning:', loadErr.message);
+      }
 
-      showNotification(`Campaign "${wizardCampaignName}" successfully approved & dispatched via SNS Workbench!`);
-      setActiveTab('dashboard');
+      setEditingDraftId(null);
+      setWizardStep(1);
+      setWizardBrief('');
+      setWizardGeneratedContent(null);
+      setWizardIsEditing(false);
+      setWizardEditedSubject('');
+      setWizardEditedBody('');
+
+      showNotification(`Campaign "${wizardCampaignName || 'Campaign'}" successfully approved & dispatched via SNS Workbench!`);
+      setActiveTab('campaigns');
     } catch (err) {
       showNotification('Dispatch error: ' + err.message, true);
     } finally {
@@ -1302,19 +1313,23 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
   };
 
   // Filtered Leads
-  const filteredContacts = contacts.filter(c => {
+  const safeContacts = Array.isArray(contacts) ? contacts.filter(Boolean) : [];
+  const filteredContacts = safeContacts.filter(c => {
+    if (!c) return false;
+    const q = (searchQuery || '').toLowerCase();
     const matchesSearch =
-      !searchQuery ||
-      (c.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (c.company || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (c.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (c.sector && c.sector.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (c.location && c.location.toLowerCase().includes(searchQuery.toLowerCase()));
+      !q ||
+      String(c.name || '').toLowerCase().includes(q) ||
+      String(c.company || '').toLowerCase().includes(q) ||
+      String(c.email || '').toLowerCase().includes(q) ||
+      String(c.sector || '').toLowerCase().includes(q) ||
+      String(c.location || '').toLowerCase().includes(q);
 
+    const secFilter = String(sectorFilter || 'All').toLowerCase();
     const matchesSector =
-      sectorFilter === 'All' ||
-      (c.sector && c.sector.toLowerCase() === sectorFilter.toLowerCase()) ||
-      (c.industry && c.industry.toLowerCase() === sectorFilter.toLowerCase());
+      secFilter === 'all' ||
+      String(c.sector || '').toLowerCase() === secFilter ||
+      String(c.industry || '').toLowerCase() === secFilter;
 
     const matchesOptIn =
       optInFilter === 'All' ||
@@ -1325,19 +1340,21 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
   });
 
   // KPI calculations
-  const totalClients = contacts.length;
-  const optedInCount = contacts.filter(c => c.opt_in === true).length;
-  const optedOutCount = contacts.filter(c => c.opt_in === false).length;
-  const highIntentCount = contacts.filter(c =>
+  const totalClients = safeContacts.length;
+  const optedInCount = safeContacts.filter(c => c.opt_in === true).length;
+  const optedOutCount = safeContacts.filter(c => c.opt_in === false).length;
+  const highIntentCount = safeContacts.filter(c =>
     c.response_intent === 'Interested' ||
     c.sales_handoff_status === 'Handed Off to Sales' ||
+    c.sales_handoff_status === 'Hot Lead' ||
     c.engagement_state === 'Replied'
   ).length;
 
-  const sectorsList = Array.from(new Set(contacts.map(c => c.sector || c.industry || 'Unspecified'))).filter(Boolean);
+  const sectorsList = Array.from(new Set(safeContacts.map(c => c.sector || c.industry || 'Unspecified'))).filter(Boolean);
   const consentPercent = totalClients ? Math.round((optedInCount / totalClients) * 100) : 0;
 
-  const filteredOptNotifications = optNotifications.filter(n => {
+  const filteredOptNotifications = (Array.isArray(optNotifications) ? optNotifications : []).filter(n => {
+    if (!n) return false;
     if (notifFilter === 'opt_in') return n.type === 'opt_in';
     if (notifFilter === 'opt_out') return n.type === 'opt_out';
     return true;
@@ -1980,18 +1997,19 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                   <span style={{ fontSize: 11, color: '#64748b', fontWeight: 600 }}>Active Conversion Funnel</span>
                 </div>
                 {(() => {
-                  const sentCampaigns = campaigns.filter(c => c.status === 'Sent');
-                  const hasDeliveryMetrics = sentCampaigns.some(c => Number.isFinite(c.metrics?.delivered));
-                  const hasOpenMetrics = sentCampaigns.some(c => Number.isFinite(c.metrics?.opened));
-                  const hasReplyMetrics = sentCampaigns.some(c => Number.isFinite(c.metrics?.replied));
-                  const deliveredCount = sentCampaigns.reduce((acc, c) => acc + (Number.isFinite(c.metrics?.delivered) ? c.metrics.delivered : 0), 0);
-                  const openedCount = sentCampaigns.reduce((acc, c) => acc + (Number.isFinite(c.metrics?.opened) ? c.metrics.opened : 0), 0);
-                  const repliedCount = sentCampaigns.reduce((acc, c) => acc + (Number.isFinite(c.metrics?.replied) ? c.metrics.replied : 0), 0);
-                  const hotCount = salesHandoffs.length;
+                  const safeCampaigns = Array.isArray(campaigns) ? campaigns.filter(Boolean) : [];
+                  const sentCampaigns = safeCampaigns.filter(c => c && c.status === 'Sent');
+                  const hasDeliveryMetrics = sentCampaigns.some(c => Number.isFinite(c?.metrics?.delivered));
+                  const hasOpenMetrics = sentCampaigns.some(c => Number.isFinite(c?.metrics?.opened));
+                  const hasReplyMetrics = sentCampaigns.some(c => Number.isFinite(c?.metrics?.replied));
+                  const deliveredCount = sentCampaigns.reduce((acc, c) => acc + (Number.isFinite(c?.metrics?.delivered) ? c.metrics.delivered : 0), 0);
+                  const openedCount = sentCampaigns.reduce((acc, c) => acc + (Number.isFinite(c?.metrics?.opened) ? c.metrics.opened : 0), 0);
+                  const repliedCount = sentCampaigns.reduce((acc, c) => acc + (Number.isFinite(c?.metrics?.replied) ? c.metrics.replied : 0), 0);
+                  const hotCount = Array.isArray(salesHandoffs) ? salesHandoffs.length : 0;
 
                   const deliveryDenominator = sentCampaigns.reduce((acc, c) => {
-                    if (!Number.isFinite(c.metrics?.delivered)) return acc;
-                    return acc + (Number.isFinite(c.metrics?.total_recipients) ? c.metrics.total_recipients : (c.recipients || 0));
+                    if (!Number.isFinite(c?.metrics?.delivered)) return acc;
+                    return acc + (Number.isFinite(c?.metrics?.total_recipients) ? c.metrics.total_recipients : (Number.isFinite(c?.recipients) ? c.recipients : 0));
                   }, 0);
                   const deliveredPct = deliveryDenominator > 0 ? Math.min(100, Math.round((deliveredCount / deliveryDenominator) * 100)) : 0;
                   const openedPct = hasOpenMetrics && deliveredCount > 0 ? Math.min(100, Math.round((openedCount / deliveredCount) * 100)) : 0;
@@ -2071,15 +2089,15 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                 <div style={{ padding: 18 }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     {sectorsList.map((sec, i) => {
-                      const count = contacts.filter(c => (c.sector || c.industry || 'Unspecified') === sec).length;
+                      const count = safeContacts.filter(c => (c.sector || c.industry || 'Unspecified') === sec).length;
                       const pct = totalClients ? ((count / totalClients) * 100).toFixed(0) : '0';
                       const colors = ['#0066cc', '#7c3aed', '#ed6c02', '#00897b', '#0284c7'];
                       const barColor = colors[i % colors.length];
 
                       return (
-                        <div key={sec}>
+                        <div key={typeof sec === 'object' ? JSON.stringify(sec) : String(sec)}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
-                            <span style={{ fontWeight: 600, color: '#334155' }}>{sec}</span>
+                            <span style={{ fontWeight: 600, color: '#334155' }}>{typeof sec === 'object' ? JSON.stringify(sec) : String(sec)}</span>
                             <span style={{ fontWeight: 600, color: '#64748b' }}>{count} ({pct}%)</span>
                           </div>
                           <div style={{ height: 6, background: '#f1f5f9', borderRadius: 4, overflow: 'hidden' }}>
@@ -2122,31 +2140,31 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                       </tr>
                     </thead>
                     <tbody>
-                      {campaigns.slice(0, 6).map((cmp, idx) => (
-                        <tr key={cmp.id || idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      {(Array.isArray(campaigns) ? campaigns.filter(Boolean) : []).slice(0, 6).map((cmp, idx) => (
+                        <tr key={cmp?.id || idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
                           <td style={{ padding: '10px 12px', fontWeight: 600, color: '#0f172a' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                              <span>{cmp.name}</span>
-                              {cmp.image_url && <Image size={12} color="#2563eb" title="Includes poster banner" />}
+                              <span>{typeof cmp?.name === 'object' ? JSON.stringify(cmp.name) : String(cmp?.name || 'Unnamed Campaign')}</span>
+                              {cmp?.image_url && <Image size={12} color="#2563eb" title="Includes poster banner" />}
                             </div>
-                            <div style={{ fontSize: 10.5, color: '#64748b' }}>{cmp.sent_date || cmp.created_date} · {cmp.recipients ?? cmp.metrics?.total_recipients ?? 0} targeted contact(s)</div>
+                            <div style={{ fontSize: 10.5, color: '#64748b' }}>{String(cmp?.sent_date || cmp?.created_date || 'Recent')} · {cmp?.recipients ?? cmp?.metrics?.total_recipients ?? 0} targeted contact(s)</div>
                           </td>
-                          <td style={{ padding: '10px 12px', color: '#475569' }}>{cmp.type || 'Newsletter'}</td>
+                          <td style={{ padding: '10px 12px', color: '#475569' }}>{typeof cmp?.type === 'object' ? JSON.stringify(cmp.type) : String(cmp?.type || 'Newsletter')}</td>
                           <td style={{ padding: '10px 12px' }}>
                             <span style={{ background: '#f1f5f9', padding: '2px 6px', borderRadius: 4, fontSize: 11, color: '#334155' }}>
-                              {cmp.sector || cmp.target_audience || 'Unspecified'}
+                              {typeof cmp?.sector === 'object' ? JSON.stringify(cmp.sector) : String(cmp?.sector || cmp?.target_audience || 'Unspecified')}
                             </span>
                           </td>
                           <td style={{ padding: '10px 12px' }}>
                             <span style={{
-                              background: cmp.status === 'Sent' ? '#e8f5e9' : cmp.status === 'Scheduled' ? '#e0f2fe' : '#f1f5f9',
-                              color: cmp.status === 'Sent' ? '#2e7d32' : cmp.status === 'Scheduled' ? '#0369a1' : '#475569',
+                              background: cmp?.status === 'Sent' ? '#e8f5e9' : cmp?.status === 'Scheduled' ? '#e0f2fe' : '#f1f5f9',
+                              color: cmp?.status === 'Sent' ? '#2e7d32' : cmp?.status === 'Scheduled' ? '#0369a1' : '#475569',
                               padding: '2px 8px',
                               borderRadius: 4,
                               fontSize: 11,
                               fontWeight: 600
                             }}>
-                              {cmp.status || 'Not reported'}
+                              {typeof cmp?.status === 'object' ? JSON.stringify(cmp.status) : String(cmp?.status || 'Not reported')}
                             </span>
                           </td>
                         </tr>
@@ -2179,7 +2197,12 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                     </thead>
                     <tbody>
                       {(() => {
-                        const engagedList = contacts.filter(c => (c.response_intent && c.response_intent !== 'Awaiting Response') || (c.client_engagements && c.client_engagements.length > 0) || c.engagement_state === 'Delivered & Engaged');
+                        const engagedList = safeContacts.filter(c => 
+                          (c.response_intent && c.response_intent !== 'Awaiting Response') || 
+                          (Array.isArray(c.client_engagements) && c.client_engagements.length > 0) || 
+                          c.engagement_state === 'Delivered & Engaged' ||
+                          c.engagement_state === 'Replied'
+                        );
                         if (engagedList.length === 0) {
                           return (
                             <tr>
@@ -2189,17 +2212,17 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                             </tr>
                           );
                         }
-                        return engagedList.map(c => (
-                          <tr key={c.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                            <td style={{ padding: '10px 12px', fontWeight: 600, color: '#0f172a' }}>{c.name}</td>
-                            <td style={{ padding: '10px 12px', color: '#475569' }}>{c.company}</td>
+                        return engagedList.map((c, i) => (
+                          <tr key={c.id || i} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                            <td style={{ padding: '10px 12px', fontWeight: 600, color: '#0f172a' }}>{typeof c.name === 'object' ? JSON.stringify(c.name) : String(c.name || 'Client')}</td>
+                            <td style={{ padding: '10px 12px', color: '#475569' }}>{typeof c.company === 'object' ? JSON.stringify(c.company) : String(c.company || '—')}</td>
                             <td style={{ padding: '10px 12px' }}>
                               <span style={{ background: '#f3e8ff', color: '#7c3aed', padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>
-                                {c.response_intent || 'Not recorded'}
+                                {typeof c.response_intent === 'object' ? JSON.stringify(c.response_intent) : String(c.response_intent || 'Not recorded')}
                               </span>
                             </td>
                             <td style={{ padding: '10px 12px', color: '#2e7d32', fontWeight: 600 }}>
-                              {c.sales_handoff_status || 'Not recorded'}
+                              {typeof c.sales_handoff_status === 'object' ? JSON.stringify(c.sales_handoff_status) : String(c.sales_handoff_status || 'Not recorded')}
                             </td>
                           </tr>
                         ));
@@ -2228,13 +2251,13 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                     </tr>
                   </thead>
                   <tbody>
-                    {auditLogs && auditLogs.length > 0 ? (
-                      auditLogs.slice(0, 8).map((log, idx) => (
+                    {Array.isArray(auditLogs) && auditLogs.length > 0 ? (
+                      auditLogs.filter(Boolean).slice(0, 8).map((log, idx) => (
                         <tr key={log.id || idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                          <td style={{ padding: '10px 14px', color: '#64748b', fontSize: 11.5 }}>{log.formattedTime || 'Just now'}</td>
-                          <td style={{ padding: '10px 14px', fontWeight: 600, color: '#0f172a' }}>{log.event_type}</td>
-                          <td style={{ padding: '10px 14px', color: '#334155', fontWeight: 500 }}>{log.contact_name}</td>
-                          <td style={{ padding: '10px 14px', color: '#64748b' }}>{log.details}</td>
+                          <td style={{ padding: '10px 14px', color: '#64748b', fontSize: 11.5 }}>{typeof log.formattedTime === 'object' ? JSON.stringify(log.formattedTime) : String(log.formattedTime || 'Just now')}</td>
+                          <td style={{ padding: '10px 14px', fontWeight: 600, color: '#0f172a' }}>{typeof log.event_type === 'object' ? JSON.stringify(log.event_type) : String(log.event_type || 'Event')}</td>
+                          <td style={{ padding: '10px 14px', color: '#334155', fontWeight: 500 }}>{typeof log.contact_name === 'object' ? JSON.stringify(log.contact_name) : String(log.contact_name || '—')}</td>
+                          <td style={{ padding: '10px 14px', color: '#64748b' }}>{typeof log.details === 'object' ? JSON.stringify(log.details) : String(log.details || '')}</td>
                           <td style={{ padding: '10px 14px' }}>
                             <span style={{
                               background: log.status === 'Delivered' ? '#e8f5e9' : log.status === 'Qualified' ? '#f3e8ff' : log.status === 'Hot Lead' ? '#fff7ed' : '#e0f2fe',
@@ -2244,7 +2267,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                               fontSize: 11,
                               fontWeight: 600
                             }}>
-                              {log.status || 'Not recorded'}
+                              {typeof log.status === 'object' ? JSON.stringify(log.status) : String(log.status || 'Not recorded')}
                             </span>
                           </td>
                         </tr>
@@ -3460,11 +3483,12 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                     </tr>
                   </thead>
                   <tbody>
-                    {campaigns
+                    {(Array.isArray(campaigns) ? campaigns.filter(Boolean) : [])
                       .filter(c => {
+                        if (!c) return false;
                         const matchesType = campaignTypeFilter === 'All' || c.type === campaignTypeFilter || (c.type || '').includes(campaignTypeFilter);
                         const matchesStatus = campaignStatusFilter === 'All' || c.status === campaignStatusFilter;
-                        const matchesSearch = !campaignSearch || c.name.toLowerCase().includes(campaignSearch.toLowerCase());
+                        const matchesSearch = !campaignSearch || String(c.name || '').toLowerCase().includes(String(campaignSearch || '').toLowerCase());
                         return matchesType && matchesStatus && matchesSearch;
                       })
                       .map((cmp) => {
@@ -3478,13 +3502,13 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                           cmp.status === 'Scheduled' ? 'dn-badge-blue' :
                           cmp.status === 'Draft' ? 'dn-badge-amber' : 'dn-badge-gray';
 
-                        const briefText = cmp.brief || cmp.developer_input || cmp.occasion || '—';
+                        const briefText = typeof cmp.brief === 'object' ? JSON.stringify(cmp.brief) : String(cmp.brief || cmp.developer_input || cmp.occasion || '—');
 
                         return (
                           <tr key={cmp.id}>
                             <td>
                               <div style={{ fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 6 }}>
-                                <span>{cmp.name}</span>
+                                <span>{typeof cmp.name === 'object' ? JSON.stringify(cmp.name) : String(cmp.name || 'Unnamed Campaign')}</span>
                                 {cmp.image_url && (
                                   <span title="Contains attached picture / banner" style={{ display: 'inline-flex' }}>
                                     <Image size={13} color="#2563eb" />
@@ -3495,7 +3519,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                             </td>
                             <td>
                               <span className={`dn-badge ${typeBadge}`}>
-                                {cmp.type}
+                                {typeof cmp.type === 'object' ? JSON.stringify(cmp.type) : String(cmp.type || 'Newsletter')}
                               </span>
                             </td>
                             <td style={{ maxWidth: 220 }}>

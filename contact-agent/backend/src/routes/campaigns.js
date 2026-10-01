@@ -600,7 +600,11 @@ router.post('/dispatch', async (req, res) => {
 
     const replyData = result.data?.nurtured_contact || result.data?.data?.nurtured_contact || result.data?.result?.nurtured_contact;
     const hasActualReply = Boolean(replyData?.client_response);
-    const classifiedIntent = hasActualReply ? (replyData?.classified_intent || result.data?.intent || 'Replied') : 'Awaiting Response';
+    let classifiedIntent = hasActualReply ? (replyData?.classified_intent || result.data?.intent || 'Replied') : 'Awaiting Response';
+    if (typeof classifiedIntent === 'object' && classifiedIntent !== null) {
+      classifiedIntent = classifiedIntent.intent || classifiedIntent.name || classifiedIntent.label || JSON.stringify(classifiedIntent);
+    }
+    classifiedIntent = String(classifiedIntent || 'Awaiting Response');
 
     // Update client engagements for all targeted contacts factually
     const priorContacts = targetAudienceContacts.map(contact => ({ contact, snapshot: JSON.parse(JSON.stringify(contact)) }));
