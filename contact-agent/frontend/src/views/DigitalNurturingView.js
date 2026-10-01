@@ -675,13 +675,16 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
         content_source: preview.content_source || 'workbench'
       });
       // Populate Campaign Wizard Step 5 preview and switch tab so generated newsletter is displayed immediately
+      const allOptedIn = contacts.filter(cnt => cnt.opt_in === true);
       setWizardCampaignType(
         selectedContentType === 'newsletter' ? 'Newsletter' :
         selectedContentType === 'welcome' ? 'Welcome Message' :
         selectedContentType === 'festival' ? 'Festival / Occasion Greeting' : 'Industry Insights'
       );
       setWizardCampaignName(campaignName);
-      setWizardAudienceType('Specific Company');
+      // Default to All Past Clients so the campaign targets all opted-in leads by default
+      setWizardAudienceType('All Past Clients');
+      setWizardSelectedCustomContacts(new Set(allOptedIn.map(cnt => cnt.id)));
       setWizardSelectedIndustry(sector);
       setWizardSelectedCompany(contact.company || 'Client Organization');
       setWizardSelectedContactId(contact.id);
@@ -706,13 +709,37 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
     }
   };
 
+  // Dedicated helper to cleanly open Campaign Wizard with reset audience targeting
+  const handleOpenCreateCampaign = (initialAudienceType = 'All Past Clients', targetContact = null) => {
+    const optedIn = contacts.filter(c => c.opt_in === true);
+    setWizardStep(1);
+    setWizardAudienceType(initialAudienceType);
+    setWizardSelectedCustomContacts(new Set(optedIn.map(c => c.id)));
+    if (targetContact) {
+      setWizardSelectedContactId(targetContact.id);
+      setWizardSelectedCompany(targetContact.company || '');
+      setWizardSelectedIndustry(targetContact.sector || targetContact.industry || '');
+    } else if (optedIn.length > 0) {
+      setWizardSelectedContactId(optedIn[0].id);
+      setWizardSelectedCompany(optedIn[0].company || '');
+      setWizardSelectedIndustry(optedIn[0].sector || optedIn[0].industry || '');
+    }
+    setActiveTab('create_campaign');
+  };
 
   // Audience resolution helper for Campaign Wizard
   const getWizardTargetRecipients = () => {
     const optedInContacts = contacts.filter(c => c.opt_in === true);
+    if (wizardAudienceType === 'All Past Clients') {
+      return optedInContacts;
+    }
+    if (wizardAudienceType === 'Custom Selection') {
+      const selected = optedInContacts.filter(c => wizardSelectedCustomContacts.has(c.id));
+      return selected.length > 0 ? selected : optedInContacts;
+    }
     if (wizardAudienceType === 'Specific Client') {
       const match = optedInContacts.filter(c => c.id === wizardSelectedContactId);
-      return match.length > 0 ? match : optedInContacts.slice(0, 1);
+      return match.length > 0 ? match : (optedInContacts.length > 0 ? [optedInContacts[0]] : []);
     }
     if (wizardAudienceType === 'Specific Industry') {
       return optedInContacts.filter(c => (c.sector || c.industry) === wizardSelectedIndustry);
@@ -723,11 +750,9 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
     if (wizardAudienceType === 'New Clients') {
       return optedInContacts.filter(c => c.client_type === 'New Client');
     }
-    if (wizardAudienceType === 'Custom Selection') {
-      return optedInContacts.filter(c => wizardSelectedCustomContacts.has(c.id));
-    }
     if (wizardSelectedCustomContacts.size > 0) {
-      return optedInContacts.filter(c => wizardSelectedCustomContacts.has(c.id));
+      const selected = optedInContacts.filter(c => wizardSelectedCustomContacts.has(c.id));
+      if (selected.length > 0) return selected;
     }
     return optedInContacts;
   };
@@ -735,7 +760,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
   const handleSelectAllOptedIn = () => {
     const optedIn = contacts.filter(c => c.opt_in === true);
     setWizardSelectedCustomContacts(new Set(optedIn.map(c => c.id)));
-    setWizardAudienceType('Custom Selection');
+    setWizardAudienceType('All Past Clients');
     if (optedIn.length > 0) {
       setWizardSelectedContactId(optedIn[0].id);
       setWizardSelectedCompany(optedIn[0].company || '');
@@ -749,6 +774,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
   };
 
   const handleToggleContactSelection = (contactId) => {
+    const optedIn = contacts.filter(c => c.opt_in === true);
     setWizardSelectedCustomContacts(prev => {
       const next = new Set(prev);
       if (next.has(contactId)) {
@@ -756,14 +782,18 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
       } else {
         next.add(contactId);
       }
+      if (next.size === optedIn.length && optedIn.length > 0) {
+        setWizardAudienceType('All Past Clients');
+      } else {
+        setWizardAudienceType('Custom Selection');
+      }
       return next;
     });
-    setWizardAudienceType('Custom Selection');
     const found = contacts.find(c => c.id === contactId);
     if (found && found.opt_in === true) {
       setWizardSelectedContactId(contactId);
       setWizardSelectedCompany(found.company || '');
-      setWizardSelectedIndustry(found.sector || '');
+      setWizardSelectedIndustry(found.sector || found.industry || '');
     }
   };
 
@@ -856,7 +886,9 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
     setWizardBrief(brief);
     setWizardBriefError(false);
     if (tmpl.sample.occasion) setWizardOccasion(tmpl.sample.occasion);
-    setWizardAudienceType('Specific Client');
+    const allOptedIn = contacts.filter(c => c.opt_in === true);
+    setWizardAudienceType('All Past Clients');
+    setWizardSelectedCustomContacts(new Set(allOptedIn.map(c => c.id)));
     if (targetContact) {
       setWizardSelectedContactId(targetContact.id);
       setWizardSelectedCompany(targetContact.company || '');
@@ -879,7 +911,9 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
     const targetContact = contacts.find(c => c.id === contactId && c.opt_in === true) || contacts.find(c => c.opt_in === true) || contacts[0];
     if (!targetContact) return;
 
-    setWizardAudienceType('Specific Client');
+    const allOptedIn = contacts.filter(c => c.opt_in === true);
+    setWizardAudienceType('All Past Clients');
+    setWizardSelectedCustomContacts(new Set(allOptedIn.map(c => c.id)));
     setWizardSelectedContactId(targetContact.id);
     setWizardSelectedCompany(targetContact.company || '');
     setWizardSelectedIndustry(targetContact.sector || '');
@@ -1329,10 +1363,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
             </button>
             <button
               className={`dn-subbar-tab ${(activeTab === 'create_campaign' || activeTab === 'generator') ? 'active' : ''}`}
-              onClick={() => {
-                setActiveTab('create_campaign');
-                setWizardStep(1);
-              }}
+              onClick={() => handleOpenCreateCampaign('All Past Clients')}
             >
               <Plus size={14} /> Create Campaign
             </button>
@@ -1508,10 +1539,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
 
           <button
             className="dn-btn dn-btn-primary dn-btn-sm"
-            onClick={() => {
-              setActiveTab('create_campaign');
-              setWizardStep(1);
-            }}
+            onClick={() => handleOpenCreateCampaign('All Past Clients')}
           >
             <Plus size={13} /> Create Campaign
           </button>
@@ -1590,6 +1618,14 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
               </div>
 
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <button
+                  type="button"
+                  className="dn-btn dn-btn-primary dn-btn-sm"
+                  style={{ background: '#2563eb', color: '#ffffff', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                  onClick={() => handleOpenCreateCampaign('All Past Clients')}
+                >
+                  <Sparkles size={13} /> Nurture All {optedInCount} Opted-In Clients
+                </button>
                 {NURTURE_SHEET_MANAGEMENT_URL && (
                   <a
                     href={NURTURE_SHEET_MANAGEMENT_URL}
@@ -1619,7 +1655,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                   </div>
                 </div>
 
-                <div className="dn-consent-hub-right">
+                <div className="dn-consent-hub-right" style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                   <button
                     className={`dn-consent-mini-metric in ${optInFilter === 'opted_in' ? 'active-pill' : ''}`}
                     onClick={() => setOptInFilter(optInFilter === 'opted_in' ? 'All' : 'opted_in')}
@@ -1636,6 +1672,16 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                   >
                     <UserX size={14} />
                     <span><strong>{optedOutCount}</strong> Opted Out</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="dn-btn dn-btn-primary dn-btn-sm"
+                    style={{ background: '#16a34a', color: '#ffffff', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 6, border: 'none', marginLeft: 4 }}
+                    onClick={() => handleOpenCreateCampaign('All Past Clients')}
+                    title="Create and dispatch campaign to all opted-in clients"
+                  >
+                    <Send size={13} /> Send Campaign to All {optedInCount} Opted-In Clients
                   </button>
                 </div>
               </div>
@@ -1693,19 +1739,19 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                     className={`dn-filter-pill ${optInFilter === 'All' ? 'active' : ''}`}
                     onClick={() => setOptInFilter('All')}
                   >
-                    All Opt-In
+                    All Clients ({totalClients})
                   </button>
                   <button
                     className={`dn-filter-pill ${optInFilter === 'opted_in' ? 'active' : ''}`}
                     onClick={() => setOptInFilter('opted_in')}
                   >
-                    Opted-In Only
+                    Opted-In Only ({optedInCount})
                   </button>
                   <button
                     className={`dn-filter-pill ${optInFilter === 'opted_out' ? 'active' : ''}`}
                     onClick={() => setOptInFilter('opted_out')}
                   >
-                    Opted-Out
+                    Opted-Out ({optedOutCount})
                   </button>
                 </div>
 
@@ -1786,27 +1832,21 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                             {isOptedIn ? (
                               <span
                                 className="dn-badge dn-badge-green"
-                                onClick={() => handleToggleOptIn(c.id, false)}
-                                style={{ cursor: 'pointer', userSelect: 'none' }}
-                                title="Click to Opt Out this client"
+                                title="Client has recorded opt-in consent for automated nurturing"
                               >
                                 <CheckCircle2 size={12} /> Opted In
                               </span>
                             ) : c.opt_in === false ? (
                               <span
                                 className="dn-badge dn-badge-red"
-                                onClick={() => handleToggleOptIn(c.id, true)}
-                                style={{ cursor: 'pointer', userSelect: 'none' }}
-                                title="Click to Opt In this client"
+                                title="Client has opted out of automated nurturing"
                               >
                                 <AlertTriangle size={12} /> Opted Out
                               </span>
                             ) : (
                               <span
                                 className="dn-badge dn-badge-amber"
-                                onClick={() => handleToggleOptIn(c.id, true)}
-                                style={{ cursor: 'pointer', userSelect: 'none' }}
-                                title="Click only after obtaining explicit consent"
+                                title="Pending explicit consent"
                               >
                                 <AlertCircle size={12} /> Pending Consent
                               </span>
@@ -3133,11 +3173,69 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                           <span className="dn-preview-value" style={{ color: '#1e40af' }}>{wizardEditedSubject || wizardGeneratedContent.subject}</span>
                         )}
                       </div>
-                      <div className="dn-preview-row">
-                        <span className="dn-preview-label">AUDIENCE:</span>
-                        <span style={{ fontSize: 12, color: '#475569' }}>
-                          {wizardAudienceType} ({getWizardTargetRecipients().length} Recipient{getWizardTargetRecipients().length === 1 ? '' : 's'})
-                        </span>
+                      <div className="dn-preview-row" style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 8, padding: '10px 0' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: 8 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <span className="dn-preview-label" style={{ marginBottom: 0 }}>AUDIENCE:</span>
+                            <span style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>
+                              {wizardAudienceType} — <span style={{ color: '#16a34a' }}>{getWizardTargetRecipients().length} of {contacts.filter(c => c.opt_in === true).length} Opted-In Client(s)</span>
+                            </span>
+                          </div>
+                          <div style={{ display: 'flex', gap: 6 }}>
+                            <button
+                              type="button"
+                              className={`dn-btn ${wizardAudienceType === 'All Past Clients' ? 'dn-btn-primary' : 'dn-btn-secondary'}`}
+                              style={{ fontSize: 11.5, padding: '4px 10px', height: 'auto' }}
+                              onClick={() => {
+                                setWizardAudienceType('All Past Clients');
+                                setWizardSelectedCustomContacts(new Set(contacts.filter(c => c.opt_in === true).map(c => c.id)));
+                              }}
+                            >
+                              <Users size={12} /> All {contacts.filter(c => c.opt_in === true).length} Opted-In
+                            </button>
+                            <button
+                              type="button"
+                              className={`dn-btn ${wizardAudienceType === 'Specific Client' ? 'dn-btn-primary' : 'dn-btn-secondary'}`}
+                              style={{ fontSize: 11.5, padding: '4px 10px', height: 'auto' }}
+                              onClick={() => {
+                                setWizardAudienceType('Specific Client');
+                              }}
+                            >
+                              <User size={12} /> Only {contacts.find(c => c.id === wizardSelectedContactId)?.name || 'Primary Client'}
+                            </button>
+                            <button
+                              type="button"
+                              className="dn-btn dn-btn-secondary"
+                              style={{ fontSize: 11.5, padding: '4px 10px', height: 'auto' }}
+                              onClick={() => setWizardStep(2)}
+                            >
+                              Adjust in Step 2 →
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Recipient summary pills */}
+                        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 2 }}>
+                          {getWizardTargetRecipients().map(rec => (
+                            <span
+                              key={rec.id}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 4,
+                                fontSize: 11.5,
+                                padding: '3px 9px',
+                                borderRadius: 12,
+                                background: '#f0fdf4',
+                                color: '#166534',
+                                border: '1px solid #bbf7d0'
+                              }}
+                            >
+                              <CheckCircle2 size={11} color="#16a34a" />
+                              <strong>{rec.name}</strong> ({rec.company})
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
 
@@ -3245,10 +3343,12 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                       <button
                         className="dn-btn dn-btn-success"
                         onClick={handleWizardDispatch}
-                        disabled={wizardIsDispatching}
+                        disabled={wizardIsDispatching || getWizardTargetRecipients().length === 0}
                       >
                         <Send size={14} />
-                        {wizardIsDispatching ? 'Dispatching to Client Channels...' : 'Approve & Send'}
+                        {wizardIsDispatching 
+                          ? `Dispatching to ${getWizardTargetRecipients().length} Client Channels...` 
+                          : `Approve & Send to ${getWizardTargetRecipients().length} Client${getWizardTargetRecipients().length === 1 ? '' : 's'}`}
                       </button>
                     </div>
                   </div>
@@ -3277,10 +3377,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <button
                   className="dn-btn dn-btn-primary dn-btn-sm"
-                  onClick={() => {
-                    setActiveTab('create_campaign');
-                    setWizardStep(1);
-                  }}
+                  onClick={() => handleOpenCreateCampaign('All Past Clients')}
                 >
                   <Plus size={13} /> Create Campaign
                 </button>
@@ -3341,10 +3438,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                 </p>
                 <button
                   className="dn-btn dn-btn-primary"
-                  onClick={() => {
-                    setActiveTab('create_campaign');
-                    setWizardStep(1);
-                  }}
+                  onClick={() => handleOpenCreateCampaign('All Past Clients')}
                 >
                   <Plus size={14} /> Create Campaign
                 </button>
