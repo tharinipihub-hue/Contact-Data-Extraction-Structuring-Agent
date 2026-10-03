@@ -226,32 +226,53 @@ const WORKBENCH_PIPELINE_NODES = [
 const NURTURE_TEMPLATES = {
   Newsletter: {
     category: 'Newsletter',
-    name: 'Newsletter Template',
-    description: 'Industry relevance, technological breakthroughs, and executive thought leadership.',
-    subject_structure: '[Industry] Intelligence Briefing: [Trend / Strategic Advancement]',
+    name: 'SNS Square Weekly GCC & AI Scoop',
+    description: 'Multi-perspective executive briefing on AI automation, GCC expansion, and enterprise transformation.',
+    subject_structure: '[Lead Story] | SNS Square Weekly GCC & AI Scoop',
     sections: [
-      { name: 'Subject structure', description: '[Industry] Intelligence Briefing: [Trend / Announcement]' },
-      { name: 'Introduction', description: 'Executive greeting and macro industry context update' },
-      { name: 'Main announcement', description: 'Key technological breakthrough, framework release, or milestone' },
-      { name: 'Industry relevance', description: 'Tailored analysis highlighting specific ROI metrics for the recipient sector' },
-      { name: 'CTA', description: 'Direct invitation to schedule an executive sync or read technical brief' },
-      { name: 'Unsubscribe', description: 'Statutory compliance footer with instant one-click unsubscribe and preference management' }
+      { name: 'Subject structure', description: '[Lead Story Headline] | SNS Square Weekly GCC & AI Scoop' },
+      { name: 'Introduction', description: 'Executive macro perspective on enterprise transformation, AI resilience, and digital foundations' },
+      { name: 'Perspectives (3-4)', description: 'Curated articles with bold headlines, analytical summaries, and read-more action links' },
+      { name: 'Strategic Synthesis', description: '4 foundational pillars tying the perspectives together' },
+      { name: 'CTA & Footer', description: 'Official SNS Square Embassy TechVillage Bengaluru office footer and one-click unsubscribe' }
     ],
     sample: {
-      campaign_name: 'Q4 Technology Innovation Briefing',
-      brief: 'Sharing latest industry benchmarks on accelerating enterprise operations with autonomous multi-agent pipelines.',
-      subject: 'Technology Intelligence Briefing: Scaling Operations with Multi-Agent Systems in 2026',
+      campaign_name: 'SNS Square Weekly GCC & AI Scoop',
+      brief: 'Synthesize the latest edition of the SNS Square Weekly GCC & AI Scoop exploring four perspectives: (1) FedRAMP Cloud Modernisation & Secure Digital Foundations; (2) Intelligent Mobility & Supply Chain Automation; (3) Accelerating Enterprise & Government Services through AI; (4) The Hidden Workforce Costs of AI and Change Management.',
+      subject: 'Accelerating Enterprise Services Through AI Automation | SNS Square Weekly GCC & AI Scoop',
       email_body: `Dear [Client Name],
 
-As leadership at [Company], staying ahead in the rapidly evolving [Industry] landscape is paramount.
+Enterprise transformation is entering a new phase, one where success is no longer measured by the number of digital initiatives launched, but by the resilience and intelligence of the systems that support them.
 
-Our advisory team at SNS Square has structured exclusive benchmarks examining how enterprise organizations are transitioning from manual pipelines to autonomous agent orchestration, delivering 3.4x faster data processing and 40% cycle time reduction.
+Whether modernising infrastructure, optimising supply networks, or preparing the workforce for AI, organisations recognise that technology alone does not create value. Sustainable transformation requires secure foundations, intelligent automation, and human capital prepared to evolve alongside AI.
 
-We have tailored these findings specifically to address operational goals at [Company].
+This edition explores four perspectives on building future-ready operations while balancing innovation, security, and talent:
 
-Would you be open to an introductory 15-minute briefing next week?
+<p><strong>FedRAMP Cloud Modernisation: Building a Secure Digital Foundation</strong><br/>
+Cloud modernisation has become a strategic priority for high-compliance sectors. Security-by-design is becoming the cornerstone of resilient enterprise infrastructure.<br/>
+<a href="https://www.snssquare.com/insights" style="color: #2563eb; text-decoration: underline; font-weight: 500;">Build secure digital foundations &rarr;</a></p>
 
-SNS Square Multi-Agent Platform`,
+<p><strong>Intelligent Mobility: Reimagining Operations Through AI</strong><br/>
+AI-powered mobility and logistics solutions enable leaders to anticipate disruptions, optimise routes, and make real-time decisions, shifting from connected networks to intelligent ecosystems.<br/>
+<a href="https://www.snssquare.com/insights" style="color: #2563eb; text-decoration: underline; font-weight: 500;">Reimagine intelligent operations &rarr;</a></p>
+
+<p><strong>Accelerating Enterprise Services Through AI Automation</strong><br/>
+Organisations are expected to deliver faster outcomes without increasing complexity. AI automation streamlines document flows and eliminates manual hand-offs, freeing teams for high-value strategic impact.<br/>
+<a href="https://www.snssquare.com/insights" style="color: #2563eb; text-decoration: underline; font-weight: 500;">Accelerate enterprise delivery &rarr;</a></p>
+
+<p><strong>The Hidden Workforce Costs of AI</strong><br/>
+While productivity gains capture headlines, long-term AI success depends on workforce transition, continuous upskilling, and proactive change management.<br/>
+<a href="https://www.snssquare.com/insights" style="color: #2563eb; text-decoration: underline; font-weight: 500;">Prepare the workforce for AI &rarr;</a></p>
+
+Every transformation initiative ultimately depends on four foundations:
+- Secure digital infrastructure that enables innovation.
+- Intelligent systems that improve operational performance.
+- Modern enterprise services designed for speed and resilience.
+- A workforce equipped to thrive alongside AI.
+
+Warm regards,
+The Team at SNS Square
+Enterprise Client Partnerships`,
       channel: 'Email'
     }
   },
@@ -886,7 +907,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
   const handleSelectWizardType = (type) => {
     setWizardCampaignType(type);
     if (type === 'Newsletter') {
-      setWizardCampaignName('Q4 Technology Intelligence Briefing');
+      setWizardCampaignName('SNS Square Weekly GCC & AI Scoop');
     } else if (type === 'Welcome Message') {
       setWizardCampaignName('Executive Client Welcome Sequence 2026');
     } else if (type === 'Festival / Occasion Wish') {

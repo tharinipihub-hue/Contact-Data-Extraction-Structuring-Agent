@@ -367,14 +367,26 @@ router.post('/generate', async (req, res) => {
 
   const developerInput = brief;
   const normalizedCampaignType = String(campaign_type || 'newsletter').toLowerCase();
-  const campaignGuidance = normalizedCampaignType === 'welcome' || normalizedCampaignType === 'welcome message'
-    ? [
-        'CAMPAIGN TYPE: Welcome and onboarding email for a new client.',
-        'Write a genuine, warm welcome to the recipient and their company. Briefly introduce SNS Square and give one practical next step for onboarding or getting started.',
-        'Use the supplied campaign brief as context for the welcome; do not turn it into a generic executive update, newsletter, announcement, or strategy briefing.',
-        'Do not use headings such as KEY ANNOUNCEMENT or STRATEGIC IMPACT. Keep the message concise and specific to the recipient.'
-      ].join(' ')
-    : '';
+  let campaignGuidance = '';
+  if (normalizedCampaignType === 'welcome' || normalizedCampaignType === 'welcome message') {
+    campaignGuidance = [
+      'CAMPAIGN TYPE: Welcome and onboarding email for a new client.',
+      'Write a genuine, warm welcome to the recipient and their company. Briefly introduce SNS Square and give one practical next step for onboarding or getting started.',
+      'Use the supplied campaign brief as context for the welcome; do not turn it into a generic executive update, newsletter, announcement, or strategy briefing.',
+      'Do not use headings such as KEY ANNOUNCEMENT or STRATEGIC IMPACT. Keep the message concise and specific to the recipient.'
+    ].join(' ');
+  } else if (normalizedCampaignType === 'newsletter') {
+    campaignGuidance = [
+      'CAMPAIGN TYPE: Official SNS Square Weekly GCC & AI Scoop Newsletter.',
+      'Subject line format: "[Primary Article Headline] | SNS Square Weekly GCC & AI Scoop".',
+      'Format the newsletter with:',
+      '(1) An executive greeting & macro editorial opening paragraph exploring enterprise transformation and AI resilience;',
+      '(2) 3 to 4 distinct curated perspectives/articles, each featuring a bold headline (<p><strong>Headline: Subtitle</strong></p>), a 2-3 sentence analytical briefing paragraph, and an actionable link (<p><a href="https://www.snssquare.com/insights" style="color: #2563eb; text-decoration: underline; font-weight: 500;">[Action Text] &rarr;</a></p>);',
+      '(3) An editorial synthesis ("Every transformation initiative ultimately depends on four foundations:") followed by <ul><li> key pillars;',
+      '(4) The official SNS Square sign-off: Warm regards, The Team at SNS Square, Enterprise Client Partnerships;',
+      '(5) Official office address in footer: BLOCK-L, Embassy TechVillage, Outer Ring Road, Devarabisanahalli, Bellandur, Bengaluru, Karnataka 560103, India; and &copy; 2026 SNS Square. All rights reserved.'
+    ].join(' ');
+  }
 
 
   const unsubBase = getUnsubscribeBaseUrl(req);
