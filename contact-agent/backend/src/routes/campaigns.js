@@ -398,7 +398,7 @@ router.post('/generate', async (req, res) => {
     action: 'generate_preview',
     campaign_name: campaign_name || `${activeSector} Campaign: ${brief.slice(0, 40)}`,
     campaign_type: campaign_type || 'newsletter',
-    developer_input: campaignGuidance ? `${campaignGuidance}\n\nCLIENT BRIEF: ${developerInput}` : developerInput,
+    developer_input: developerInput,
     campaign_brief: developerInput,
     ...(occasion ? { occasion } : {}),
     sector: activeSector,
