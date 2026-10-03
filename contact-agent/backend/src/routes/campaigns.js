@@ -82,26 +82,80 @@ router.post('/upload-image', async (req, res) => {
   }
 });
 
+const DEFAULT_PUBLIC_APP_URL = 'https://contact-data-extraction-structuring-agent.onrender.com';
+
 function getUnsubscribeBaseUrl(req) {
-  if (process.env.UNSUBSCRIBE_BASE_URL) {
+  if (process.env.UNSUBSCRIBE_BASE_URL && !process.env.UNSUBSCRIBE_BASE_URL.includes('localhost')) {
     return process.env.UNSUBSCRIBE_BASE_URL.replace(/\/+$/, '');
   }
-  if (process.env.PUBLIC_APP_URL) {
+  if (process.env.PUBLIC_APP_URL && !process.env.PUBLIC_APP_URL.includes('localhost')) {
     return process.env.PUBLIC_APP_URL.replace(/\/+$/, '');
   }
   let host = req ? (req.headers['x-forwarded-host'] || req.headers.host) : null;
-  const proto = req ? (req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http')) : 'http';
-  if (host && /^(localhost|127\.0\.0\.1):3000$/i.test(host)) {
-    host = host.replace(/:3000$/i, ':4000');
+  if (host && !host.includes('localhost') && !host.includes('127.0.0.1')) {
+    const proto = req ? (req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http')) : 'https';
+    return `${proto}://${host}`.replace(/\/+$/, '');
   }
-  return host ? `${proto}://${host}` : '';
+  return DEFAULT_PUBLIC_APP_URL;
+}
+
+function escapeRegex(str) {
+  return String(str || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function useConfiguredPreferenceLinks(emailBody, unsubscribeUrl, preferencesUrl) {
-  return String(emailBody || '').replace(
-    /https?:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?\/(unsubscribe|preferences)(?:\?[^\s"'<>]*)?/gi,
-    (_match, page) => page.toLowerCase() === 'unsubscribe' ? unsubscribeUrl : preferencesUrl
-  );
+  return String(emailBody || '')
+    .replace(/https?:\/\/[^\s"'<>]+\/unsubscribe(?:\?[^\s"'<>]*)?/gi, unsubscribeUrl)
+    .replace(/https?:\/\/[^\s"'<>]+\/preferences(?:\?[^\s"'<>]*)?/gi, preferencesUrl)
+    .replace(
+      /https?:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?\/(unsubscribe|preferences)(?:\?[^\s"'<>]*)?/gi,
+      (_match, page) => page.toLowerCase() === 'unsubscribe' ? unsubscribeUrl : preferencesUrl
+    );
+}
+
+function personalizeContentForRecipient(rawBody, rawSubject, recipient, allContacts, unsubBase) {
+  let body = String(rawBody || '');
+  let subject = String(rawSubject || '');
+
+  const recipientFullName = recipient.name || '';
+  const recipientFirstName = recipientFullName.split(' ')[0] || recipientFullName;
+  const recipientCompany = recipient.company || 'your organization';
+
+  // 1. Normalize greeting to recipient
+  body = body.replace(/(<p\b[^>]*>)?(?:Dear|Hi|Hello|Greetings)\s+[^,<\n\r]+(,\s*<\/p>|,|\s*<\/p>)/i, (m, prefix, suffix) => {
+    return `${prefix || ''}Dear ${recipientFirstName}${suffix || ','}`;
+  });
+
+  // 2. Iterate all known contacts to replace any other names and companies
+  for (const c of allContacts) {
+    if (c.id === recipient.id) continue;
+    if (c.name) {
+      const cFull = c.name;
+      const cFirst = c.name.split(' ')[0];
+      body = body.replace(new RegExp(`Dear\\s+${escapeRegex(cFull)}`, 'gi'), `Dear ${recipientFullName}`);
+      body = body.replace(new RegExp(`Hi\\s+${escapeRegex(cFull)}`, 'gi'), `Hi ${recipientFullName}`);
+      if (cFirst && cFirst.length > 2) {
+        body = body.replace(new RegExp(`Dear\\s+${escapeRegex(cFirst)}`, 'gi'), `Dear ${recipientFirstName}`);
+        body = body.replace(new RegExp(`Hi\\s+${escapeRegex(cFirst)}`, 'gi'), `Hi ${recipientFirstName}`);
+      }
+      subject = subject.replace(new RegExp(escapeRegex(cFull), 'gi'), recipientFullName);
+    }
+    if (c.company && c.company.length > 2) {
+      body = body.replace(new RegExp(escapeRegex(c.company), 'g'), recipientCompany);
+      subject = subject.replace(new RegExp(escapeRegex(c.company), 'g'), recipientCompany);
+    }
+  }
+
+  // 3. Scrub and replace all unsubscribe and preferences links to point to this recipient's URL
+  const recipientUnsubUrl = `${unsubBase}/unsubscribe?id=${encodeURIComponent(recipient.id)}`;
+  const recipientPrefUrl = `${unsubBase}/preferences?id=${encodeURIComponent(recipient.id)}`;
+
+  body = body
+    .replace(/https?:\/\/[^\s"'<>]+\/unsubscribe(?:\?[^\s"'<>]*)?/gi, recipientUnsubUrl)
+    .replace(/https?:\/\/[^\s"'<>]+\/preferences(?:\?[^\s"'<>]*)?/gi, recipientPrefUrl)
+    .replace(/https?:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?\/(?:unsubscribe|preferences)(?:\?[^\s"'<>]*)?/gi, recipientUnsubUrl);
+
+  return { body, subject, recipientUnsubUrl, recipientPrefUrl };
 }
 
 function extractWorkbenchAiContent(data) {
@@ -462,10 +516,17 @@ router.post('/dispatch', async (req, res) => {
       );
     };
 
-    // Dispatch individually to every opted-in contact in the target audience
-    const dispatchPromises = targetAudienceContacts.map(async (recipient) => {
-      const recipientUnsubUrl = `${unsubBase}/unsubscribe?id=${encodeURIComponent(recipient.id)}`;
-      const recipientPrefUrl = `${unsubBase}/preferences?id=${encodeURIComponent(recipient.id)}`;
+    const allStoreContacts = nurtureStore.getContacts();
+    const dispatchResults = [];
+
+    // Dispatch individually to every opted-in contact with complete personalized content
+    for (const recipient of targetAudienceContacts) {
+      const {
+        body: personalizedBody,
+        subject: personalizedSubject,
+        recipientUnsubUrl,
+        recipientPrefUrl
+      } = personalizeContentForRecipient(finalBody, finalSubject, recipient, allStoreContacts, unsubBase);
 
       const unsubscribeFooterHtml = `
 <div style="margin-top: 28px; padding-top: 16px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; text-align: center; line-height: 1.6;">
@@ -474,7 +535,7 @@ router.post('/dispatch', async (req, res) => {
   <a href="${recipientPrefUrl}" style="color: #64748b; text-decoration: underline; margin-left: 12px;">Manage Preferences</a>
 </div>`.trim();
 
-      let recipientBody = finalBody;
+      let recipientBody = personalizedBody;
 
       if (publicImageUrl && !recipientBody.includes('<img')) {
         const formattedText = recipientBody.split('\n\n').map(p => `<p style="margin: 0 0 16px 0;">${p.replace(/\n/g, '<br/>')}</p>`).join('');
@@ -497,27 +558,17 @@ router.post('/dispatch', async (req, res) => {
         }
       }
 
-      // Replace any existing unsubscribe/preference links with recipient's personalized links
+      // Aggressively replace any localhost or non-production links
       recipientBody = recipientBody
         .replace(/https?:\/\/[^\s"'<>]+\/unsubscribe(?:\?[^\s"'<>]*)?/gi, recipientUnsubUrl)
-        .replace(/https?:\/\/[^\s"'<>]+\/preferences(?:\?[^\s"'<>]*)?/gi, recipientPrefUrl);
-
-      // Personalize greeting if recipient differs from the primary preview contact
-      const recipientFirstName = (recipient.name || '').split(' ')[0];
-      const recipientFullName = recipient.name || '';
-      if (primaryFirstName && recipientFirstName && primaryFirstName !== recipientFirstName) {
-        recipientBody = recipientBody
-          .replace(new RegExp(`Dear\\s+${primaryFullName}`, 'g'), `Dear ${recipientFullName}`)
-          .replace(new RegExp(`Dear\\s+${primaryFirstName}`, 'g'), `Dear ${recipientFirstName}`)
-          .replace(new RegExp(`Hi\\s+${primaryFullName}`, 'g'), `Hi ${recipientFullName}`)
-          .replace(new RegExp(`Hi\\s+${primaryFirstName}`, 'g'), `Hi ${recipientFirstName}`);
-      }
+        .replace(/https?:\/\/[^\s"'<>]+\/preferences(?:\?[^\s"'<>]*)?/gi, recipientPrefUrl)
+        .replace(/https?:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?\/(?:unsubscribe|preferences)(?:\?[^\s"'<>]*)?/gi, recipientUnsubUrl);
 
       const recipientPayload = {
         action: 'approve_and_send',
-        campaign_name: campaign_name || `${activeSector} Newsletter Dispatch`,
+        campaign_name: campaign_name || `${recipient.sector || activeSector} Newsletter Dispatch`,
         campaign_type: campaign_type || 'newsletter',
-        developer_input: finalDeveloperInput,
+        developer_input: `CAMPAIGN TOPIC: ${finalDeveloperInput}\n\nTARGET RECIPIENT: ${recipient.name} at ${recipient.company} (${recipient.sector || 'Technology'})\nUNSUBSCRIBE LINK: ${recipientUnsubUrl}\nPREFERENCES LINK: ${recipientPrefUrl}`,
         occasion: finalDeveloperInput,
         sector: recipient.sector || recipient.industry || activeSector,
         target_segment: audience || `${activeSector} Clients`,
@@ -535,6 +586,7 @@ router.post('/dispatch', async (req, res) => {
         preferences_url: recipientPrefUrl,
         content: {
           ...content,
+          subject: personalizedSubject,
           image_url: publicImageUrl || finalImageUrl,
           poster_url: publicImageUrl || finalImageUrl,
           attachments: publicImageUrl || finalImageUrl,
@@ -544,7 +596,7 @@ router.post('/dispatch', async (req, res) => {
         poster_url: publicImageUrl || finalImageUrl,
         poster_image: publicImageUrl || finalImageUrl,
         attachments: publicImageUrl || finalImageUrl,
-        subject: content?.subject || finalSubject,
+        subject: personalizedSubject,
         email_body: recipientBody,
         whatsapp_message: content?.whatsapp_message
       };
@@ -552,14 +604,17 @@ router.post('/dispatch', async (req, res) => {
       try {
         const result = await workbenchService.triggerNurturingWorkflow(recipientPayload);
         const confirmed = isDeliveryConfirmed(result?.data);
-        return { recipient, success: confirmed, result, recipientBody, recipientPayload };
+        dispatchResults.push({ recipient, success: confirmed, result, recipientBody, recipientPayload });
       } catch (err) {
         console.error(`[Campaigns /dispatch] Failed to dispatch to ${recipient.email}:`, err.message);
-        return { recipient, success: false, error: err.message };
+        dispatchResults.push({ recipient, success: false, error: err.message });
       }
-    });
 
-    const dispatchResults = await Promise.all(dispatchPromises);
+      // Small delay between calls to prevent concurrency collision on Workbench
+      if (targetAudienceContacts.length > 1) {
+        await new Promise(r => setTimeout(r, 600));
+      }
+    }
     const successfulDispatches = dispatchResults.filter(r => r.success);
 
     if (successfulDispatches.length === 0) {

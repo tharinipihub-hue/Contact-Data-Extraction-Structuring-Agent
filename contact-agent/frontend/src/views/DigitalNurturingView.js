@@ -385,6 +385,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
   const [wizardImageName, setWizardImageName] = useState('');
   const [editingDraftId, setEditingDraftId] = useState(null);
   const [wizardSelectedContactId, setWizardSelectedContactId] = useState('');
+  const [wizardPreviewContactId, setWizardPreviewContactId] = useState('');
 
   // Templates Tab State
   const [selectedTemplateTab, setSelectedTemplateTab] = useState('Newsletter');
@@ -802,6 +803,58 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
     }
   };
 
+  const getPersonalizedPreviewContent = (rawBody, rawSubject, targetContact) => {
+    if (!rawBody || !targetContact) {
+      return {
+        body: rawBody || '',
+        subject: rawSubject || '',
+        unsubUrl: `${APP_ORIGIN}/unsubscribe?id=${encodeURIComponent(targetContact?.id || 'CNT-001')}`,
+        prefUrl: `${APP_ORIGIN}/preferences?id=${encodeURIComponent(targetContact?.id || 'CNT-001')}`
+      };
+    }
+    let body = String(rawBody);
+    let subject = String(rawSubject || '');
+    const firstName = (targetContact.name || '').split(' ')[0] || targetContact.name;
+    const fullName = targetContact.name || '';
+    const company = targetContact.company || 'your organization';
+
+    // 1. Replace greetings
+    body = body.replace(/(<p\b[^>]*>)?(?:Dear|Hi|Hello|Greetings)\s+[^,<\n\r]+(,\s*<\/p>|,|\s*<\/p>)/i, (m, p, s) => {
+      return `${p || ''}Dear ${firstName}${s || ','}`;
+    });
+
+    // 2. Replace other contact names and companies
+    for (const c of contacts) {
+      if (c.id === targetContact.id) continue;
+      if (c.name) {
+        const cFull = c.name;
+        const cFirst = c.name.split(' ')[0];
+        body = body.replace(new RegExp(`Dear\\s+${cFull.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'gi'), `Dear ${fullName}`);
+        body = body.replace(new RegExp(`Hi\\s+${cFull.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'gi'), `Hi ${fullName}`);
+        if (cFirst && cFirst.length > 2) {
+          body = body.replace(new RegExp(`Dear\\s+${cFirst.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'gi'), `Dear ${firstName}`);
+          body = body.replace(new RegExp(`Hi\\s+${cFirst.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'gi'), `Hi ${firstName}`);
+        }
+        subject = subject.replace(new RegExp(cFull.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), fullName);
+      }
+      if (c.company && c.company.length > 2) {
+        body = body.replace(new RegExp(c.company.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), company);
+        subject = subject.replace(new RegExp(c.company.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), company);
+      }
+    }
+
+    // 3. Unsubscribe & Preferences links
+    const unsubUrl = `${APP_ORIGIN}/unsubscribe?id=${encodeURIComponent(targetContact.id)}`;
+    const prefUrl = `${APP_ORIGIN}/preferences?id=${encodeURIComponent(targetContact.id)}`;
+
+    body = body
+      .replace(/https?:\/\/[^\s"'<>]+\/unsubscribe(?:\?[^\s"'<>]*)?/gi, unsubUrl)
+      .replace(/https?:\/\/[^\s"'<>]+\/preferences(?:\?[^\s"'<>]*)?/gi, prefUrl)
+      .replace(/https?:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?\/(?:unsubscribe|preferences)(?:\?[^\s"'<>]*)?/gi, unsubUrl);
+
+    return { body, subject, unsubUrl, prefUrl };
+  };
+
   const handleApplyTemplateInStep3 = (templateKey) => {
     const tmpl = NURTURE_TEMPLATES[templateKey];
     if (!tmpl) return;
@@ -940,14 +993,13 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
       showNotification('Select at least one opted-in audience contact before generating a campaign.', true);
       return;
     }
-    const primaryContact = contactOverride || (wizardAudienceType === 'Specific Client'
-      ? recipients.find(c => c.id === wizardSelectedContactId)
-      : recipients[0]);
+    const primaryContact = contactOverride || (wizardSelectedContactId ? recipients.find(c => c.id === wizardSelectedContactId) : null) || recipients[0];
     if (!primaryContact || !recipients.some(c => c.id === primaryContact.id)) {
       showNotification('The selected contact is not part of the opted-in campaign audience.', true);
       return;
     }
     setWizardSelectedContactId(primaryContact.id);
+    setWizardPreviewContactId(primaryContact.id);
     setWizardIsGenerating(true);
     try {
       let preview = null;
@@ -2991,8 +3043,9 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                                 }}
                                 onClick={() => {
                                   setWizardSelectedContactId(c.id);
+                                  setWizardPreviewContactId(c.id);
                                   setWizardSelectedCompany(c.company || '');
-                                  setWizardSelectedIndustry(c.sector || '');
+                                  setWizardSelectedIndustry(c.sector || c.industry || '');
                                 }}
                                 title={isOptedOut ? `${c.name} has opted out` : `Select ${c.name} (${c.company})`}
                               >
@@ -3090,8 +3143,17 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
             )}
 
             {/* ── STEP 5: PREVIEW ── */}
-            {wizardStep === 5 && (wizardGeneratedContent || wizardEditedBody) && (
-              <div>
+            {wizardStep === 5 && (wizardGeneratedContent || wizardEditedBody) && (() => {
+              const recipients = getWizardTargetRecipients();
+              const activePreviewContact = contacts.find(c => c.id === (wizardPreviewContactId || wizardSelectedContactId)) || recipients[0] || contacts[0];
+              const previewPersonalized = getPersonalizedPreviewContent(
+                wizardEditedBody || wizardGeneratedContent?.email_body,
+                wizardEditedSubject || wizardGeneratedContent?.subject,
+                activePreviewContact
+              );
+
+              return (
+                <div>
                 <div style={{ marginBottom: 16 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
                     <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a' }}>Step 5 — Preview</h3>
@@ -3184,8 +3246,56 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                     </div>
                   )}
 
+                  {/* Dynamic Recipient Preview Selector */}
+                  <div style={{ marginBottom: 14, background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: 12 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, flexWrap: 'wrap', gap: 6 }}>
+                      <span style={{ fontSize: 12.5, fontWeight: 700, color: '#1e293b' }}>
+                        Previewing Personalization For: <strong style={{ color: '#2563eb' }}>{activePreviewContact.name}</strong> ({activePreviewContact.company})
+                      </span>
+                      <span style={{ fontSize: 11.5, color: '#64748b' }}>Click any client below to inspect their personalized copy</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      {recipients.map(rec => {
+                        const isSelected = activePreviewContact.id === rec.id;
+                        return (
+                          <button
+                            key={rec.id}
+                            type="button"
+                            onClick={() => {
+                              setWizardPreviewContactId(rec.id);
+                              setWizardSelectedContactId(rec.id);
+                            }}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              padding: '5px 12px',
+                              fontSize: 12,
+                              fontWeight: isSelected ? 700 : 500,
+                              background: isSelected ? '#2563eb' : '#ffffff',
+                              color: isSelected ? '#ffffff' : '#334155',
+                              border: isSelected ? '1px solid #1d4ed8' : '1px solid #cbd5e1',
+                              borderRadius: 6,
+                              cursor: 'pointer'
+                            }}
+                          >
+                            <span>{rec.name}</span>
+                            <span style={{ fontSize: 11, opacity: 0.85 }}>({rec.company})</span>
+                            {isSelected && <Check size={12} color="#fff" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
                   <div className="dn-preview-box">
                     <div className="dn-preview-header">
+                      <div className="dn-preview-row">
+                        <span className="dn-preview-label">RECIPIENT:</span>
+                        <span className="dn-preview-value" style={{ fontWeight: 600, color: '#0f172a' }}>
+                          {activePreviewContact.name} &lt;{activePreviewContact.email}&gt; — <span style={{ color: '#2563eb' }}>{activePreviewContact.company}</span> ({activePreviewContact.sector || activePreviewContact.industry || 'Technology'})
+                        </span>
+                      </div>
                       <div className="dn-preview-row">
                         <span className="dn-preview-label">SUBJECT:</span>
                         {wizardIsEditing ? (
@@ -3198,7 +3308,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                             style={{ flex: 1, padding: '6px 10px', fontSize: 13, fontWeight: 600 }}
                           />
                         ) : (
-                          <span className="dn-preview-value" style={{ color: '#1e40af' }}>{wizardEditedSubject || wizardGeneratedContent.subject}</span>
+                          <span className="dn-preview-value" style={{ color: '#1e40af' }}>{previewPersonalized.subject}</span>
                         )}
                       </div>
                       <div className="dn-preview-row" style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 8, padding: '10px 0' }}>
@@ -3304,22 +3414,22 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                           />
                         </div>
                       ) : (
-                        <EmailBodyPreview content={wizardEditedBody || wizardGeneratedContent.email_body} />
+                        <EmailBodyPreview content={previewPersonalized.body} />
                       )}
                     </div>
 
                     <div className="dn-preview-footer">
                       <div>
                         <a
-                          href={`${APP_ORIGIN}/unsubscribe?id=${encodeURIComponent(wizardSelectedContactId || getWizardTargetRecipients()[0]?.id || 'CNT-001')}`}
+                          href={previewPersonalized.unsubUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{ color: '#2563eb', textDecoration: 'underline', marginRight: 12 }}
                         >
-                          Unsubscribe
+                          Unsubscribe ({activePreviewContact.name})
                         </a>
                         <a
-                          href={`${APP_ORIGIN}/preferences?id=${encodeURIComponent(wizardSelectedContactId || getWizardTargetRecipients()[0]?.id || 'CNT-001')}`}
+                          href={previewPersonalized.prefUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{ color: '#64748b', textDecoration: 'none' }}
@@ -3382,7 +3492,8 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                   </div>
                 </div>
               </div>
-            )}
+            );
+          })()}
           </div>
         )}
 
