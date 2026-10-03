@@ -104,15 +104,21 @@ app.use('/api/contacts', nurtureContactsRoutes);
 app.use('/api/campaigns', campaignsRoutes);
 app.use('/api/sales', salesRoutes);
 app.use('/api/webhook', nurtureWebhookRoutes);
-app.get(['/preferences', '/unsubscribe'], (req, res) => {
-  const key = req.query.id || req.query.contact_id || req.query.email;
-  const contact = key ? (nurtureStore.getContactById(key) || nurtureStore.getContacts().find(c => String(c.email || '').toLowerCase() === String(key).toLowerCase())) : null;
-  const isUnsubscribe = req.path === '/unsubscribe';
+app.all(['/preferences', '/preferences/*', '/unsubscribe', '/unsubscribe/*', '/api/unsubscribe', '/api/preferences'], (req, res) => {
+  const rawKey = req.query.id || req.query.contact_id || req.query.email || req.query.contactId || req.body?.id || req.body?.contact_id || req.body?.email;
+  const key = rawKey ? String(rawKey).trim() : '';
+  const contact = key ? nurtureStore.getContactById(key) : null;
+  const isUnsubscribe = req.path.includes('unsubscribe') || req.originalUrl.includes('unsubscribe');
+  let updatedContact = contact;
   if (isUnsubscribe && contact) {
     const result = nurtureStore.updateContactPreferences(contact.id, { opt_in: false, reason: 'One-click unsubscribe link' });
+    if (result?.contact) updatedContact = result.contact;
     if (result) nurtureStore.addAuditLog({ event_type: 'Client Opt-Out (Unsubscribe)', contact_name: `${contact.name} (${contact.company})`, details: 'Client opted out using the deployed unsubscribe link.', status: 'Opted Out' });
   }
-  res.type('html').send(renderPreferencePage(contact, isUnsubscribe));
+  if (req.xhr || req.headers.accept?.includes('application/json') || req.path.startsWith('/api/')) {
+    return res.json({ success: true, unsubscribed: isUnsubscribe, contact: updatedContact });
+  }
+  res.type('html').send(renderPreferencePage(updatedContact, isUnsubscribe));
 });
 
 app.use(
@@ -162,8 +168,8 @@ if (fs.existsSync(frontendBuildPath)) {
       req.path.startsWith('/api') ||
       req.path.startsWith('/retry') ||
       req.path.startsWith('/health')
-      || req.path === '/preferences'
-      || req.path === '/unsubscribe'
+      || req.path.startsWith('/preferences')
+      || req.path.startsWith('/unsubscribe')
     ) {
       return next();
     }

@@ -6444,7 +6444,7 @@
       "data": {
         "label": "Http Request",
         "inputs": {
-          "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
+          "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=YOUR_GEMINI_API_KEY",
           "body": "{\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Extract all contact information visible in this image. Return ONLY valid JSON in this exact structure: {\\\"contacts\\\":[{\\\"full_name\\\":\\\"\\\",\\\"first_name\\\":\\\"\\\",\\\"last_name\\\":\\\"\\\",\\\"designation\\\":\\\"\\\",\\\"company\\\":\\\"\\\",\\\"email\\\":\\\"\\\",\\\"phone\\\":\\\"\\\",\\\"address\\\":\\\"\\\",\\\"city\\\":\\\"\\\",\\\"state\\\":\\\"\\\",\\\"country\\\":\\\"\\\",\\\"sector_industry\\\":\\\"\\\",\\\"linkedin_url\\\":\\\"\\\",\\\"website\\\":\\\"\\\",\\\"source\\\":\\\"\\\",\\\"validation_status\\\":\\\"\\\",\\\"duplicate_status\\\":\\\"\\\"}]}. Do not invent or infer information that is not visible. If a field is not visible, return an empty string.\"\n        },\n        {\n          \"file_data\": {\n            \"mime_type\": \"{{ $json.mimeType }}\",\n            \"file_uri\": \"{{ $json.fileUri }}\"\n          }\n        }\n      ]\n    }\n  ]\n}",
           "method": "POST",
           "headers": {
@@ -6655,7 +6655,7 @@
                     "thoughtsTokenCount": 3593,
                     "serviceTier": "standard"
                   },
-                  "modelVersion": "gemini-3.6-flash",
+                  "modelVersion": "gemini-2.0-flash",
                   "responseId": "ggm6ao3pIsvV4-EPhs6VuQQ"
                 }
               },

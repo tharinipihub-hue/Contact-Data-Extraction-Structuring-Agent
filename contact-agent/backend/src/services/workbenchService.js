@@ -528,20 +528,19 @@ async function processFile(
       if (localContacts && localContacts.length > 0) {
         const scored = leadEngine.processAndScoreList(localContacts, fileObj.name || 'Upload');
         store.addContacts(file_id, scored);
+        store.updateFileStatus(file_id, 'done');
         console.log(`[workbenchService] ✓ Stored ${scored.length} contact(s) via local engine for file_id=${file_id}`);
       } else {
-        console.log(`[workbenchService] No contacts extracted locally. Waiting for async callback if available.`);
+        console.log(`[workbenchService] No contacts extracted locally. Marking file_id=${file_id} status.`);
+        // If no contacts could be extracted from image or document, mark as failed so UI informs user
+        store.updateFileStatus(file_id, 'failed', 'No contact records could be extracted from this file. Please verify file format and clarity.');
       }
-
-      // Mark file status as done so frontend does not hang indefinitely
-      store.updateFileStatus(file_id, 'done');
-      console.log(`[workbenchService] ✓ Marked file_id=${file_id} as done.`);
     }
 
   } catch (err) {
     const errorMsg =
       err.response
-        ? `Workbench HTTP ${err.response.status}: ${JSON.stringify(err.response.data)}`
+        ? `Workbench HTTP ${err.response.status}: ${typeof err.response.data === 'object' ? JSON.stringify(err.response.data) : err.response.data}`
         : err.message;
 
     console.error(
@@ -563,9 +562,11 @@ async function processFile(
       console.warn(`[workbenchService] Fallback extraction also failed:`, fallbackErr.message);
     }
 
+    // Do NOT falsely mark as done if extraction genuinely failed
     store.updateFileStatus(
       file_id,
-      'done'
+      'failed',
+      `Extraction failed: ${errorMsg}`
     );
   }
 }

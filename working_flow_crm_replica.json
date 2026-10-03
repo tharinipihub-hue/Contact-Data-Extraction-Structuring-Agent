@@ -775,7 +775,7 @@
               "supportDotNotation": {
                 "type": "boolean",
                 "default": true,
-                "description": "If enabled, dotted names create nested objects (e.g. number.one → { number: { one: value } })"
+                "description": "If enabled, dotted names create nested objects (e.g. number.one \u2192 { number: { one: value } })"
               },
               "items": {
                 "type": "array",
@@ -1049,7 +1049,7 @@
           "items": [
             {
               "json": {
-                "text": "GGOOGLE / ALPHABETSundar PichaiCEOPUBLIC EXECUTIVE PROFILEOfficial company sitegoogle.comMountain View, CALEADERSHIPMMICROSOFTSatya NadellaChairman & CEOPUBLIC EXECUTIVE PROFILEOfficial company sitemicrosoft.comRedmond, WALEADERSHIPnAPPLEJohn TernusCEOPUBLIC EXECUTIVE PROFILEOfficial company siteapple.comCupertino, CALEADERSHIPaAMAZONAndy JassyPresident & CEOPUBLIC EXECUTIVE PROFILEOfficial company siteamazon.comSeattle, WALEADERSHIP∞METAMark ZuckerbergFounder & CEOPUBLIC EXECUTIVE PROFILEOfficial company sitemeta.comMenlo Park, CALEADERSHIPNNVIDIAJensen HuangFounder, President & CEOPUBLIC EXECUTIVE PROFILEOfficial company sitenvidia.comSanta Clara, CALEADERSHIPAADOBEShantanu NarayenChair & CEOPUBLIC EXECUTIVE PROFILEOfficial company siteadobe.comSan Jose, CALEADERSHIPIBMIBMArvind KrishnaChairman, President & CEOPUBLIC EXECUTIVE PROFILEOfficial company siteibm.comArmonk, NYLEADERSHIP>ACCENTUREJulie SweetChair & CEOPUBLIC EXECUTIVE PROFILEOfficial company siteaccenture.comNew York, NYLEADERSHIP\n",
+                "text": "GGOOGLE / ALPHABETSundar PichaiCEOPUBLIC EXECUTIVE PROFILEOfficial company sitegoogle.comMountain View, CALEADERSHIPMMICROSOFTSatya NadellaChairman & CEOPUBLIC EXECUTIVE PROFILEOfficial company sitemicrosoft.comRedmond, WALEADERSHIPnAPPLEJohn TernusCEOPUBLIC EXECUTIVE PROFILEOfficial company siteapple.comCupertino, CALEADERSHIPaAMAZONAndy JassyPresident & CEOPUBLIC EXECUTIVE PROFILEOfficial company siteamazon.comSeattle, WALEADERSHIP\u221eMETAMark ZuckerbergFounder & CEOPUBLIC EXECUTIVE PROFILEOfficial company sitemeta.comMenlo Park, CALEADERSHIPNNVIDIAJensen HuangFounder, President & CEOPUBLIC EXECUTIVE PROFILEOfficial company sitenvidia.comSanta Clara, CALEADERSHIPAADOBEShantanu NarayenChair & CEOPUBLIC EXECUTIVE PROFILEOfficial company siteadobe.comSan Jose, CALEADERSHIPIBMIBMArvind KrishnaChairman, President & CEOPUBLIC EXECUTIVE PROFILEOfficial company siteibm.comArmonk, NYLEADERSHIP>ACCENTUREJulie SweetChair & CEOPUBLIC EXECUTIVE PROFILEOfficial company siteaccenture.comNew York, NYLEADERSHIP\n",
                 "pages": 1,
                 "metadata": {}
               },
@@ -1937,7 +1937,7 @@
               "supportDotNotation": {
                 "type": "boolean",
                 "default": true,
-                "description": "If enabled, dotted names create nested objects (e.g. number.one → { number: { one: value } })"
+                "description": "If enabled, dotted names create nested objects (e.g. number.one \u2192 { number: { one: value } })"
               },
               "items": {
                 "type": "array",
@@ -3385,7 +3385,7 @@
               "supportDotNotation": {
                 "type": "boolean",
                 "default": true,
-                "description": "If enabled, dotted names create nested objects (e.g. number.one → { number: { one: value } })"
+                "description": "If enabled, dotted names create nested objects (e.g. number.one \u2192 { number: { one: value } })"
               },
               "items": {
                 "type": "array",
@@ -3920,7 +3920,7 @@
                   }
                 ],
                 "default": 1,
-                "description": "Batch Size — Enter a number or an expression (e.g. {{ $json.size }})"
+                "description": "Batch Size \u2014 Enter a number or an expression (e.g. {{ $json.size }})"
               },
               "options": {
                 "type": "object",
@@ -3932,7 +3932,7 @@
                       "bundled"
                     ],
                     "default": "separate",
-                    "description": "Done Branch Output — \"separate\" emits individual items, \"bundled\" emits one item with all results in an array"
+                    "description": "Done Branch Output \u2014 \"separate\" emits individual items, \"bundled\" emits one item with all results in an array"
                   }
                 },
                 "additionalProperties": false
@@ -4226,7 +4226,7 @@
               "supportDotNotation": {
                 "type": "boolean",
                 "default": true,
-                "description": "If enabled, dotted names create nested objects (e.g. number.one → { number: { one: value } })"
+                "description": "If enabled, dotted names create nested objects (e.g. number.one \u2192 { number: { one: value } })"
               },
               "items": {
                 "type": "array",
@@ -4397,7 +4397,7 @@
           "category": "Data  Processing",
           "provider": "code",
           "operation": "execute",
-          "icon": "💻",
+          "icon": "\ud83d\udcbb",
           "description": "Execute custom JavaScript or Python code",
           "inputSchemaJSON": {
             "type": "object",
@@ -4706,7 +4706,7 @@
           "category": "Data  Processing",
           "provider": "code",
           "operation": "execute",
-          "icon": "💻",
+          "icon": "\ud83d\udcbb",
           "description": "Execute custom JavaScript or Python code",
           "inputSchemaJSON": {
             "type": "object",
@@ -4786,7 +4786,7 @@
           "category": "Data  Processing",
           "provider": "code",
           "operation": "execute",
-          "icon": "💻",
+          "icon": "\ud83d\udcbb",
           "description": "Execute custom JavaScript or Python code",
           "inputSchemaJSON": {
             "type": "object",
@@ -4866,7 +4866,7 @@
           "category": "Data  Processing",
           "provider": "code",
           "operation": "execute",
-          "icon": "💻",
+          "icon": "\ud83d\udcbb",
           "description": "Execute custom JavaScript or Python code",
           "inputSchemaJSON": {
             "type": "object",
@@ -4946,7 +4946,7 @@
           "category": "Data  Processing",
           "provider": "code",
           "operation": "execute",
-          "icon": "💻",
+          "icon": "\ud83d\udcbb",
           "description": "Execute custom JavaScript or Python code",
           "inputSchemaJSON": {
             "type": "object",
@@ -5049,7 +5049,7 @@
           "category": "Data  Processing",
           "provider": "code",
           "operation": "execute",
-          "icon": "💻",
+          "icon": "\ud83d\udcbb",
           "description": "Execute custom JavaScript or Python code",
           "inputSchemaJSON": {
             "type": "object",
@@ -5349,7 +5349,7 @@
           "category": "Data  Processing",
           "provider": "code",
           "operation": "execute",
-          "icon": "💻",
+          "icon": "\ud83d\udcbb",
           "description": "Execute custom JavaScript or Python code",
           "inputSchemaJSON": {
             "type": "object",
@@ -5452,7 +5452,7 @@
           "category": "Data  Processing",
           "provider": "code",
           "operation": "execute",
-          "icon": "💻",
+          "icon": "\ud83d\udcbb",
           "description": "Execute custom JavaScript or Python code",
           "inputSchemaJSON": {
             "type": "object",
@@ -6624,7 +6624,7 @@
       "data": {
         "label": "Http Request",
         "inputs": {
-          "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
+          "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=YOUR_GEMINI_API_KEY",
           "body": "{\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Extract all contact information visible in this image. Return ONLY valid JSON in this exact structure: {\\\"contacts\\\":[{\\\"full_name\\\":\\\"\\\",\\\"first_name\\\":\\\"\\\",\\\"last_name\\\":\\\"\\\",\\\"designation\\\":\\\"\\\",\\\"company\\\":\\\"\\\",\\\"email\\\":\\\"\\\",\\\"phone\\\":\\\"\\\",\\\"address\\\":\\\"\\\",\\\"city\\\":\\\"\\\",\\\"state\\\":\\\"\\\",\\\"country\\\":\\\"\\\",\\\"sector_industry\\\":\\\"\\\",\\\"linkedin_url\\\":\\\"\\\",\\\"website\\\":\\\"\\\",\\\"source\\\":\\\"\\\",\\\"validation_status\\\":\\\"\\\",\\\"duplicate_status\\\":\\\"\\\"}]}. Do not invent or infer information that is not visible. If a field is not visible, return an empty string.\"\n        },\n        {\n          \"file_data\": {\n            \"mime_type\": \"{{ $json.mimeType }}\",\n            \"file_uri\": \"{{ $json.fileUri }}\"\n          }\n        }\n      ]\n    }\n  ]\n}",
           "method": "POST",
           "headers": {
@@ -6835,7 +6835,7 @@
                     "thoughtsTokenCount": 1605,
                     "serviceTier": "standard"
                   },
-                  "modelVersion": "gemini-3.6-flash",
+                  "modelVersion": "gemini-2.0-flash",
                   "responseId": "uxO6av6HN5uJ4-EPsNGbgAw"
                 }
               },

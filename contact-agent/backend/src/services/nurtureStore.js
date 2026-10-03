@@ -130,6 +130,45 @@ class NurtureStore {
     } catch (_) {
       this.optEvents = [];
     }
+    this.syncContactEngagements();
+  }
+
+  syncContactEngagements() {
+    if (!Array.isArray(this.contacts) || !Array.isArray(this.campaigns)) return;
+    const sentCampaigns = this.campaigns.filter(c => 
+      c.status === 'Sent' || 
+      c.status === 'Completed' ||
+      c.delivery_status === 'Workbench confirmed dispatch' ||
+      c.delivery_status === 'Delivered'
+    );
+    for (const campaign of sentCampaigns) {
+      const recipientIds = new Set(Array.isArray(campaign.contact_ids) ? campaign.contact_ids : []);
+      const recipientEmails = new Set(Array.isArray(campaign.recipient_contacts) ? campaign.recipient_contacts.map(rc => (rc.email || '').toLowerCase()) : []);
+      const isAll = campaign.audience === 'All Past Clients';
+
+      for (const contact of this.contacts) {
+        const matches = isAll || recipientIds.has(contact.id) || (contact.email && recipientEmails.has(contact.email.toLowerCase())) || (campaign.audience === 'Specific Industry' && (campaign.sector === contact.sector || campaign.sector === contact.industry));
+        if (matches) {
+          contact.client_engagements = contact.client_engagements || [];
+          const exists = contact.client_engagements.some(eng => (eng.campaign_name || '').trim().toLowerCase() === (campaign.name || '').trim().toLowerCase());
+          if (!exists) {
+            contact.client_engagements.unshift({
+              campaign_name: campaign.name,
+              type: campaign.type || 'Newsletter',
+              channel: (Array.isArray(campaign.channels) ? campaign.channels.join(' + ') : campaign.channel) || 'Email',
+              status: 'Delivered (Workbench Confirmed)',
+              delivery_status: 'Delivered',
+              engagement: contact.engagement_state === 'Replied' ? (contact.response_intent || 'Replied') : (campaign.metrics?.opened > 0 ? 'Opened' : 'Delivered & Active'),
+              date: campaign.sent_date || campaign.created_date || 'Recent',
+              subject: campaign.subject || ''
+            });
+          }
+          if (!contact.delivery_status || contact.delivery_status === 'Not dispatched') {
+            contact.delivery_status = 'Sent';
+          }
+        }
+      }
+    }
   }
 
   loadContacts() {
@@ -184,11 +223,17 @@ class NurtureStore {
   }
 
   getContacts() {
+    this.syncContactEngagements();
     return this.contacts;
   }
 
   getContactById(id) {
-    return this.contacts.find(c => c.id === id);
+    if (!id) return null;
+    const clean = String(id).trim().toLowerCase();
+    return this.contacts.find(c => 
+      String(c.id || '').trim().toLowerCase() === clean ||
+      String(c.email || '').trim().toLowerCase() === clean
+    ) || null;
   }
 
   getOptEvents() {
@@ -301,7 +346,7 @@ class NurtureStore {
   }
 
   updateContactPreferences(id, preferences = {}) {
-    let contact = this.contacts.find(c => c.id === id || c.email === id);
+    let contact = this.getContactById(id);
     if (!contact && preferences.name) {
       contact = this.contacts.find(c => c.name && c.name.toLowerCase() === preferences.name.toLowerCase());
     }
@@ -505,14 +550,28 @@ class NurtureStore {
   }
 
   getStats() {
-    const totalSent = this.campaigns.reduce((acc, c) => acc + (c.metrics?.sent || 0), 0);
-    const totalInterested = this.salesHandoffs.length;
+    this.syncContactEngagements();
+    const sentCampaigns = this.campaigns.filter(c => 
+      c.status === 'Sent' || 
+      c.status === 'Completed' ||
+      c.delivery_status === 'Workbench confirmed dispatch' ||
+      c.delivery_status === 'Delivered' ||
+      (c.metrics && (Number(c.metrics.sent) > 0 || Number(c.metrics.delivered) > 0))
+    );
+    const totalSent = sentCampaigns.reduce((acc, c) => {
+      const count = Number(c.metrics?.sent ?? c.metrics?.delivered ?? c.recipients ?? c.recipients_count ?? (Array.isArray(c.contact_ids) ? c.contact_ids.length : 0));
+      return acc + (Number.isFinite(count) && count > 0 ? count : 1);
+    }, 0);
+    const totalInterested = this.salesHandoffs.length || this.contacts.filter(c => c.sales_handoff_status === 'Hot Lead' || c.response_intent === 'Interested').length;
     const optedInCount = this.contacts.filter(c => c.opt_in === true).length;
+    const optedOutCount = this.contacts.filter(c => c.opt_in === false).length;
 
     return {
       total_clients: this.contacts.length,
       opted_in_clients: optedInCount,
+      opted_out_clients: optedOutCount,
       active_campaigns: this.campaigns.length,
+      sent_campaigns: sentCampaigns.length,
       messages_sent: totalSent,
       interested_clients: totalInterested
     };

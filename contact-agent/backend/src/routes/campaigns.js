@@ -444,28 +444,41 @@ router.post('/dispatch', async (req, res) => {
     }
 
     const unsubBase = getUnsubscribeBaseUrl(req);
-    const primaryContactId = targetContact?.id || targetAudienceContacts[0].id;
-    const unsubUrl = `${unsubBase}/unsubscribe?id=${primaryContactId}`;
-    const prefUrl = `${unsubBase}/preferences?id=${primaryContactId}`;
+    const primaryContact = targetContact || targetAudienceContacts[0];
+    const primaryFirstName = (primaryContact.name || '').split(' ')[0];
+    const primaryFullName = primaryContact.name || '';
 
-    let rawBody = finalBody;
-    let finalEmailBody = rawBody;
+    const isDeliveryConfirmed = (resData) => {
+      if (!resData) return false;
+      const responses = [resData, resData?.result, resData?.data, resData?.data?.result].filter(Boolean);
+      return resData?.success !== false && !responses.some(response => response.success === false) && responses.some(response =>
+        response.success !== false && (
+          response.delivery_confirmed === true ||
+          response.email_sent === true ||
+          response.sent === true ||
+          String(response.delivery_status || '').toLowerCase() === 'delivered' ||
+          ['sent', 'delivered', 'completed'].includes(String(response.status || '').toLowerCase())
+        )
+      );
+    };
 
-    // Replace stale unsubscribe/preferences hosts with the current application origin.
-    finalEmailBody = finalEmailBody
-      .replace(/https?:\/\/[^\s"'<>]+\/unsubscribe(?:\?[^\s"'<>]*)?/gi, unsubUrl)
-      .replace(/https?:\/\/[^\s"'<>]+\/preferences(?:\?[^\s"'<>]*)?/gi, prefUrl);
+    // Dispatch individually to every opted-in contact in the target audience
+    const dispatchPromises = targetAudienceContacts.map(async (recipient) => {
+      const recipientUnsubUrl = `${unsubBase}/unsubscribe?id=${encodeURIComponent(recipient.id)}`;
+      const recipientPrefUrl = `${unsubBase}/preferences?id=${encodeURIComponent(recipient.id)}`;
 
-    const unsubscribeFooterHtml = `
+      const unsubscribeFooterHtml = `
 <div style="margin-top: 28px; padding-top: 16px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; text-align: center; line-height: 1.6;">
   You are receiving this executive update because of your strategic collaboration with SNS Square.<br/>
-  <a href="${unsubUrl}" style="color: #2563eb; text-decoration: underline; margin-right: 12px;">Unsubscribe</a> &bull; 
-  <a href="${prefUrl}" style="color: #64748b; text-decoration: underline; margin-left: 12px;">Manage Preferences</a>
+  <a href="${recipientUnsubUrl}" style="color: #2563eb; text-decoration: underline; margin-right: 12px;">Unsubscribe</a> &bull; 
+  <a href="${recipientPrefUrl}" style="color: #64748b; text-decoration: underline; margin-left: 12px;">Manage Preferences</a>
 </div>`.trim();
 
-    if (publicImageUrl && !rawBody.includes('<img')) {
-      const formattedText = rawBody.split('\n\n').map(p => `<p style="margin: 0 0 16px 0;">${p.replace(/\n/g, '<br/>')}</p>`).join('');
-      finalEmailBody = `
+      let recipientBody = finalBody;
+
+      if (publicImageUrl && !recipientBody.includes('<img')) {
+        const formattedText = recipientBody.split('\n\n').map(p => `<p style="margin: 0 0 16px 0;">${p.replace(/\n/g, '<br/>')}</p>`).join('');
+        recipientBody = `
 <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #1e293b; line-height: 1.6; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;">
   <div style="text-align: center; margin-bottom: 24px;">
     <img src="${publicImageUrl}" alt="Campaign Poster" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; display: block; margin: 0 auto;" />
@@ -475,66 +488,96 @@ router.post('/dispatch', async (req, res) => {
   </div>
   ${unsubscribeFooterHtml}
 </div>`.trim();
-    } else if (!finalEmailBody.includes('/unsubscribe')) {
-      if (finalEmailBody.includes('</div>')) {
-        const lastDivIdx = finalEmailBody.lastIndexOf('</div>');
-        finalEmailBody = finalEmailBody.slice(0, lastDivIdx) + unsubscribeFooterHtml + '</div>';
-      } else {
-        finalEmailBody = finalEmailBody + `\n\n---\nTo update your preferences or unsubscribe, visit: ${unsubUrl}`;
+      } else if (!recipientBody.includes('/unsubscribe')) {
+        if (recipientBody.includes('</div>')) {
+          const lastDivIdx = recipientBody.lastIndexOf('</div>');
+          recipientBody = recipientBody.slice(0, lastDivIdx) + unsubscribeFooterHtml + '</div>';
+        } else {
+          recipientBody = recipientBody + `\n\n---\nTo update your preferences or unsubscribe, visit: ${recipientUnsubUrl}`;
+        }
       }
-    }
 
-    const payload = {
-      action: 'approve_and_send',
-      campaign_name: campaign_name || `${activeSector} Newsletter Dispatch`,
-      campaign_type: campaign_type || 'newsletter',
-      developer_input: finalDeveloperInput,
-      occasion: finalDeveloperInput,
-      sector: activeSector,
-      target_segment: audience || `${activeSector} Clients`,
-      channel: (channels && channels[0]) || 'email',
-      from_email: process.env.NURTURE_SENDER_EMAIL || '',
-      sender_email: process.env.NURTURE_SENDER_EMAIL || '',
-      contacts: targetAudienceContacts,
-      active_contact: targetContact || targetAudienceContacts[0],
-      unsubscribe_url: unsubUrl,
-      preferences_url: prefUrl,
-      content: {
-        ...content,
+      // Replace any existing unsubscribe/preference links with recipient's personalized links
+      recipientBody = recipientBody
+        .replace(/https?:\/\/[^\s"'<>]+\/unsubscribe(?:\?[^\s"'<>]*)?/gi, recipientUnsubUrl)
+        .replace(/https?:\/\/[^\s"'<>]+\/preferences(?:\?[^\s"'<>]*)?/gi, recipientPrefUrl);
+
+      // Personalize greeting if recipient differs from the primary preview contact
+      const recipientFirstName = (recipient.name || '').split(' ')[0];
+      const recipientFullName = recipient.name || '';
+      if (primaryFirstName && recipientFirstName && primaryFirstName !== recipientFirstName) {
+        recipientBody = recipientBody
+          .replace(new RegExp(`Dear\\s+${primaryFullName}`, 'g'), `Dear ${recipientFullName}`)
+          .replace(new RegExp(`Dear\\s+${primaryFirstName}`, 'g'), `Dear ${recipientFirstName}`)
+          .replace(new RegExp(`Hi\\s+${primaryFullName}`, 'g'), `Hi ${recipientFullName}`)
+          .replace(new RegExp(`Hi\\s+${primaryFirstName}`, 'g'), `Hi ${recipientFirstName}`);
+      }
+
+      const recipientPayload = {
+        action: 'approve_and_send',
+        campaign_name: campaign_name || `${activeSector} Newsletter Dispatch`,
+        campaign_type: campaign_type || 'newsletter',
+        developer_input: finalDeveloperInput,
+        occasion: finalDeveloperInput,
+        sector: recipient.sector || recipient.industry || activeSector,
+        target_segment: audience || `${activeSector} Clients`,
+        channel: (channels && channels[0]) || 'email',
+        from_email: process.env.NURTURE_SENDER_EMAIL || '',
+        sender_email: process.env.NURTURE_SENDER_EMAIL || '',
+        contacts: [recipient],
+        active_contact: recipient,
+        to_email: recipient.email,
+        recipient_email: recipient.email,
+        email: recipient.email,
+        recipient_name: recipient.name,
+        recipient_company: recipient.company,
+        unsubscribe_url: recipientUnsubUrl,
+        preferences_url: recipientPrefUrl,
+        content: {
+          ...content,
+          image_url: publicImageUrl || finalImageUrl,
+          poster_url: publicImageUrl || finalImageUrl,
+          attachments: publicImageUrl || finalImageUrl,
+          email_body: recipientBody
+        },
         image_url: publicImageUrl || finalImageUrl,
         poster_url: publicImageUrl || finalImageUrl,
+        poster_image: publicImageUrl || finalImageUrl,
         attachments: publicImageUrl || finalImageUrl,
-        email_body: finalEmailBody
-      },
-      image_url: publicImageUrl || finalImageUrl,
-      poster_url: publicImageUrl || finalImageUrl,
-      poster_image: publicImageUrl || finalImageUrl,
-      attachments: publicImageUrl || finalImageUrl,
-      subject: content?.subject,
-      email_body: finalEmailBody,
-      whatsapp_message: content?.whatsapp_message
-    };
+        subject: content?.subject || finalSubject,
+        email_body: recipientBody,
+        whatsapp_message: content?.whatsapp_message
+      };
 
-    // Strictly trigger SNS Workbench workflow
-    const result = await workbenchService.triggerNurturingWorkflow(payload);
+      try {
+        const result = await workbenchService.triggerNurturingWorkflow(recipientPayload);
+        const confirmed = isDeliveryConfirmed(result?.data);
+        return { recipient, success: confirmed, result, recipientBody, recipientPayload };
+      } catch (err) {
+        console.error(`[Campaigns /dispatch] Failed to dispatch to ${recipient.email}:`, err.message);
+        return { recipient, success: false, error: err.message };
+      }
+    });
 
-    const deliveryResponses = [result.data, result.data?.result, result.data?.data, result.data?.data?.result].filter(Boolean);
-    const deliveryConfirmed = result.data?.success !== false && !deliveryResponses.some(response => response.success === false) && deliveryResponses.some(response =>
-      response.success !== false && (
-        response.delivery_confirmed === true ||
-        response.email_sent === true ||
-        response.sent === true ||
-        String(response.delivery_status || '').toLowerCase() === 'delivered' ||
-        ['sent', 'delivered', 'completed'].includes(String(response.status || '').toLowerCase())
-      )
-    );
-    if (!deliveryConfirmed) {
-      return res.status(502).json({ success: false, error: 'Workbench responded without confirming campaign delivery.', requires_workbench: true, workbench_response: result.data });
+    const dispatchResults = await Promise.all(dispatchPromises);
+    const successfulDispatches = dispatchResults.filter(r => r.success);
+
+    if (successfulDispatches.length === 0) {
+      const firstError = dispatchResults[0]?.error || 'Workbench responded without confirming campaign delivery.';
+      return res.status(502).json({
+        success: false,
+        error: `Workbench delivery failed: ${firstError}`,
+        requires_workbench: true,
+        dispatch_results: dispatchResults.map(r => ({ recipient: r.recipient?.email, success: r.success, error: r.error }))
+      });
     }
 
+    const primaryDispatch = successfulDispatches[0];
+    const result = primaryDispatch.result;
+    const payload = primaryDispatch.recipientPayload;
+
     const recipientCount = targetAudienceContacts.length;
-    // Audience size is known from the selected contacts. Delivery and engagement
-    // metrics remain unknown unless Workbench explicitly returns those counts.
+    const sentCount = successfulDispatches.length;
     const rawMetrics = result.data?.metrics || result.data?.result?.metrics;
     const metric = key => {
       const value = rawMetrics?.[key];
@@ -544,13 +587,13 @@ router.post('/dispatch', async (req, res) => {
     };
     const workbenchMetrics = {
       total_recipients: metric('total_recipients') ?? recipientCount,
-      sent: metric('sent'),
-      delivered: metric('delivered'),
-      opened: metric('opened'),
-      clicked: metric('clicked'),
-      replied: metric('replied'),
-      interested: metric('interested'),
-      unsubscribed: metric('unsubscribed')
+      sent: sentCount,
+      delivered: sentCount,
+      opened: metric('opened') ?? 0,
+      clicked: metric('clicked') ?? 0,
+      replied: metric('replied') ?? 0,
+      interested: metric('interested') ?? 0,
+      unsubscribed: metric('unsubscribed') ?? 0
     };
 
     const createdDateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });

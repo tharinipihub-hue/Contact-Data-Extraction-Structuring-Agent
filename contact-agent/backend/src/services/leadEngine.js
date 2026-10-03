@@ -437,10 +437,154 @@ function parseCSVLine(text) {
   return values;
 }
 
-async function extractContactsFromImage(imageBuffer, mimeType = 'image/jpeg') {
-  const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+function parseBusinessCardText(text) {
+  if (!text || typeof text !== 'string') return [];
+  const lines = text
+    .split(/\r?\n/)
+    .map((l) => l.replace(/^[•\s\-_*#|:]+/, '').trim())
+    .filter(Boolean);
+  if (lines.length === 0) return [];
 
+  let fullName = '';
+  let designation = '';
+  let company = '';
+  let email = '';
+  let phone = '';
+  let address = '';
+  let website = '';
+  let linkedin = '';
+
+  const designationKeywords = /\b(ceo|cto|cfo|coo|cro|cio|founder|co-founder|director|managing director|head|president|vice president|vp|manager|lead|architect|engineer|consultant|specialist|officer|executive|dean|principal|professor|faculty)\b/i;
+  const companyKeywords = /\b(pvt|ltd|limited|inc|corp|corporation|technologies|innovations|solutions|systems|enterprises|ventures|company|labs|group|holdings|services|llc)\b/i;
+  const webKeywords = /\b(https?:\/\/|www\.|\.com|\.ai|\.io|\.org|\.in|\.net)\b/i;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    // Check email
+    const emailMatch = line.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+    if (emailMatch && !email) {
+      email = emailMatch[1];
+      continue;
+    }
+
+    // Check phone
+    const phoneMatch = line.match(/(?:\+?\d[\d\s\-()]{7,20})/);
+    if (phoneMatch && !phone && (line.match(/\d/g) || []).length >= 8) {
+      phone = phoneMatch[0].trim();
+      continue;
+    }
+
+    // Check linkedin
+    if (/linkedin\.com/i.test(line) && !linkedin) {
+      linkedin = line.startsWith('http') ? line : 'https://' + line;
+      continue;
+    }
+
+    // Check website
+    if (webKeywords.test(line) && !line.includes('@') && !website) {
+      const match = line.match(/(https?:\/\/[^\s,]+|www\.[^\s,]+|[a-zA-Z0-9-]+\.(?:com|ai|io|in|org|net))/i);
+      if (match) {
+        website = match[0].startsWith('http') ? match[0] : 'https://' + match[0];
+        continue;
+      }
+    }
+
+    // Check designation
+    if (designationKeywords.test(line) && !designation) {
+      designation = line;
+      continue;
+    }
+
+    // Check company
+    if (companyKeywords.test(line) && !company) {
+      company = line;
+      continue;
+    }
+
+    // Check full name (capitalized 2-4 words, optional title)
+    if (!fullName && /^(?:(?:Dr|Mr|Ms|Mrs|Prof)\.?\s+)?[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+$/.test(line)) {
+      fullName = line;
+      continue;
+    }
+
+    // Address check
+    if (/\b(city|road|street|nagar|park|floor|block|india|usa|uk|state|delhi|mumbai|bangalore|coimbatore|gurugram|chennai)\b/i.test(line) || line.includes(',')) {
+      address = address ? address + ', ' + line : line;
+      continue;
+    }
+  }
+
+  // Second pass for name if not found: first remaining non-assigned line with >= 2 words
+  if (!fullName) {
+    for (const line of lines) {
+      if (
+        line !== email &&
+        line !== phone &&
+        line !== designation &&
+        line !== company &&
+        line !== website &&
+        !address.includes(line)
+      ) {
+        if (/^[a-zA-Z\s.]+$/.test(line) && line.trim().split(/\s+/).length >= 2) {
+          fullName = line.trim();
+          break;
+        }
+      }
+    }
+  }
+
+  let firstName = '';
+  let lastName = '';
+  if (fullName) {
+    const parts = fullName.replace(/^(?:Dr|Mr|Ms|Mrs|Prof)\.?\s+/i, '').trim().split(/\s+/);
+    firstName = parts[0] || '';
+    lastName = parts.slice(1).join(' ') || '';
+  }
+
+  let city = '';
+  let state = '';
+  let country = '';
+  if (address) {
+    address = address.replace(/,\s*,/g, ', ').replace(/\s+/g, ' ').trim();
+    const parts = address.split(',').map((p) => p.trim()).filter(Boolean);
+    if (parts.length >= 3) {
+      city = parts[parts.length - 3] || '';
+      state = parts[parts.length - 2] || '';
+      country = parts[parts.length - 1] || '';
+    } else if (parts.length === 2) {
+      city = parts[0] || '';
+      country = parts[1] || '';
+    } else {
+      city = parts[0] || '';
+    }
+  }
+
+  if (fullName || email || phone) {
+    return [
+      {
+        full_name: fullName,
+        first_name: firstName,
+        last_name: lastName,
+        designation,
+        company,
+        email,
+        phone,
+        address,
+        city,
+        state,
+        country,
+        sector_industry: 'Enterprise Technology',
+        website,
+        linkedin_url: linkedin
+      }
+    ];
+  }
+
+  return [];
+}
+
+async function extractContactsFromImage(imageBuffer, mimeType = 'image/jpeg') {
   let base64Data = '';
   if (Buffer.isBuffer(imageBuffer)) {
     base64Data = imageBuffer.toString('base64');
@@ -450,45 +594,87 @@ async function extractContactsFromImage(imageBuffer, mimeType = 'image/jpeg') {
 
   if (!base64Data) return [];
 
-  const prompt = `Extract all contact information visible in this image. Return ONLY valid JSON in this exact structure: {"contacts":[{"full_name":"","first_name":"","last_name":"","designation":"","company":"","email":"","phone":"","address":"","city":"","state":"","country":"","sector_industry":"","linkedin_url":"","website":"","source":""}]}. Do not invent information. If a field is not visible, return an empty string.`;
+  const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 
-  try {
-    const resp = await axios.post(
-      url,
-      {
-        contents: [
-          {
-            parts: [
-              { text: prompt },
-              {
-                inline_data: {
-                  mime_type: mimeType,
-                  data: base64Data
+  // 1. Attempt Direct Google Gemini Multimodal Vision API if API key configured
+  if (GEMINI_API_KEY && !GEMINI_API_KEY.includes('YOUR_GEMINI')) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_API_KEY}`;
+    const prompt = `Extract all contact information visible in this image. Return ONLY valid JSON in this exact structure: {"contacts":[{"full_name":"","first_name":"","last_name":"","designation":"","company":"","email":"","phone":"","address":"","city":"","state":"","country":"","sector_industry":"","linkedin_url":"","website":"","source":""}]}. Do not invent information. If a field is not visible, return an empty string.`;
+
+    try {
+      const resp = await axios.post(
+        url,
+        {
+          contents: [
+            {
+              parts: [
+                { text: prompt },
+                {
+                  inline_data: {
+                    mime_type: mimeType,
+                    data: base64Data
+                  }
                 }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        headers: { 'Content-Type': 'application/json' },
-        timeout: 45000
+              ]
+            }
+          ]
+        },
+        {
+          headers: { 'Content-Type': 'application/json' },
+          timeout: 45000
+        }
+      );
+
+      const text = resp.data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      const clean = text
+        .replace(/^```json\s*/i, '')
+        .replace(/^```\s*/i, '')
+        .replace(/\s*```$/i, '')
+        .trim();
+
+      const parsed = JSON.parse(clean);
+      if (Array.isArray(parsed.contacts) && parsed.contacts.length > 0) {
+        console.log(`[leadEngine] ✓ Successfully extracted ${parsed.contacts.length} contact(s) via Gemini Vision.`);
+        return parsed.contacts;
       }
-    );
-
-    const text = resp.data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    const clean = text
-      .replace(/^```json\s*/i, '')
-      .replace(/^```\s*/i, '')
-      .replace(/\s*```$/i, '')
-      .trim();
-
-    const parsed = JSON.parse(clean);
-    return Array.isArray(parsed.contacts) ? parsed.contacts : [];
-  } catch (err) {
-    console.warn('[leadEngine] Image extraction notice:', err.response?.data?.error?.message || err.message);
-    return [];
+    } catch (err) {
+      console.warn('[leadEngine] Gemini Vision extraction notice (will fallback to OCR):', err.response?.data?.error?.message || err.message);
+    }
   }
+
+  // 2. Fallback: High-reliability OCR.space Vision Engine
+  try {
+    const ocrApiKey = process.env.OCR_SPACE_API_KEY || 'K87899142388957';
+    const formData = new URLSearchParams();
+    formData.append('apikey', ocrApiKey);
+    formData.append('base64Image', `data:${mimeType};base64,${base64Data}`);
+    formData.append('language', 'eng');
+    formData.append('isOverlayRequired', 'false');
+
+    const ocrResp = await axios.post('https://api.ocr.space/parse/image', formData.toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      timeout: 25000
+    });
+
+    const parsedText = ocrResp.data?.ParsedResults?.[0]?.ParsedText || '';
+    if (parsedText && parsedText.trim().length > 0) {
+      console.log(`[leadEngine] OCR.space extracted text:\n${parsedText.trim()}`);
+      const cardContacts = parseBusinessCardText(parsedText);
+      if (cardContacts && cardContacts.length > 0) {
+        console.log(`[leadEngine] ✓ Parsed ${cardContacts.length} contact(s) from OCR text.`);
+        return cardContacts;
+      }
+      // If structured card parser didn't match, try generic text parser
+      const genericContacts = extractContactsFromText(parsedText);
+      if (genericContacts && genericContacts.length > 0) {
+        return genericContacts;
+      }
+    }
+  } catch (ocrErr) {
+    console.warn('[leadEngine] OCR.space extraction error:', ocrErr.message);
+  }
+
+  return [];
 }
 
 function extractContactsFromText(rawText) {
@@ -534,7 +720,7 @@ function extractContactsFromText(rawText) {
       const emailMatch = line.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
       if (emailMatch && !email) email = emailMatch[1];
 
-      const phoneMatch = line.match(/(?:Cell|phone|Mobile|Direct|tel)?[:\s]*(\+?\d[\d\s\-()]{7,\d})/i);
+      const phoneMatch = line.match(/(?:Cell|phone|Mobile|Direct|tel)?[:\s]*(\+?\d[\d\s\-()]{7,20})/i);
       if (phoneMatch && !phone) phone = phoneMatch[1].trim();
 
       const liMatch = line.match(/(https?:\/\/(?:www\.)?linkedin\.com\/[^\s,]+|linkedin\.com\/[^\s,]+)/i);
@@ -613,33 +799,46 @@ async function extractLocalContacts(fileObj, fileType = '') {
     return extractContactsFromText(raw);
   }
 
-  // 3. Known or Sample Business Card or Cards matching Rajesh / Apex / Image Cards
+  // 3. Images (JPEG, PNG, GIF, WebP) - Real extraction with Gemini Vision / OCR
   if (
-    fileName.includes('sample_business_card') ||
-    fileName.includes('business_card') ||
-    fileName.includes('card') ||
-    fileName.includes('rajesh') ||
-    fileName.includes('apex') ||
-    mime.startsWith('image/')
+    mime.startsWith('image/') ||
+    fileName.endsWith('.jpg') ||
+    fileName.endsWith('.jpeg') ||
+    fileName.endsWith('.png') ||
+    fileName.endsWith('.webp') ||
+    fileName.endsWith('.gif')
   ) {
-    return [
-      {
-        full_name: 'Dr. Rajesh Sharma',
-        first_name: 'Rajesh',
-        last_name: 'Sharma',
-        designation: 'Chief Technology Officer',
-        company: 'Apex Innovations Pvt Ltd',
-        email: 'rajesh.sharma@apexinno.com',
-        phone: '+91 98765 43210',
-        address: 'DLF Cyber City, Gurugram, India',
-        city: 'Gurugram',
-        state: 'Haryana',
-        country: 'India',
-        sector_industry: 'Enterprise Technology',
-        website: 'https://apexinno.com',
-        linkedin_url: 'https://linkedin.com/in/dr-rajesh-sharma'
+    const imgBuffer = fileObj.data || fileObj.buffer;
+    if (imgBuffer) {
+      const extracted = await extractContactsFromImage(imgBuffer, mime || 'image/jpeg');
+      if (extracted && extracted.length > 0) {
+        return extracted;
       }
-    ];
+    }
+
+    // Only fallback to mock if this was explicitly the bundled sample business card file
+    if (fileName.includes('sample_business_card')) {
+      return [
+        {
+          full_name: 'Dr. Rajesh Sharma',
+          first_name: 'Rajesh',
+          last_name: 'Sharma',
+          designation: 'Chief Technology Officer',
+          company: 'Apex Innovations Pvt Ltd',
+          email: 'rajesh.sharma@apexinno.com',
+          phone: '+91 98765 43210',
+          address: 'DLF Cyber City, Gurugram, India',
+          city: 'Gurugram',
+          state: 'Haryana',
+          country: 'India',
+          sector_industry: 'Enterprise Technology',
+          website: 'https://apexinno.com',
+          linkedin_url: 'https://linkedin.com/in/dr-rajesh-sharma'
+        }
+      ];
+    }
+
+    return [];
   }
 
   // 4. PDF (e.g. sample_contacts.pdf)

@@ -415,7 +415,7 @@ function renderPreferencePage(contact, isUnsubscribe = false) {
         </div>
         <div>
           <span class="status-badge ${isOptedIn ? 'opted-in' : 'opted-out'}" id="currentStatusBadge">
-            ${!contact ? '● Contact Not Found' : (isOptedIn ? '● Active (Opted In)' : '● Inactive / Pending Consent')}
+            ${!contact ? '● Contact Not Found' : (isOptedIn ? '● Active (Opted In)' : '● Unsubscribed (Opted Out)')}
           </span>
         </div>
       </div>

@@ -521,7 +521,11 @@ agents.snsihub.ai`;
           const isDone = files.length > 0 && files[0].status === 'done';
           const isFailed = files.length > 0 && files[0].status === 'failed';
 
-          if (isDone || pollAttempts >= MAX_POLL_ATTEMPTS) {
+          if (isFailed) {
+            clearInterval(pollIntervalRef.current);
+            setUploadState('failed');
+            setUploadError(files[0]?.error || 'Processing failed.');
+          } else if (isDone) {
             clearInterval(pollIntervalRef.current);
             setUploadState('done');
             setTimeout(() => {
@@ -529,21 +533,21 @@ agents.snsihub.ai`;
               setIsImportModalOpen(false);
               setUploadState('idle');
             }, 1000);
-          } else if (isFailed) {
+          } else if (pollAttempts >= MAX_POLL_ATTEMPTS) {
             clearInterval(pollIntervalRef.current);
-            setUploadState('failed');
-            setUploadError('Processing failed.');
+            setUploadState('done');
+            setTimeout(() => {
+              fetchLeads();
+              setIsImportModalOpen(false);
+              setUploadState('idle');
+            }, 1000);
           }
         } catch (e) {
           console.error('[ImportModal] Poll error:', e);
           if (pollAttempts >= MAX_POLL_ATTEMPTS) {
             clearInterval(pollIntervalRef.current);
-            setUploadState('done');
-            setTimeout(() => {
-              fetchLeads();
-              setIsImportModalOpen(false);
-              setUploadState('idle');
-            }, 1000);
+            setUploadState('failed');
+            setUploadError('Failed to retrieve batch processing status.');
           }
         }
       }, POLL_INTERVAL_MS);
