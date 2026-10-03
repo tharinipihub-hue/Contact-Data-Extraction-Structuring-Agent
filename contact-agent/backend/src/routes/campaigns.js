@@ -33,7 +33,43 @@ router.delete('/:id', (req, res) => {
   }
 });
 
-async function uploadToFreeImage(sourceDataOrPath) {
+const path = require('path');
+const fs = require('fs');
+
+const UPLOAD_DIR = path.resolve(process.env.UPLOAD_DIR || './uploads');
+const POSTERS_DIR = path.join(UPLOAD_DIR, 'posters');
+try {
+  fs.mkdirSync(POSTERS_DIR, { recursive: true });
+} catch (_) {}
+
+function saveLocalPoster(sourceDataOrPath, req) {
+  try {
+    if (!sourceDataOrPath || typeof sourceDataOrPath !== 'string') return null;
+    if (sourceDataOrPath.startsWith('http://') || sourceDataOrPath.startsWith('https://')) {
+      return sourceDataOrPath;
+    }
+    const match = sourceDataOrPath.match(/^data:image\/([a-zA-Z0-9+.-]+);base64,(.+)$/);
+    if (!match) return null;
+    let ext = match[1].toLowerCase();
+    if (ext === 'jpeg') ext = 'jpg';
+    else if (ext.includes('png')) ext = 'png';
+    else if (ext.includes('webp')) ext = 'webp';
+    else if (ext.includes('gif')) ext = 'gif';
+    else ext = 'jpg';
+
+    const buffer = Buffer.from(match[2], 'base64');
+    const filename = `poster_${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${ext}`;
+    const filePath = path.join(POSTERS_DIR, filename);
+    fs.writeFileSync(filePath, buffer);
+    const baseUrl = getUnsubscribeBaseUrl(req);
+    return `${baseUrl}/files/poster/${filename}`;
+  } catch (err) {
+    console.error('[saveLocalPoster] Error saving poster locally:', err.message);
+    return null;
+  }
+}
+
+async function uploadToFreeImage(sourceDataOrPath, req) {
   try {
     if (!sourceDataOrPath) return null;
     if (typeof sourceDataOrPath === 'string' && (sourceDataOrPath.startsWith('http://') || sourceDataOrPath.startsWith('https://'))) {
@@ -41,27 +77,33 @@ async function uploadToFreeImage(sourceDataOrPath) {
     }
 
     if (typeof sourceDataOrPath === 'string' && sourceDataOrPath.startsWith('data:image/')) {
-      const base64Data = sourceDataOrPath.split(',')[1];
-      const formData = new FormData();
-      if (!process.env.FREEIMAGE_API_KEY) throw new Error('FREEIMAGE_API_KEY is not configured');
-      formData.append('key', process.env.FREEIMAGE_API_KEY);
-      formData.append('action', 'upload');
-      formData.append('source', base64Data);
-      formData.append('format', 'json');
+      if (process.env.FREEIMAGE_API_KEY) {
+        try {
+          const base64Data = sourceDataOrPath.split(',')[1];
+          const formData = new FormData();
+          formData.append('key', process.env.FREEIMAGE_API_KEY);
+          formData.append('action', 'upload');
+          formData.append('source', base64Data);
+          formData.append('format', 'json');
 
-      const res = await fetch('https://freeimage.host/api/1/upload', {
-        method: 'POST',
-        body: formData
-      });
-      const data = await res.json();
-      if (data && data.image && (data.image.url || data.image.display_url)) {
-        return data.image.url || data.image.display_url;
+          const res = await fetch('https://freeimage.host/api/1/upload', {
+            method: 'POST',
+            body: formData
+          });
+          const data = await res.json();
+          if (data && data.image && (data.image.url || data.image.display_url)) {
+            return data.image.url || data.image.display_url;
+          }
+        } catch (fetchErr) {
+          console.warn('[uploadToFreeImage] FreeImage upload failed, falling back to local poster storage:', fetchErr.message);
+        }
       }
+      return saveLocalPoster(sourceDataOrPath, req);
     }
   } catch (err) {
     console.warn('[uploadToFreeImage] Upload error:', err.message);
   }
-  return null;
+  return saveLocalPoster(sourceDataOrPath, req);
 }
 
 // Upload custom poster image endpoint (returns public HTTPS URL for Gmail delivery)
@@ -71,7 +113,7 @@ router.post('/upload-image', async (req, res) => {
     if (!image_data) {
       return res.status(400).json({ success: false, error: 'No image data provided' });
     }
-    const publicUrl = await uploadToFreeImage(image_data);
+    const publicUrl = await uploadToFreeImage(image_data, req);
     if (publicUrl) {
       return res.json({ success: true, url: publicUrl });
     }
@@ -488,13 +530,13 @@ router.post('/dispatch', async (req, res) => {
     let finalImageUrl = image_url || content?.image_url || ''; 
     let publicImageUrl = null;
     if (finalImageUrl) {
-      publicImageUrl = await uploadToFreeImage(finalImageUrl);
+      publicImageUrl = await uploadToFreeImage(finalImageUrl, req);
     }
     if (!publicImageUrl && finalImageUrl && finalImageUrl.startsWith('http')) {
       publicImageUrl = finalImageUrl;
     }
     if (finalImageUrl && !publicImageUrl) {
-      return res.status(502).json({ success: false, error: 'Campaign poster could not be hosted.', requires_image_host: true });
+      publicImageUrl = saveLocalPoster(finalImageUrl, req);
     }
 
     const unsubBase = getUnsubscribeBaseUrl(req);

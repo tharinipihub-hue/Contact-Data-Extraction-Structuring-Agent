@@ -50,12 +50,13 @@ app.use(cors());
 // HTTP request logger
 app.use(morgan('dev'));
 
-// JSON body parser
-app.use(express.json());
+// JSON body parser with 50mb limit to allow images and campaign payloads
+app.use(express.json({ limit: '50mb' }));
 
-// URL-encoded body parser
+// URL-encoded body parser with 50mb limit
 app.use(
   express.urlencoded({
+    limit: '50mb',
     extended: true
   })
 );

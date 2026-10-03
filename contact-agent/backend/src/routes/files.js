@@ -12,6 +12,30 @@ const UPLOAD_DIR = path.resolve(
   process.env.UPLOAD_DIR || './uploads'
 );
 
+router.get('/poster/:filename', (req, res) => {
+  try {
+    const filename = path.basename(req.params.filename);
+    const filePath = path.join(UPLOAD_DIR, 'posters', filename);
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).send('Poster not found');
+    }
+    const ext = path.extname(filename).toLowerCase();
+    const mimeTypes = {
+      '.png': 'image/png',
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.gif': 'image/gif',
+      '.webp': 'image/webp',
+      '.svg': 'image/svg+xml'
+    };
+    res.setHeader('Content-Type', mimeTypes[ext] || 'image/jpeg');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    return res.sendFile(filePath);
+  } catch (err) {
+    return res.status(500).send('Unable to serve poster');
+  }
+});
+
 router.get('/:file_id', (req, res) => {
   try {
     const { file_id } = req.params;

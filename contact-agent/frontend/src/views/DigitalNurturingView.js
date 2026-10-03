@@ -1236,35 +1236,68 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
     showNotification(`Opened draft "${draft.name}" for editing.`);
   };
 
+  const compressImage = (file, maxWidth = 1200, maxHeight = 1200, quality = 0.85) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (readerEvent) => {
+        const img = new Image();
+        img.onload = () => {
+          let { width, height } = img;
+          if (width > maxWidth || height > maxHeight) {
+            if (width > height) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            } else {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = () => resolve(readerEvent.target.result);
+        img.src = readerEvent.target.result;
+      };
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(file);
+    });
+  };
+
   // Upload Picture / Banner
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
       showNotification('Please select a valid image file (PNG, JPG, WebP, etc.)', true);
       return;
     }
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const dataUri = event.target.result;
-      setWizardImage(dataUri);
+    try {
+      showNotification(`Processing ${file.name}...`);
+      const compressedDataUri = await compressImage(file);
+      if (!compressedDataUri) return;
+      setWizardImage(compressedDataUri);
       setWizardImageName(file.name);
       showNotification(`Attached picture: ${file.name}`);
 
       try {
         const res = await axios.post(`${API_BASE}/campaigns/upload-image`, {
-          image_data: dataUri,
+          image_data: compressedDataUri,
           filename: file.name
-        }, { timeout: 15000 });
+        }, { timeout: 30000 });
         if (res.data?.url) {
           setWizardImage(res.data.url);
           console.log('[handleImageUpload] Hosted image URL ready:', res.data.url);
         }
       } catch (err) {
-        console.warn('[handleImageUpload] Background upload warning:', err.message);
+        console.warn('[handleImageUpload] Server image upload warning:', err.message);
       }
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+      console.warn('[handleImageUpload] Processing error:', err.message);
+    }
   };
 
   // Dispatch Campaign
