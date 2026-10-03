@@ -1020,7 +1020,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
           occasion: wizardOccasion || effectiveBrief,
           target_audience: wizardAudienceType === 'Specific Client' ? `${primaryContact.name} (${primaryContact.company})` : wizardAudienceType,
           channel: wizardChannels.email ? 'Email' : 'WhatsApp'
-        }, { timeout: 30000 });
+        }, { timeout: 60000 });
 
         if (res.data?.success === true && res.data?.content_source === 'workbench' && res.data?.preview && (res.data.preview.email_body || res.data.preview.subject)) {
           generatedCampaign = res.data.campaign || null;
@@ -1092,9 +1092,11 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
             whatsapp_message: wizardGeneratedContent.whatsapp_message,
             image_url: wizardImage
           }
-        }, { timeout: 35000 });
+        }, { timeout: 90000 });
       } catch (e) {
-        console.warn('[handleWizardDispatch] Workbench dispatch network warning:', e.message);
+        console.error('[handleWizardDispatch] Workbench dispatch error:', e);
+        const serverError = e.response?.data?.error || e.message;
+        throw new Error(serverError || 'Workbench did not confirm campaign delivery.');
       }
       if (!dispatchRes?.data?.success || !dispatchRes?.data?.campaign) {
         throw new Error(dispatchRes?.data?.error || 'Workbench did not confirm campaign delivery.');
@@ -1289,9 +1291,11 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
             whatsapp_message: generatedOutput.whatsapp_message,
             image_url: generatedOutput.image_url || wizardImage
           }
-        }, { timeout: 35000 });
+        }, { timeout: 90000 });
       } catch (e) {
-        console.warn('[handleDispatchCampaign] Workbench dispatch warning:', e.message);
+        console.error('[handleDispatchCampaign] Workbench dispatch error:', e);
+        const serverError = e.response?.data?.error || e.message;
+        throw new Error(serverError || 'Workbench did not confirm campaign delivery.');
       }
       if (!dispatchRes?.data?.success || !dispatchRes?.data?.campaign) {
         throw new Error(dispatchRes?.data?.error || 'Workbench did not confirm campaign delivery.');

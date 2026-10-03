@@ -505,22 +505,21 @@ router.post('/dispatch', async (req, res) => {
     const isDeliveryConfirmed = (resData) => {
       if (!resData) return false;
       const responses = [resData, resData?.result, resData?.data, resData?.data?.result].filter(Boolean);
-      return resData?.success !== false && !responses.some(response => response.success === false) && responses.some(response =>
-        response.success !== false && (
-          response.delivery_confirmed === true ||
-          response.email_sent === true ||
-          response.sent === true ||
-          String(response.delivery_status || '').toLowerCase() === 'delivered' ||
-          ['sent', 'delivered', 'completed'].includes(String(response.status || '').toLowerCase())
-        )
+      if (resData.success === false || responses.some(response => response.success === false)) return false;
+      return responses.some(response =>
+        response.delivery_confirmed === true ||
+        response.email_sent === true ||
+        response.sent === true ||
+        String(response.delivery_status || '').toLowerCase() === 'delivered' ||
+        ['sent', 'delivered', 'completed', 'success'].includes(String(response.status || '').toLowerCase()) ||
+        response.success === true
       );
     };
 
     const allStoreContacts = nurtureStore.getContacts();
-    const dispatchResults = [];
 
-    // Dispatch individually to every opted-in contact with complete personalized content
-    for (const recipient of targetAudienceContacts) {
+    // Dispatch concurrently to every opted-in contact with complete personalized content
+    const dispatchPromises = targetAudienceContacts.map(async (recipient) => {
       const {
         body: personalizedBody,
         subject: personalizedSubject,
@@ -604,21 +603,18 @@ router.post('/dispatch', async (req, res) => {
       try {
         const result = await workbenchService.triggerNurturingWorkflow(recipientPayload);
         const confirmed = isDeliveryConfirmed(result?.data);
-        dispatchResults.push({ recipient, success: confirmed, result, recipientBody, recipientPayload });
+        return { recipient, success: confirmed, result, recipientBody, recipientPayload };
       } catch (err) {
         console.error(`[Campaigns /dispatch] Failed to dispatch to ${recipient.email}:`, err.message);
-        dispatchResults.push({ recipient, success: false, error: err.message });
+        return { recipient, success: false, error: err.message };
       }
+    });
 
-      // Small delay between calls to prevent concurrency collision on Workbench
-      if (targetAudienceContacts.length > 1) {
-        await new Promise(r => setTimeout(r, 600));
-      }
-    }
+    const dispatchResults = await Promise.all(dispatchPromises);
     const successfulDispatches = dispatchResults.filter(r => r.success);
 
     if (successfulDispatches.length === 0) {
-      const firstError = dispatchResults[0]?.error || 'Workbench responded without confirming campaign delivery.';
+      const firstError = dispatchResults.find(r => r.error)?.error || 'Workbench responded without confirming campaign delivery.';
       return res.status(502).json({
         success: false,
         error: `Workbench delivery failed: ${firstError}`,
@@ -742,11 +738,12 @@ router.post('/dispatch', async (req, res) => {
     }
 
     // Factual Campaign Delivery Logger Audit Log
+    const recipientEmails = successfulDispatches.map(s => s.recipient?.email || s.recipient?.name).filter(Boolean).join(', ');
     const targetName = targetContact ? `${targetContact.name} (${targetContact.company})` : `${recipientCount} Client(s)`;
     const newAuditEntries = [{
       event_type: 'Campaign Delivery Logger',
       contact_name: targetName,
-      details: `Workbench confirmed the dispatch operation for "${newCampaign.name}" (${newCampaign.type}) to ${targetContact?.email || 'selected contacts'}. Timestamp: ${sentDateStr}`,
+      details: `Workbench confirmed campaign dispatch for "${newCampaign.name}" (${newCampaign.type}) to ${recipientEmails || 'selected contacts'}. Timestamp: ${sentDateStr}`,
       status: 'Sent'
     }];
     if (hasActualReply) {
