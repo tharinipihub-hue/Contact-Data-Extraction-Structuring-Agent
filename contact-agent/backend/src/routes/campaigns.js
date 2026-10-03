@@ -145,14 +145,20 @@ function escapeRegex(str) {
   return String(str || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+function forcePublicUnsubscribeUrls(htmlOrText, unsubUrl, prefUrl) {
+  if (!htmlOrText || typeof htmlOrText !== 'string') return htmlOrText;
+  return htmlOrText
+    .replace(/href\s*=\s*['"][^'"]*(?:unsubscribe|opt-out)[^'"]*['"]/gi, `href="${unsubUrl}"`)
+    .replace(/href\s*=\s*['"][^'"]*preferences[^'"]*['"]/gi, `href="${prefUrl}"`)
+    .replace(/\[([^\]]*unsubscribe[^\]]*)\]\([^)]+\)/gi, `[$1](${unsubUrl})`)
+    .replace(/\[([^\]]*preference[^\]]*)\]\([^)]+\)/gi, `[$1](${prefUrl})`)
+    .replace(/(?:https?:\/\/)?(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?\/(?:unsubscribe|preferences)(?:\?[^\s"'<>]*)?/gi, unsubUrl)
+    .replace(/https?:\/\/[^\s"'<>]+\/unsubscribe(?:\?[^\s"'<>]*)?/gi, unsubUrl)
+    .replace(/https?:\/\/[^\s"'<>]+\/preferences(?:\?[^\s"'<>]*)?/gi, prefUrl);
+}
+
 function useConfiguredPreferenceLinks(emailBody, unsubscribeUrl, preferencesUrl) {
-  return String(emailBody || '')
-    .replace(/https?:\/\/[^\s"'<>]+\/unsubscribe(?:\?[^\s"'<>]*)?/gi, unsubscribeUrl)
-    .replace(/https?:\/\/[^\s"'<>]+\/preferences(?:\?[^\s"'<>]*)?/gi, preferencesUrl)
-    .replace(
-      /https?:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?\/(unsubscribe|preferences)(?:\?[^\s"'<>]*)?/gi,
-      (_match, page) => page.toLowerCase() === 'unsubscribe' ? unsubscribeUrl : preferencesUrl
-    );
+  return forcePublicUnsubscribeUrls(emailBody, unsubscribeUrl, preferencesUrl);
 }
 
 function personalizeContentForRecipient(rawBody, rawSubject, recipient, allContacts, unsubBase) {
@@ -192,10 +198,7 @@ function personalizeContentForRecipient(rawBody, rawSubject, recipient, allConta
   const recipientUnsubUrl = `${unsubBase}/unsubscribe?id=${encodeURIComponent(recipient.id)}`;
   const recipientPrefUrl = `${unsubBase}/preferences?id=${encodeURIComponent(recipient.id)}`;
 
-  body = body
-    .replace(/https?:\/\/[^\s"'<>]+\/unsubscribe(?:\?[^\s"'<>]*)?/gi, recipientUnsubUrl)
-    .replace(/https?:\/\/[^\s"'<>]+\/preferences(?:\?[^\s"'<>]*)?/gi, recipientPrefUrl)
-    .replace(/https?:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?\/(?:unsubscribe|preferences)(?:\?[^\s"'<>]*)?/gi, recipientUnsubUrl);
+  body = forcePublicUnsubscribeUrls(body, recipientUnsubUrl, recipientPrefUrl);
 
   return { body, subject, recipientUnsubUrl, recipientPrefUrl };
 }
@@ -600,10 +603,7 @@ router.post('/dispatch', async (req, res) => {
       }
 
       // Aggressively replace any localhost or non-production links
-      recipientBody = recipientBody
-        .replace(/https?:\/\/[^\s"'<>]+\/unsubscribe(?:\?[^\s"'<>]*)?/gi, recipientUnsubUrl)
-        .replace(/https?:\/\/[^\s"'<>]+\/preferences(?:\?[^\s"'<>]*)?/gi, recipientPrefUrl)
-        .replace(/https?:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?\/(?:unsubscribe|preferences)(?:\?[^\s"'<>]*)?/gi, recipientUnsubUrl);
+      recipientBody = forcePublicUnsubscribeUrls(recipientBody, recipientUnsubUrl, recipientPrefUrl);
 
       const recipientPayload = {
         action: 'approve_and_send',
@@ -631,7 +631,9 @@ router.post('/dispatch', async (req, res) => {
           image_url: publicImageUrl || finalImageUrl,
           poster_url: publicImageUrl || finalImageUrl,
           attachments: publicImageUrl || finalImageUrl,
-          email_body: recipientBody
+          email_body: recipientBody,
+          unsubscribe_url: recipientUnsubUrl,
+          preferences_url: recipientPrefUrl
         },
         image_url: publicImageUrl || finalImageUrl,
         poster_url: publicImageUrl || finalImageUrl,

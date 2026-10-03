@@ -61,10 +61,11 @@ import {
 import './DigitalNurturingView.css';
 
 const API_BASE = '/api';
-const APP_ORIGIN = typeof window === 'undefined' ? '' : (
-  window.location.hostname === 'localhost' && window.location.port === '3000'
-    ? 'http://localhost:4000'
-    : window.location.origin
+const PRODUCTION_APP_URL = 'https://contact-data-extraction-structuring-agent.onrender.com';
+const APP_ORIGIN = typeof window === 'undefined' ? PRODUCTION_APP_URL : (
+  window.location.hostname.includes('onrender.com') || (!window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1'))
+    ? window.location.origin
+    : PRODUCTION_APP_URL
 );
 const NURTURE_CONTACTS_URL = `${API_BASE}/contacts`;
 const NURTURE_SHEET_MANAGEMENT_URL = process.env.REACT_APP_NURTURE_SHEET_MANAGEMENT_URL || '';
@@ -848,9 +849,13 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
     const prefUrl = `${APP_ORIGIN}/preferences?id=${encodeURIComponent(targetContact.id)}`;
 
     body = body
+      .replace(/href\s*=\s*['"][^'"]*(?:unsubscribe|opt-out)[^'"]*['"]/gi, `href="${unsubUrl}"`)
+      .replace(/href\s*=\s*['"][^'"]*preferences[^'"]*['"]/gi, `href="${prefUrl}"`)
+      .replace(/\[([^\]]*unsubscribe[^\]]*)\]\([^)]+\)/gi, `[$1](${unsubUrl})`)
+      .replace(/\[([^\]]*preference[^\]]*)\]\([^)]+\)/gi, `[$1](${prefUrl})`)
+      .replace(/(?:https?:\/\/)?(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?\/(?:unsubscribe|preferences)(?:\?[^\s"'<>]*)?/gi, unsubUrl)
       .replace(/https?:\/\/[^\s"'<>]+\/unsubscribe(?:\?[^\s"'<>]*)?/gi, unsubUrl)
-      .replace(/https?:\/\/[^\s"'<>]+\/preferences(?:\?[^\s"'<>]*)?/gi, prefUrl)
-      .replace(/https?:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?\/(?:unsubscribe|preferences)(?:\?[^\s"'<>]*)?/gi, unsubUrl);
+      .replace(/https?:\/\/[^\s"'<>]+\/preferences(?:\?[^\s"'<>]*)?/gi, prefUrl);
 
     return { body, subject, unsubUrl, prefUrl };
   };
