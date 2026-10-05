@@ -20,7 +20,9 @@ import {
   CheckSquare,
   Globe,
   XCircle,
-  HelpCircle
+  HelpCircle,
+  Sliders,
+  ExternalLink
 } from 'lucide-react';
 import ClientEmailPreview from './ClientEmailPreview';
 
@@ -36,13 +38,15 @@ export default function InstantOccasionWishTab({
   contacts = [],
   apiBase = '/api',
   showNotification,
-  onCampaignDispatched
+  onCampaignDispatched,
+  onOpenWorkflowTab
 }) {
   const [currentStep, setCurrentStep] = useState(1);
   const [occasions, setOccasions] = useState([]);
   const [selectedOccasionName, setSelectedOccasionName] = useState('Diwali');
   const [audienceFilterMode, setAudienceFilterMode] = useState('region_matched'); // 'region_matched' | 'all_opted_in' | 'specific_client'
   const [selectedContactId, setSelectedContactId] = useState('');
+  const [deploymentError, setDeploymentError] = useState(null);
   const [selectedRegionOverride, setSelectedRegionOverride] = useState('auto');
   
   const [isGenerating, setIsGenerating] = useState(false);
@@ -142,6 +146,7 @@ export default function InstantOccasionWishTab({
     setIsGenerating(true);
     setGeneratedWish(null);
     setDispatchSuccessData(null);
+    setDeploymentError(null);
     try {
       const primaryContact = resolvedAudience[0];
       const res = await axios.post(`${apiBase}/nurture/instant-wish`, {
@@ -157,18 +162,36 @@ export default function InstantOccasionWishTab({
         setEditedSubject(res.data.content.subject || '');
         setEditedBody(res.data.content.email_body || '');
         setIsEditing(false);
+        setDeploymentError(null);
         setCurrentStep(3); // Advance to preview step
         if (showNotification) {
           showNotification(`Occasion Greeting generated via SNS Workbench for ${selectedOccasionName}!`);
         }
       } else {
+        const errorMsg = res.data?.error || 'AI generation failed. Please check Workbench connection.';
+        setDeploymentError({
+          error_type: res.data?.error_type || 'generation_failed',
+          message: res.data?.message || errorMsg,
+          action_label: res.data?.action_label || 'Check Workbench Deployment',
+          action_hint: res.data?.action_hint || 'Verify the workflow is active and deployed in SNS Agent Workbench.',
+          target_url: res.data?.target_url || null
+        });
         if (showNotification) {
-          showNotification(res.data?.error || 'AI generation failed. Please check Workbench connection.', true);
+          showNotification(errorMsg, true);
         }
       }
     } catch (err) {
+      const errData = err.response?.data;
+      const errorMsg = errData?.message || errData?.error || err.message;
+      setDeploymentError({
+        error_type: errData?.error_type || (err.response?.status === 404 || err.response?.status === 502 ? 'workflow_not_deployed' : 'generation_failed'),
+        message: errorMsg,
+        action_label: errData?.action_label || 'Check Workbench Deployment',
+        action_hint: errData?.action_hint || 'Verify the workflow is active and deployed in SNS Agent Workbench.',
+        target_url: errData?.target_url || null
+      });
       if (showNotification) {
-        showNotification('Generation error: ' + (err.response?.data?.error || err.message), true);
+        showNotification('Generation error: ' + errorMsg, true);
       }
     } finally {
       setIsGenerating(false);
@@ -518,6 +541,49 @@ export default function InstantOccasionWishTab({
             )}
           </button>
         </div>
+
+        {/* SNS Workbench Deployment / Status Alert Banner */}
+        {deploymentError && (
+          <div style={{
+            marginTop: 16,
+            padding: '14px 18px',
+            backgroundColor: '#fffbeb',
+            border: '1px solid #fde68a',
+            borderRadius: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 8
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#92400e', fontWeight: 700, fontSize: 13.5 }}>
+                <AlertTriangle size={18} color="#d97706" />
+                <span>
+                  {deploymentError.error_type === 'workflow_not_deployed'
+                    ? 'SNS Workbench Workflow Inactive or Not Deployed (HTTP 404)'
+                    : 'SNS Workbench Generation Failed'}
+                </span>
+              </div>
+              {onOpenWorkflowTab && (
+                <button
+                  type="button"
+                  onClick={onOpenWorkflowTab}
+                  className="dn-btn dn-btn-secondary dn-btn-sm"
+                  style={{ borderColor: '#d97706', color: '#92400e', fontWeight: 600, backgroundColor: '#fef3c7' }}
+                >
+                  <Sliders size={13} /> {deploymentError.action_label || 'Check Workbench Deployment'}
+                </button>
+              )}
+            </div>
+            <div style={{ fontSize: 12.5, color: '#78350f', lineHeight: 1.5 }}>
+              {deploymentError.message}
+            </div>
+            {deploymentError.action_hint && (
+              <div style={{ fontSize: 11.5, color: '#b45309', background: '#fef3c7', padding: '6px 10px', borderRadius: 4 }}>
+                💡 <strong>Required Action:</strong> {deploymentError.action_hint}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* ── STEP 3: Preview & Edit Greeting ── */}

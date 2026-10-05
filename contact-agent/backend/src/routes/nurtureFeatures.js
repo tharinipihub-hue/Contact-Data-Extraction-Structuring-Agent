@@ -302,13 +302,38 @@ router.post('/instant-wish', async (req, res) => {
         }
       }
     } catch (err) {
-      workbenchError = err.message;
+      workbenchError = err;
     }
 
     if (!generatedContent?.subject || !generatedContent?.email_body) {
+      const err = workbenchError;
+      const is404 = err?.status === 404 || err?.errorType === 'workflow_not_deployed' || String(err?.message || '').includes('404');
+      const isAuth = err?.status === 401 || err?.status === 403 || err?.errorType === 'auth_error';
+      const isNetwork = err?.errorType === 'network_error';
+
+      const errorType = is404
+        ? 'workflow_not_deployed'
+        : isAuth
+        ? 'auth_error'
+        : isNetwork
+        ? 'network_error'
+        : 'generation_failed';
+
+      const userMessage = is404
+        ? 'Generation is currently unavailable because the SNS Workbench Client Nurturing workflow is not deployed or its production webhook is unavailable.'
+        : isAuth
+        ? 'SNS Workbench authentication required or credentials rejected.'
+        : isNetwork
+        ? 'Unable to connect to SNS Workbench. Check your internet connection.'
+        : (err?.message || 'AI content generation failed. Please check Workbench deployment.');
+
       return res.status(502).json({
         success: false,
-        error: workbenchError || 'AI content generation failed. Please retry or check the Workbench connection.',
+        error_type: errorType,
+        error: err?.message || userMessage,
+        message: userMessage,
+        action_label: is404 ? 'Check Workbench Deployment' : 'Retry Generation',
+        action_hint: is404 ? 'In SNS Workbench, open the Client Nurturing workflow and click "Deploy Live".' : undefined,
         requires_workbench: true
       });
     }
@@ -408,6 +433,21 @@ router.post('/industry-context', async (req, res) => {
   } catch (err) {
     console.error('[Industry Context Error]:', err.message);
     return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ── Real-time Workbench Deployment & Connectivity Status ──
+router.get('/workbench-status', async (req, res) => {
+  try {
+    const status = await workbenchService.getWorkbenchStatus();
+    return res.json(status);
+  } catch (err) {
+    return res.status(500).json({
+      status: 'connection_error',
+      label: 'Connection Error',
+      connected: false,
+      error: err.message
+    });
   }
 });
 

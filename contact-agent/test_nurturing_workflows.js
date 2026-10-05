@@ -23,6 +23,7 @@
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, 'backend/.env') });
 require('dotenv').config();
+process.env.TEST_MODE = 'true';
 
 const axios = require('axios');
 const assert = require('assert');

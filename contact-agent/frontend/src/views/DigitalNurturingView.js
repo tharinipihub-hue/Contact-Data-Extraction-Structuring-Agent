@@ -482,9 +482,33 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
   const [isImportFromExtractionOpen, setIsImportFromExtractionOpen] = useState(false);
   const [selectedExtractedIds, setSelectedExtractedIds] = useState(new Set());
 
-  // SNS Workbench Live Webhook Test State
+  // SNS Workbench Live Webhook & Deployment State
+  const [workbenchStatus, setWorkbenchStatus] = useState({
+    status: 'checking',
+    label: 'Checking Workbench...',
+    connected: false,
+    http_status: null
+  });
+  const [deploymentAlert, setDeploymentAlert] = useState(null);
   const [isTestingWebhook, setIsTestingWebhook] = useState(false);
   const [webhookTestResult, setWebhookTestResult] = useState(null);
+
+  const fetchWorkbenchStatus = async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/nurture/workbench-status`, { timeout: 8000 });
+      if (res.data) {
+        setWorkbenchStatus(res.data);
+      }
+    } catch (err) {
+      setWorkbenchStatus({
+        status: 'connection_error',
+        label: 'Connection Error',
+        connected: false,
+        http_status: err.response?.status || null,
+        message: err.response?.data?.message || err.message
+      });
+    }
+  };
 
   const handleTestWorkbenchWebhook = async () => {
     const optedInContact = contacts.find(contact => contact.opt_in === true);
@@ -506,22 +530,31 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
         elapsed,
         source: 'workbench_webhook',
         status: confirmed ? 'Workbench Responded Successfully' : 'Workbench test failed',
-        data: res.data?.response || res.data
+        data: res.data?.response || res.data,
+        actionLabel: res.data?.action_label,
+        actionHint: res.data?.action_hint,
+        targetUrl: res.data?.target_url
       });
       if (confirmed) {
         showNotification(`SNS Workbench responded with HTTP ${res.data.status || 200} in ${elapsed}ms.`);
       } else {
         showNotification(res.data?.error || 'SNS Workbench test failed.', true);
       }
+      fetchWorkbenchStatus();
     } catch (err) {
       const elapsed = Date.now() - start;
+      const errData = err.response?.data;
       setWebhookTestResult({
         success: false,
         elapsed,
-        status: err.response?.data?.status || err.response?.status || 502,
-        error: err.response?.data?.error || err.message
+        status: errData?.status || err.response?.status || 502,
+        error: errData?.error || err.message,
+        actionLabel: errData?.action_label || 'Check Workbench Deployment',
+        actionHint: errData?.action_hint || 'In SNS Agent Workbench, ensure the Client Nurturing workflow is toggled Active / Deployed Live.',
+        targetUrl: errData?.target_url
       });
-      showNotification('Webhook test error: ' + (err.response?.data?.error || err.message), true);
+      showNotification('Webhook test error: ' + (errData?.error || err.message), true);
+      fetchWorkbenchStatus();
     } finally {
       setIsTestingWebhook(false);
     }
@@ -549,19 +582,26 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
   useEffect(() => {
     loadData();
     handleSyncSheets();
-    const handleFocus = () => loadData();
+    fetchWorkbenchStatus();
+    const handleFocus = () => {
+      loadData();
+      fetchWorkbenchStatus();
+    };
     window.addEventListener('focus', handleFocus);
     const syncInterval = setInterval(loadData, 4000);
     const sheetSyncInterval = setInterval(handleSyncSheets, 60000);
+    const statusInterval = setInterval(fetchWorkbenchStatus, 30000);
     return () => {
       window.removeEventListener('focus', handleFocus);
       clearInterval(syncInterval);
       clearInterval(sheetSyncInterval);
+      clearInterval(statusInterval);
     };
   }, []);
 
   useEffect(() => {
     loadData();
+    fetchWorkbenchStatus();
   }, [activeTab]);
 
   const loadData = async () => {
@@ -681,6 +721,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
     }
 
     setIsGenerating(true);
+    setDeploymentAlert(null);
     const sector = contact.sector || contact.industry || targetSector || 'Technology';
     const isWelcome = selectedContentType === 'welcome';
     const isFestival = selectedContentType === 'festival_wish';
@@ -706,6 +747,8 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
     try {
       let preview = null;
       let generatedCampaign = null;
+      let apiError = null;
+
       try {
         const res = await axios.post(`${API_BASE}/campaigns/generate`, {
           campaign_name: campaignName,
@@ -729,7 +772,23 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
           };
         }
       } catch (apiErr) {
-        console.warn('[handleGenerateContent] Backend API generate failed:', apiErr.message);
+        apiError = apiErr;
+      }
+
+      if (apiError) {
+        const errData = apiError.response?.data;
+        const errorType = errData?.error_type || (apiError.response?.status === 404 || apiError.response?.status === 502 ? 'workflow_not_deployed' : 'generation_failed');
+        const userMsg = errData?.message || errData?.error || apiError.message;
+        setDeploymentAlert({
+          type: errorType,
+          title: errorType === 'workflow_not_deployed' ? 'SNS Workbench Workflow Not Deployed (HTTP 404)' : 'AI Generation Error',
+          message: userMsg,
+          actionLabel: errData?.action_label || 'Check Workbench Deployment',
+          actionHint: errData?.action_hint || 'In SNS Agent Workbench, ensure the Client Nurturing workflow is toggled Active / Deployed Live.',
+          targetUrl: errData?.target_url || null
+        });
+        showNotification(userMsg, true);
+        return;
       }
 
       if (!preview || !preview.subject || preview.content_source !== 'workbench') {
@@ -1074,9 +1133,11 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
     setWizardSelectedContactId(primaryContact.id);
     setWizardPreviewContactId(primaryContact.id);
     setWizardIsGenerating(true);
+    setDeploymentAlert(null);
     try {
       let preview = null;
       let generatedCampaign = null;
+      let apiError = null;
       const campaignName = nameOverride || wizardCampaignName;
       const effectiveType = typeOverride || wizardCampaignType;
       try {
@@ -1105,7 +1166,23 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
           };
         }
       } catch (e) {
-        console.warn('[handleWizardGenerate] Backend API generate failed:', e.message);
+        apiError = e;
+      }
+
+      if (apiError) {
+        const errData = apiError.response?.data;
+        const errorType = errData?.error_type || (apiError.response?.status === 404 || apiError.response?.status === 502 ? 'workflow_not_deployed' : 'generation_failed');
+        const userMsg = errData?.message || errData?.error || apiError.message;
+        setDeploymentAlert({
+          type: errorType,
+          title: errorType === 'workflow_not_deployed' ? 'SNS Workbench Workflow Not Deployed (HTTP 404)' : 'AI Generation Error',
+          message: userMsg,
+          actionLabel: errData?.action_label || 'Check Workbench Deployment',
+          actionHint: errData?.action_hint || 'In SNS Agent Workbench, ensure the Client Nurturing workflow is toggled Active / Deployed Live.',
+          targetUrl: errData?.target_url || null
+        });
+        showNotification(userMsg, true);
+        return;
       }
 
       if (!preview || !preview.email_body || preview.content_source !== 'workbench') {
@@ -1698,13 +1775,44 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
 
         {!isSidebarCollapsed && (
           <div className="dn-sidebar-footer">
-            <div className="dn-sidebar-status-card">
+            <div
+              className="dn-sidebar-status-card"
+              onClick={() => setActiveTab('workflow')}
+              style={{ cursor: 'pointer', transition: 'all 0.2s ease' }}
+              title="Click to inspect SNS Workbench deployment status & health"
+            >
               <div className="dn-sidebar-status-row">
-                <span className="dn-sidebar-status-dot" />
-                <span style={{ fontWeight: 600 }}>SNS Workbench Live</span>
+                <span
+                  className="dn-sidebar-status-dot"
+                  style={{
+                    backgroundColor:
+                      workbenchStatus.status === 'connected' ? '#10b981' :
+                      workbenchStatus.status === 'workflow_not_deployed' ? '#f59e0b' :
+                      workbenchStatus.status === 'auth_required' ? '#f59e0b' :
+                      workbenchStatus.status === 'connection_error' ? '#ef4444' :
+                      workbenchStatus.status === 'webhook_unavailable' ? '#ef4444' : '#94a3b8',
+                    boxShadow:
+                      workbenchStatus.status === 'connected' ? '0 0 6px rgba(16, 185, 129, 0.6)' :
+                      workbenchStatus.status === 'workflow_not_deployed' ? '0 0 6px rgba(245, 158, 11, 0.6)' :
+                      workbenchStatus.status === 'auth_required' ? '0 0 6px rgba(245, 158, 11, 0.6)' :
+                      workbenchStatus.status === 'connection_error' ? '0 0 6px rgba(239, 68, 68, 0.6)' :
+                      '0 0 6px rgba(148, 163, 184, 0.4)'
+                  }}
+                />
+                <span style={{
+                  fontWeight: 600,
+                  fontSize: 11.5,
+                  color: workbenchStatus.status === 'workflow_not_deployed' ? '#fde68a' : '#cbd5e1'
+                }}>
+                  {workbenchStatus.label || 'Checking Workbench...'}
+                </span>
               </div>
-              <div className="dn-sidebar-status-sub">
-                Agentic Pipeline v2.4
+              <div className="dn-sidebar-status-sub" style={{ fontSize: 10.5, color: '#94a3b8' }}>
+                {workbenchStatus.status === 'connected' ? 'Agentic Pipeline Active' :
+                 workbenchStatus.status === 'workflow_not_deployed' ? 'Workbench HTTP 404 • Inactive' :
+                 workbenchStatus.status === 'auth_required' ? 'Workbench HTTP 401/403' :
+                 workbenchStatus.status === 'connection_error' ? 'Host Unreachable' :
+                 workbenchStatus.status === 'webhook_unavailable' ? 'Endpoint Unavailable' : 'Click to inspect status'}
               </div>
             </div>
           </div>
@@ -2100,6 +2208,53 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                 </div>
               </div>
             </div>
+
+            {/* Deployment Alert Banner */}
+            {deploymentAlert && (
+              <div style={{
+                margin: '12px 0 16px 0',
+                padding: '14px 18px',
+                backgroundColor: '#fffbeb',
+                border: '1px solid #fde68a',
+                borderRadius: 8,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#92400e', fontWeight: 700, fontSize: 13.5 }}>
+                    <AlertTriangle size={18} color="#d97706" />
+                    <span>{deploymentAlert.title}</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('workflow')}
+                      className="dn-btn dn-btn-secondary dn-btn-sm"
+                      style={{ borderColor: '#d97706', color: '#92400e', fontWeight: 600, backgroundColor: '#fef3c7' }}
+                    >
+                      <Sliders size={13} /> {deploymentAlert.actionLabel || 'Check Workbench Deployment'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDeploymentAlert(null)}
+                      style={{ background: 'none', border: 'none', color: '#92400e', cursor: 'pointer', padding: 4 }}
+                      title="Dismiss"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                </div>
+                <div style={{ fontSize: 12.5, color: '#78350f', lineHeight: 1.5 }}>
+                  {deploymentAlert.message}
+                </div>
+                {deploymentAlert.actionHint && (
+                  <div style={{ fontSize: 11.5, color: '#b45309', background: '#fef3c7', padding: '6px 10px', borderRadius: 4 }}>
+                    💡 <strong>Required Action:</strong> {deploymentAlert.actionHint}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Leads Table */}
             <div className="dn-table-wrap">
@@ -3487,6 +3642,52 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                         </div>
                       </div>
                     </div>
+
+                    {deploymentAlert && (
+                      <div style={{
+                        marginTop: 16,
+                        padding: '14px 18px',
+                        backgroundColor: '#fffbeb',
+                        border: '1px solid #fde68a',
+                        borderRadius: 8,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 8
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#92400e', fontWeight: 700, fontSize: 13.5 }}>
+                            <AlertTriangle size={18} color="#d97706" />
+                            <span>{deploymentAlert.title}</span>
+                          </div>
+                          <div style={{ display: 'flex', gap: 8 }}>
+                            <button
+                              type="button"
+                              onClick={() => setActiveTab('workflow')}
+                              className="dn-btn dn-btn-secondary dn-btn-sm"
+                              style={{ borderColor: '#d97706', color: '#92400e', fontWeight: 600, backgroundColor: '#fef3c7' }}
+                            >
+                              <Sliders size={13} /> {deploymentAlert.actionLabel || 'Check Workbench Deployment'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setDeploymentAlert(null)}
+                              style={{ background: 'none', border: 'none', color: '#92400e', cursor: 'pointer', padding: 4 }}
+                              title="Dismiss"
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                        </div>
+                        <div style={{ fontSize: 12.5, color: '#78350f', lineHeight: 1.5 }}>
+                          {deploymentAlert.message}
+                        </div>
+                        {deploymentAlert.actionHint && (
+                          <div style={{ fontSize: 11.5, color: '#b45309', background: '#fef3c7', padding: '6px 10px', borderRadius: 4 }}>
+                            💡 <strong>Required Action:</strong> {deploymentAlert.actionHint}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 );
               })()}
@@ -4378,11 +4579,27 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                 </p>
               </div>
 
-              <div style={{ display: 'flex', gap: 10 }}>
-                <span className={`dn-badge ${webhookTestResult?.success ? 'dn-badge-green' : webhookTestResult ? 'dn-badge-amber' : 'dn-badge-blue'}`} style={{ padding: '6px 12px', fontSize: 12 }}>
-                  {webhookTestResult?.success ? <CheckCircle2 size={13} /> : <Activity size={13} />}
-                  {webhookTestResult?.success ? 'Workbench Responded' : webhookTestResult ? 'Workbench Test Failed' : 'Workbench Not Tested'}
+              <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                <span
+                  className={`dn-badge ${
+                    workbenchStatus.status === 'connected' ? 'dn-badge-green' :
+                    workbenchStatus.status === 'workflow_not_deployed' ? 'dn-badge-amber' :
+                    workbenchStatus.status === 'auth_required' ? 'dn-badge-amber' : 'dn-badge-red'
+                  }`}
+                  style={{ padding: '6px 12px', fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                >
+                  {workbenchStatus.status === 'connected' ? <CheckCircle2 size={13} /> : <AlertTriangle size={13} />}
+                  {workbenchStatus.label || 'Workbench Status'}
                 </span>
+                <button
+                  type="button"
+                  onClick={fetchWorkbenchStatus}
+                  className="dn-btn dn-btn-secondary dn-btn-sm"
+                  style={{ height: 32, padding: '4px 10px', fontSize: 11.5 }}
+                  title="Re-probe Workbench endpoint"
+                >
+                  <RefreshCw size={12} /> Probe Endpoint
+                </button>
               </div>
             </div>
 
@@ -4398,15 +4615,55 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                   </div>
                 </div>
 
-                <button
-                  className="dn-btn dn-btn-primary"
-                  onClick={handleTestWorkbenchWebhook}
-                  disabled={isTestingWebhook}
-                >
-                  <RefreshCw size={13} className={isTestingWebhook ? 'spin-icon' : ''} />
-                  {isTestingWebhook ? 'Pinging Workbench Webhook...' : 'Test Webhook Execution'}
-                </button>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    className="dn-btn dn-btn-secondary"
+                    onClick={fetchWorkbenchStatus}
+                    style={{ fontSize: 12 }}
+                  >
+                    <RefreshCw size={13} /> Check Workbench Deployment
+                  </button>
+                  <button
+                    className="dn-btn dn-btn-primary"
+                    onClick={handleTestWorkbenchWebhook}
+                    disabled={isTestingWebhook}
+                  >
+                    <RefreshCw size={13} className={isTestingWebhook ? 'spin-icon' : ''} />
+                    {isTestingWebhook ? 'Pinging Workbench Webhook...' : 'Test Webhook Execution'}
+                  </button>
+                </div>
               </div>
+
+              {/* Detailed Deployment Guidance Banner when 404 or inactive */}
+              {workbenchStatus.status === 'workflow_not_deployed' && (
+                <div style={{
+                  marginBottom: 16,
+                  padding: '16px 20px',
+                  backgroundColor: '#fffbeb',
+                  border: '1px solid #fde68a',
+                  borderRadius: 8,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 10
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#92400e', fontWeight: 700, fontSize: 14 }}>
+                    <AlertTriangle size={18} color="#d97706" />
+                    <span>SNS Workbench Client Nurturing Workflow Inactive / Not Deployed (HTTP 404)</span>
+                  </div>
+                  <div style={{ fontSize: 13, color: '#78350f', lineHeight: 1.5 }}>
+                    The target webhook URL (<code>https://api.agents.snsihub.ai/webhook/client-nurturing</code>) returned HTTP 404 with error: <em>"Webhook not found or workflow inactive"</em>. This occurs when the workflow is created but not yet published or toggled <strong>Active</strong> in SNS Agent Workbench.
+                  </div>
+                  <div style={{ background: '#fef3c7', padding: '10px 14px', borderRadius: 6, fontSize: 12, color: '#92400e', lineHeight: 1.6 }}>
+                    <strong>Steps to Activate in SNS Agent Workbench:</strong>
+                    <ol style={{ margin: '6px 0 0 16px', padding: 0 }}>
+                      <li>Open the SNS Agent Workbench canvas (<a href="https://api.agents.snsihub.ai" target="_blank" rel="noreferrer" style={{ color: '#b45309', fontWeight: 600, textDecoration: 'underline' }}>api.agents.snsihub.ai <ExternalLink size={11} style={{ display: 'inline' }} /></a>).</li>
+                      <li>Select the <strong>Client Nurturing</strong> workflow.</li>
+                      <li>In the top header, toggle the workflow switch to <strong>Active: ON</strong> (or click <strong>Deploy Live</strong>).</li>
+                      <li>Click <strong>"Test Webhook Execution"</strong> or <strong>"Check Workbench Deployment"</strong> above to confirm the live endpoint responds.</li>
+                    </ol>
+                  </div>
+                </div>
+              )}
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 12, marginBottom: 16 }}>
                 <div style={{ background: '#f8fafc', padding: 12, borderRadius: 8, border: '1px solid #e2e8f0' }}>
@@ -4414,8 +4671,8 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                   <div style={{ fontSize: 12, fontWeight: 600, color: '#2563eb', marginTop: 4, wordBreak: 'break-all' }}>
                     Configured server-side with NURTURE_WORKBENCH_WEBHOOK_URL
                   </div>
-                  <span className={`dn-badge ${webhookTestResult?.success ? 'dn-badge-green' : 'dn-badge-amber'}`} style={{ marginTop: 6 }}>
-                    {webhookTestResult?.success ? 'Verified by generated content response' : 'Not verified in this session'}
+                  <span className={`dn-badge ${workbenchStatus.status === 'connected' ? 'dn-badge-green' : workbenchStatus.status === 'workflow_not_deployed' ? 'dn-badge-amber' : 'dn-badge-blue'}`} style={{ marginTop: 6 }}>
+                    {workbenchStatus.label || 'Checking endpoint'}
                   </span>
                 </div>
 
@@ -4444,7 +4701,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                 <div style={{ background: webhookTestResult.success ? '#f0fdf4' : '#fef2f2', border: `1px solid ${webhookTestResult.success ? '#bbf7d0' : '#fecaca'}`, borderRadius: 8, padding: 14 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                     <span style={{ fontWeight: 700, fontSize: 13, color: webhookTestResult.success ? '#166534' : '#991b1b' }}>
-                      {webhookTestResult.success ? 'Webhook Execution Succeeded' : 'Webhook Error'}
+                      {webhookTestResult.success ? 'Webhook Execution Succeeded' : 'Webhook Diagnostic Result'}
                     </span>
                     <span style={{ fontSize: 11, color: '#64748b' }}>Latency: {webhookTestResult.elapsed}ms</span>
                   </div>
@@ -4453,6 +4710,11 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                       ? `SNS Workbench returned generated content with status: "${webhookTestResult.status}".`
                       : webhookTestResult.error}
                   </div>
+                  {webhookTestResult.actionHint && (
+                    <div style={{ marginTop: 6, fontSize: 11.5, color: '#991b1b' }}>
+                      💡 {webhookTestResult.actionHint}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -4556,6 +4818,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
               loadData();
               setActiveTab('campaigns');
             }}
+            onOpenWorkflowTab={() => setActiveTab('workflow')}
           />
         )}
       </div>

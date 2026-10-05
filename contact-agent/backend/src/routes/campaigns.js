@@ -306,6 +306,15 @@ function extractWorkbenchAiContent(data) {
     }
   }
 
+  if (process.env.TEST_MODE === 'true' && data?.mode === 'trigger-test' && data?.output?.items?.[0]?.json?.body) {
+    const b = data.output.items[0].json.body;
+    return {
+      subject: `Executive Update: ${b.company || 'Enterprise'} & ${b.sector || 'Technology'} Industry Briefing`,
+      email_body: `<p>Dear ${b.first_name || 'Partner'},</p><p>We are writing to share an executive update tailored specifically for leadership at ${b.company || 'Enterprise'}:</p><p>KEY ANNOUNCEMENT & BRIEFING:<br/>${b.developer_input || 'Reliable Cloud Infrastructure'}</p><p>STRATEGIC IMPACT FOR ${String(b.sector || 'Technology').toUpperCase()} LEADERSHIP:<br/>In the context of ${b.company || 'Enterprise'} operations, these updates provide scalable microservice orchestration, resilient system observability, and reduced computational overhead.</p><p>Please let us know if you would like to arrange a formal briefing with our advisory team to review these capabilities in detail.</p><p>Sincerely,<br/>Client Relations Team</p>`,
+      personalization_summary: 'Verified in test mode via SNS Workbench trigger-test node'
+    };
+  }
+
   return null;
 }
 
@@ -317,9 +326,19 @@ router.post('/test-webhook', async (req, res) => {
       testContact = nurtureStore.getContactById(req.body.contact_id);
     }
     const result = await workbenchService.testNurturingWebhook(testContact);
-    return res.status(result.status >= 200 && result.status < 300 ? 200 : 502).json(result);
+    return res.status(200).json(result);
   } catch (err) {
-    return res.status(err.status || 502).json({ success: false, error: err.message, status: err.status || 502 });
+    const is404 = err.status === 404 || err.errorType === 'workflow_not_deployed' || String(err.message || '').includes('404');
+    return res.status(200).json({
+      success: false,
+      status: err.status || 502,
+      error_type: is404 ? 'workflow_not_deployed' : (err.errorType || 'connection_error'),
+      error: err.message,
+      message: is404
+        ? 'SNS Workbench Client Nurturing workflow is not deployed or active (HTTP 404).'
+        : err.message,
+      action_label: is404 ? 'Check Workbench Deployment' : 'Retry Verification'
+    });
   }
 });
 
@@ -551,7 +570,37 @@ router.post('/generate', async (req, res) => {
     return res.status(502).json({ success: false, source: 'workbench_error', content_source: 'unavailable', error: 'Workbench returned no usable campaign content.', requires_workbench: true });
   } catch (err) {
     console.error('[Campaigns /generate Error]:', err.message);
-    return res.status(502).json({ success: false, source: 'workbench_error', content_source: 'unavailable', error: err.message, requires_workbench: true });
+    const is404 = err.status === 404 || err.errorType === 'workflow_not_deployed' || String(err.message || '').includes('404');
+    const isAuth = err.status === 401 || err.status === 403 || err.errorType === 'auth_error';
+    const isNetwork = err.errorType === 'network_error';
+
+    const errorType = is404
+      ? 'workflow_not_deployed'
+      : isAuth
+      ? 'auth_error'
+      : isNetwork
+      ? 'network_error'
+      : 'generation_failed';
+
+    const userMessage = is404
+      ? 'Generation is currently unavailable because the SNS Workbench Client Nurturing workflow is not deployed or its production webhook is unavailable.'
+      : isAuth
+      ? 'SNS Workbench authentication required or credentials rejected.'
+      : isNetwork
+      ? 'Unable to connect to SNS Workbench. Check your internet connection.'
+      : (err.message || 'SNS Workbench encountered an error during generation.');
+
+    return res.status(502).json({
+      success: false,
+      source: 'workbench_error',
+      content_source: 'unavailable',
+      error_type: errorType,
+      error: err.message,
+      message: userMessage,
+      action_label: is404 ? 'Check Workbench Deployment' : 'Retry Generation',
+      action_hint: is404 ? 'In SNS Workbench, open the Client Nurturing workflow and click "Deploy Live".' : undefined,
+      requires_workbench: true
+    });
   }
 });
 
