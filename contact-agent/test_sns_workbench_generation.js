@@ -191,11 +191,60 @@ async function run() {
         body_text_only: rawContaminatedHtml
       }
     });
-    assert.strictEqual(leakNormalized.articles[0].ctaText, 'Explore Perspective');
+    assert.strictEqual(leakNormalized.articles[0].ctaText, '', 'A missing/placeholder CTA label is not invented');
     assert.deepStrictEqual(leakNormalized.synthesisPoints, ['Secure cloud landing zones']);
-    console.log('  ✓ normalizeWorkbenchTemplateContent strips [Action Text] placeholders and leaked prompt instructions');
+    // Test authentic production Workbench plain paragraph extraction into editorial hero & articles
+    const liveWorkbenchHtml = `
+      <p>Dear Arjun,</p>
+      <p>We are writing to share an executive update tailored specifically for leadership at BrightEdge Solutions:</p>
+      <p>Strategic Cloud Migration & Sovereign AI Infrastructure for 2026</p>
+      <p>In the context of BrightEdge Solutions operations, these updates provide scalable microservice orchestration, resilient system observability, and reduced computational overhead.</p>
+      <p>Please let us know if you would like to arrange a formal briefing with our advisory team to review these capabilities in detail.</p>
+      <p>Sincerely,<br/>Client Relations Team</p>
+      <p>---<br/>To manage your communication preferences or opt out, reply STOP or update your profile in the client portal.</p>
+    `;
+    const liveNormalized = normalizeWorkbenchTemplateContent({
+      preview: {
+        subject: 'Executive Update: BrightEdge Solutions & Technology Industry Briefing',
+        body_text_only: liveWorkbenchHtml
+      },
+      workbench_content: {
+        subject: 'Executive Update: BrightEdge Solutions & Technology Industry Briefing',
+        campaign_name: 'AI Cloud Modernization Newsletter'
+      }
+    });
+    assert.strictEqual(liveNormalized.subjectLine, 'Executive Update: BrightEdge Solutions & Technology Industry Briefing');
+    assert.strictEqual(liveNormalized.greetingType, 'personal');
+    assert.strictEqual(liveNormalized.heroHeadline, 'Strategic Cloud Migration & Sovereign AI Infrastructure for 2026');
+    assert.match(liveNormalized.heroBody, /We are writing to share an executive update/);
+    assert.match(liveNormalized.heroBody, /microservice orchestration/);
+    assert.match(liveNormalized.heroBody, /formal briefing/);
+    assert.strictEqual(liveNormalized.articles, undefined, 'Plain paragraphs are not converted into invented content blocks');
+    assert.strictEqual(liveNormalized.synthesisPoints, undefined, 'Unreturned foundations must not be manufactured');
+    assert(!JSON.stringify(liveNormalized).includes('Sincerely'), 'Sign-off must be stripped from editorial body');
+    assert(!JSON.stringify(liveNormalized).includes('STOP'), 'Preference footer must be stripped from editorial body');
+    assert.strictEqual(normalizeWorkbenchTemplateContent({ success: false, error: 'Webhook not found or workflow inactive', workbench_response: { error: 'Webhook not found or workflow inactive' } }), null);
+    const instructionOnly = normalizeWorkbenchTemplateContent({
+      preview: { subject: 'A real subject', body_text_only: '<p>FESTIVAL WISH RULE: Return only the greeting content without any instruction headings.</p>' }
+    });
+    assert.strictEqual(instructionOnly, null, 'An instruction-only result cannot count as usable generated copy');
+    const cleanFields = normalizeWorkbenchTemplateContent({
+      structured_content: {
+        subject: 'Valid subject',
+        hero_headline: 'Valid headline',
+        hero_body: 'Valid editorial body.',
+        content_blocks: [{ headline: 'Valid article', body: 'Valid article copy.', cta_label: '[Action Text] →' }]
+      },
+      preview: { subject: 'Valid subject', body_text_only: '<p>Valid editorial body.</p>' },
+      content_source: 'workbench'
+    });
+    assert.strictEqual(cleanFields.articles[0].headline, 'Valid article');
+    assert.strictEqual(cleanFields.articles[0].ctaText, '');
+    assert.strictEqual(cleanFields.articles[0].ctaUrl, '');
+    assert.strictEqual(cleanFields.foundations, undefined, 'Missing foundations remain absent');
+    console.log('  ✓ Unstructured copy remains actual Workbench paragraphs; instruction-only output and fake blocks are rejected');
 
-    console.log('RESULTS: 6/6 Workbench generation service tests passed');
+    console.log('RESULTS: 7/7 Workbench generation service tests passed');
   } finally {
     global.fetch = originalFetch;
     delete global.DOMParser;

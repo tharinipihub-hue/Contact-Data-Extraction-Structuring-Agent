@@ -191,7 +191,9 @@ class WorkbenchService {
     const isAuth = response.status === 401 || response.status === 403;
     const success = response.status >= 200 && response.status < 300 && responseData?.success !== false;
 
-    console.info(`[NurturingWebhookTest] POST ${parsedTarget.host}${parsedTarget.pathname} status=${response.status} durationMs=${durationMs} success=${success}`);
+    const testNormalizedContent = require('../routes/campaigns').extractWorkbenchAiContent(responseData);
+    const hasTestGeneratedContent = Boolean(testNormalizedContent?.email_body?.trim());
+    console.info(`[NurturingWebhookTest] POST ${parsedTarget.host}${parsedTarget.pathname} mode=test status=${response.status} durationMs=${durationMs} response=${JSON.stringify(responseData)} normalized_generated_content=${hasTestGeneratedContent} normalized_fields=${Object.keys(testNormalizedContent || {}).join(',')}`);
     return {
       success,
       status: response.status,
@@ -234,7 +236,7 @@ class WorkbenchService {
       throw error;
     }
 
-    console.info(`[NurturingProductionWebhook] POST ${targetUrl} (exact runtime URL)`);
+    console.info(`[NurturingProductionWebhook] POST ${targetUrl} mode=production action=${payload?.action || ''} request_type=${payload?.request_type || ''} payload_fields=${Object.keys(payload || {}).sort().join(',')}`);
     let response;
     try {
       response = await fetch(targetUrl, {
@@ -270,8 +272,8 @@ class WorkbenchService {
     // Accept only actual subject/body values, including the workflow's observed
     // { success, executionId, result: { subject, email_body } } wrapper.
     const normalizedContent = require('../routes/campaigns').extractWorkbenchAiContent(outputData);
-    const hasGeneratedContent = Boolean(normalizedContent?.subject && normalizedContent?.email_body);
-    console.info(`[NurturingWebhook] POST ${parsedTarget.host}${parsedTarget.pathname} mode=production status=${response.status} response=${JSON.stringify(responseData)} normalized_generated_content=${hasGeneratedContent}`);
+    const hasGeneratedContent = Boolean(normalizedContent?.email_body?.trim());
+    console.info(`[NurturingWebhook] POST ${parsedTarget.host}${parsedTarget.pathname} mode=production status=${response.status} response=${JSON.stringify(responseData)} normalized_generated_content=${hasGeneratedContent} normalized_fields=${Object.keys(normalizedContent || {}).join(',')}`);
 
     if (response.status >= 200 && response.status < 300) {
       return { success: true, source: 'workbench_production_webhook', targetUrl, httpStatus: response.status, data: outputData, normalizedContent };

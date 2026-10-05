@@ -6,6 +6,7 @@ const nurtureStore = require('../services/nurtureStore');
 const workbenchService = require('../services/nurtureWorkbenchService');
 const {
   sanitizeAndValidateSubject,
+  detectPromptLeakInSubject,
   sanitizeAndPersonalizeGreeting,
   cleanEmailBodyHtml,
   wrapInSnsSquareTemplate,
@@ -256,7 +257,11 @@ function normalizeExtractedFields(src, defaultSummary = 'Generated via SNS Workb
 
   if (!email_body && (heroHeadline || (Array.isArray(cleanedBlocks) && cleanedBlocks.length))) {
     const heroPart = heroHeadline ? `<h2>${heroHeadline}</h2>\n<p>${heroBody}</p>` : '';
-    const blocksPart = (Array.isArray(cleanedBlocks) ? cleanedBlocks : []).map(b => `<p><strong>Headline: ${b.headline || b.title || ''}</strong></p>\n<p>${b.body || b.paragraph || ''}</p>${(b.cta_label || b.ctaText) ? `\n<p><a href="${b.cta_url || b.ctaUrl || 'https://www.snssquare.com/insights'}">${b.cta_label || b.ctaText} &rarr;</a></p>` : ''}`).join('\n\n');
+    const blocksPart = (Array.isArray(cleanedBlocks) ? cleanedBlocks : []).map(b => {
+      const ctaUrl = /^(?:https?:\/\/|mailto:)[^\s"'<>]+$/i.test(b.cta_url || b.ctaUrl || '') ? (b.cta_url || b.ctaUrl) : '';
+      const ctaText = b.cta_label || b.ctaText || '';
+      return `<p><strong>${b.headline || b.title || ''}</strong></p>\n<p>${b.body || b.paragraph || ''}</p>${ctaText && ctaUrl ? `\n<p><a href="${ctaUrl}">${ctaText} &rarr;</a></p>` : ''}`;
+    }).join('\n\n');
     email_body = [heroPart, blocksPart].filter(Boolean).join('\n\n');
   }
 
@@ -423,10 +428,10 @@ router.post('/generate', async (req, res) => {
     topic,
     target_audience,
     channel,
-    sector,
-    contact_id,
-    contacts
+    sector
   } = req.body;
+  const contact_id = req.body.contact_id || req.body.active_contact_id;
+  const contacts = req.body.contacts || req.body.contact_ids;
 
   let targetContact = null;
   if (contact_id) {
@@ -487,12 +492,10 @@ router.post('/generate', async (req, res) => {
     ].join(' ');
   } else if (normalizedCampaignType.includes('festival') || normalizedCampaignType.includes('wish') || normalizedCampaignType.includes('occasion')) {
     campaignGuidance = [
-      'CAMPAIGN TYPE: Warm Executive Festive & Seasonal Greetings.',
-      'Write an authentic, culturally respectful, warm executive festive greeting celebrating shared milestones, gratitude, and future prosperity.',
-      'Do NOT format this as a technical newsletter, IT capabilities overview, or architecture update.',
-      'Do NOT use headings or labels such as KEY ANNOUNCEMENT, BRIEFING, STRATEGIC IMPACT, or technical jargon like microservice orchestration.',
-      'Celebrate the occasion genuinely, express deep appreciation for the collaboration, and extend warm wishes to the recipient, their leadership team, and their families.',
-      'Official Sign-off: Warm regards, The Team at SNS Square, Enterprise Client Partnerships.'
+      'CAMPAIGN TYPE: Personal occasion greeting.',
+      'Write a brief, sincere, culturally respectful greeting focused entirely on the named occasion. Offer warm wishes for happiness, peace, good health, and prosperity as appropriate.',
+      'Do not include business updates, company or product promotion, partnership language, milestones, achievements, technical content, calls to action, executive framing, or instruction headings.',
+      'Do not invent occasion-specific customs or religious claims. Use a simple greeting and a warm sign-off from SNS Square.'
     ].join(' ');
   } else if (normalizedCampaignType.includes('promotional') || normalizedCampaignType.includes('strategic')) {
     campaignGuidance = [
@@ -526,10 +529,11 @@ router.post('/generate', async (req, res) => {
 
   const payload = {
     action: 'generate_preview',
+    request_type: 'generate_preview',
     campaign_name: campaign_name || `${activeSector} Campaign: ${brief.slice(0, 40)}`,
     campaign_type: campaign_type || 'newsletter',
-    developer_input: campaignGuidance ? `${developerInput}\n\n${campaignGuidance}` : developerInput,
-    campaign_brief: campaignGuidance ? `${developerInput}\n\n${campaignGuidance}` : developerInput,
+    developer_input: developerInput,
+    campaign_brief: developerInput,
     campaign_guidance: campaignGuidance,
     ...(occasion ? { occasion, ...occasionPayloadData } : {}),
     sector: activeSector,
@@ -574,19 +578,21 @@ router.post('/generate', async (req, res) => {
     const extracted = result.normalizedContent || extractWorkbenchAiContent(result.data);
     console.info(`[Campaigns /generate] Workbench normalized generated content=${Boolean(extracted?.subject && extracted?.email_body)} http_status=${result.httpStatus}`);
 
-    if (extracted && extracted.subject && extracted.email_body && result.data?.success !== false) {
+    if (extracted && extracted.email_body && result.data?.success !== false) {
       const campaignId = req.body.campaign_id || `CMP-${require('crypto').randomUUID()}`;
       const previous = nurtureStore.getCampaigns().find(campaign => campaign.id === campaignId);
       const now = new Date().toISOString();
 
       // 1. Sanitize subject line to guarantee prompt instructions never leak
-      const cleanSubject = sanitizeAndValidateSubject(extracted.subject, {
-        campaignType: campaign_type,
-        occasion,
-        company: activeContact.company,
-        name: activeContact.name,
-        topic: brief || developerInput
-      });
+      const cleanSubject = extracted.subject && extracted.subject.trim().length >= 6 && !detectPromptLeakInSubject(extracted.subject)
+        ? sanitizeAndValidateSubject(extracted.subject, {
+          campaignType: campaign_type,
+          occasion,
+          company: activeContact.company,
+          name: activeContact.name,
+          topic: brief || developerInput
+        })
+        : '';
 
       // 2. Sanitize greeting to prevent generic fake titles (Dear Leader, Dear Executive)
       let cleanBody = sanitizeAndPersonalizeGreeting(extracted.email_body, activeContact);

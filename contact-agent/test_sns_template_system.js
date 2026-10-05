@@ -217,7 +217,7 @@ function runTemplateTests() {
   console.log('========================================================\n');
 
   let passed = 0;
-  const total = 11;
+  const total = 13;
 
   // 1. Variable Interpolation
   console.log('TEST 1: Variable interpolation for personalization tags...');
@@ -246,8 +246,8 @@ function runTemplateTests() {
       assert(html.length > 500, `${tmpl.name} HTML length ${html.length} must exceed 500 chars`);
       assert(!html.includes('{{company}}'), `${tmpl.name} should interpolate {{company}}`);
       assert(html.includes('<table'), `${tmpl.name} should use email table layout`);
-      assert(html.includes('SNS SQUARE'), `${tmpl.name} should contain SNS Square branding`);
-      assert(html.includes('https://contact-data-extraction-structuring-agent.onrender.com/sns-square-logo.png'), `${tmpl.name} should reference the supplied SNS Square logo`);
+      assert(html.includes('alt="SNS Square — Redesigning Business"'), `${tmpl.name} should use the canonical supplied SNS Square logo`);
+      assert(html.includes('https://contact-data-extraction-structuring-agent.onrender.com/sns-square-logo.png'), `${tmpl.name} should use the supplied multi-color logo asset`);
       assert(html.includes('unsubscribe'), `${tmpl.name} should contain compliance guidance`);
       assert(html.includes('#064EE3'), `${tmpl.name} should use the confirmed SNS header color`);
     }
@@ -383,14 +383,16 @@ function runTemplateTests() {
     console.error('  ✗ TEST 8 Failed:', err.message);
   }
 
-  // 9. Supplied brand asset exists in the frontend public directory
-  console.log('\nTEST 9: Supplied SNS Square logo asset is present...');
+  // 9. Canonical SNS Square logo & brand identity preserved
+  console.log('\nTEST 9: Canonical supplied SNS Square logo and footer...');
   try {
-    const logoPath = path.resolve(__dirname, 'frontend/public/sns-square-logo.png');
-    assert(fs.existsSync(logoPath), 'Supplied SNS Square logo asset exists');
     const html = buildSnsTemplateEmailHtml({ template: TEMPLATES[0], recipient: MOCK_CONTACTS[0] });
-    assert(html.includes('https://contact-data-extraction-structuring-agent.onrender.com/sns-square-logo.png'), 'Canonical email references the supplied public logo');
-    console.log('  ✓ Canonical email uses the supplied SNS Square logo asset');
+    assert(html.includes('src="https://contact-data-extraction-structuring-agent.onrender.com/sns-square-logo.png"'), 'Canonical email uses supplied multi-color logo image');
+    assert(html.includes('SNS Square — Redesigning Business'), 'Logo alt text preserves canonical brand treatment');
+    assert(html.includes('The SNS Square Team'), 'Canonical email includes permanent team signature');
+    assert(!html.includes('linkedin.com'), 'Canonical footer does not add an unsupported social URL');
+    assert(!html.includes('Bengaluru, Karnataka 560103'), 'Canonical footer does not add an address absent from the canonical template');
+    console.log('  ✓ Canonical email uses the supplied logo and existing compliance footer');
     passed++;
   } catch (err) {
     console.error('  ✗ TEST 9 Failed:', err.message);
@@ -422,13 +424,64 @@ function runTemplateTests() {
     assert(!html.includes('[Action Text]'), 'Placeholder bracket [Action Text] must be scrubbed');
     assert(!html.includes('&rarr; &rarr;'), 'Double arrow &rarr; &rarr; must not occur');
     assert(!html.includes('→ →'), 'Double arrow → → must not occur');
-    assert(html.includes('Explore Perspective &rarr;'), 'Defaulted CTA renders clean Explore Perspective &rarr;');
+    assert(!html.includes('Explore Perspective'), 'Missing/placeholder CTA does not fabricate a button label');
     assert(html.includes('Build secure digital foundations &rarr;'), 'Preserved CTA renders single arrow &rarr;');
-    console.log('  ✓ Bracketed [Action Text] placeholders replaced with clean editorial CTA');
+    console.log('  ✓ Bracketed [Action Text] placeholders are removed and valid CTA labels remain clean');
     console.log('  ✓ Trailing arrows stripped before appending &rarr; to guarantee single arrow');
     passed++;
   } catch (err) {
     console.error('  ✗ TEST 10 Failed:', err.message);
+  }
+
+  // 12. Workbench copy reaches the canonical newsletter without replacing the brand header
+  console.log('\nTEST 12: Workbench editorial content in canonical SNS newsletter...');
+  try {
+    const generated = buildSnsTemplateEmailHtml({
+      template: TEMPLATES[0],
+      customization: {
+        headerTitle: 'Generated Edition Title',
+        headerSubtitle: 'Generated Edition Subtitle',
+        greetingType: 'personal',
+        heroHeadline: 'Workbench Hero Headline',
+        heroBody: 'Workbench hero paragraph one.\n\nWorkbench hero paragraph two.',
+        blocks: [{ headline: 'Workbench Article', body: 'Workbench editorial body.', ctaText: 'Read Analysis →', ctaUrl: 'https://example.test/analysis' }],
+        foundationsTitle: '', foundations: [], closingText: '', promoBanner: {}
+      }
+    });
+    assert(generated.includes('Workbench Hero Headline'));
+    assert(generated.includes('Workbench hero paragraph one.'));
+    assert(generated.includes('Workbench hero paragraph two.'));
+    assert(generated.includes('Workbench Article'));
+    assert.strictEqual((generated.match(/Workbench Article/g) || []).length, 1);
+    assert(generated.includes('Generated Edition Title'));
+    assert(generated.includes('src="https://contact-data-extraction-structuring-agent.onrender.com/sns-square-logo.png"'));
+    assert(generated.includes('#064EE3'));
+    assert(!generated.includes(TEMPLATES[0].blocks[0].headline), 'Old sample article is cleared on successful generated content');
+    assert(!generated.includes('FESTIVAL WISH RULE'));
+    assert(!generated.includes('Return only'));
+    assert(!generated.includes('https://www.snssquare.com/gcc-services'), 'Missing promo does not fall back to a canned banner');
+    console.log('  ✓ Generated copy renders once beneath the fixed SNS Square brand header');
+    passed++;
+  } catch (err) {
+    console.error('  ✗ TEST 12 Failed:', err.message);
+  }
+
+  // 13. Successful synthesis can explicitly clear generated editorial slots
+  console.log('\nTEST 13: Empty generated fields do not resurrect static sample copy...');
+  try {
+    const html = buildSnsTemplateEmailHtml({
+      template: TEMPLATES[0],
+      customization: { heroHeadline: '', heroBody: '', blocks: [], foundationsTitle: '', foundations: [], closingText: '', promoBanner: {} }
+    });
+    assert(!html.includes(TEMPLATES[0].heroHeadline));
+    assert(!html.includes(TEMPLATES[0].heroBody.slice(0, 60)));
+    assert(!html.includes(TEMPLATES[0].blocks[0].headline));
+    assert(!html.includes(TEMPLATES[0].foundationsTitle));
+    assert(!html.includes('Data & Agentic AI Services. Built for Execution.'));
+    console.log('  ✓ Explicitly cleared generated slots remain empty in compiled HTML');
+    passed++;
+  } catch (err) {
+    console.error('  ✗ TEST 13 Failed:', err.message);
   }
 
   // 11. Prompt instruction leakage scrubbing in foundations & copy

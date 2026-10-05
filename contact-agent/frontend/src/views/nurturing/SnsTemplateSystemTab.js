@@ -115,37 +115,27 @@ const SNS_TEMPLATES_CATALOG = [
     name: 'SNS Festival & Seasonal Greeting',
     category: 'Occasion',
     tag: 'Cultural Intelligence',
-    purpose: 'Culturally aligned, warm seasonal client greetings celebrating shared milestones, gratitude, and future prosperity.',
-    headerTitle: 'Warm Executive Festive Wishes',
-    headerSubtitle: 'Celebrating Shared Milestones & Prosperity',
+    purpose: 'Culturally respectful, warm seasonal greetings focused on the occasion and heartfelt wishes.',
+    headerTitle: 'Warm Festive Wishes',
+    headerSubtitle: 'Wishing You Joy and Prosperity',
     defaultSubject: 'Warm Festive Wishes to {{company}} from SNS Square',
     greetingType: 'personal',
-    heroHeadline: 'Celebrating Shared Milestones and Enduring Partnership',
-    heroBody: 'As we celebrate this joyous festive season, all of us at SNS Square extend our warmest greetings to you and the entire team at {{company}}.\n\nPartnerships built on mutual trust, shared innovation, and relentless execution are the cornerstone of sustainable success. We value the milestones we have achieved together and look forward to scaling new heights in the season ahead.',
+    heroHeadline: 'Wishing You a Joyful Celebration',
+    heroBody: 'Wishing you and your loved ones a joyful and peaceful festive season. May the occasion bring happiness, good health, and prosperity to you and your family.',
     blocks: [
       {
         id: 'b1',
-        headline: 'A Season of Renewal, Growth, and Shared Prosperity',
+        headline: 'Warm Wishes for the Festive Season',
         image: IMAGE_PRESETS[4].url,
-        body: 'May this festive season illuminate new avenues of growth, health, and prosperity for you, your colleagues, and your families. Thank you for your continued confidence in our team.',
-        ctaText: 'Connect with Executive Leadership',
-        ctaUrl: 'https://www.snssquare.com/leadership'
+        body: 'May your celebration be filled with light, happiness, peace, and prosperity.',
+        ctaText: '',
+        ctaUrl: ''
       }
     ],
-    foundationsTitle: 'Reflecting on the foundations of our collaboration:',
-    foundations: [
-      'Unyielding commitment to technical and delivery excellence.',
-      'Collaborative alignment across strategic objectives.',
-      'Transparent partnership grounded in mutual respect.'
-    ],
-    closingText: 'Wishing you, your family, and your entire organisation a joyous, safe, and prosperous celebration.\n\nWarm regards,\nThe Team at SNS Square\nEnterprise Client Partnerships',
-    promoBanner: {
-      headline: 'Empowering Enterprise Excellence Together',
-      body: 'We are proud to serve as your strategic technology and Agentic AI partner across global centers.',
-      partnerBadge: 'Executive Partnership Desk',
-      ctaText: 'Visit SNS Square',
-      ctaUrl: 'https://www.snssquare.com'
-    }
+    foundationsTitle: '',
+    foundations: [],
+    closingText: 'Warm wishes,\nThe Team at SNS Square',
+    promoBanner: null
   },
   {
     id: 'promotional_campaign',
@@ -416,7 +406,13 @@ export default function SnsTemplateSystemTab({
         throw { response: { status: res.status, data: res.data } };
       }
       const preview = normalizeWorkbenchTemplateContent(res.data);
-      if (!preview || !Object.values(preview).some(value => value && (typeof value !== 'object' || Object.keys(value).length))) {
+      const hasGeneratedCopy = preview && Boolean(
+        preview.heroHeadline || preview.heroBody ||
+        preview.articles?.some(article => article.headline || article.body) ||
+        preview.synthesisPoints?.length || preview.closingText ||
+        preview.promoBanner?.headline || preview.promoBanner?.body
+      );
+      if (!hasGeneratedCopy) {
         setWorkbenchResponseStatus('no_usable_content');
         setAiError({ message: 'Workbench responded, but no usable campaign content was returned.', errorType: 'no_usable_content', httpStatus: res.data?.workbench_http_status, response: res.data?.workbench_response });
         return;
@@ -427,33 +423,22 @@ export default function SnsTemplateSystemTab({
         if (preview.headerTitle) setHeaderTitle(preview.headerTitle);
         if (preview.headerSubtitle) setHeaderSubtitle(preview.headerSubtitle);
         if (preview.greetingType) setGreetingType(preview.greetingType);
-        if (preview.heroHeadline) setHeroHeadline(preview.heroHeadline);
-        if (preview.heroBody) setHeroBody(preview.heroBody);
-        if (preview.articles && preview.articles.length > 0) {
-          setBlocks(current => preview.articles.map((article, index) => ({
-            ...(current[index] || {}),
-            headline: article.headline || current[index]?.headline || '',
-            body: article.body || current[index]?.body || '',
-            image: article.image || current[index]?.image || '',
-            ctaText: cleanCtaText(article.ctaText || current[index]?.ctaText || ''),
-            ctaUrl: article.ctaUrl || current[index]?.ctaUrl || '',
-            id: current[index]?.id || `workbench-${index + 1}`
-          })));
-        }
-        if (preview.foundationsTitle) setFoundationsTitle(scrubPromptDirectiveText(preview.foundationsTitle));
-        if (preview.synthesisPoints && preview.synthesisPoints.length > 0) {
-          const validPoints = preview.synthesisPoints
-            .map(p => scrubPromptDirectiveText(p))
-            .filter(p => p && p.length >= 5 && !/^(?:structured key pillars|standards|official sign-off|warm regards)/i.test(p));
-          if (validPoints.length > 0) setFoundations(validPoints);
-        }
-        if (preview.closingText) setClosingText(scrubPromptDirectiveText(preview.closingText));
-        if (preview.promoBanner && Object.keys(preview.promoBanner).length > 0) {
-          setPromoBanner(current => ({
-            ...current,
-            ...preview.promoBanner
-          }));
-        }
+        // Successful synthesis replaces generated editorial slots; omitted fields
+        // must not leave the template's sample newsletter copy in the final email.
+        setHeroHeadline(preview.heroHeadline || '');
+        setHeroBody(preview.heroBody || '');
+        setBlocks((preview.articles || []).map((article, index) => ({
+          headline: article.headline || '',
+          body: article.body || '',
+          image: article.image || '',
+          ctaText: cleanCtaText(article.ctaText || ''),
+          ctaUrl: article.ctaUrl || '',
+          id: `workbench-${index + 1}`
+        })));
+        setFoundationsTitle(preview.foundationsTitle || '');
+        setFoundations(preview.synthesisPoints || []);
+        setClosingText(preview.closingText || '');
+        setPromoBanner(preview.promoBanner || {});
         setWorkbenchResponseStatus(res.data?.workbench_http_status || 'success');
         setAiSuccess(`Synthesized editorial copy for "${topicToUse}" via SNS Workbench.`);
         if (showNotification) {

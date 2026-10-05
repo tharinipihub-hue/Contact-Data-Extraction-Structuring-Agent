@@ -348,26 +348,24 @@ SNS Square Multi-Agent Platform`,
   Festival: {
     category: 'Festival',
     name: 'Festival Template',
-    description: 'Executive celebratory wishes across major holidays and occasions.',
+    description: 'Simple, warm wishes focused on the selected holiday or occasion.',
     subject_structure: 'Warm [Festival Name] Greetings & Prosperity Wishes from SNS Square',
     sections: [
-      { name: 'Greeting', description: 'Warm executive wishes for festival / occasion' },
+      { name: 'Greeting', description: 'Warm wishes focused on the festival or occasion' },
       { name: 'Festival name', description: 'Occasion identification (Diwali, New Year, Thanksgiving, etc.)' },
-      { name: 'Short personalized message', description: 'Celebrating shared milestones and wishing prosperity' },
-      { name: 'SNS branding', description: 'SNS Square strategic partnership sign-off' }
+      { name: 'Short personalized message', description: 'Sharing heartfelt wishes for the occasion' },
+      { name: 'Sign-off', description: 'A simple sign-off from SNS Square' }
     ],
     sample: {
       campaign_name: 'Diwali Executive Celebration 2026',
       occasion: 'Diwali 2026',
-      brief: 'Warm Diwali greetings celebrating partnership milestones and wishing prosperity.',
+      brief: 'A brief, warm Diwali greeting wishing happiness, peace, good health, and prosperity.',
       subject: 'Warm Diwali Greetings & Prosperity Wishes from SNS Square',
       email_body: `Dear [Client Name],
 
-On behalf of everyone at SNS Square, we wish you, your team, and your loved ones a joyous, luminous, and prosperous Diwali!
+Wishing you and your loved ones a joyful and peaceful Diwali filled with light, happiness, good health, and prosperity.
 
-May this festive season bring boundless growth, innovation, and success to all your strategic ventures at [Company].
-
-SNS Square Multi-Agent Platform`,
+Warm wishes,\nThe Team at SNS Square`,
       channel: 'Email + WhatsApp'
     }
   },
@@ -734,8 +732,8 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
       defaultTopic = `Client Welcome & Partnership Orientation`;
       defaultCampaignName = `Welcome Sequence: ${contact.company}`;
     } else if (isFestival) {
-      defaultTopic = `Festive Greetings & Executive Wishes 2026`;
-      defaultCampaignName = `Executive Festive Greeting: ${contact.company}`;
+      defaultTopic = `Warm ${wizardOccasion || 'Festive'} Wishes`;
+      defaultCampaignName = `Festive Greeting: ${contact.company}`;
     } else if (isContent) {
       defaultTopic = `${sector} Digital Transformation & Multi-Agent Case Study`;
       defaultCampaignName = `Case Study Briefing: ${contact.company}`;
@@ -3288,7 +3286,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                             onClick={() => {
                               setWizardOccasion(occ);
                               setWizardCampaignName(`${occ} Executive Celebration`);
-                              setWizardBrief(`Warm ${occ} greetings celebrating shared milestones and wishing prosperity. Warm, concise, and respectful. No technical newsletter content.`);
+                              setWizardBrief(`A brief, warm ${occ} greeting focused on the occasion and wishing happiness, peace, good health, and prosperity.`);
                               setWizardBriefError(false);
                             }}
                             style={{ fontSize: 11.5, padding: '4px 10px', height: 'auto' }}
@@ -3355,7 +3353,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                         <span style={{ fontSize: 11.5, color: '#64748b', alignSelf: 'center', marginRight: 2 }}>Quick Presets:</span>
                         {[
                           { label: '🏆 Company Anniversary', val: 'Company Anniversary', brief: 'Celebrating our company anniversary milestone and thanking client leadership for their strategic partnership.' },
-                          { label: '🪔 Diwali 2026', val: 'Diwali 2026', brief: 'Warm Diwali greetings celebrating partnership milestones and wishing prosperity.' },
+                          { label: '🪔 Diwali 2026', val: 'Diwali 2026', brief: 'A brief, warm Diwali greeting wishing happiness, peace, good health, and prosperity.' },
                           { label: '✨ New Year 2026', val: 'New Year 2026', brief: 'Warm New Year greetings and wishing growth and prosperity.' },
                           { label: '🚀 Platform Milestone', val: 'Platform Milestone', brief: 'Celebrating our next-generation autonomous AI milestone and thanking client partners.' }
                         ].map((preset) => (

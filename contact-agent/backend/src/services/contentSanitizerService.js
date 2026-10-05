@@ -17,7 +17,7 @@ const PROMPT_INSTRUCTION_PATTERNS = [
   /^(?:this\s+is\s+a|campaign\s+rules?|instructions?|prompt|brief)\s*[:—–-]/i,
   /\b(?:do\s+not\s+include|keep\s+it\s+under|keep\s+under|avoid\s+product|culturally\s+appropriate|not\s+a\s+newsletter)\b/i,
   /^(?:system\s+instructions?|developer\s+input)\s*[:—–-]/i,
-  /\b(?:under\s+\d+\s+words|concise\s+greeting|warm\s+greeting|festival\s+rules?)\b/i
+  /\b(?:under\s+\d+\s+words|concise\s+greeting|warm\s+greeting|festival\s+rules?|FESTIVAL(?:\s+WISH)?\s+RULE|Return only|Output only|KEY\s+ANNOUNCEMENT\s*(?:&|AND)\s*BRIEFING|STRATEGIC IMPACT FOR|generation instructions?|system instructions?|developer instructions?)\b/i
 ];
 
 /**
@@ -170,19 +170,14 @@ function decodeHtmlEntities(str) {
     .replace(/&amp;/g, '&');
 }
 
-const CANONICAL_EDITORIAL_FOUNDATIONS = [
-  'Secure digital infrastructure that enables innovation.',
-  'Intelligent systems that improve operational performance.',
-  'Modern public and enterprise services designed for speed and resilience.',
-  'A workforce equipped to thrive alongside AI.'
-];
-
 /**
  * Scrubs prompt instruction leaks, directive numbering, and meta-rules from text.
  */
 function scrubPromptDirectiveText(text) {
   if (!text || typeof text !== 'string') return '';
-  let s = text;
+  let s = decodeHtmlEntities(text);
+  if (/^\s*[\[{]\s*["'\w]+\s*:/.test(s) ||
+    /\b(?:FESTIVAL(?:\s+WISH)?\s+RULE|(?:NEWSLETTER|CAMPAIGN)\s+RULES?|CAMPAIGN TYPE|EDITORIAL GUIDELINES|QUALITY STANDARD|Return only\b|Output only\b|KEY\s+ANNOUNCEMENT\s*(?:&|AND)\s*BRIEFING|STRATEGIC IMPACT FOR|GENERATION INSTRUCTIONS?|PROMPT INSTRUCTIONS?|SYSTEM INSTRUCTIONS?|DEVELOPER INSTRUCTIONS?|(?:SECTION|STEP)\s+\d+\s*[:.)-]|developer_input\s*:|campaign_type\s*:|content_blocks\s*:)/i.test(s)) return '';
   s = s.replace(/\(\d+\)\s*(?:Official Sign-off|Standards|Strategic Synthesis|Theme & Headline|Executive Opening|Curated Analytical Perspectives)[\s\S]*/i, '');
   s = s.replace(/(?:Official Sign-off|Standards|Strategic Synthesis|Theme & Headline|Executive Opening|Curated Analytical Perspectives)\s*:[\s\S]*/i, '');
   s = s.replace(/\b(?:Avoid raw markup leakage|Content must feel like one unified editorial publication|Do NOT invent unsupported factual claims|fake statistics|imaginary partner companies)[\s\S]*/i, '');
@@ -206,9 +201,7 @@ function cleanActionText(raw) {
   s = s.replace(/^[\s\["“‘]+|[\s\]"”’]+$/g, '').trim();
   s = s.replace(/^\[(.*)\]$/, '$1').trim();
   s = s.replace(/\s*(?:&rarr;|→|->|-->|>)+$/gi, '').trim();
-  if (!s || /^(?:action\s*text|cta|link|read\s*more|click\s*here|placeholder)$/i.test(s)) {
-    return 'Explore Perspective';
-  }
+  if (!s || /^(?:\[?action\s*text\]?|\[?cta\]?|\[?link(?:\s*text)?\]?|read\s*more|click\s*here|placeholder)$/i.test(s)) return '';
   return s;
 }
 
@@ -218,7 +211,7 @@ function cleanActionText(raw) {
  * and falls back to clean canonical editorial foundations if empty.
  */
 function sanitizeFoundationsList(rawList) {
-  if (!Array.isArray(rawList)) return CANONICAL_EDITORIAL_FOUNDATIONS;
+  if (!Array.isArray(rawList)) return [];
   const cleaned = rawList
     .map(scrubPromptDirectiveText)
     .filter(item => {
@@ -226,7 +219,7 @@ function sanitizeFoundationsList(rawList) {
       if (/^(?:structured key pillars|standards|official sign-off|warm regards)/i.test(item)) return false;
       return true;
     });
-  return cleaned.length > 0 ? cleaned : CANONICAL_EDITORIAL_FOUNDATIONS;
+  return cleaned;
 }
 
 /**
@@ -235,6 +228,7 @@ function sanitizeFoundationsList(rawList) {
 function scrubPromptLeakFromHtml(html) {
   if (!html || typeof html !== 'string') return '';
   let s = html;
+  s = s.replace(/<(p|div|li|h[1-6])\b[^>]*>[\s\S]*?(?:FESTIVAL(?:\s+WISH)?\s+RULE|(?:NEWSLETTER|CAMPAIGN)\s+RULES?|CAMPAIGN TYPE|EDITORIAL GUIDELINES|QUALITY STANDARD|Return only|Output only|KEY\s+ANNOUNCEMENT\s*(?:&|AND)\s*BRIEFING|STRATEGIC IMPACT FOR|SYSTEM INSTRUCTIONS?|DEVELOPER INSTRUCTIONS?|PROMPT INSTRUCTIONS?|developer_input\s*:|campaign_type\s*:|content_blocks\s*:)[\s\S]*?<\/\1\s*>/gi, '');
   s = s.replace(/\(\d+\)\s*(?:Official Sign-off|Standards|Strategic Synthesis|Theme & Headline|Executive Opening|Curated Analytical Perspectives)[\s\S]*?(?=(?:<\/li>|<\/p>|<p>|<ul>|<ol>|\n\n|$))/gi, '');
   s = s.replace(/(?:Official Sign-off|Standards|Strategic Synthesis|Theme & Headline|Executive Opening|Curated Analytical Perspectives)\s*:[\s\S]*?(?=(?:<\/li>|<\/p>|<p>|<ul>|<ol>|\n\n|$))/gi, '');
   s = s.replace(/\b(?:Avoid raw markup leakage|Content must feel like one unified editorial publication|Do NOT invent unsupported factual claims|fake statistics|imaginary partner companies)[\s\S]*?(?=(?:<\/li>|<\/p>|<p>|<ul>|<ol>|\n\n|$))/gi, '');
@@ -242,9 +236,10 @@ function scrubPromptLeakFromHtml(html) {
   s = s.replace(/\bSTRATEGIC\s+IMPACT\s+(?:FOR\s+[^:\n<]+)?:\s*/gi, '');
   s = s.replace(/\bstructured key pillars with consistent terminology\.?/gi, '');
   s = s.replace(/(?:&rarr;|→)\s*(?:&rarr;|→)+/gi, '&rarr;');
-  s = s.replace(/<a\b([^>]*)>\[?(?:Action Text|CTA|Link Text)\]?\s*(?:&rarr;|→)?<\/a>/gi, '<a$1>Explore Perspective &rarr;</a>');
+  s = s.replace(/<a\b[^>]*>\s*\[?(?:Action Text|CTA|Link Text)\]?\s*(?:&rarr;|→)?\s*<\/a>/gi, '');
   s = s.replace(/<li>\s*<\/li>/gi, '');
   s = s.replace(/<p[^>]*>\s*<\/p>/gi, '');
+  if (/^\s*[\[{]\s*["'\w]+\s*:/.test(s) || /\b(?:FESTIVAL(?:\s+WISH)?\s+RULE|(?:NEWSLETTER|CAMPAIGN)\s+RULES?|CAMPAIGN TYPE|EDITORIAL GUIDELINES|QUALITY STANDARD|Return only\b|Output only\b|SYSTEM INSTRUCTIONS?|DEVELOPER INSTRUCTIONS?|PROMPT INSTRUCTIONS?|developer_input\s*:|campaign_type\s*:|content_blocks\s*:)/i.test(s)) return '';
   return s;
 }
 
@@ -318,13 +313,13 @@ function wrapInSnsSquareTemplate(contentBodyHtml, options = {}) {
   const snsSquareLogoUrl = 'https://contact-data-extraction-structuring-agent.onrender.com/sns-square-logo.png';
 
   const defaultTitle = isFestival
-    ? 'Warm Executive Festive Wishes'
+    ? 'Warm Festive Wishes'
     : isEvent
       ? 'Executive Leadership Briefing'
       : 'Your Weekly GCC & AI Scoop';
 
   const defaultSubtitle = isFestival
-    ? 'Executive Festive Greetings & Partnerships'
+    ? 'Wishing You Joy and Prosperity'
     : isEvent
       ? 'Exclusive Roundtable & Strategy Forum'
       : 'Core Perspective | Wednesday Edition';

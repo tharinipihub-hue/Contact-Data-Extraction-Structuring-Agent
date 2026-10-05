@@ -72,27 +72,32 @@ function buildSnsTemplateEmailHtml({
 
   const rawHeaderTitle = c.headerTitle || t.headerTitle || 'Your Weekly GCC & AI Scoop';
   const rawHeaderSubtitle = c.headerSubtitle || t.headerSubtitle || 'Core Perspective | Wednesday Edition';
-  const headerTitle = escapeHtml(interpolate(rawHeaderTitle));
-  const headerSubtitle = escapeHtml(interpolate(rawHeaderSubtitle));
+  const headerTitle = escapeHtml(scrubPromptLeak(interpolate(rawHeaderTitle)));
+  const headerSubtitle = escapeHtml(scrubPromptLeak(interpolate(rawHeaderSubtitle)));
 
   // 3. Greeting & Hero Section
   const greetingType = c.greetingType || t.greetingType || (isFestival || isCampaign || isEvent || isClientUpdate ? 'personal' : 'editorial');
   const greetingText = greetingType === 'editorial' ? 'Hello Readers,' : `Dear ${firstName},`;
 
-  const heroHeadline = escapeHtml(interpolate(c.heroHeadline || t.heroHeadline || ''));
-  const rawHeroBody = c.heroBody || t.heroBody || '';
+  const heroHeadlineValue = Object.prototype.hasOwnProperty.call(c, 'heroHeadline') ? c.heroHeadline : t.heroHeadline;
+  const heroHeadline = escapeHtml(scrubPromptLeak(interpolate(heroHeadlineValue || '')));
+  const rawHeroBody = Object.prototype.hasOwnProperty.call(c, 'heroBody') ? c.heroBody : (t.heroBody || '');
   const heroParagraphs = interpolate(rawHeroBody)
     .split(/\n\n+/)
-    .map(p => p.trim())
+    .map(p => scrubPromptLeak(p.trim()))
     .filter(Boolean)
     .map(p => `<p style="font-size: 14.5px; line-height: 1.7; color: #334155; margin: 0 0 14px 0;">${escapeHtml(p).replace(/\n/g, '<br/>')}</p>`)
     .join('\n');
 
   // 4. Curated Article / Content Blocks
-  const blocks = Array.isArray(c.blocks) ? c.blocks : (Array.isArray(t.blocks) ? t.blocks : []);
+  const blocks = Array.isArray(c.blocks)
+    ? c.blocks
+    : (Array.isArray(c.articles) && c.articles.length > 0
+      ? c.articles
+      : (Array.isArray(t.blocks) ? t.blocks : []));
   const blocksHtml = blocks.map((b, idx) => {
-    const headline = escapeHtml(interpolate(b.headline || ''));
-    const body = escapeHtml(interpolate(b.body || ''));
+    const headline = escapeHtml(scrubPromptLeak(interpolate(b.headline || '')));
+    const body = escapeHtml(scrubPromptLeak(interpolate(b.body || '')));
     const image = /^https:\/\//i.test(b.image || '') ? escapeHtml(b.image) : '';
 
     // Sanitize CTA button text: strip brackets, strip trailing arrows, map placeholders
@@ -101,10 +106,8 @@ function buildSnsTemplateEmailHtml({
     rawCta = rawCta.replace(/^[\s\["“‘]+|[\s\]"”’]+$/g, '').trim();
     rawCta = rawCta.replace(/^\[(.*)\]$/, '$1').trim();
     rawCta = rawCta.replace(/\s*(?:&rarr;|→|->|-->|>)+$/gi, '').trim();
-    if (!rawCta || /^(?:action\s*text|cta|link|read\s*more|click\s*here|placeholder)$/i.test(rawCta)) {
-      rawCta = 'Explore Perspective';
-    }
-    const ctaText = escapeHtml(interpolate(rawCta));
+    if (/^(?:\[?action\s*text\]?|\[?cta\]?|\[?link(?:\s*text)?\]?|read\s*more|click\s*here|placeholder)$/i.test(rawCta)) rawCta = '';
+    const ctaText = escapeHtml(scrubPromptLeak(interpolate(rawCta)));
     const ctaUrl = /^(?:https?:\/\/|mailto:)[^\s"'<>]+$/i.test(b.ctaUrl || '') ? escapeHtml(b.ctaUrl) : '';
 
     return `
@@ -115,7 +118,7 @@ function buildSnsTemplateEmailHtml({
           </div>` : ''}
         ${headline ? `<h3 style="font-size: 17px; font-weight: 700; color: #0f172a; margin: 0 0 10px 0; line-height: 1.35;">${headline}</h3>` : ''}
         ${body ? `<p style="font-size: 14px; line-height: 1.65; color: #334155; margin: 0 0 14px 0;">${body.replace(/\n/g, '<br/>')}</p>` : ''}
-        ${ctaText ? `
+        ${ctaText && ctaUrl ? `
               <div style="margin-top: 12px;">
             <a href="${ctaUrl || '#'}" style="background-color: #0b0f19; color: #ffffff; text-decoration: none; padding: 9px 18px; border-radius: 6px; font-size: 12.5px; font-weight: 600; display: inline-block;">
               ${ctaText} &rarr;
@@ -126,16 +129,10 @@ function buildSnsTemplateEmailHtml({
   }).join('\n');
 
   // 5. Foundations / Synthesis Section
-  const CANONICAL_EDITORIAL_FOUNDATIONS = [
-    'Secure digital infrastructure that enables innovation.',
-    'Intelligent systems that improve operational performance.',
-    'Modern public and enterprise services designed for speed and resilience.',
-    'A workforce equipped to thrive alongside AI.'
-  ];
-
   function scrubPromptLeak(str) {
     if (!str || typeof str !== 'string') return '';
-    let s = str;
+    let s = str.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&quot;/gi, '"').replace(/&#39;/gi, "'").replace(/&amp;/gi, '&');
+    if (/^\s*[\[{]\s*["'\w]+\s*:/.test(s) || /\b(?:FESTIVAL(?:\s+WISH)?\s+RULE|(?:NEWSLETTER|CAMPAIGN)\s+RULES?|CAMPAIGN TYPE|EDITORIAL GUIDELINES|QUALITY STANDARD|Return only\b|Output only\b|Do not include\b|Never include\b|SYSTEM INSTRUCTIONS?|DEVELOPER INSTRUCTIONS?|PROMPT INSTRUCTIONS?|KEY\s+ANNOUNCEMENT\s*(?:&|AND)\s*BRIEFING|STRATEGIC IMPACT FOR|developer_input\s*:|campaign_type\s*:|content_blocks\s*:)/i.test(s)) return '';
     s = s.replace(/\(\d+\)\s*(?:Official Sign-off|Standards|Strategic Synthesis|Theme & Headline|Executive Opening|Curated Analytical Perspectives)[\s\S]*/i, '');
     s = s.replace(/(?:Official Sign-off|Standards|Strategic Synthesis|Theme & Headline|Executive Opening|Curated Analytical Perspectives)\s*:[\s\S]*/i, '');
     s = s.replace(/\b(?:Avoid raw markup leakage|Content must feel like one unified editorial publication|Do NOT invent unsupported factual claims|fake statistics|imaginary partner companies)[\s\S]*/i, '');
@@ -147,7 +144,7 @@ function buildSnsTemplateEmailHtml({
     return s.trim();
   }
 
-  const rawFoundationsTitle = interpolate(c.foundationsTitle || t.foundationsTitle || '');
+  const rawFoundationsTitle = interpolate(Object.prototype.hasOwnProperty.call(c, 'foundationsTitle') ? c.foundationsTitle : (t.foundationsTitle || ''));
   const foundationsTitle = escapeHtml(scrubPromptLeak(rawFoundationsTitle));
   const rawFoundations = Array.isArray(c.foundations) ? c.foundations : (Array.isArray(t.foundations) ? t.foundations : []);
 
@@ -155,11 +152,7 @@ function buildSnsTemplateEmailHtml({
     .map(f => scrubPromptLeak(interpolate(f)))
     .filter(f => f && f.length >= 5 && !/^(?:structured key pillars|standards|official sign-off|warm regards)/i.test(f));
 
-  if (cleanedFoundations.length === 0 && (foundationsTitle || t.foundations?.length)) {
-    cleanedFoundations = CANONICAL_EDITORIAL_FOUNDATIONS;
-  }
-
-  let rawClosing = interpolate(c.closingText || t.closingText || '');
+  let rawClosing = interpolate(Object.prototype.hasOwnProperty.call(c, 'closingText') ? c.closingText : (t.closingText || ''));
   rawClosing = scrubPromptLeak(rawClosing);
   const closingText = rawClosing;
 
@@ -179,11 +172,13 @@ function buildSnsTemplateEmailHtml({
   ` : '';
 
   // 6. Promotional Banner
-  const promo = c.promoBanner || t.promoBanner || null;
-  const promoHeadline = escapeHtml(interpolate(promo?.headline || ''));
-  const promoBody = escapeHtml(interpolate(promo?.body || ''));
-  const promoBadge = escapeHtml(interpolate(promo?.partnerBadge || ''));
-  const promoCtaText = escapeHtml(interpolate(promo?.ctaText || ''));
+  const isOccasionTemplate = String(t.category || '').toLowerCase().includes('occasion') || String(t.id || '').toLowerCase().includes('festival');
+  const promo = Object.prototype.hasOwnProperty.call(c, 'promoBanner') ? c.promoBanner : (isOccasionTemplate ? null : (t.promoBanner || null));
+  const promoHeadline = escapeHtml(scrubPromptLeak(interpolate(promo?.headline || '')));
+  const promoBody = escapeHtml(scrubPromptLeak(interpolate(promo?.body || '')));
+  const promoBadge = escapeHtml(scrubPromptLeak(interpolate(promo?.partnerBadge || '')));
+  const rawPromoCta = scrubPromptLeak(interpolate(promo?.ctaText || '')).replace(/\s*(?:&rarr;|→|->|-->|>)+$/gi, '').trim();
+  const promoCtaText = /^(?:\[?action\s*text\]?|\[?cta\]?|\[?link(?:\s*text)?\]?|read\s*more|click\s*here|placeholder)$/i.test(rawPromoCta) ? '' : escapeHtml(rawPromoCta);
   const promoCtaUrl = /^(?:https?:\/\/|mailto:)[^\s"'<>]+$/i.test(promo?.ctaUrl || '') ? escapeHtml(promo.ctaUrl) : '';
 
   const promoBannerHtml = promoHeadline ? `
@@ -198,9 +193,9 @@ function buildSnsTemplateEmailHtml({
               <div style="font-size: 13px; color: #cbd5e1; line-height: 1.6; margin-bottom: 14px;">
                 ${promoBody}
               </div>` : ''}
-            ${promoCtaText ? `
-              <a href="${promoCtaUrl || '#'}" style="background-color: #0b0f19; color: #ffffff; border: 1px solid #3b82f6; text-decoration: none; padding: 9px 18px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">
-                ${promoCtaText} &rarr;
+            ${promoCtaText && promoCtaUrl ? `
+              <a href="${promoCtaUrl}" style="background-color: #0b0f19; color: #ffffff; border: 1px solid #3b82f6; text-decoration: none; padding: 9px 18px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">
+                ${promoCtaText.replace(/\s*(?:&rarr;|→|->|-->|>)+$/gi, '').trim()} &rarr;
               </a>` : ''}
           </td>
           ${promoBadge ? `
