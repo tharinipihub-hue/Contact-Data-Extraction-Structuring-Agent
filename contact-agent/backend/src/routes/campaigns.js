@@ -4,6 +4,12 @@ const express = require('express');
 const router = express.Router();
 const nurtureStore = require('../services/nurtureStore');
 const workbenchService = require('../services/nurtureWorkbenchService');
+const {
+  sanitizeAndValidateSubject,
+  sanitizeAndPersonalizeGreeting,
+  cleanEmailBodyHtml,
+  wrapInSnsSquareTemplate
+} = require('../services/contentSanitizerService');
 
 // Get all campaigns
 router.get('/', (req, res) => {
@@ -169,10 +175,9 @@ function personalizeContentForRecipient(rawBody, rawSubject, recipient, allConta
   const recipientFirstName = recipientFullName.split(' ')[0] || recipientFullName;
   const recipientCompany = recipient.company || 'your organization';
 
-  // 1. Normalize greeting to recipient
-  body = body.replace(/(<p\b[^>]*>)?(?:Dear|Hi|Hello|Greetings)\s+[^,<\n\r]+(,\s*<\/p>|,|\s*<\/p>)/i, (m, prefix, suffix) => {
-    return `${prefix || ''}Dear ${recipientFirstName}${suffix || ','}`;
-  });
+  // 1. Sanitize fake titles (Dear Leader, Dear Executive) and normalize greeting to recipient
+  body = sanitizeAndPersonalizeGreeting(body, recipient);
+  subject = sanitizeAndValidateSubject(subject, { company: recipientCompany, name: recipientFullName });
 
   // 2. Iterate all known contacts to replace any other names and companies
   for (const c of allContacts) {
@@ -461,10 +466,36 @@ router.post('/generate', async (req, res) => {
       const campaignId = req.body.campaign_id || `CMP-${require('crypto').randomUUID()}`;
       const previous = nurtureStore.getCampaigns().find(campaign => campaign.id === campaignId);
       const now = new Date().toISOString();
+
+      // 1. Sanitize subject line to guarantee prompt instructions never leak
+      const cleanSubject = sanitizeAndValidateSubject(extracted.subject, {
+        campaignType: campaign_type,
+        occasion,
+        company: activeContact.company,
+        name: activeContact.name,
+        topic: brief || developerInput
+      });
+
+      // 2. Sanitize greeting to prevent generic fake titles (Dear Leader, Dear Executive)
+      let cleanBody = sanitizeAndPersonalizeGreeting(extracted.email_body, activeContact);
+      cleanBody = cleanEmailBodyHtml(cleanBody);
+      cleanBody = useConfiguredPreferenceLinks(cleanBody, unsubUrl, prefUrl);
+
+      // 3. Wrap in official standardized SNS Square email template
+      const fullTemplateHtml = wrapInSnsSquareTemplate(cleanBody, {
+        campaignType: campaign_type,
+        recipientUnsubUrl: unsubUrl,
+        recipientPrefUrl: prefUrl,
+        company: 'SNS Square'
+      });
+
       const previewData = {
         ...((result.data?.nurtured_contact || result.data?.result || result.data) || {}),
-        subject: extracted.subject,
-        email_body: useConfiguredPreferenceLinks(extracted.email_body, unsubUrl, prefUrl),
+        subject: cleanSubject,
+        email_body: fullTemplateHtml,
+        email_body_html: fullTemplateHtml,
+        body_text_only: cleanBody,
+        content_version: previous?.content_version || 'v1',
         personalization_summary: extracted.personalization_summary || 'Generated via SNS Workbench',
         content_source: 'workbench'
       };
@@ -472,6 +503,7 @@ router.post('/generate', async (req, res) => {
       const generatedCampaign = {
         ...(previous || {}),
         id: campaignId,
+        content_version: previous?.content_version || 'v1',
         name: campaign_name || `${activeSector} Campaign: ${brief.slice(0, 40)}`,
         type: campaign_type || 'newsletter',
         type_key: String(campaign_type || 'newsletter').toLowerCase().replace(/\s+/g, '_'),

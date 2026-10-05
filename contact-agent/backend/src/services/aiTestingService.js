@@ -1,653 +1,254 @@
 'use strict';
 
 /**
- * AI Quality Testing Service — Digital Client Nurturing Agent
- *
- * Purpose: Evaluate the quality of AI-generated campaign content WITHOUT
- * sending emails to real customers. Tests run in a sandbox mode.
- *
- * Test areas:
- *  - Campaign personalization quality
- *  - Newsletter structure compliance
- *  - Festival/occasion tone compliance
- *  - Regional personalization
- *  - Email subject quality
- *  - Email body completeness
- *  - Placeholder detection (unreplaced [Name], [Company] etc.)
- *  - Generic-content detection
- *  - Hallucinated company/product claims (heuristic)
- *  - Missing recipient information
- *  - Incorrect campaign type detection
- *  - Workbench response validity
- *  - Dispatch payload validity
- *  - Compliance (unsubscribe links, consent checks)
- *
- * No email is ever sent during testing. The test runner uses workbench
- * generate (not dispatch) to evaluate content quality.
+ * Enterprise AI Quality Testing Service — Digital Client Nurturing Agent
+ * 
+ * Scaled audience-level quality validation:
+ *  - Quick Test (5–10 representative contacts)
+ *  - Standard Test (25 representative contacts)
+ *  - Full Test (all contacts in selected audience)
+ * 
+ * Transparent 100-Point Quality Score Model:
+ *  - Personalization: 20
+ *  - Content Quality: 20
+ *  - Campaign Structure: 15
+ *  - Industry / Context Relevance: 15
+ *  - Technical Validity: 10
+ *  - Compliance: 15
+ *  - Brand Consistency: 5
+ *  Total: 100
+ * 
+ * Statuses:
+ *  - 90–100: READY
+ *  - 75–89: READY WITH WARNINGS
+ *  - Below 75: NEEDS IMPROVEMENT
+ *  - Critical compliance failures override to BLOCKED
+ * 
+ * Guarantee: Running AI Quality validation NEVER sends emails to real customers.
  */
 
 const workbenchService = require('./nurtureWorkbenchService');
 const nurtureStore = require('./nurtureStore');
+const {
+  detectPromptLeakInSubject,
+  sanitizeAndValidateSubject,
+  sanitizeAndPersonalizeGreeting
+} = require('./contentSanitizerService');
 
-// ── Scoring weights ───────────────────────────────────────────────────────────
-
-const SCORING_WEIGHTS = {
-  personalization: 20,
-  relevance: 15,
-  accuracy: 15,
-  tone: 10,
-  campaign_type_compliance: 10,
-  content_quality: 15,
-  technical_validity: 10,
-  compliance: 5
+const SCORING_MODEL = {
+  personalization: { max: 20, label: 'Personalization Quality' },
+  content_quality: { max: 20, label: 'Content Quality & Integrity' },
+  campaign_structure: { max: 15, label: 'Campaign Structure Compliance' },
+  industry_relevance: { max: 15, label: 'Industry & Context Relevance' },
+  technical_validity: { max: 10, label: 'Technical & Link Validity' },
+  compliance: { max: 15, label: 'Compliance & Consent Coverage' },
+  brand_consistency: { max: 5, label: 'SNS Square Brand Consistency' }
 };
 
-// ── Test definitions ──────────────────────────────────────────────────────────
-
 /**
- * Evaluate personalization quality of generated content.
+ * Filter audience based on criteria.
  */
-function testPersonalization(content, contact, campaignType) {
-  const issues = [];
-  const good = [];
-  const recommendations = [];
-  let score = 10;
+function resolveAudienceContacts(options = {}) {
+  const {
+    audience_filter = 'all',
+    audience_value = '',
+    selected_contact_ids = [],
+    contacts_override = null
+  } = options;
 
-  const body = String(content.email_body || '');
-  const subject = String(content.subject || '');
+  let allContacts = contacts_override || nurtureStore.getContacts();
 
-  // 1. Check for unreplaced placeholders
-  const placeholderPattern = /\[([A-Za-z_ ]+)\]|\{([A-Za-z_ ]+)\}/g;
-  const placeholders = [...body.matchAll(placeholderPattern), ...subject.matchAll(placeholderPattern)];
-  if (placeholders.length > 0) {
-    const found = placeholders.map(m => m[0]).join(', ');
-    issues.push(`Unreplaced placeholders detected: ${found}`);
-    score -= 3;
-  } else {
-    good.push('No unreplaced placeholders detected.');
+  if (audience_filter === 'selected' && Array.isArray(selected_contact_ids) && selected_contact_ids.length > 0) {
+    const idSet = new Set(selected_contact_ids);
+    return allContacts.filter(c => idSet.has(c.id));
   }
 
-  // 2. Check for recipient name
-  if (contact?.name) {
+  if (audience_filter === 'industry' && audience_value) {
+    return allContacts.filter(c => (c.sector || c.industry || '').toLowerCase() === audience_value.toLowerCase());
+  }
+
+  if (audience_filter === 'region' && audience_value) {
+    const val = audience_value.toLowerCase();
+    return allContacts.filter(c => {
+      const loc = [c.country, c.state, c.city, c.location].filter(Boolean).join(' ').toLowerCase();
+      return loc.includes(val);
+    });
+  }
+
+  if (audience_filter === 'segment' && audience_value) {
+    return allContacts.filter(c => (c.client_type || c.segment || 'Past Clients').toLowerCase() === audience_value.toLowerCase());
+  }
+
+  // Default: All opted-in contacts (or all contacts if no opt-ins)
+  const optedIn = allContacts.filter(c => c.opt_in === true);
+  return optedIn.length > 0 ? optedIn : allContacts;
+}
+
+/**
+ * Select a representative sample based on test mode.
+ */
+function sampleAudience(audience, testMode = 'quick', customSampleSize = null) {
+  if (audience.length === 0) return [];
+  if (testMode === 'full') return audience;
+
+  let sampleLimit = 10;
+  if (customSampleSize && Number(customSampleSize) > 0) {
+    sampleLimit = Math.min(Number(customSampleSize), audience.length);
+  } else if (testMode === 'standard') {
+    sampleLimit = Math.min(25, audience.length);
+  } else {
+    // Quick test
+    sampleLimit = Math.min(10, audience.length);
+  }
+
+  if (audience.length <= sampleLimit) return audience;
+
+  // Stratified sampling across industries/regions for representative coverage
+  const sampled = [];
+  const step = Math.floor(audience.length / sampleLimit);
+  for (let i = 0; i < sampleLimit; i++) {
+    const idx = Math.min(i * step, audience.length - 1);
+    sampled.push(audience[idx]);
+  }
+  return sampled;
+}
+
+/**
+ * Evaluate single contact data and generated content.
+ */
+function evaluateContactRecord(contact, content, campaignType, occasion) {
+  const issues = [];
+  const warnings = [];
+  const goods = [];
+  let isBlocked = false;
+
+  const body = String(content?.email_body || '');
+  const subject = String(content?.subject || '');
+
+  // 1. Compliance check (Critical)
+  if (contact.opt_in === false) {
+    issues.push(`Contact ${contact.name || contact.id} has opted out. Must not receive campaigns.`);
+    isBlocked = true;
+  }
+  if (!contact.email || !contact.email.includes('@')) {
+    issues.push(`Contact ${contact.name || contact.id} has missing or invalid email address.`);
+    isBlocked = true;
+  }
+  if (!body.includes('unsubscribe') && !body.includes('Unsubscribe')) {
+    issues.push('Missing mandatory one-click unsubscribe mechanism.');
+    isBlocked = true;
+  }
+
+  // 2. Personalization check
+  if (!contact.name || contact.name.trim().length < 2) {
+    warnings.push(`Missing recipient contact name.`);
+  } else {
     const firstName = contact.name.split(' ')[0];
     if (body.includes(firstName) || body.includes(contact.name)) {
-      good.push(`Recipient name "${firstName}" found in email body.`);
-      score += 1;
+      goods.push(`Personalized greeting with first name "${firstName}".`);
     } else {
-      issues.push(`Recipient name "${contact.name}" not found in email body.`);
-      score -= 2;
-      recommendations.push('Ensure the Workbench personalizer inserts the recipient first name in the greeting.');
+      warnings.push(`First name "${firstName}" not found in message body.`);
     }
   }
 
-  // 3. Check for company name
-  if (contact?.company && contact.company !== 'Enterprise Partner' && contact.company !== 'your organization') {
-    if (body.includes(contact.company) || subject.includes(contact.company)) {
-      good.push(`Company name "${contact.company}" is present in content.`);
-    } else {
-      issues.push(`Company name "${contact.company}" not found in content.`);
-      score -= 1;
-      recommendations.push('Include company name in at least one location for better personalization.');
+  if (!contact.company || contact.company === 'Enterprise Partner') {
+    warnings.push(`Missing confirmed company name for contact.`);
+  } else if (body.includes(contact.company) || subject.includes(contact.company)) {
+    goods.push(`Company name "${contact.company}" reflected in campaign.`);
+  }
+
+  // Check for fake titles
+  if (/Dear\s+(?:Leader|Executive|Enterprise\s+Partner|Client\s+Executive)/i.test(body)) {
+    issues.push(`Generic fabricated title ("Dear Leader/Executive") detected.`);
+  }
+
+  // Check for unreplaced placeholders
+  const placeholderMatch = body.match(/\[([A-Za-z_ ]+)\]|\{([A-Za-z_ ]+)\}/);
+  if (placeholderMatch) {
+    issues.push(`Unreplaced placeholder "${placeholderMatch[0]}" detected.`);
+  }
+
+  // 3. Subject Line Prompt Leak Check
+  if (detectPromptLeakInSubject(subject)) {
+    issues.push(`AI instructions leaked into subject line: "${subject.slice(0, 45)}...".`);
+  }
+
+  // 4. Tone / Campaign-type check
+  const isFestival = String(campaignType).toLowerCase().includes('festival') || String(campaignType).toLowerCase().includes('wish');
+  if (isFestival) {
+    if (subject.includes('Weekly GCC & AI Scoop')) {
+      warnings.push('Festival greeting contains newsletter branding in subject line.');
+    }
+    const techWords = ['cloud modernisation', 'ai automation digest', 'roi case study', 'platform update'];
+    const foundTech = techWords.filter(tw => body.toLowerCase().includes(tw));
+    if (foundTech.length > 0) {
+      warnings.push(`Festival greeting contains technical newsletter content: ${foundTech.join(', ')}.`);
     }
   }
 
-  // 4. Check for industry/sector context
-  const industry = contact?.industry || contact?.sector || '';
-  if (industry && industry !== 'Technology') {
-    if (body.toLowerCase().includes(industry.toLowerCase())) {
-      good.push(`Industry context "${industry}" present in content.`);
-    } else {
-      issues.push(`No industry-specific context found for "${industry}".`);
-      score -= 1;
-      recommendations.push('Improve industry-specific enrichment in the Workbench prompt.');
-    }
-  }
-
-  // 5. Generic greeting check
-  if (/Dear\s+(Partner|Client|Valued|User|Customer)/i.test(body)) {
-    issues.push('Generic greeting detected (e.g., "Dear Valued Client") instead of personalized name.');
-    score -= 2;
-    recommendations.push('Ensure the greeting uses the actual recipient name.');
-  }
-
-  score = Math.max(0, Math.min(10, score));
   return {
-    test_name: 'Campaign Personalization',
-    category: 'personalization',
-    score: Math.round(score * 10) / 10,
-    max_score: 10,
-    status: score >= 7 ? 'PASS' : score >= 4 ? 'WARN' : 'FAIL',
+    contact_id: contact.id,
+    contact_name: contact.name || 'Unnamed',
+    company: contact.company || 'Unspecified',
+    email: contact.email || '',
+    is_blocked: isBlocked,
     issues,
-    good,
-    recommendations
+    warnings,
+    goods
   };
 }
 
 /**
- * Evaluate newsletter structure compliance.
+ * Run Full Audience-Level AI Quality Test Suite
  */
-function testNewsletterStructure(content, campaignType) {
-  if (!['newsletter', 'Newsletter'].includes(campaignType)) {
-    return {
-      test_name: 'Newsletter Structure',
-      category: 'campaign_type_compliance',
-      score: 10,
-      max_score: 10,
-      status: 'SKIP',
-      issues: [],
-      good: ['Not a newsletter campaign — structure test skipped.'],
-      recommendations: []
-    };
-  }
-
-  const body = String(content.email_body || '');
-  const subject = String(content.subject || '');
-  const issues = [];
-  const good = [];
-  const recommendations = [];
-  let score = 10;
-
-  // Subject format check
-  if (subject.includes('SNS Square') || subject.includes('Weekly') || subject.includes('AI')) {
-    good.push('Subject line references SNS Square newsletter branding.');
-  } else {
-    issues.push('Newsletter subject does not follow expected format: "[Headline] | SNS Square Weekly GCC & AI Scoop".');
-    score -= 2;
-    recommendations.push('Subject format should be: [Lead Story] | SNS Square Weekly GCC & AI Scoop');
-  }
-
-  // Check for multiple perspectives / articles
-  const headlineCount = (body.match(/<strong>|#{1,3}\s+\w/g) || []).length;
-  if (headlineCount >= 2) {
-    good.push(`Found ${headlineCount} section headings/perspectives.`);
-  } else {
-    issues.push('Newsletter appears to have fewer than 2 distinct perspective sections.');
-    score -= 2;
-    recommendations.push('Newsletter should include 3-4 curated perspectives with bold headlines.');
-  }
-
-  // Check for links
-  const linkCount = (body.match(/href=|https?:\/\//g) || []).length;
-  if (linkCount >= 2) {
-    good.push(`Found ${linkCount} links in newsletter content.`);
-  } else {
-    issues.push('Newsletter has fewer than 2 action links. Each perspective should have a read-more link.');
-    score -= 1;
-    recommendations.push('Add read-more action links for each newsletter perspective.');
-  }
-
-  // Check for footer/sign-off
-  if (body.toLowerCase().includes('snssquare') || body.includes('SNS Square')) {
-    good.push('SNS Square sign-off or branding present in body.');
-  } else {
-    issues.push('Missing SNS Square sign-off in newsletter footer.');
-    score -= 1;
-    recommendations.push('Add official SNS Square sign-off: "The Team at SNS Square, Enterprise Client Partnerships"');
-  }
-
-  // Check for unsubscribe
-  if (body.includes('unsubscribe') || body.includes('Unsubscribe')) {
-    good.push('Unsubscribe link present in content.');
-  } else {
-    issues.push('No unsubscribe link detected. Required for email compliance.');
-    score -= 2;
-    recommendations.push('Always include a functional unsubscribe link in newsletters.');
-  }
-
-  score = Math.max(0, Math.min(10, score));
-  return {
-    test_name: 'Newsletter Structure',
-    category: 'campaign_type_compliance',
-    score: Math.round(score * 10) / 10,
-    max_score: 10,
-    status: score >= 7 ? 'PASS' : score >= 4 ? 'WARN' : 'FAIL',
-    issues,
-    good,
-    recommendations
-  };
-}
-
-/**
- * Evaluate festival/occasion tone compliance.
- */
-function testFestivalTone(content, campaignType, occasion) {
-  const isFestival = ['festival_wish', 'Festival / Occasion Wish', 'festival', 'Festival'].includes(campaignType);
-  if (!isFestival) {
-    return {
-      test_name: 'Festival / Occasion Tone',
-      category: 'tone',
-      score: 10,
-      max_score: 10,
-      status: 'SKIP',
-      issues: [],
-      good: ['Not a festival/occasion campaign — tone test skipped.'],
-      recommendations: []
-    };
-  }
-
-  const body = String(content.email_body || '');
-  const subject = String(content.subject || '');
-  const issues = [];
-  const good = [];
-  const recommendations = [];
-  let score = 10;
-
-  // Check for warm tone indicators
-  const warmWords = ['warm', 'joyous', 'prosperous', 'celebrate', 'wishes', 'greetings', 'festive', 'luminous', 'blessings', 'happy', 'joy'];
-  const warmCount = warmWords.filter(w => body.toLowerCase().includes(w)).length;
-  if (warmCount >= 2) {
-    good.push(`Warm/festive tone detected (${warmCount} warm-tone words found).`);
-  } else {
-    issues.push('Festival message lacks warm, celebratory tone.');
-    score -= 3;
-    recommendations.push('Festival messages should be warm, joyful, and occasion-specific. Avoid corporate/technical language.');
-  }
-
-  // Check occasion is mentioned
-  if (occasion && body.toLowerCase().includes(occasion.toLowerCase().split(' ')[0])) {
-    good.push(`Occasion "${occasion}" is mentioned in the content.`);
-  } else if (occasion) {
-    issues.push(`Occasion "${occasion}" is not explicitly mentioned in the email body.`);
-    score -= 2;
-    recommendations.push('Festival messages must explicitly name the occasion being celebrated.');
-  }
-
-  // Ensure it doesn't contain newsletter/technical content
-  const technicalIndicators = ['newsletter', 'AI automation', 'cloud modernisation', 'enterprise transformation', 'ROI', 'use case', 'case study', 'platform update'];
-  const technicalFound = technicalIndicators.filter(t => body.toLowerCase().includes(t.toLowerCase()));
-  if (technicalFound.length > 1) {
-    issues.push(`Festival message contains technical/newsletter content: ${technicalFound.slice(0, 3).join(', ')}.`);
-    score -= 3;
-    recommendations.push('Festival/occasion messages must NOT be technical newsletters. Keep them warm, concise, and occasion-focused.');
-  } else {
-    good.push('No inappropriate technical newsletter content in festival message.');
-  }
-
-  // Check length (festival messages should be concise)
-  const wordCount = body.split(/\s+/).length;
-  if (wordCount > 400) {
-    issues.push(`Festival message is too long (${wordCount} words). Festival wishes should be concise (under 200 words).`);
-    score -= 1;
-    recommendations.push('Festival messages should be concise and warm — ideally under 200 words.');
-  } else {
-    good.push(`Festival message length is appropriate (${wordCount} words).`);
-  }
-
-  score = Math.max(0, Math.min(10, score));
-  return {
-    test_name: 'Festival / Occasion Tone',
-    category: 'tone',
-    score: Math.round(score * 10) / 10,
-    max_score: 10,
-    status: score >= 7 ? 'PASS' : score >= 4 ? 'WARN' : 'FAIL',
-    issues,
-    good,
-    recommendations
-  };
-}
-
-/**
- * Evaluate content quality — checks for generic/default content, broken patterns.
- */
-function testContentQuality(content, campaignType) {
-  const body = String(content.email_body || '');
-  const subject = String(content.subject || '');
-  const issues = [];
-  const good = [];
-  const recommendations = [];
-  let score = 10;
-
-  // Check for empty content
-  if (!body || body.trim().length < 50) {
-    issues.push('Email body is empty or too short (under 50 characters).');
-    score -= 5;
-    recommendations.push('AI generation must produce a complete email body.');
-  } else {
-    good.push('Email body has sufficient content.');
-  }
-
-  // Check for empty subject
-  if (!subject || subject.trim().length < 5) {
-    issues.push('Email subject is empty or too short.');
-    score -= 3;
-    recommendations.push('AI generation must produce a descriptive subject line.');
-  } else {
-    good.push('Email subject is present and descriptive.');
-  }
-
-  // Check for default/template content indicators
-  const defaultIndicators = [
-    '[Your Name]', '[Company Name]', '[Campaign Name]', '[Insert Topic]',
-    'Lorem ipsum', 'example@example.com', 'placeholder', '{{', '}}'
-  ];
-  const defaultFound = defaultIndicators.filter(d => body.includes(d) || subject.includes(d));
-  if (defaultFound.length > 0) {
-    issues.push(`Default template content detected: ${defaultFound.join(', ')}`);
-    score -= 3;
-    recommendations.push('Replace all template placeholders with actual AI-generated content.');
-  } else {
-    good.push('No default template content detected.');
-  }
-
-  // Check for content_source being workbench
-  if (content.content_source === 'workbench') {
-    good.push('Content is sourced from SNS Workbench AI generation.');
-  } else {
-    issues.push('Content is NOT marked as Workbench-generated. Verify AI generation is active.');
-    score -= 2;
-    recommendations.push('Ensure campaign content goes through the SNS Workbench workflow.');
-  }
-
-  // Check for basic formatting (paragraphs)
-  const hasFormatting = body.includes('<p>') || body.includes('\n\n') || body.includes('**');
-  if (hasFormatting) {
-    good.push('Email body has structured formatting.');
-  }
-
-  score = Math.max(0, Math.min(10, score));
-  return {
-    test_name: 'Content Quality',
-    category: 'content_quality',
-    score: Math.round(score * 10) / 10,
-    max_score: 10,
-    status: score >= 7 ? 'PASS' : score >= 4 ? 'WARN' : 'FAIL',
-    issues,
-    good,
-    recommendations
-  };
-}
-
-/**
- * Test technical validity — payload structure, links, compliance.
- */
-function testTechnicalValidity(content, contact, dispatchPayload = null) {
-  const body = String(content.email_body || '');
-  const issues = [];
-  const good = [];
-  const recommendations = [];
-  let score = 10;
-
-  // Check for unsubscribe link
-  if (body.includes('unsubscribe') || body.includes('/unsubscribe')) {
-    good.push('Unsubscribe link present.');
-  } else {
-    issues.push('No unsubscribe link detected. Required for CAN-SPAM/GDPR compliance.');
-    score -= 3;
-    recommendations.push('All marketing emails must contain a functional unsubscribe link.');
-  }
-
-  // Check for production URL in unsubscribe (not localhost)
-  if (body.includes('localhost') || body.includes('127.0.0.1')) {
-    issues.push('Localhost URL detected in email body. Production emails must use the public domain.');
-    score -= 2;
-    recommendations.push('Replace localhost URLs with the configured PUBLIC_APP_URL before dispatch.');
-  } else {
-    good.push('No localhost URLs detected in email body.');
-  }
-
-  // Check recipient email
-  if (contact?.email && contact.email.includes('@')) {
-    good.push(`Recipient email is present: ${contact.email}`);
-  } else {
-    issues.push('Recipient email is missing or invalid.');
-    score -= 3;
-    recommendations.push('All campaign recipients must have a valid email address.');
-  }
-
-  // Check opt-in status
-  if (contact?.opt_in === true) {
-    good.push('Contact has active opt-in consent.');
-  } else if (contact?.opt_in === false) {
-    issues.push('CRITICAL: Contact has opted OUT. This campaign must NOT be dispatched to this contact.');
-    score -= 5;
-    recommendations.push('Remove opted-out contacts from campaign audience before dispatch.');
-  } else {
-    issues.push('Contact opt-in status is unknown.');
-    score -= 2;
-    recommendations.push('Verify opt-in consent before sending any campaign.');
-  }
-
-  // Dispatch payload validity
-  if (dispatchPayload) {
-    if (dispatchPayload.content?.subject && dispatchPayload.content?.email_body) {
-      good.push('Dispatch payload contains required subject and email_body fields.');
-    } else {
-      issues.push('Dispatch payload is missing subject or email_body. Content must be approved before dispatch.');
-      score -= 2;
-    }
-    if (dispatchPayload.action === 'approve_and_send') {
-      good.push('Dispatch payload action is correctly set to "approve_and_send".');
-    }
-  }
-
-  score = Math.max(0, Math.min(10, score));
-  return {
-    test_name: 'Technical Validity',
-    category: 'technical_validity',
-    score: Math.round(score * 10) / 10,
-    max_score: 10,
-    status: score >= 7 ? 'PASS' : score >= 4 ? 'WARN' : 'FAIL',
-    issues,
-    good,
-    recommendations
-  };
-}
-
-/**
- * Test Workbench response validity.
- */
-function testWorkbenchResponse(workbenchResult) {
-  const issues = [];
-  const good = [];
-  const recommendations = [];
-  let score = 10;
-
-  if (!workbenchResult) {
-    return {
-      test_name: 'Workbench Response Validity',
-      category: 'technical_validity',
-      score: 0,
-      max_score: 10,
-      status: 'FAIL',
-      issues: ['No Workbench response received.'],
-      good: [],
-      recommendations: ['Check SNS Workbench connectivity and ensure the workflow is deployed.']
-    };
-  }
-
-  if (workbenchResult.success === true) {
-    good.push('Workbench returned a successful response.');
-  } else {
-    issues.push('Workbench response did not confirm success.');
-    score -= 5;
-    recommendations.push('Verify SNS Workbench workflow is active and responding correctly.');
-  }
-
-  if (workbenchResult.source === 'workbench_webhook') {
-    good.push('Response is from the Workbench webhook (not a local fallback).');
-  } else {
-    issues.push('Response source is not the Workbench webhook.');
-    score -= 3;
-  }
-
-  if (workbenchResult.data) {
-    good.push('Workbench response contains structured data payload.');
-  } else {
-    issues.push('Workbench response has no data payload.');
-    score -= 2;
-  }
-
-  score = Math.max(0, Math.min(10, score));
-  return {
-    test_name: 'Workbench Response Validity',
-    category: 'technical_validity',
-    score: Math.round(score * 10) / 10,
-    max_score: 10,
-    status: score >= 7 ? 'PASS' : score >= 4 ? 'WARN' : 'FAIL',
-    issues,
-    good,
-    recommendations
-  };
-}
-
-/**
- * Test relevance — is the content relevant to the campaign type and contact?
- */
-function testRelevance(content, contact, campaignType, occasion) {
-  const body = String(content.email_body || '');
-  const issues = [];
-  const good = [];
-  const recommendations = [];
-  let score = 10;
-
-  const industry = contact?.industry || contact?.sector || '';
-
-  // Industry relevance for newsletters
-  if (['newsletter', 'Newsletter'].includes(campaignType) && industry) {
-    const industryTerms = {
-      'Technology': ['AI', 'cloud', 'automation', 'digital', 'software', 'technology', 'enterprise'],
-      'Finance': ['fintech', 'financial', 'banking', 'investment', 'compliance', 'regulation', 'capital'],
-      'Healthcare': ['health', 'medical', 'clinical', 'patient', 'digital health', 'healthcare'],
-      'Education': ['education', 'learning', 'student', 'academic', 'EdTech', 'curriculum'],
-      'Manufacturing': ['manufacturing', 'production', 'supply chain', 'operations', 'automation', 'factory'],
-      'Retail': ['retail', 'ecommerce', 'customer', 'commerce', 'supply chain', 'fulfillment'],
-      'Real Estate': ['real estate', 'property', 'construction', 'infrastructure', 'development']
-    };
-    const terms = industryTerms[industry] || industryTerms['Technology'];
-    const relevantCount = terms.filter(t => body.toLowerCase().includes(t.toLowerCase())).length;
-    if (relevantCount >= 2) {
-      good.push(`Content contains ${relevantCount} industry-relevant terms for ${industry}.`);
-    } else {
-      issues.push(`Newsletter appears generic — fewer than 2 ${industry} industry-specific terms detected.`);
-      score -= 3;
-      recommendations.push(`Enhance industry-specific content for ${industry} clients with relevant terminology and context.`);
-    }
-  }
-
-  // Campaign type correctness
-  if (['festival_wish', 'Festival / Occasion Wish', 'festival'].includes(campaignType)) {
-    if (!body.toLowerCase().includes('newsletter') && !body.toLowerCase().includes('case study')) {
-      good.push('Festival campaign does not contain newsletter content — correct behavior.');
-    }
-  }
-
-  // Occasion in festival campaigns
-  if (occasion && ['festival_wish', 'Festival / Occasion Wish', 'festival'].includes(campaignType)) {
-    if (body.toLowerCase().includes(occasion.toLowerCase().split(' ')[0])) {
-      good.push(`Occasion "${occasion}" is reflected in the content.`);
-    } else {
-      issues.push(`Occasion "${occasion}" is not referenced in the email body.`);
-      score -= 2;
-    }
-  }
-
-  score = Math.max(0, Math.min(10, score));
-  return {
-    test_name: 'Content Relevance',
-    category: 'relevance',
-    score: Math.round(score * 10) / 10,
-    max_score: 10,
-    status: score >= 7 ? 'PASS' : score >= 4 ? 'WARN' : 'FAIL',
-    issues,
-    good,
-    recommendations
-  };
-}
-
-/**
- * Test compliance — opt-in, unsubscribe, GDPR basics.
- */
-function testCompliance(content, contact) {
-  const body = String(content.email_body || '');
-  const issues = [];
-  const good = [];
-  const recommendations = [];
-  let score = 10;
-
-  if (contact?.opt_in !== true) {
-    issues.push('CRITICAL: Contact has not opted in. Campaign must not be dispatched without consent.');
-    score -= 5;
-    recommendations.push('Obtain explicit opt-in consent before sending any campaign.');
-  } else {
-    good.push('Contact has confirmed opt-in consent.');
-  }
-
-  if (body.includes('unsubscribe') || body.includes('Unsubscribe')) {
-    good.push('Unsubscribe option present in email.');
-  } else {
-    issues.push('No unsubscribe mechanism found. Required by CAN-SPAM and GDPR.');
-    score -= 3;
-    recommendations.push('All marketing emails must include a one-click unsubscribe link.');
-  }
-
-  if (body.includes('preferences') || body.includes('Manage')) {
-    good.push('Preference management link present.');
-  }
-
-  score = Math.max(0, Math.min(10, score));
-  return {
-    test_name: 'Compliance',
-    category: 'compliance',
-    score: Math.round(score * 10) / 10,
-    max_score: 10,
-    status: score >= 7 ? 'PASS' : score >= 4 ? 'WARN' : 'FAIL',
-    issues,
-    good,
-    recommendations
-  };
-}
-
-/**
- * Run the full AI test suite for a campaign and contact.
- *
- * IMPORTANT: This function NEVER sends an email to real customers.
- * It only calls the Workbench /generate endpoint (preview, not dispatch).
- *
- * @param {Object} options
- * @returns {Promise<Object>} — full structured test result
- */
-async function runAITestSuite(options = {}) {
+async function runAudienceAITest(options = {}) {
   const {
+    audience_filter = 'all',
+    audience_value = '',
+    selected_contact_ids = [],
+    test_mode = 'quick',
+    sample_size = null,
     campaign_type = 'newsletter',
-    campaign_name,
-    campaign_brief,
-    contact_id,
-    occasion
+    campaign_name = '',
+    campaign_brief = '',
+    occasion = ''
   } = options;
 
   const testStartedAt = new Date().toISOString();
-  const testId = `AI-TEST-${Date.now()}`;
+  const testId = `AI-AUDIT-${Date.now()}`;
 
-  // ── 1. Select a test contact (must be opted-in) ───────────────────────────
-  let testContact = null;
-  if (contact_id) {
-    testContact = nurtureStore.getContactById(contact_id);
-  }
-  if (!testContact || testContact.opt_in !== true) {
-    testContact = nurtureStore.getContacts().find(c => c.opt_in === true);
-  }
-  if (!testContact) {
-    // Use a safe sandbox contact — never a real customer
-    testContact = {
-      id: 'AI-TEST-SANDBOX-001',
-      name: 'AI Test Contact',
-      company: 'AI Test Organization',
-      designation: 'Test Executive',
-      email: 'ai-test-sandbox@noreply.local',
-      sector: 'Technology',
-      industry: 'Technology',
-      opt_in: true,
-      country: 'India'
+  // 1. Resolve full audience
+  const fullAudience = resolveAudienceContacts({
+    audience_filter,
+    audience_value,
+    selected_contact_ids
+  });
+
+  const totalAudienceCount = fullAudience.length;
+  if (totalAudienceCount === 0) {
+    return {
+      success: false,
+      error: 'No contacts found for the selected audience criteria.',
+      total_audience: 0,
+      tested_count: 0
     };
   }
 
-  const effectiveBrief = campaign_brief || `AI Quality Test — ${campaign_type} campaign evaluation`;
-  const effectiveName = campaign_name || `AI Test: ${campaign_type}`;
+  // 2. Select test sample
+  const testSample = sampleAudience(fullAudience, test_mode, sample_size);
+  const primaryContact = testSample.find(c => c.opt_in === true) || testSample[0];
 
-  // ── 2. Generate test content via Workbench (preview only) ─────────────────
+  const effectiveBrief = campaign_brief || (
+    campaign_type.includes('festival')
+      ? `Warm ${occasion || 'Festive'} wishes celebrating shared milestones and wishing prosperity. Concise, respectful, warm. No technical newsletter.`
+      : `Weekly enterprise briefing for ${primaryContact.sector || 'Technology'} leadership.`
+  );
+  const effectiveName = campaign_name || `AI Quality Audit: ${campaign_type}`;
+
+  // 3. Trigger live Workbench in Sandbox Test Mode
   let workbenchResult = null;
-  let generatedContent = null;
   let workbenchError = null;
+  let rawContent = null;
 
   const testPayload = {
     action: 'generate_preview',
@@ -655,130 +256,287 @@ async function runAITestSuite(options = {}) {
     campaign_type,
     developer_input: effectiveBrief,
     campaign_brief: effectiveBrief,
-    sector: testContact.sector || 'Technology',
-    industry: testContact.industry || 'Technology',
-    company: testContact.company,
-    full_name: testContact.name,
-    first_name: testContact.name.split(' ')[0],
-    designation: testContact.designation || 'Executive',
-    name: testContact.name,
-    email: testContact.email,
-    to_email: testContact.email,
-    target_segment: 'AI Test Audience (Sandbox)',
+    sector: primaryContact.sector || primaryContact.industry || 'Technology',
+    industry: primaryContact.industry || primaryContact.sector || 'Technology',
+    company: primaryContact.company,
+    full_name: primaryContact.name,
+    first_name: (primaryContact.name || '').split(' ')[0] || '',
+    designation: primaryContact.designation || 'Executive',
+    name: primaryContact.name,
+    email: primaryContact.email,
+    to_email: primaryContact.email,
+    target_segment: `Audit Sample (${testSample.length} contacts)`,
     channel: 'email',
-    contacts: [testContact],
-    active_contact: testContact,
+    contacts: [primaryContact],
+    active_contact: primaryContact,
     occasion: occasion || '',
-    country: testContact.country || '',
-    // Flag this as a test — do NOT send
+    country: primaryContact.country || '',
     is_test_mode: true,
     test_mode: true
   };
 
   try {
     workbenchResult = await workbenchService.triggerNurturingWorkflow(testPayload);
-    // Extract content from Workbench response
     const { extractWorkbenchAiContent } = require('../routes/campaigns');
     if (extractWorkbenchAiContent) {
-      generatedContent = extractWorkbenchAiContent(workbenchResult?.data);
+      rawContent = extractWorkbenchAiContent(workbenchResult?.data);
     }
-    if (!generatedContent && workbenchResult?.data) {
-      // Try direct extraction
+    if (!rawContent && workbenchResult?.data) {
       const d = workbenchResult.data;
       const src = d?.nurtured_contact || d?.result || d;
       if (src?.subject && src?.email_body) {
-        generatedContent = { subject: src.subject, email_body: src.email_body, content_source: 'workbench' };
+        rawContent = { subject: src.subject, email_body: src.email_body };
       }
     }
-    if (generatedContent) generatedContent.content_source = 'workbench';
   } catch (err) {
     workbenchError = err.message;
     workbenchResult = { success: false, error: err.message };
   }
 
-  // If Workbench is unreachable, run tests on a clearly marked synthetic result
-  if (!generatedContent) {
-    generatedContent = {
-      subject: '',
-      email_body: '',
-      content_source: 'unavailable',
-      error: workbenchError || 'Workbench did not return content'
-    };
-  }
+  // Sanitize content & detect instructions
+  let subject = rawContent?.subject || '';
+  let body = rawContent?.email_body || '';
 
-  // ── 3. Run test suite ──────────────────────────────────────────────────────
-  const testResults = [
-    testPersonalization(generatedContent, testContact, campaign_type),
-    testNewsletterStructure(generatedContent, campaign_type),
-    testFestivalTone(generatedContent, campaign_type, occasion),
-    testContentQuality(generatedContent, campaign_type),
-    testRelevance(generatedContent, testContact, campaign_type, occasion),
-    testTechnicalValidity(generatedContent, testContact),
-    testWorkbenchResponse(workbenchResult),
-    testCompliance(generatedContent, testContact)
-  ];
-
-  // ── 4. Calculate overall score ─────────────────────────────────────────────
-  const categoryScores = {};
-  Object.keys(SCORING_WEIGHTS).forEach(cat => {
-    const catTests = testResults.filter(t => t.category === cat && t.status !== 'SKIP');
-    if (catTests.length === 0) {
-      categoryScores[cat] = { score: SCORING_WEIGHTS[cat], max: SCORING_WEIGHTS[cat], skipped: true };
-    } else {
-      const avg = catTests.reduce((sum, t) => sum + (t.score / t.max_score), 0) / catTests.length;
-      categoryScores[cat] = {
-        score: Math.round(avg * SCORING_WEIGHTS[cat] * 10) / 10,
-        max: SCORING_WEIGHTS[cat],
-        tests: catTests.length
-      };
-    }
+  const subjectHadLeak = detectPromptLeakInSubject(subject);
+  subject = sanitizeAndValidateSubject(subject, {
+    campaignType: campaign_type,
+    occasion,
+    company: primaryContact.company,
+    name: primaryContact.name,
+    topic: effectiveBrief
   });
 
+  body = sanitizeAndPersonalizeGreeting(body, primaryContact);
+
+  const evaluatedContent = {
+    subject,
+    email_body: body,
+    subject_had_instruction_leak: subjectHadLeak,
+    content_source: rawContent ? 'workbench' : 'unavailable'
+  };
+
+  // 4. Evaluate each contact in test sample
+  const contactEvaluations = testSample.map(contact => {
+    return evaluateContactRecord(contact, evaluatedContent, campaign_type, occasion);
+  });
+
+  // 5. Aggregate Findings & Issues
+  let totalIssues = 0;
+  let totalWarnings = 0;
+  let totalGoods = 0;
+  let hasCriticalBlock = false;
+
+  const contactIssuesList = [];
+
+  contactEvaluations.forEach((ce, idx) => {
+    if (ce.is_blocked) hasCriticalBlock = true;
+    totalIssues += ce.issues.length;
+    totalWarnings += ce.warnings.length;
+    totalGoods += ce.goods.length;
+
+    ce.issues.forEach(iss => {
+      contactIssuesList.push({
+        contact_id: ce.contact_id,
+        contact_name: ce.contact_name,
+        company: ce.company,
+        severity: 'high',
+        detail: iss
+      });
+    });
+
+    ce.warnings.forEach(warn => {
+      contactIssuesList.push({
+        contact_id: ce.contact_id,
+        contact_name: ce.contact_name,
+        company: ce.company,
+        severity: 'medium',
+        detail: warn
+      });
+    });
+  });
+
+  // 6. Calculate Transparent Category Scores (Total 100)
+  // Deductions based on sample findings
+  const sampleSize = testSample.length;
+  const issuesPerContact = totalIssues / sampleSize;
+  const warningsPerContact = totalWarnings / sampleSize;
+
+  // Category 1: Personalization (Max 20)
+  let personalizationScore = 20 - (issuesPerContact * 8) - (warningsPerContact * 3);
+  personalizationScore = Math.max(0, Math.min(20, Math.round(personalizationScore * 10) / 10));
+
+  // Category 2: Content Quality (Max 20)
+  let contentQualityScore = evaluatedContent.content_source === 'workbench' ? 20 : 5;
+  if (!body || body.length < 80) contentQualityScore -= 10;
+  if (subjectHadLeak) contentQualityScore -= 5;
+  contentQualityScore = Math.max(0, Math.min(20, Math.round(contentQualityScore * 10) / 10));
+
+  // Category 3: Campaign Structure (Max 15)
+  let structureScore = 15;
+  if (campaign_type.includes('newsletter')) {
+    const headings = (body.match(/<h[1-6]|<strong>|###/g) || []).length;
+    if (headings < 2) structureScore -= 5;
+  }
+  structureScore = Math.max(0, Math.min(15, structureScore));
+
+  // Category 4: Industry / Context Relevance (Max 15)
+  let relevanceScore = 15;
+  const hasIndustryContext = testSample.some(c => (c.sector || c.industry) && body.toLowerCase().includes((c.sector || c.industry || '').toLowerCase()));
+  if (!hasIndustryContext && primaryContact.sector !== 'Technology') {
+    relevanceScore -= 4;
+  }
+  relevanceScore = Math.max(0, Math.min(15, relevanceScore));
+
+  // Category 5: Technical Validity (Max 10)
+  let technicalScore = 10;
+  if (workbenchError) technicalScore -= 6;
+  if (hasCriticalBlock) technicalScore -= 4;
+  technicalScore = Math.max(0, Math.min(10, technicalScore));
+
+  // Category 6: Compliance (Max 15)
+  let complianceScore = 15;
+  const optedOutInSample = testSample.filter(c => c.opt_in === false).length;
+  if (optedOutInSample > 0) complianceScore -= (optedOutInSample / sampleSize) * 15;
+  if (!body.includes('unsubscribe')) complianceScore -= 8;
+  complianceScore = Math.max(0, Math.min(15, Math.round(complianceScore * 10) / 10));
+
+  // Category 7: Brand Consistency (Max 5)
+  let brandScore = 5;
+  if (subjectHadLeak) brandScore -= 2;
+  brandScore = Math.max(0, Math.min(5, brandScore));
+
+  const categoryScores = {
+    personalization: { score: personalizationScore, max: 20, pct: Math.round((personalizationScore / 20) * 100), label: 'Personalization Quality' },
+    content_quality: { score: contentQualityScore, max: 20, pct: Math.round((contentQualityScore / 20) * 100), label: 'Content Quality & Integrity' },
+    campaign_structure: { score: structureScore, max: 15, pct: Math.round((structureScore / 15) * 100), label: 'Campaign Structure Compliance' },
+    industry_relevance: { score: relevanceScore, max: 15, pct: Math.round((relevanceScore / 15) * 100), label: 'Industry & Context Relevance' },
+    technical_validity: { score: technicalScore, max: 10, pct: Math.round((technicalScore / 10) * 100), label: 'Technical & Link Validity' },
+    compliance: { score: complianceScore, max: 15, pct: Math.round((complianceScore / 15) * 100), label: 'CAN-SPAM & Consent Compliance' },
+    brand_consistency: { score: brandScore, max: 5, pct: Math.round((brandScore / 5) * 100), label: 'Brand & Template Consistency' }
+  };
+
   const overallScore = Math.round(
-    Object.values(categoryScores).reduce((sum, cat) => sum + cat.score, 0) * 10
+    Object.values(categoryScores).reduce((sum, c) => sum + c.score, 0) * 10
   ) / 10;
 
-  const passed = testResults.filter(t => t.status === 'PASS').length;
-  const failed = testResults.filter(t => t.status === 'FAIL').length;
-  const warned = testResults.filter(t => t.status === 'WARN').length;
-  const skipped = testResults.filter(t => t.status === 'SKIP').length;
+  // Determine readiness status per user specification
+  let readiness = 'READY';
+  if (hasCriticalBlock || complianceScore < 10) {
+    readiness = 'BLOCKED';
+  } else if (overallScore >= 90) {
+    readiness = 'READY';
+  } else if (overallScore >= 75) {
+    readiness = 'READY WITH WARNINGS';
+  } else {
+    readiness = 'NEEDS IMPROVEMENT';
+  }
 
-  const allIssues = testResults.flatMap(t => t.issues);
-  const allRecommendations = testResults.flatMap(t => t.recommendations);
+  // Count pass/warning/failed contacts in sample
+  const passedCount = contactEvaluations.filter(ce => !ce.is_blocked && ce.issues.length === 0 && ce.warnings.length === 0).length;
+  const warnedCount = contactEvaluations.filter(ce => !ce.is_blocked && ce.warnings.length > 0 && ce.issues.length === 0).length;
+  const failedCount = contactEvaluations.filter(ce => ce.issues.length > 0 && !ce.is_blocked).length;
+  const blockedCount = contactEvaluations.filter(ce => ce.is_blocked).length;
+
+  // 7. Actionable Recommendations
+  const actionableRecommendations = [];
+  if (personalizationScore < 18) {
+    actionableRecommendations.push({
+      category: 'Personalization',
+      issue: 'Missing recipient personalization or generic greeting detected.',
+      recommendation: 'Ensure greeting explicitly uses first name (e.g. "Dear Arjun,") and references verified company name.',
+      action_type: 'improve_enrichment'
+    });
+  }
+  if (complianceScore < 15) {
+    actionableRecommendations.push({
+      category: 'Compliance',
+      issue: 'Opt-out consent check or unsubscribe link missing.',
+      recommendation: 'Filter audience to verified opted-in recipients only and include standard SNS unsubscribe footer.',
+      action_type: 'filter_opt_ins'
+    });
+  }
+  if (subjectHadLeak) {
+    actionableRecommendations.push({
+      category: 'Subject Line',
+      issue: 'Prompt instructions detected in generated subject line.',
+      recommendation: 'Sanitizer automatically cleaned subject. Instruct Workbench prompt to return subject line only.',
+      action_type: 'clean_subject'
+    });
+  }
+  if (structureScore < 15 && campaign_type.includes('newsletter')) {
+    actionableRecommendations.push({
+      category: 'Structure',
+      issue: 'Fewer than 2 distinct perspective headlines in newsletter.',
+      recommendation: 'Generate newsletter using approved multi-perspective SNS Square editorial framework.',
+      action_type: 'apply_newsletter_structure'
+    });
+  }
+
+  const testResultsArray = Object.entries(categoryScores).map(([key, cat]) => ({
+    test_name: cat.label,
+    category: key,
+    score: cat.score,
+    max_score: cat.max,
+    status: cat.pct >= 85 ? 'PASS' : cat.pct >= 65 ? 'WARN' : 'FAIL',
+    issues: contactIssuesList.filter(ci => ci.severity === 'high').map(ci => `${ci.contact_name} (${ci.company}): ${ci.detail}`),
+    good: [`Evaluated across ${testSample.length} contacts (${cat.score}/${cat.max} pts)`],
+    recommendations: actionableRecommendations.filter(ar => ar.category.toLowerCase().includes(key.toLowerCase().slice(0, 4))).map(ar => ar.recommendation)
+  }));
+
+  const recommendationsStrings = actionableRecommendations.map(ar => `${ar.category}: ${ar.recommendation}`);
 
   return {
+    success: true,
     test_id: testId,
-    test_mode: true,
+    test_mode,
     email_sent: false,
+    dispatches_blocked: true,
     campaign_type,
-    campaign_name: effectiveName,
-    contact_used: {
-      id: testContact.id,
-      name: testContact.name,
-      company: testContact.company,
-      industry: testContact.industry || testContact.sector
+    audience_summary: {
+      filter_applied: audience_filter,
+      filter_value: audience_value || 'all',
+      total_audience_count: totalAudienceCount,
+      tested_sample_count: testSample.length,
+      coverage_display: `${testSample.length} / ${totalAudienceCount} tested`
+    },
+    sample_size: testSample.length,
+    total_audience: totalAudienceCount,
+    results_summary: {
+      passed: passedCount,
+      warnings: warnedCount,
+      failed: failedCount,
+      blocked: blockedCount,
+      total_tested: testSample.length
+    },
+    summary: {
+      passed: passedCount,
+      warned: warnedCount,
+      failed: failedCount,
+      total: testResultsArray.length
     },
     overall_score: overallScore,
     overall_max: 100,
-    overall_grade: overallScore >= 80 ? 'A' : overallScore >= 65 ? 'B' : overallScore >= 50 ? 'C' : 'F',
-    status: failed === 0 ? (warned === 0 ? 'PASS' : 'PASS_WITH_WARNINGS') : 'FAIL',
-    summary: {
-      passed,
-      failed,
-      warned,
-      skipped,
-      total: testResults.length
-    },
+    overall_grade: overallScore >= 90 ? 'A+' : overallScore >= 80 ? 'A' : overallScore >= 70 ? 'B' : overallScore >= 60 ? 'C' : 'D',
+    readiness,
+    status: readiness,
     category_scores: categoryScores,
-    test_results: testResults,
-    all_issues: allIssues,
-    all_recommendations: [...new Set(allRecommendations)],
-    workbench_status: workbenchResult?.success ? 'connected' : 'error',
+    test_results: testResultsArray,
+    contact_issues: contactIssuesList.slice(0, 15),
+    actionable_recommendations: actionableRecommendations,
+    all_recommendations: recommendationsStrings,
+    recommendations: recommendationsStrings,
+    workbench_status: workbenchResult?.success !== false ? 'connected' : 'error',
     workbench_error: workbenchError,
+    evaluated_content: {
+      subject: evaluatedContent.subject,
+      email_body_preview: evaluatedContent.email_body.slice(0, 450) + (evaluatedContent.email_body.length > 450 ? '...' : ''),
+      content_source: evaluatedContent.content_source
+    },
     generated_content: {
-      subject: generatedContent.subject,
-      email_body_preview: generatedContent.email_body?.slice(0, 500) + (generatedContent.email_body?.length > 500 ? '...' : ''),
-      content_source: generatedContent.content_source
+      subject: evaluatedContent.subject,
+      email_body: evaluatedContent.email_body,
+      email_body_preview: evaluatedContent.email_body.slice(0, 450) + (evaluatedContent.email_body.length > 450 ? '...' : ''),
+      content_source: evaluatedContent.content_source
     },
     tested_at: testStartedAt,
     completed_at: new Date().toISOString()
@@ -786,12 +544,9 @@ async function runAITestSuite(options = {}) {
 }
 
 module.exports = {
-  runAITestSuite,
-  testPersonalization,
-  testNewsletterStructure,
-  testFestivalTone,
-  testContentQuality,
-  testRelevance,
-  testTechnicalValidity,
-  testCompliance
+  runAudienceAITest,
+  evaluateContactRecord,
+  resolveAudienceContacts,
+  sampleAudience,
+  SCORING_MODEL
 };

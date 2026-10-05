@@ -77,6 +77,7 @@ import AiTestEnvironmentTab from './nurturing/AiTestEnvironmentTab';
 import AiProductReviewTab from './nurturing/AiProductReviewTab';
 import ContactResearchTab from './nurturing/ContactResearchTab';
 import InstantOccasionWishTab from './nurturing/InstantOccasionWishTab';
+import ClientEmailPreview from './nurturing/ClientEmailPreview';
 
 const API_BASE = '/api';
 const PRODUCTION_APP_URL = 'https://contact-data-extraction-structuring-agent.onrender.com';
@@ -181,6 +182,28 @@ function renderEmailInline(text, keyPrefix) {
 }
 
 function EmailBodyPreview({ content }) {
+  if (!content) return null;
+  const raw = String(content).trim();
+  const hasHtml = /<\/?(p|div|table|h[1-6]|ul|ol|strong|b|em|span|br|a|tr|td|th|section|article)\b/i.test(raw);
+  if (hasHtml) {
+    const sanitizedHtml = DOMPurify.sanitize(raw, {
+      ALLOWED_TAGS: [
+        'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'strike',
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li',
+        'a', 'table', 'tbody', 'tr', 'td', 'th', 'thead', 'div', 'span', 'img', 'hr', 'blockquote'
+      ],
+      ALLOWED_ATTR: ['href', 'target', 'rel', 'style', 'class', 'src', 'alt', 'width', 'height', 'align', 'border', 'cellpadding', 'cellspacing', 'title'],
+      ADD_ATTR: ['target']
+    });
+    return (
+      <div
+        className="dn-rendered-email-frame"
+        dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
+        style={{ fontSize: 14, lineHeight: 1.65, color: '#1e293b' }}
+      />
+    );
+  }
+
   const text = emailPreviewSourceText(content);
   const lines = text.split('\n');
   const blocks = [];
@@ -1511,25 +1534,19 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
         <div className="dn-subbar-left">
           <div className="dn-subbar-tabs">
             <button
-              className={`dn-subbar-tab ${activeTab === 'leads' ? 'active' : ''}`}
-              onClick={() => setActiveTab('leads')}
-            >
-              <Users size={14} /> Client Leads ({totalClients})
-            </button>
-            <button
               className={`dn-subbar-tab ${activeTab === 'dashboard' ? 'active' : ''}`}
               onClick={() => setActiveTab('dashboard')}
             >
-              <LayoutDashboard size={14} /> Executive Dashboard
+              <LayoutDashboard size={14} /> Overview
             </button>
             <button
-              className={`dn-subbar-tab ${(activeTab === 'create_campaign' || activeTab === 'generator') ? 'active' : ''}`}
-              onClick={() => handleOpenCreateCampaign('All Past Clients')}
+              className={`dn-subbar-tab ${activeTab === 'leads' ? 'active' : ''}`}
+              onClick={() => setActiveTab('leads')}
             >
-              <Plus size={14} /> Create Campaign
+              <Users size={14} /> Contacts ({totalClients})
             </button>
             <button
-              className={`dn-subbar-tab ${activeTab === 'campaigns' ? 'active' : ''}`}
+              className={`dn-subbar-tab ${(activeTab === 'campaigns' || activeTab === 'create_campaign' || activeTab === 'generator') ? 'active' : ''}`}
               onClick={() => setActiveTab('campaigns')}
             >
               <Calendar size={14} /> Campaigns ({campaigns.length})
@@ -1541,40 +1558,34 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
               <Layers size={14} /> Templates
             </button>
             <button
-              className={`dn-subbar-tab ${activeTab === 'engagement' ? 'active' : ''}`}
-              onClick={() => setActiveTab('engagement')}
-            >
-              <Activity size={14} /> Engagement
-            </button>
-            <button
-              className={`dn-subbar-tab ${activeTab === 'workflow' ? 'active' : ''}`}
-              onClick={() => setActiveTab('workflow')}
-            >
-              <Sliders size={14} /> SNS Workbench Flow
-            </button>
-            <button
-              className={`dn-subbar-tab ${activeTab === 'ai_test' ? 'active' : ''}`}
-              onClick={() => setActiveTab('ai_test')}
-            >
-              <FlaskConical size={14} /> AI Test Environment
-            </button>
-            <button
-              className={`dn-subbar-tab ${activeTab === 'ai_review' ? 'active' : ''}`}
-              onClick={() => setActiveTab('ai_review')}
-            >
-              <Cpu size={14} /> AI Product Review
-            </button>
-            <button
               className={`dn-subbar-tab ${activeTab === 'contact_research' ? 'active' : ''}`}
               onClick={() => setActiveTab('contact_research')}
             >
-              <Search size={14} /> Research Contact
+              <Search size={14} /> Research
             </button>
             <button
               className={`dn-subbar-tab ${activeTab === 'instant_wish' ? 'active' : ''}`}
               onClick={() => setActiveTab('instant_wish')}
             >
-              <Gift size={14} /> Instant Occasion Wish
+              <Gift size={14} /> Occasions
+            </button>
+            <button
+              className={`dn-subbar-tab ${activeTab === 'engagement' ? 'active' : ''}`}
+              onClick={() => setActiveTab('engagement')}
+            >
+              <Activity size={14} /> Analytics
+            </button>
+            <button
+              className={`dn-subbar-tab ${(activeTab === 'ai_test' || activeTab === 'ai_review') ? 'active' : ''}`}
+              onClick={() => setActiveTab('ai_test')}
+            >
+              <FlaskConical size={14} /> AI Quality
+            </button>
+            <button
+              className={`dn-subbar-tab ${activeTab === 'workflow' ? 'active' : ''}`}
+              onClick={() => setActiveTab('workflow')}
+            >
+              <Sliders size={14} /> Workflow
             </button>
           </div>
         </div>
@@ -4484,24 +4495,42 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
         )}
 
         {/* ══════════════════════════════════════════════════════════════════
-            TAB 8: AI TEST ENVIRONMENT
+            TAB 8 & 9: AI QUALITY (TEST ENVIRONMENT & PRODUCT REVIEW)
             ══════════════════════════════════════════════════════════════════ */}
-        {activeTab === 'ai_test' && (
-          <AiTestEnvironmentTab
-            contacts={contacts}
-            apiBase={API_BASE}
-            showNotification={showNotification}
-          />
-        )}
-
-        {/* ══════════════════════════════════════════════════════════════════
-            TAB 9: AI PRODUCT REVIEW
-            ══════════════════════════════════════════════════════════════════ */}
-        {activeTab === 'ai_review' && (
-          <AiProductReviewTab
-            apiBase={API_BASE}
-            showNotification={showNotification}
-          />
+        {(activeTab === 'ai_test' || activeTab === 'ai_review') && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ display: 'flex', gap: 8, borderBottom: '1px solid #e2e8f0', paddingBottom: 10 }}>
+              <button
+                type="button"
+                className={`dn-btn dn-btn-sm ${activeTab === 'ai_test' ? 'dn-btn-primary' : 'dn-btn-secondary'}`}
+                onClick={() => setActiveTab('ai_test')}
+                style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+              >
+                <FlaskConical size={14} /> AI Quality Test Environment
+              </button>
+              <button
+                type="button"
+                className={`dn-btn dn-btn-sm ${activeTab === 'ai_review' ? 'dn-btn-primary' : 'dn-btn-secondary'}`}
+                onClick={() => setActiveTab('ai_review')}
+                style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+              >
+                <Cpu size={14} /> AI Product Architecture Review
+              </button>
+            </div>
+            {activeTab === 'ai_test' && (
+              <AiTestEnvironmentTab
+                contacts={contacts}
+                apiBase={API_BASE}
+                showNotification={showNotification}
+              />
+            )}
+            {activeTab === 'ai_review' && (
+              <AiProductReviewTab
+                apiBase={API_BASE}
+                showNotification={showNotification}
+              />
+            )}
+          </div>
         )}
 
         {/* ══════════════════════════════════════════════════════════════════
