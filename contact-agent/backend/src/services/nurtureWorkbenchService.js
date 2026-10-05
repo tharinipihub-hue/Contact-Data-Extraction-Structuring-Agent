@@ -234,6 +234,7 @@ class WorkbenchService {
       throw error;
     }
 
+    console.info(`[NurturingProductionWebhook] POST ${targetUrl} (exact runtime URL)`);
     let response;
     try {
       response = await fetch(targetUrl, {
