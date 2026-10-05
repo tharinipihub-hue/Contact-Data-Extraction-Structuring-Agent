@@ -11,6 +11,15 @@
   width: 100%;
   min-width: 0;
   max-width: 100%;
+  overflow-x: clip;
+}
+
+/* The app content container is intentionally capped for most tabs. Let the
+   template editor use the full width of its workspace. */
+.dn-content:has(.sns-template-system) {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
 }
 
 .sns-template-wizard,
@@ -53,20 +62,45 @@
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
-  padding: 9px 11px;
+  min-height: 42px;
+  padding: 10px 12px;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
   background: #ffffff;
   color: #0f172a;
   font: inherit;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.45;
 }
 
 .sns-template-system textarea.sns-template-control {
-  min-height: 112px;
+  min-height: 150px;
   resize: vertical;
   white-space: pre-wrap;
+}
+
+.sns-template-system .sns-template-control:focus {
+  outline: 2px solid rgba(37, 99, 235, 0.2);
+  border-color: #2563eb;
+}
+
+.sns-template-form-grid > .sns-template-field:nth-child(2),
+.sns-template-form-grid > .sns-template-field:nth-child(3),
+.sns-template-form-grid > .sns-template-field:nth-child(4) {
+  grid-column: span 1;
+}
+
+.sns-template-system input.sns-template-control,
+.sns-template-system textarea.sns-template-control,
+.sns-template-system select.sns-template-control {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.sns-template-system input[type="radio"] {
+  width: auto;
+  min-width: 0;
 }
 
 .sns-template-block-card {
@@ -98,5 +132,27 @@
   .sns-template-system .dn-panel {
     padding-left: 16px !important;
     padding-right: 16px !important;
+  }
+
+  .sns-template-system {
+    width: 100%;
+  }
+
+  .sns-template-system .dn-panel,
+  .sns-template-wizard,
+  .sns-template-block-card {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .sns-template-system .sns-template-control {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .sns-template-form-grid > .sns-template-field,
+  .sns-template-block-fields-grid > *,
+  .sns-template-block-cta-grid > * {
+    grid-column: 1 / -1;
   }
 }

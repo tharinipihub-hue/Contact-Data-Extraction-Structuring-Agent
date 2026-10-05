@@ -244,7 +244,7 @@ function extractWorkbenchAiContent(data) {
       value.forEach(item => queue.push(item?.json || item));
       continue;
     }
-    ['output', 'items', 'json', 'body', 'data', 'result', 'content', 'nurtured_contact'].forEach(key => {
+    ['output', 'items', 'json', 'body', 'data', 'result', 'content', 'nurtured_contact', 'workbench_content', 'preview'].forEach(key => {
       const nested = value[key];
       if (nested && typeof nested === 'object') queue.push(nested);
     });
@@ -322,7 +322,7 @@ function extractWorkbenchAiContent(data) {
 
   // 2. Check direct / structured fields in Workbench response
   for (const src of payloads) {
-    if (src && typeof src === 'object') {
+    if (src && typeof src === 'object' && src.success !== false && src.status !== 'error' && !src.error) {
       const subject = src.subject;
       const email_body = src.email_body;
       if (subject && email_body && typeof subject === 'string' && typeof email_body === 'string' && subject.trim() && email_body.trim()) {
@@ -499,7 +499,8 @@ router.post('/generate', async (req, res) => {
     const result = await workbenchService.triggerNurturingProductionWorkflow(payload);
     
     // Robustly extract Workbench Groq AI or workflow output
-    const extracted = extractWorkbenchAiContent(result.data);
+    const extracted = result.normalizedContent || extractWorkbenchAiContent(result.data);
+    console.info(`[Campaigns /generate] Workbench normalized generated content=${Boolean(extracted?.subject && extracted?.email_body)} http_status=${result.httpStatus}`);
 
     if (extracted && extracted.subject && extracted.email_body && result.data?.success !== false) {
       const campaignId = req.body.campaign_id || `CMP-${require('crypto').randomUUID()}`;
@@ -598,7 +599,8 @@ router.post('/generate', async (req, res) => {
       error: 'Workbench responded, but no usable campaign content was returned.',
       message: 'Workbench responded, but no usable campaign content was returned.',
       workbench_http_status: result.httpStatus,
-      workbench_response: process.env.NODE_ENV === 'production' ? undefined : result.data,
+      workbench_response: result.data,
+      normalized_generated_content: null,
       requires_workbench: true
     });
   } catch (err) {
@@ -641,7 +643,8 @@ router.post('/generate', async (req, res) => {
       error: err.message,
       message: userMessage,
       workbench_http_status: err.status || null,
-      workbench_response: process.env.NODE_ENV === 'production' ? undefined : (err.responseData || null),
+      workbench_endpoint: err.targetUrl || 'https://api.agents.snsihub.ai/webhook/client-nurturing',
+      workbench_response: err.responseData || null,
       action_label: is404 ? 'Check Workbench Deployment' : 'Retry Generation',
       action_hint: is404 ? 'In SNS Workbench, open the Client Nurturing workflow and click "Deploy Live".' : undefined,
       requires_workbench: true

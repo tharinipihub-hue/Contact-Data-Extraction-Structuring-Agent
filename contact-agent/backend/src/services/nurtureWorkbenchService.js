@@ -9,40 +9,28 @@ class WorkbenchService {
   constructor() {
     this.webhookUrl = process.env.NURTURE_WORKBENCH_WEBHOOK_URL || 'https://api.agents.snsihub.ai/webhook/client-nurturing';
     this.testWebhookUrl = process.env.NURTURE_WORKBENCH_TEST_WEBHOOK_URL || 'https://api.agents.snsihub.ai/webhook-test/client-nurturing';
-    this.preferredWebhookUrl = null;
   }
 
   getWebhookUrl(payload = {}) {
     // Read at call time so tests and managed runtimes can update env before requests.
     const isTestMode = payload.is_test_mode === true || payload.test_mode === true;
-    const isTestEnv = process.env.TEST_MODE === 'true' || process.env.NODE_ENV === 'test' || process.env.USE_WORKBENCH_TEST_WEBHOOK === 'true';
 
     const testUrl = process.env.NURTURE_WORKBENCH_TEST_WEBHOOK_URL || this.testWebhookUrl;
     const prodUrl = process.env.NURTURE_WORKBENCH_WEBHOOK_URL || this.webhookUrl;
 
-    if (isTestMode || isTestEnv) {
-      return testUrl || prodUrl;
-    }
-    // Return dynamically verified active endpoint if production returned 404
-    if (this.preferredWebhookUrl) {
-      return this.preferredWebhookUrl;
-    }
-    return prodUrl || testUrl;
+    if (isTestMode) return testUrl;
+    // Only explicit test requests may use the test endpoint.
+    return prodUrl;
   }
 
   /**
    * Safe status check: queries the configured SNS Workbench webhook URLs
-   * to determine real-time connectivity and deployment status without fabricating.
-   * If the production webhook returns 404 (workflow inactive), automatically checks
-   * the test webhook to verify if the workflow is operational.
+   * to determine production connectivity and deployment status without fabricating.
+   * Test webhook probes are exposed by the explicit test webhook action only.
    */
   async getWorkbenchStatus() {
-    const useTestWebhook = process.env.USE_WORKBENCH_TEST_WEBHOOK === 'true' || process.env.TEST_MODE === 'true';
     const prodUrl = process.env.NURTURE_WORKBENCH_WEBHOOK_URL || this.webhookUrl;
-    const testUrl = process.env.NURTURE_WORKBENCH_TEST_WEBHOOK_URL || this.testWebhookUrl;
-
-    const primaryUrl = useTestWebhook ? (testUrl || prodUrl) : (prodUrl || testUrl);
-    const secondaryUrl = primaryUrl === prodUrl ? testUrl : prodUrl;
+    const primaryUrl = prodUrl;
 
     if (!primaryUrl) {
       return {
@@ -68,7 +56,6 @@ class WorkbenchService {
       const durationMs = Date.now() - startedAt;
 
       if (res.status >= 200 && res.status < 300) {
-        this.preferredWebhookUrl = primaryUrl;
         return {
           status: 'connected',
           label: 'Connected',
@@ -76,46 +63,13 @@ class WorkbenchService {
           http_status: res.status,
           duration_ms: durationMs,
           endpoint: primaryUrl,
-          mode: primaryUrl === testUrl ? 'test_webhook' : 'production',
-          message: primaryUrl === testUrl
-            ? 'SNS Workbench test webhook is live and operational.'
-            : 'SNS Workbench production webhook is live and responsive.',
+          mode: 'production',
+          message: 'SNS Workbench production webhook is live and responsive.',
           action_label: 'Workbench Active'
         };
       }
 
       if (res.status === 404) {
-        // If primary URL was 404, check secondary URL (e.g. test webhook)
-        if (secondaryUrl && secondaryUrl !== primaryUrl) {
-          try {
-            const secStartedAt = Date.now();
-            const secRes = await fetch(secondaryUrl, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'User-Agent': 'Digital-Client-Nurturing-Backend/1.0' },
-              body: JSON.stringify({ action: 'ping', test: true }),
-              signal: AbortSignal.timeout(6000)
-            });
-            const secDuration = Date.now() - secStartedAt;
-
-            if (secRes.status >= 200 && secRes.status < 300) {
-              this.preferredWebhookUrl = secondaryUrl;
-              return {
-                status: 'connected',
-                label: 'Connected',
-                connected: true,
-                http_status: secRes.status,
-                duration_ms: secDuration,
-                endpoint: secondaryUrl,
-                mode: 'test_webhook',
-                message: 'SNS Workbench test webhook is live and responsive (production webhook is pending deployment).',
-                action_label: 'Workbench Active'
-              };
-            }
-          } catch (_secErr) {
-            // Secondary probe failed; fall through to 404 report
-          }
-        }
-
         return {
           status: 'workflow_not_deployed',
           label: 'Workflow Not Deployed',
@@ -153,35 +107,6 @@ class WorkbenchService {
         action_label: 'Inspect Webhook'
       };
     } catch (err) {
-      // Check secondary URL if primary had a network error
-      if (secondaryUrl && secondaryUrl !== primaryUrl) {
-        try {
-          const secStartedAt = Date.now();
-          const secRes = await fetch(secondaryUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'User-Agent': 'Digital-Client-Nurturing-Backend/1.0' },
-            body: JSON.stringify({ action: 'ping', test: true }),
-            signal: AbortSignal.timeout(6000)
-          });
-          const secDuration = Date.now() - secStartedAt;
-
-          if (secRes.status >= 200 && secRes.status < 300) {
-            this.preferredWebhookUrl = secondaryUrl;
-            return {
-              status: 'connected',
-              label: 'Connected',
-              connected: true,
-              http_status: secRes.status,
-              duration_ms: secDuration,
-              endpoint: secondaryUrl,
-              mode: 'test_webhook',
-              message: 'SNS Workbench test webhook is live and responsive.',
-              action_label: 'Workbench Active'
-            };
-          }
-        } catch (_secErr) {}
-      }
-
       return {
         status: 'connection_error',
         label: 'Connection Error',
@@ -336,13 +261,19 @@ class WorkbenchService {
     try { responseData = JSON.parse(responseText); }
     catch (_err) { responseData = responseText ? { text: responseText.slice(0, 2000) } : null; }
 
-    console.info(`[NurturingWebhook] POST ${parsedTarget.host}${parsedTarget.pathname} status=${response.status} mode=production`);
+    let outputData = responseData;
+    if (Array.isArray(outputData) && outputData[0]) outputData = outputData[0].json || outputData[0];
+    else if (outputData?.json) outputData = outputData.json;
+    if (outputData?.data && !outputData.nurtured_contact && outputData.data.nurtured_contact) outputData = outputData.data;
+
+    // Accept only actual subject/body values, including the workflow's observed
+    // { success, executionId, result: { subject, email_body } } wrapper.
+    const normalizedContent = require('../routes/campaigns').extractWorkbenchAiContent(outputData);
+    const hasGeneratedContent = Boolean(normalizedContent?.subject && normalizedContent?.email_body);
+    console.info(`[NurturingWebhook] POST ${parsedTarget.host}${parsedTarget.pathname} mode=production status=${response.status} response=${JSON.stringify(responseData)} normalized_generated_content=${hasGeneratedContent}`);
+
     if (response.status >= 200 && response.status < 300) {
-      let outputData = responseData;
-      if (Array.isArray(outputData) && outputData[0]) outputData = outputData[0].json || outputData[0];
-      else if (outputData?.json) outputData = outputData.json;
-      if (outputData?.data && !outputData.nurtured_contact && outputData.data.nurtured_contact) outputData = outputData.data;
-      return { success: true, source: 'workbench_production_webhook', targetUrl, httpStatus: response.status, data: outputData };
+      return { success: true, source: 'workbench_production_webhook', targetUrl, httpStatus: response.status, data: outputData, normalizedContent };
     }
 
     const error = new Error(typeof responseData?.error === 'string'
@@ -357,6 +288,7 @@ class WorkbenchService {
     error.actionLabel = response.status === 404 ? 'Check Workbench Deployment' : 'Retry Generation';
     error.targetUrl = targetUrl;
     error.responseData = responseData;
+    error.normalizedGeneratedContent = null;
     throw error;
   }
 
@@ -448,37 +380,8 @@ class WorkbenchService {
       };
     }
 
-    // Workbench returned an error or inactive status
+    // Workbench returned an error or inactive status; never retry against test.
     if (status === 404) {
-      const testUrl = process.env.NURTURE_WORKBENCH_TEST_WEBHOOK_URL || this.testWebhookUrl;
-      if (testUrl && targetUrl !== testUrl) {
-        console.warn(`[NurturingWebhook] Production webhook returned 404 at ${targetUrl}. Attempting automatic fallback to active test webhook: ${testUrl}`);
-        try {
-          const fallbackResp = await doRequest(testUrl);
-          if (fallbackResp.status >= 200 && fallbackResp.status < 300) {
-            let outputData = fallbackResp.data;
-            if (Array.isArray(fallbackResp.data) && fallbackResp.data[0]) {
-              outputData = fallbackResp.data[0].json || fallbackResp.data[0];
-            } else if (fallbackResp.data && fallbackResp.data.json) {
-              outputData = fallbackResp.data.json;
-            }
-            if (outputData && outputData.data && !outputData.nurtured_contact && outputData.data.nurtured_contact) {
-              outputData = outputData.data;
-            }
-            this.preferredWebhookUrl = testUrl;
-            console.info(`[NurturingWebhook] Fallback to test webhook succeeded! status=${fallbackResp.status}`);
-            return {
-              success: true,
-              source: 'workbench_test_webhook_fallback',
-              targetUrl: testUrl,
-              data: outputData
-            };
-          }
-        } catch (fallbackErr) {
-          console.warn(`[NurturingWebhook] Fallback to test webhook also failed: ${fallbackErr.message}`);
-        }
-      }
-
       const err = new Error(`SNS Workbench workflow is not active or deployed at ${targetUrl} (HTTP 404). In SNS Workbench, click "Deploy Live" (or "▶ Run Workflow") to enable webhook execution.`);
       err.status = 404;
       err.errorType = 'workflow_not_deployed';

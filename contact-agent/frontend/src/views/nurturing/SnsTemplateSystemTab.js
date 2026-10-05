@@ -376,10 +376,7 @@ export default function SnsTemplateSystemTab({
     setIsCheckingWorkbench(true);
     try {
       const status = await axios.get(`${apiBase.replace(/\/$/, '')}/nurture/workbench-status`, { timeout: 10000 });
-      const detail = status.data?.mode === 'test_webhook'
-        ? 'The TEST webhook responded. Template generation still uses the production webhook.'
-        : status.data?.message || 'Deployment status refreshed.';
-      setAiError(current => ({ ...current, message: `${current?.message || 'Production generation is unavailable.'} ${detail}` }));
+      setAiError(current => ({ ...current, statusCheck: status.data }));
     } catch (error) {
       setAiError(current => ({ ...current, message: `${current?.message || 'Production generation is unavailable.'} Deployment status check failed: ${error.response?.data?.message || error.message}` }));
     } finally {
@@ -392,10 +389,6 @@ export default function SnsTemplateSystemTab({
     if (!activeTemplate) return;
     if (!aiTopic.trim()) {
       setAiError({ message: 'Enter a campaign focus or topic before requesting SNS Workbench synthesis.', errorType: 'validation_error' });
-      return;
-    }
-    if (!previewContact || previewContact.opt_in !== true) {
-      setAiError({ message: 'Select an opted-in preview recipient before requesting SNS Workbench synthesis.', errorType: 'validation_error' });
       return;
     }
     setIsAiGenerating(true);
@@ -411,12 +404,14 @@ export default function SnsTemplateSystemTab({
         topic: topicToUse,
         developer_input: topicToUse,
         brief: topicToUse,
-        contact_id: previewContact.id,
-        contacts: [previewContact],
-        sector: previewContact.sector || previewContact.industry || 'Technology'
+        ...(previewContact ? {
+          contact_id: previewContact.id,
+          contacts: [previewContact],
+          sector: previewContact.sector || previewContact.industry || 'Technology'
+        } : {})
       };
 
-      const res = await axios.post(`${apiBase}/campaigns/generate`, payload, { timeout: 35000 });
+      const res = await axios.post(`${apiBase.replace(/\/$/, '')}/campaigns/generate`, payload, { timeout: 35000 });
       if (!res.data?.success || res.data?.content_source !== 'workbench') {
         throw { response: { status: res.status, data: res.data } };
       }
@@ -431,7 +426,13 @@ export default function SnsTemplateSystemTab({
         if (preview.heroHeadline) setHeroHeadline(preview.heroHeadline);
         if (preview.heroBody) setHeroBody(preview.heroBody);
         if (preview.articles) setBlocks(current => preview.articles.map((article, index) => ({
-          ...(current[index] || {}), ...article, id: current[index]?.id || `workbench-${index + 1}`
+          ...(current[index] || {}),
+          headline: article.headline || current[index]?.headline || '',
+          body: article.body || current[index]?.body || '',
+          image: article.image || current[index]?.image || '',
+          ctaText: article.ctaText || current[index]?.ctaText || '',
+          ctaUrl: article.ctaUrl || current[index]?.ctaUrl || '',
+          id: current[index]?.id || `workbench-${index + 1}`
         })));
         if (preview.synthesisPoints) setFoundations(preview.synthesisPoints);
         setWorkbenchResponseStatus(res.data?.workbench_http_status || 'success');
@@ -443,11 +444,12 @@ export default function SnsTemplateSystemTab({
     } catch (err) {
       const errData = err.response?.data;
       const errMsg = errData?.error || err.message;
-      const workbenchStatus = errData?.workbench_http_status;
+      const workbenchStatus = errData?.workbench_http_status || err.response?.status;
+      const isWorkflow404 = workbenchStatus === 404 || errData?.error_type === 'workflow_not_deployed';
       setWorkbenchResponseStatus(workbenchStatus || errData?.error_type || 'generation_failed');
       setAiError({
-        message: workbenchStatus === 404 || errData?.error_type === 'workflow_not_deployed'
-          ? `Workbench generation unavailable. The SNS Workbench Client Nurturing workflow is not active/deployed. Workbench response: ${errMsg}`
+        message: isWorkflow404
+          ? `Production webhook returned HTTP 404: ${errMsg}.`
           : workbenchStatus === 401 || workbenchStatus === 403 || errData?.error_type === 'auth_error'
             ? 'SNS Workbench authentication/configuration error. Check the production webhook credentials.'
             : errData?.error_type === 'timeout' || errData?.error_type === 'network_error'
@@ -456,11 +458,14 @@ export default function SnsTemplateSystemTab({
                 ? 'Workbench responded, but no usable campaign content was returned.'
                 : errData?.message || errMsg,
         actionLabel: errData?.action_label,
-        actionHint: errData?.action_hint,
+        actionHint: isWorkflow404
+          ? 'Deploy/activate the Client Nurturing workflow in SNS Workbench before generating campaign content.'
+          : errData?.action_hint,
         errorType: errData?.error_type,
-        httpStatus: workbenchStatus || err.response?.status,
-        response: errData?.workbench_response,
-        development: process.env.NODE_ENV !== 'production'
+        httpStatus: workbenchStatus,
+        endpoint: errData?.workbench_endpoint || 'https://api.agents.snsihub.ai/webhook/client-nurturing',
+        response: errData?.workbench_response || errData || null,
+        development: true
       });
       if (showNotification) {
         showNotification(`Workbench generation: ${errMsg}`, true);
@@ -836,13 +841,14 @@ export default function SnsTemplateSystemTab({
                   <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 6, padding: '10px 14px', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                     <AlertTriangle size={15} color="#dc2626" style={{ marginTop: 2, flexShrink: 0 }} />
                     <div style={{ fontSize: 12, color: '#991b1b', lineHeight: 1.45 }}>
-                      <strong>{aiError.errorType === 'workflow_not_deployed' ? 'Workbench generation unavailable' : 'Workbench Generation Notice'}:</strong> {aiError.message}
+                      <strong>{aiError.errorType === 'workflow_not_deployed' || aiError.httpStatus === 404 ? 'Workbench generation unavailable' : 'Workbench Generation Notice'}</strong>
+                      <div style={{ marginTop: 4 }}>{aiError.message}</div>
                       {aiError.actionHint && (
                         <div style={{ marginTop: 4, color: '#7f1d1d', fontSize: 11.5 }}>
                           <em>Guidance: {aiError.actionHint}</em>
                         </div>
                       )}
-                      {aiError.errorType === 'workflow_not_deployed' && (
+                      {(aiError.errorType === 'workflow_not_deployed' || aiError.httpStatus === 404) && !aiError.statusCheck && (
                         <button type="button" className="dn-btn dn-btn-secondary dn-btn-xs" onClick={checkWorkbenchDeployment} disabled={isCheckingWorkbench} style={{ marginTop: 8 }}>
                           {isCheckingWorkbench ? 'Checking deployment...' : (aiError.actionLabel || 'Check Workbench Deployment')}
                         </button>
@@ -850,8 +856,11 @@ export default function SnsTemplateSystemTab({
                       {aiError.development && (
                         <details style={{ marginTop: 8 }}>
                           <summary>Development diagnostics</summary>
-                          <div>Template: {activeTemplate?.name || 'none'}; usable generated content received: no; Workbench HTTP status: {aiError.httpStatus || workbenchResponseStatus}</div>
-                          {aiError.response && <pre style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', maxHeight: 180, overflow: 'auto' }}>{JSON.stringify(aiError.response, null, 2)}</pre>}
+                          <div>HTTP status: {aiError.httpStatus || workbenchResponseStatus}</div>
+                          <div>Endpoint: {aiError.endpoint || 'https://api.agents.snsihub.ai/webhook/client-nurturing'}</div>
+                          <div>Method: POST</div>
+                          {aiError.response && <pre style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', maxHeight: 240, overflow: 'auto' }}>{JSON.stringify(aiError.response, null, 2)}</pre>}
+                          {aiError.statusCheck && <pre style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', maxHeight: 180, overflow: 'auto' }}>{JSON.stringify(aiError.statusCheck, null, 2)}</pre>}
                         </details>
                       )}
                     </div>
@@ -1341,7 +1350,8 @@ export default function SnsTemplateSystemTab({
                         category: activeTemplate.category,
                         campaignName,
                         subjectLine,
-        content: { customization: { headerTitle, headerSubtitle, greetingType, heroHeadline, heroBody, blocks, foundationsTitle, foundations, closingText, promoBanner } },
+                        defaultSubject: activeTemplate.defaultSubject,
+                        content: { customization: { headerTitle, headerSubtitle, greetingType, heroHeadline, heroBody, blocks, foundationsTitle, foundations, closingText, promoBanner } },
                         html: compiledEmailHtml,
                         contentVersion: 'v1'
                       })}

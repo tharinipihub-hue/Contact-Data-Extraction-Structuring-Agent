@@ -1,21 +1,40 @@
 'use strict';
 
-/**
- * Map the current campaigns/generate API contract into the SNS template model.
- * The backend returns Workbench's subject/email_body pair plus the sanitized
- * original copy in preview.body_text_only. Missing sections intentionally stay
- * absent so the selected template retains its controlled defaults.
- */
+/** Normalize only the subject/body fields established by the Workbench route,
+ * traversing the wrappers actually emitted by Workbench and this application. */
 function normalizeWorkbenchTemplateContent(apiResponse) {
-  const preview = apiResponse?.preview;
-  const raw = apiResponse?.workbench_content;
-  if (!preview || !raw || typeof raw.subject !== 'string' || typeof raw.email_body !== 'string') return null;
+  const queue = [apiResponse];
+  const visited = new Set();
+  const payloads = [];
+  while (queue.length) {
+    const value = queue.shift();
+    if (!value || typeof value !== 'object' || visited.has(value)) continue;
+    visited.add(value);
+    payloads.push(value);
+    if (Array.isArray(value)) {
+      value.forEach(item => queue.push(item?.json || item));
+      continue;
+    }
+    ['output', 'items', 'json', 'body', 'data', 'result', 'content', 'nurtured_contact', 'workbench_content', 'preview'].forEach(key => {
+      if (value[key] && typeof value[key] === 'object') queue.push(value[key]);
+    });
+  }
 
-  const normalized = { subjectLine: typeof preview.subject === 'string' ? preview.subject.trim() : raw.subject.trim() };
-  const bodyHtml = typeof preview.body_text_only === 'string' ? preview.body_text_only : raw.email_body;
+  const raw = payloads.find(value => typeof value.subject === 'string' && typeof value.email_body === 'string');
+  const explicitPreview = apiResponse?.preview;
+  const preview = explicitPreview && typeof explicitPreview.subject === 'string'
+    ? explicitPreview
+    : payloads.find(value => typeof value.subject === 'string' && typeof value.body_text_only === 'string')
+      || payloads.find(value => typeof value.subject === 'string' && typeof value.email_body === 'string');
+  if (!raw && !preview) return null;
+
+  const subject = preview?.subject || raw?.subject;
+  const bodyHtml = preview?.body_text_only || preview?.email_body || raw?.email_body || '';
+  const normalized = {};
+  if (typeof subject === 'string' && subject.trim()) normalized.subjectLine = subject.trim();
   if (!bodyHtml.trim() || typeof DOMParser === 'undefined') {
     if (bodyHtml.trim()) normalized.heroBody = bodyHtml.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-    return normalized;
+    return Object.keys(normalized).length ? normalized : null;
   }
 
   const parsed = new DOMParser().parseFromString(bodyHtml, 'text/html');
@@ -66,7 +85,7 @@ function normalizeWorkbenchTemplateContent(apiResponse) {
   if (openingParagraphs.length) normalized.heroBody = openingParagraphs.join('\n\n');
   if (blocksFromWorkbench.length) normalized.articles = blocksFromWorkbench.filter(block => block.headline || block.body);
   if (synthesisPoints.length) normalized.synthesisPoints = synthesisPoints;
-  return normalized;
+  return Object.keys(normalized).length ? normalized : null;
 }
 
 module.exports = { normalizeWorkbenchTemplateContent };
