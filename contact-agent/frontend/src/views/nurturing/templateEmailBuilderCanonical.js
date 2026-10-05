@@ -94,7 +94,17 @@ function buildSnsTemplateEmailHtml({
     const headline = escapeHtml(interpolate(b.headline || ''));
     const body = escapeHtml(interpolate(b.body || ''));
     const image = /^https:\/\//i.test(b.image || '') ? escapeHtml(b.image) : '';
-    const ctaText = escapeHtml(interpolate(b.ctaText || ''));
+
+    // Sanitize CTA button text: strip brackets, strip trailing arrows, map placeholders
+    let rawCta = String(b.ctaText || '').trim();
+    rawCta = rawCta.replace(/\s*(?:&rarr;|→|->|-->|>)+$/gi, '').trim();
+    rawCta = rawCta.replace(/^[\s\["“‘]+|[\s\]"”’]+$/g, '').trim();
+    rawCta = rawCta.replace(/^\[(.*)\]$/, '$1').trim();
+    rawCta = rawCta.replace(/\s*(?:&rarr;|→|->|-->|>)+$/gi, '').trim();
+    if (!rawCta || /^(?:action\s*text|cta|link|read\s*more|click\s*here|placeholder)$/i.test(rawCta)) {
+      rawCta = 'Explore Perspective';
+    }
+    const ctaText = escapeHtml(interpolate(rawCta));
     const ctaUrl = /^(?:https?:\/\/|mailto:)[^\s"'<>]+$/i.test(b.ctaUrl || '') ? escapeHtml(b.ctaUrl) : '';
 
     return `
@@ -116,17 +126,50 @@ function buildSnsTemplateEmailHtml({
   }).join('\n');
 
   // 5. Foundations / Synthesis Section
-  const foundationsTitle = escapeHtml(interpolate(c.foundationsTitle || t.foundationsTitle || ''));
-  const foundations = Array.isArray(c.foundations) ? c.foundations : (Array.isArray(t.foundations) ? t.foundations : []);
-  const closingText = interpolate(c.closingText || t.closingText || '');
+  const CANONICAL_EDITORIAL_FOUNDATIONS = [
+    'Secure digital infrastructure that enables innovation.',
+    'Intelligent systems that improve operational performance.',
+    'Modern public and enterprise services designed for speed and resilience.',
+    'A workforce equipped to thrive alongside AI.'
+  ];
 
-  const foundationsHtml = (foundationsTitle || foundations.length > 0) ? `
+  function scrubPromptLeak(str) {
+    if (!str || typeof str !== 'string') return '';
+    let s = str;
+    s = s.replace(/\(\d+\)\s*(?:Official Sign-off|Standards|Strategic Synthesis|Theme & Headline|Executive Opening|Curated Analytical Perspectives)[\s\S]*/i, '');
+    s = s.replace(/(?:Official Sign-off|Standards|Strategic Synthesis|Theme & Headline|Executive Opening|Curated Analytical Perspectives)\s*:[\s\S]*/i, '');
+    s = s.replace(/\b(?:Avoid raw markup leakage|Content must feel like one unified editorial publication|Do NOT invent unsupported factual claims|fake statistics|imaginary partner companies)[\s\S]*/i, '');
+    s = s.replace(/\bSTRATEGIC IMPACT FOR [^:]+:?[\s\S]*/i, '');
+    s = s.replace(/\bKEY ANNOUNCEMENT & BRIEFING:?[\s\S]*/i, '');
+    s = s.replace(/\bstructured key pillars with consistent terminology\.?/i, '');
+    s = s.replace(/^[\s•\-\*\d\.\)]+/, '');
+    s = s.replace(/^["“‘]+|["”’]+$/g, '');
+    return s.trim();
+  }
+
+  const rawFoundationsTitle = interpolate(c.foundationsTitle || t.foundationsTitle || '');
+  const foundationsTitle = escapeHtml(scrubPromptLeak(rawFoundationsTitle));
+  const rawFoundations = Array.isArray(c.foundations) ? c.foundations : (Array.isArray(t.foundations) ? t.foundations : []);
+
+  let cleanedFoundations = rawFoundations
+    .map(f => scrubPromptLeak(interpolate(f)))
+    .filter(f => f && f.length >= 5 && !/^(?:structured key pillars|standards|official sign-off|warm regards)/i.test(f));
+
+  if (cleanedFoundations.length === 0 && (foundationsTitle || t.foundations?.length)) {
+    cleanedFoundations = CANONICAL_EDITORIAL_FOUNDATIONS;
+  }
+
+  let rawClosing = interpolate(c.closingText || t.closingText || '');
+  rawClosing = scrubPromptLeak(rawClosing);
+  const closingText = rawClosing;
+
+  const foundationsHtml = (foundationsTitle || cleanedFoundations.length > 0) ? `
     <div style="margin: 30px 0 20px 0; padding: 20px; background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
       ${foundationsTitle ? `
         <strong style="font-size: 14px; color: #0f172a; display: block; margin-bottom: 12px;">${foundationsTitle}</strong>` : ''}
-      ${foundations.length > 0 ? `
+      ${cleanedFoundations.length > 0 ? `
         <ul style="margin: 0; padding-left: 20px; font-size: 13.5px; line-height: 1.65; color: #334155;">
-          ${foundations.map(f => `<li style="margin-bottom: 6px;">${escapeHtml(interpolate(f))}</li>`).join('\n')}
+          ${cleanedFoundations.map(f => `<li style="margin-bottom: 6px;">${escapeHtml(f)}</li>`).join('\n')}
         </ul>` : ''}
       ${closingText ? `
         <p style="font-size: 13.5px; line-height: 1.65; color: #475569; margin: 14px 0 0 0;">

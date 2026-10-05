@@ -1,5 +1,31 @@
 'use strict';
 
+function scrubPromptDirectiveText(text) {
+  if (!text || typeof text !== 'string') return '';
+  let s = text;
+  s = s.replace(/\(\d+\)\s*(?:Official Sign-off|Standards|Strategic Synthesis|Theme & Headline|Executive Opening|Curated Analytical Perspectives)[\s\S]*/i, '');
+  s = s.replace(/(?:Official Sign-off|Standards|Strategic Synthesis|Theme & Headline|Executive Opening|Curated Analytical Perspectives)\s*:[\s\S]*/i, '');
+  s = s.replace(/\b(?:Avoid raw markup leakage|Content must feel like one unified editorial publication|Do NOT invent unsupported factual claims|fake statistics|imaginary partner companies)[\s\S]*/i, '');
+  s = s.replace(/\bSTRATEGIC IMPACT FOR [^:<>\n]+:?[\s\S]*/i, '');
+  s = s.replace(/\bKEY ANNOUNCEMENT & BRIEFING:?[\s\S]*/i, '');
+  s = s.replace(/\bstructured key pillars with consistent terminology\.?/i, '');
+  s = s.replace(/^[\s•\-\*\d\.\)]+/, '');
+  s = s.replace(/^["“‘]+|["”’]+$/g, '');
+  return s.trim();
+}
+
+function cleanCtaText(raw) {
+  let s = String(raw || '').trim();
+  s = s.replace(/\s*(?:&rarr;|→|->|-->|>)+$/gi, '').trim();
+  s = s.replace(/^[\s\["“‘]+|[\s\]"”’]+$/g, '').trim();
+  s = s.replace(/^\[(.*)\]$/, '$1').trim();
+  s = s.replace(/\s*(?:&rarr;|→|->|-->|>)+$/gi, '').trim();
+  if (!s || /^(?:action\s*text|cta|link|read\s*more|click\s*here|placeholder)$/i.test(s)) {
+    return 'Explore Perspective';
+  }
+  return s;
+}
+
 /** Normalize only the subject/body fields established by the Workbench route,
  * traversing the wrappers actually emitted by Workbench and this application. */
 function normalizeWorkbenchTemplateContent(apiResponse) {
@@ -64,7 +90,7 @@ function normalizeWorkbenchTemplateContent(apiResponse) {
           headline: b.headline || b.title || '',
           body: b.body || b.paragraph || '',
           image: b.image || b.image_url || '',
-          ctaText: b.ctaText || b.cta_text || b.cta_label || '',
+          ctaText: cleanCtaText(b.ctaText || b.cta_text || b.cta_label || ''),
           ctaUrl: b.ctaUrl || b.cta_url || ''
         });
       }
@@ -84,8 +110,11 @@ function normalizeWorkbenchTemplateContent(apiResponse) {
       if (tag === 'ul' || tag === 'ol') {
         if (!structuredFoundations || structuredFoundations.length === 0) {
           node.querySelectorAll('li').forEach(item => {
-            const text = item.textContent.trim();
-            if (text && !synthesisPoints.includes(text)) synthesisPoints.push(text);
+            const raw = item.textContent.trim();
+            const text = scrubPromptDirectiveText(raw);
+            if (text && text.length >= 5 && !/^(?:structured key pillars|standards|official sign-off|warm regards)/i.test(text)) {
+              if (!synthesisPoints.includes(text)) synthesisPoints.push(text);
+            }
           });
         }
         return;
@@ -103,7 +132,7 @@ function normalizeWorkbenchTemplateContent(apiResponse) {
 
       const link = node.querySelector('a[href]');
       if (link && activeArticle) {
-        activeArticle.ctaText = link.textContent.trim();
+        activeArticle.ctaText = cleanCtaText(link.textContent.trim());
         const href = link.getAttribute('href') || '';
         if (/^(?:https?:\/\/|mailto:)/i.test(href)) activeArticle.ctaUrl = href;
         return;
@@ -155,11 +184,14 @@ function normalizeWorkbenchTemplateContent(apiResponse) {
   if (structuredFoundationsTitle && String(structuredFoundationsTitle).trim()) {
     normalized.foundationsTitle = String(structuredFoundationsTitle).trim();
   }
-  if (synthesisPoints.length) {
-    normalized.synthesisPoints = synthesisPoints.filter(Boolean);
+  const cleanedSynthesisPoints = synthesisPoints
+    .map(p => scrubPromptDirectiveText(p))
+    .filter(p => p && p.length >= 5 && !/^(?:structured key pillars|standards|official sign-off|warm regards)/i.test(p));
+  if (cleanedSynthesisPoints.length) {
+    normalized.synthesisPoints = cleanedSynthesisPoints;
   }
   if (structuredClosingText && String(structuredClosingText).trim()) {
-    normalized.closingText = String(structuredClosingText).trim();
+    normalized.closingText = scrubPromptDirectiveText(String(structuredClosingText).trim());
   }
   if (structuredPromoBanner && typeof structuredPromoBanner === 'object' && Object.keys(structuredPromoBanner).length > 0) {
     normalized.promoBanner = structuredPromoBanner;
@@ -168,4 +200,4 @@ function normalizeWorkbenchTemplateContent(apiResponse) {
   return Object.keys(normalized).length ? normalized : null;
 }
 
-module.exports = { normalizeWorkbenchTemplateContent };
+module.exports = { normalizeWorkbenchTemplateContent, cleanCtaText, scrubPromptDirectiveText };

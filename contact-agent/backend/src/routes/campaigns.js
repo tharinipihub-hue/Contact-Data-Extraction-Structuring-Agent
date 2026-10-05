@@ -8,7 +8,10 @@ const {
   sanitizeAndValidateSubject,
   sanitizeAndPersonalizeGreeting,
   cleanEmailBodyHtml,
-  wrapInSnsSquareTemplate
+  wrapInSnsSquareTemplate,
+  cleanActionText,
+  sanitizeFoundationsList,
+  scrubPromptDirectiveText
 } = require('../services/contentSanitizerService');
 
 // Get all campaigns
@@ -245,11 +248,20 @@ function normalizeExtractedFields(src, defaultSummary = 'Generated via SNS Workb
   const heroHeadline = src.hero_headline || src.heroHeadline || src.hero?.headline || '';
   const heroBody = src.hero_body || src.heroBody || src.hero?.body || (Array.isArray(src.hero?.paragraphs) ? src.hero.paragraphs.join('\n\n') : '');
   const rawBlocks = src.content_blocks || src.blocks || src.articles;
+  const cleanedBlocks = Array.isArray(rawBlocks) ? rawBlocks.map(b => ({
+    ...b,
+    ctaText: cleanActionText(b.ctaText || b.cta_text || b.cta_label || ''),
+    cta_label: cleanActionText(b.cta_label || b.ctaText || b.cta_text || '')
+  })) : null;
 
-  if (!email_body && (heroHeadline || (Array.isArray(rawBlocks) && rawBlocks.length))) {
+  if (!email_body && (heroHeadline || (Array.isArray(cleanedBlocks) && cleanedBlocks.length))) {
     const heroPart = heroHeadline ? `<h2>${heroHeadline}</h2>\n<p>${heroBody}</p>` : '';
-    const blocksPart = (Array.isArray(rawBlocks) ? rawBlocks : []).map(b => `<p><strong>Headline: ${b.headline || b.title || ''}</strong></p>\n<p>${b.body || b.paragraph || ''}</p>${(b.cta_label || b.ctaText || b.cta_text) ? `\n<p><a href="${b.cta_url || b.ctaUrl || 'https://www.snssquare.com/insights'}">${b.cta_label || b.ctaText || b.cta_text} &rarr;</a></p>` : ''}`).join('\n\n');
+    const blocksPart = (Array.isArray(cleanedBlocks) ? cleanedBlocks : []).map(b => `<p><strong>Headline: ${b.headline || b.title || ''}</strong></p>\n<p>${b.body || b.paragraph || ''}</p>${(b.cta_label || b.ctaText) ? `\n<p><a href="${b.cta_url || b.ctaUrl || 'https://www.snssquare.com/insights'}">${b.cta_label || b.ctaText} &rarr;</a></p>` : ''}`).join('\n\n');
     email_body = [heroPart, blocksPart].filter(Boolean).join('\n\n');
+  }
+
+  if (email_body) {
+    email_body = cleanEmailBodyHtml(email_body);
   }
 
   if (!subject && !email_body) return null;
@@ -268,13 +280,13 @@ function normalizeExtractedFields(src, defaultSummary = 'Generated via SNS Workb
   if (heroHeadline) result.hero_headline = heroHeadline;
   if (heroBody) result.hero_body = heroBody;
   if (Array.isArray(src.hero?.paragraphs)) result.hero_paragraphs = src.hero.paragraphs;
-  if (Array.isArray(rawBlocks)) result.content_blocks = rawBlocks;
+  if (Array.isArray(cleanedBlocks)) result.content_blocks = cleanedBlocks;
   const foundationsTitle = src.foundations_title || src.foundationsTitle;
-  if (foundationsTitle) result.foundations_title = foundationsTitle;
+  if (foundationsTitle) result.foundations_title = scrubPromptDirectiveText(foundationsTitle);
   const foundations = src.foundations || src.synthesis_points || src.synthesisPoints;
-  if (Array.isArray(foundations)) result.foundations = foundations;
+  if (Array.isArray(foundations)) result.foundations = sanitizeFoundationsList(foundations);
   const closingText = src.closing_text || src.closingText;
-  if (closingText) result.closing_text = closingText;
+  if (closingText) result.closing_text = scrubPromptDirectiveText(closingText);
   const greetingType = src.greeting_type || src.greetingType;
   if (greetingType) result.greeting_type = greetingType;
   const promoBanner = src.promo_banner || src.promoBanner;
@@ -468,10 +480,26 @@ router.post('/generate', async (req, res) => {
       'Structure and quality requirements:',
       '(1) Theme & Headline: Establish a clear, compelling macro headline and a cohesive business transformation theme.',
       '(2) Executive Opening: Provide a concise executive-style macro introduction (2-3 sentences) exploring enterprise transformation, GCC execution, and AI resilience.',
-      '(3) Curated Analytical Perspectives: Provide 2 to 3 distinct perspectives/articles. Each must feature a strong bold headline (<p><strong>Headline: Insight Subtitle</strong></p>), followed by 2-3 sentences of meaningful, balanced business analysis demonstrating logical progression, and an appropriate, concise call-to-action link (<p><a href="https://www.snssquare.com/insights" style="color: #2563eb; text-decoration: underline; font-weight: 500;">[Action Text] &rarr;</a></p>).',
-      '(4) Strategic Synthesis: An editorial synthesis ("Every transformation initiative ultimately depends on four foundations:") followed by <ul><li> structured key pillars with consistent terminology.',
+      '(3) Curated Analytical Perspectives: Provide 2 to 3 distinct perspectives/articles. Each must feature a strong bold headline (<p><strong>Headline: Insight Subtitle</strong></p>), followed by 2-3 sentences of meaningful, balanced business analysis demonstrating logical progression, and an appropriate, concise call-to-action link (<p><a href="https://www.snssquare.com/insights" style="color: #2563eb; text-decoration: underline; font-weight: 500;">Explore the Perspective &rarr;</a></p>). Never output bracketed placeholder tokens like "[Action Text]".',
+      '(4) Strategic Synthesis: An editorial synthesis ("Every transformation initiative ultimately depends on four foundations:") followed by <ul><li> with 3 to 4 distinct strategic pillars (e.g., Secure Cloud Architecture, Autonomous Operations, Continuous Governance, Workforce AI Enablement). Do NOT output prompt instructions or prompt numbering into the bullet text.',
       '(5) Official Sign-off: Warm regards, The Team at SNS Square, Enterprise Client Partnerships.',
-      '(6) Standards: Content must feel like one unified editorial publication. Avoid raw markup leakage, disconnected sentences, generic filler, repetitive headings, keyword stuffing, or awkward CTAs. Do NOT invent unsupported factual claims, fake statistics, or imaginary partner companies.'
+      '(6) Quality Standard: Content must feel like one unified editorial publication. Never leak prompt guidelines, numbering labels, or internal instructions into the rendered copy.'
+    ].join(' ');
+  } else if (normalizedCampaignType.includes('festival') || normalizedCampaignType.includes('wish') || normalizedCampaignType.includes('occasion')) {
+    campaignGuidance = [
+      'CAMPAIGN TYPE: Warm Executive Festive & Seasonal Greetings.',
+      'Write an authentic, culturally respectful, warm executive festive greeting celebrating shared milestones, gratitude, and future prosperity.',
+      'Do NOT format this as a technical newsletter, IT capabilities overview, or architecture update.',
+      'Do NOT use headings or labels such as KEY ANNOUNCEMENT, BRIEFING, STRATEGIC IMPACT, or technical jargon like microservice orchestration.',
+      'Celebrate the occasion genuinely, express deep appreciation for the collaboration, and extend warm wishes to the recipient, their leadership team, and their families.',
+      'Official Sign-off: Warm regards, The Team at SNS Square, Enterprise Client Partnerships.'
+    ].join(' ');
+  } else if (normalizedCampaignType.includes('promotional') || normalizedCampaignType.includes('strategic')) {
+    campaignGuidance = [
+      'CAMPAIGN TYPE: Enterprise Capability & Strategic Partnership Update.',
+      'Highlight executive capabilities in data and Agentic AI systems with measurable enterprise value.',
+      'Do not use meta prompt headings like KEY ANNOUNCEMENT or STRATEGIC IMPACT. Present clear executive paragraphs with an actionable briefing and next steps.',
+      'Official Sign-off: Warm regards, The Team at SNS Square, Enterprise Client Partnerships.'
     ].join(' ');
   }
 

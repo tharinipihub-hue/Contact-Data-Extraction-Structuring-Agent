@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 import ClientEmailPreview from './ClientEmailPreview';
 import { buildSnsTemplateEmailHtml, interpolateEmailHtmlVars, interpolateTemplateVars } from './templateEmailBuilder';
-import { normalizeWorkbenchTemplateContent } from './workbenchTemplateContent';
+import { normalizeWorkbenchTemplateContent, cleanCtaText, scrubPromptDirectiveText } from './workbenchTemplateContent';
 import './SnsTemplateSystemTab.css';
 
 // Preset High Quality Tech & Enterprise Imagery matching the visual reference
@@ -435,14 +435,19 @@ export default function SnsTemplateSystemTab({
             headline: article.headline || current[index]?.headline || '',
             body: article.body || current[index]?.body || '',
             image: article.image || current[index]?.image || '',
-            ctaText: article.ctaText || current[index]?.ctaText || '',
+            ctaText: cleanCtaText(article.ctaText || current[index]?.ctaText || ''),
             ctaUrl: article.ctaUrl || current[index]?.ctaUrl || '',
             id: current[index]?.id || `workbench-${index + 1}`
           })));
         }
-        if (preview.foundationsTitle) setFoundationsTitle(preview.foundationsTitle);
-        if (preview.synthesisPoints && preview.synthesisPoints.length > 0) setFoundations(preview.synthesisPoints);
-        if (preview.closingText) setClosingText(preview.closingText);
+        if (preview.foundationsTitle) setFoundationsTitle(scrubPromptDirectiveText(preview.foundationsTitle));
+        if (preview.synthesisPoints && preview.synthesisPoints.length > 0) {
+          const validPoints = preview.synthesisPoints
+            .map(p => scrubPromptDirectiveText(p))
+            .filter(p => p && p.length >= 5 && !/^(?:structured key pillars|standards|official sign-off|warm regards)/i.test(p));
+          if (validPoints.length > 0) setFoundations(validPoints);
+        }
+        if (preview.closingText) setClosingText(scrubPromptDirectiveText(preview.closingText));
         if (preview.promoBanner && Object.keys(preview.promoBanner).length > 0) {
           setPromoBanner(current => ({
             ...current,
@@ -1087,6 +1092,7 @@ export default function SnsTemplateSystemTab({
                           type="text"
                           className="dn-input sns-template-control"
                           value={block.ctaText}
+                          placeholder="e.g. Explore Perspective (arrow → added automatically)"
                           onChange={(e) => {
                             const newBlocks = [...blocks];
                             newBlocks[bIdx].ctaText = e.target.value;
@@ -1111,6 +1117,85 @@ export default function SnsTemplateSystemTab({
                   </div>
                 ))}
               </div>
+
+              {/* Strategic Foundations & Synthesis Section (Editable in Step 1) */}
+              {(foundationsTitle || (foundations && foundations.length > 0)) && (
+                <div className="dn-panel" style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>
+                      Strategic Foundations &amp; Synthesis
+                    </span>
+                    <button
+                      type="button"
+                      className="dn-btn dn-btn-secondary dn-btn-sm"
+                      onClick={() => setFoundations([...foundations, ''])}
+                      style={{ fontSize: 11 }}
+                    >
+                      + Add Pillar
+                    </button>
+                  </div>
+
+                  <div className="sns-template-field">
+                    <label style={{ fontSize: 11.5, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>
+                      Foundations Section Title
+                    </label>
+                    <input
+                      type="text"
+                      className="dn-input sns-template-control"
+                      value={foundationsTitle}
+                      onChange={(e) => setFoundationsTitle(e.target.value)}
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <label style={{ fontSize: 11.5, fontWeight: 600, color: '#475569' }}>
+                      Key Strategic Pillars (Bullet Points)
+                    </label>
+                    {foundations.map((pillar, pIdx) => (
+                      <div key={pIdx} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                        <span style={{ fontSize: 12, color: '#94a3b8' }}>&bull;</span>
+                        <input
+                          type="text"
+                          className="dn-input sns-template-control"
+                          value={pillar}
+                          onChange={(e) => {
+                            const updated = [...foundations];
+                            updated[pIdx] = e.target.value;
+                            setFoundations(updated);
+                          }}
+                          style={{ flex: 1 }}
+                        />
+                        {foundations.length > 1 && (
+                          <button
+                            type="button"
+                            className="dn-btn dn-btn-secondary dn-btn-sm"
+                            onClick={() => {
+                              const updated = foundations.filter((_, idx) => idx !== pIdx);
+                              setFoundations(updated);
+                            }}
+                            style={{ padding: '4px 8px', color: '#ef4444' }}
+                            title="Remove Pillar"
+                          >
+                            &times;
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="sns-template-field">
+                    <label style={{ fontSize: 11.5, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>
+                      Closing Partnership Sign-off Note
+                    </label>
+                    <textarea
+                      className="dn-input sns-template-control"
+                      rows={2}
+                      value={closingText}
+                      onChange={(e) => setClosingText(e.target.value)}
+                    />
+                  </div>
+                </div>
+              )}
 
               {/* Bottom Actions */}
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, borderTop: '1px solid #f1f5f9', paddingTop: 14 }}>

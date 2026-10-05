@@ -170,6 +170,84 @@ function decodeHtmlEntities(str) {
     .replace(/&amp;/g, '&');
 }
 
+const CANONICAL_EDITORIAL_FOUNDATIONS = [
+  'Secure digital infrastructure that enables innovation.',
+  'Intelligent systems that improve operational performance.',
+  'Modern public and enterprise services designed for speed and resilience.',
+  'A workforce equipped to thrive alongside AI.'
+];
+
+/**
+ * Scrubs prompt instruction leaks, directive numbering, and meta-rules from text.
+ */
+function scrubPromptDirectiveText(text) {
+  if (!text || typeof text !== 'string') return '';
+  let s = text;
+  s = s.replace(/\(\d+\)\s*(?:Official Sign-off|Standards|Strategic Synthesis|Theme & Headline|Executive Opening|Curated Analytical Perspectives)[\s\S]*/i, '');
+  s = s.replace(/(?:Official Sign-off|Standards|Strategic Synthesis|Theme & Headline|Executive Opening|Curated Analytical Perspectives)\s*:[\s\S]*/i, '');
+  s = s.replace(/\b(?:Avoid raw markup leakage|Content must feel like one unified editorial publication|Do NOT invent unsupported factual claims|fake statistics|imaginary partner companies)[\s\S]*/i, '');
+  s = s.replace(/\bSTRATEGIC IMPACT FOR [^:<>\n]+:?[\s\S]*/i, '');
+  s = s.replace(/\bKEY ANNOUNCEMENT & BRIEFING:?[\s\S]*/i, '');
+  s = s.replace(/\bstructured key pillars with consistent terminology\.?/i, '');
+  s = s.replace(/^[\s•\-\*\d\.\)]+/, '');
+  s = s.replace(/^["“‘]+|["”’]+$/g, '');
+  return s.trim();
+}
+
+/**
+ * Sanitizes call-to-action button labels:
+ *  - Strips brackets: "[Action Text]" -> "Action Text"
+ *  - Strips trailing arrows so template builders do not produce duplicate "→ →"
+ *  - Replaces placeholders like "[Action Text]" or "Action Text" with "Explore Perspective"
+ */
+function cleanActionText(raw) {
+  let s = String(raw || '').trim();
+  s = s.replace(/\s*(?:&rarr;|→|->|-->|>)+$/gi, '').trim();
+  s = s.replace(/^[\s\["“‘]+|[\s\]"”’]+$/g, '').trim();
+  s = s.replace(/^\[(.*)\]$/, '$1').trim();
+  s = s.replace(/\s*(?:&rarr;|→|->|-->|>)+$/gi, '').trim();
+  if (!s || /^(?:action\s*text|cta|link|read\s*more|click\s*here|placeholder)$/i.test(s)) {
+    return 'Explore Perspective';
+  }
+  return s;
+}
+
+/**
+ * Sanitizes foundations / strategic pillars list.
+ * Strips prompt instructions, discards prompt-only artifacts,
+ * and falls back to clean canonical editorial foundations if empty.
+ */
+function sanitizeFoundationsList(rawList) {
+  if (!Array.isArray(rawList)) return CANONICAL_EDITORIAL_FOUNDATIONS;
+  const cleaned = rawList
+    .map(scrubPromptDirectiveText)
+    .filter(item => {
+      if (!item || item.length < 5) return false;
+      if (/^(?:structured key pillars|standards|official sign-off|warm regards)/i.test(item)) return false;
+      return true;
+    });
+  return cleaned.length > 0 ? cleaned : CANONICAL_EDITORIAL_FOUNDATIONS;
+}
+
+/**
+ * Scrubs prompt instruction leaks from HTML strings.
+ */
+function scrubPromptLeakFromHtml(html) {
+  if (!html || typeof html !== 'string') return '';
+  let s = html;
+  s = s.replace(/\(\d+\)\s*(?:Official Sign-off|Standards|Strategic Synthesis|Theme & Headline|Executive Opening|Curated Analytical Perspectives)[\s\S]*?(?=(?:<\/li>|<\/p>|<p>|<ul>|<ol>|\n\n|$))/gi, '');
+  s = s.replace(/(?:Official Sign-off|Standards|Strategic Synthesis|Theme & Headline|Executive Opening|Curated Analytical Perspectives)\s*:[\s\S]*?(?=(?:<\/li>|<\/p>|<p>|<ul>|<ol>|\n\n|$))/gi, '');
+  s = s.replace(/\b(?:Avoid raw markup leakage|Content must feel like one unified editorial publication|Do NOT invent unsupported factual claims|fake statistics|imaginary partner companies)[\s\S]*?(?=(?:<\/li>|<\/p>|<p>|<ul>|<ol>|\n\n|$))/gi, '');
+  s = s.replace(/\bKEY\s+ANNOUNCEMENT\s*(?:&|AND)?\s*BRIEFING\s*:?\s*/gi, '');
+  s = s.replace(/\bSTRATEGIC\s+IMPACT\s+(?:FOR\s+[^:\n<]+)?:\s*/gi, '');
+  s = s.replace(/\bstructured key pillars with consistent terminology\.?/gi, '');
+  s = s.replace(/(?:&rarr;|→)\s*(?:&rarr;|→)+/gi, '&rarr;');
+  s = s.replace(/<a\b([^>]*)>\[?(?:Action Text|CTA|Link Text)\]?\s*(?:&rarr;|→)?<\/a>/gi, '<a$1>Explore Perspective &rarr;</a>');
+  s = s.replace(/<li>\s*<\/li>/gi, '');
+  s = s.replace(/<p[^>]*>\s*<\/p>/gi, '');
+  return s;
+}
+
 /**
  * Formats raw plain text or HTML body into clean HTML paragraphs.
  * 
@@ -184,6 +262,9 @@ function cleanEmailBodyHtml(content) {
   if (/&lt;(?:p|div|br|strong|b|em|i|ul|ol|li|h[1-6]|a)\b/i.test(body)) {
     body = decodeHtmlEntities(body);
   }
+
+  // Scrub prompt directives, awkward placeholders, and duplicate arrows
+  body = scrubPromptLeakFromHtml(body);
 
   // If already rich HTML with tags, return with paragraph spacing normalized
   if (/<(?:p|div|table|h[1-6]|ul|ol)\b/i.test(body)) {
@@ -233,11 +314,8 @@ function wrapInSnsSquareTemplate(contentBodyHtml, options = {}) {
   const isNewsletter = normalizedType.includes('newsletter');
   const isEvent = normalizedType.includes('event') || normalizedType.includes('webinar');
 
-  const headerGradient = isFestival
-    ? 'linear-gradient(135deg, #701a75 0%, #a21caf 50%, #c026d3 100%)'
-    : isEvent
-      ? 'linear-gradient(135deg, #065f46 0%, #059669 50%, #10b981 100%)'
-      : 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 55%, #3b82f6 100%)';
+  const headerColor = '#064EE3';
+  const snsSquareLogoUrl = 'https://contact-data-extraction-structuring-agent.onrender.com/sns-square-logo.png';
 
   const defaultTitle = isFestival
     ? 'Warm Executive Festive Wishes'
@@ -288,44 +366,12 @@ function wrapInSnsSquareTemplate(contentBodyHtml, options = {}) {
       </table>
     </div>` : '';
 
-  return `
-<div class="sns-email-container" style="background-color: #f1f5f9; padding: 24px 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-  <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 640px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
-    <!-- SNS Square Branded Gradient Header (Reference: Screenshot 1) -->
+  return `<div class="sns-email-container" style="background-color: #f1f5f9; padding: 24px 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 640px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+    <!-- SNS Square Branded Confirmed Header -->
     <tr>
-      <td style="padding: 24px 28px; background: ${headerGradient}; border-bottom: 1px solid rgba(255,255,255,0.15);">
-        <table border="0" cellpadding="0" cellspacing="0" width="100%">
-          <tr>
-            <td style="vertical-align: middle;">
-              <table border="0" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td style="padding-right: 12px; vertical-align: middle;">
-                    <!-- Multi-Color Square Logo Icon -->
-                    <div style="width: 38px; height: 38px; border: 3px solid #ef4444; border-top-color: #f59e0b; border-right-color: #10b981; border-bottom-color: #06b6d4; border-radius: 4px; display: inline-block; box-sizing: border-box; position: relative;">
-                      <div style="position: absolute; top: 3px; left: 3px; right: 3px; bottom: 3px; background: rgba(255,255,255,0.15); border-radius: 2px;"></div>
-                    </div>
-                  </td>
-                  <td style="vertical-align: middle;">
-                    <div style="font-size: 15px; font-weight: 900; letter-spacing: -0.02em; color: #ffffff; text-transform: uppercase;">
-                      SNS SQUARE
-                    </div>
-                    <div style="font-size: 9.5px; color: #dbeafe; letter-spacing: 0.04em; font-style: italic;">
-                      Redesigning Business
-                    </div>
-                  </td>
-                </tr>
-              </table>
-            </td>
-            <td align="right" style="vertical-align: middle;">
-              <div style="font-size: 19px; font-weight: 800; color: #ffffff; line-height: 1.25;">
-                ${headerTitleText}
-              </div>
-              <div style="font-size: 11.5px; color: #dbeafe; margin-top: 3px; font-weight: 500;">
-                ${headerSubtitleText}
-              </div>
-            </td>
-          </tr>
-        </table>
+      <td bgcolor="${headerColor}" style="padding: 20px 24px; background-color: ${headerColor}; border-bottom: 1px solid ${headerColor};">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td style="vertical-align: middle;"><img src="${snsSquareLogoUrl}" alt="SNS Square — Redesigning Business" width="140" height="auto" border="0" style="display: block; width: 140px; height: auto; max-width: 140px; background-color: #ffffff; border-radius: 4px;" /></td><td align="right" style="vertical-align: middle;"><div style="font-size: 18px; font-weight: 800; color: #ffffff; line-height: 1.25;">${headerTitleText}</div><div style="font-size: 11.5px; color: #dbeafe; margin-top: 3px; font-weight: 500;">${headerSubtitleText}</div></td></tr></table>
       </td>
     </tr>
     <!-- Main Email Body Content -->
@@ -354,9 +400,7 @@ function wrapInSnsSquareTemplate(contentBodyHtml, options = {}) {
         </div>
         <!-- Centered Logo in Footer -->
         <div style="margin-bottom: 14px;">
-          <div style="width: 32px; height: 32px; border: 2.5px solid #ef4444; border-top-color: #f59e0b; border-right-color: #10b981; border-bottom-color: #06b6d4; border-radius: 3px; display: inline-block; margin-bottom: 4px;"></div>
-          <div style="font-size: 13px; font-weight: 800; color: #ffffff; letter-spacing: -0.01em;">SNS SQUARE</div>
-          <div style="font-size: 8.5px; color: #94a3b8; font-style: italic;">Redesigning Business</div>
+          <img src="${snsSquareLogoUrl}" alt="SNS Square" width="100" height="auto" border="0" style="display: block; margin: 0 auto; width: 100px; height: auto; background-color: #ffffff; border-radius: 4px; padding: 2px;" />
         </div>
         <!-- Office Location Address -->
         <div style="color: #94a3b8; font-size: 11.5px; line-height: 1.5; max-width: 480px; margin: 0 auto 12px auto;">
@@ -379,5 +423,9 @@ module.exports = {
   sanitizeAndValidateSubject,
   sanitizeAndPersonalizeGreeting,
   cleanEmailBodyHtml,
-  wrapInSnsSquareTemplate
+  wrapInSnsSquareTemplate,
+  cleanActionText,
+  scrubPromptDirectiveText,
+  sanitizeFoundationsList,
+  scrubPromptLeakFromHtml
 };

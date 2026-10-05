@@ -217,7 +217,7 @@ function runTemplateTests() {
   console.log('========================================================\n');
 
   let passed = 0;
-  const total = 9;
+  const total = 11;
 
   // 1. Variable Interpolation
   console.log('TEST 1: Variable interpolation for personalization tags...');
@@ -394,6 +394,67 @@ function runTemplateTests() {
     passed++;
   } catch (err) {
     console.error('  ✗ TEST 9 Failed:', err.message);
+  }
+
+  // 10. CTA button label sanitization & double arrow prevention
+  console.log('\nTEST 10: CTA button label sanitization & single arrow guarantee...');
+  try {
+    const leakTemplate = {
+      ...TEMPLATES[0],
+      blocks: [
+        {
+          id: 'b_test1',
+          headline: 'Cloud Modernization Perspective',
+          body: 'Strategic perspective on cloud scalability.',
+          ctaText: '[Action Text] &rarr;',
+          ctaUrl: 'https://www.snssquare.com/insights'
+        },
+        {
+          id: 'b_test2',
+          headline: 'Autonomous Mobility Operations',
+          body: 'Optimizing logistics workflows with AI.',
+          ctaText: 'Build secure digital foundations &rarr;',
+          ctaUrl: 'https://www.snssquare.com/insights'
+        }
+      ]
+    };
+    const html = buildSnsTemplateEmailHtml({ template: leakTemplate, recipient: MOCK_CONTACTS[0] });
+    assert(!html.includes('[Action Text]'), 'Placeholder bracket [Action Text] must be scrubbed');
+    assert(!html.includes('&rarr; &rarr;'), 'Double arrow &rarr; &rarr; must not occur');
+    assert(!html.includes('→ →'), 'Double arrow → → must not occur');
+    assert(html.includes('Explore Perspective &rarr;'), 'Defaulted CTA renders clean Explore Perspective &rarr;');
+    assert(html.includes('Build secure digital foundations &rarr;'), 'Preserved CTA renders single arrow &rarr;');
+    console.log('  ✓ Bracketed [Action Text] placeholders replaced with clean editorial CTA');
+    console.log('  ✓ Trailing arrows stripped before appending &rarr; to guarantee single arrow');
+    passed++;
+  } catch (err) {
+    console.error('  ✗ TEST 10 Failed:', err.message);
+  }
+
+  // 11. Prompt instruction leakage scrubbing in foundations & copy
+  console.log('\nTEST 11: Prompt instruction leakage scrubbing in foundations...');
+  try {
+    const contaminatedTemplate = {
+      ...TEMPLATES[0],
+      foundationsTitle: 'Every transformation initiative ultimately depends on four foundations: (4) Strategic Synthesis',
+      foundations: [
+        'Robust FedRAMP cloud compliance architecture. (5) Official Sign-off: Warm regards, The Team at SNS Square, Enterprise Client Partnerships.',
+        'structured key pillars with consistent terminology. (5) Official Sign-off: Warm regards. (6) Standards: Content must feel like one unified editorial publication. Avoid raw markup leakage, disconnected sentences, generic filler, repetitive headings, keyword stuffing, or awkward CTAs. Do NOT invent unsupported factual claims, fake statistics, or imaginary partner companies. STRATEGIC IMPACT FOR TECHNOLOGY LEADERSHIP AT BRIGHTEDGE SOLUTIONS'
+      ],
+      closingText: 'Together, these capabilities power transformation. (6) Standards: Do NOT invent unsupported factual claims.'
+    };
+    const html = buildSnsTemplateEmailHtml({ template: contaminatedTemplate, recipient: MOCK_CONTACTS[0] });
+    assert(!html.includes('(5) Official Sign-off:'), 'Leaked (5) Official Sign-off must be stripped');
+    assert(!html.includes('(6) Standards:'), 'Leaked (6) Standards must be stripped');
+    assert(!html.includes('Avoid raw markup leakage'), 'Meta-directive text must be stripped');
+    assert(!html.includes('Do NOT invent unsupported factual claims'), 'Meta-directive text must be stripped');
+    assert(!html.includes('STRATEGIC IMPACT FOR'), 'Prompt header STRATEGIC IMPACT FOR must be stripped');
+    assert(html.includes('Robust FedRAMP cloud compliance architecture.'), 'Legitimate pillar content must be preserved');
+    console.log('  ✓ Leaked prompt instructions and meta-standards completely scrubbed');
+    console.log('  ✓ Pure prompt leakage items cleanly purged without breaking template');
+    passed++;
+  } catch (err) {
+    console.error('  ✗ TEST 11 Failed:', err.message);
   }
 
   console.log('\n========================================================');

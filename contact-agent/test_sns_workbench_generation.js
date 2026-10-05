@@ -172,7 +172,30 @@ async function run() {
     assert.strictEqual(requestedUrls.at(-1).url, process.env.NURTURE_WORKBENCH_WEBHOOK_URL);
     console.log('  ✓ Successful response data is passed through without fallback or fabricated fields');
 
-    console.log('RESULTS: 5/5 Workbench generation service tests passed');
+    // Prompt leakage and [Action Text] stripping test
+    const rawContaminatedHtml = `
+      <h2>Autonomous Cloud Resilience</h2>
+      <p>Enterprise infrastructure requires secure foundation and automation.</p>
+      <p><strong>Headline: FedRAMP 2.0 Compliance Architecture</strong></p>
+      <p>Modern agencies achieve continuous compliance through automated checks.</p>
+      <p><a href="https://www.snssquare.com/insights">[Action Text] &rarr;</a></p>
+      <p>Every transformation initiative ultimately depends on four foundations:</p>
+      <ul>
+        <li>Secure cloud landing zones</li>
+        <li>structured key pillars with consistent terminology. (5) Official Sign-off: Warm regards, The Team at SNS Square, Enterprise Client Partnerships. (6) Standards: Content must feel like one unified editorial publication. Avoid raw markup leakage, disconnected sentences, generic filler, repetitive headings, keyword stuffing, or awkward CTAs. Do NOT invent unsupported factual claims, fake statistics, or imaginary partner companies. STRATEGIC IMPACT FOR TECHNOLOGY LEADERSHIP</li>
+      </ul>
+    `;
+    const leakNormalized = normalizeWorkbenchTemplateContent({
+      preview: {
+        subject: 'FedRAMP Cloud Modernisation | Weekly Scoop',
+        body_text_only: rawContaminatedHtml
+      }
+    });
+    assert.strictEqual(leakNormalized.articles[0].ctaText, 'Explore Perspective');
+    assert.deepStrictEqual(leakNormalized.synthesisPoints, ['Secure cloud landing zones']);
+    console.log('  ✓ normalizeWorkbenchTemplateContent strips [Action Text] placeholders and leaked prompt instructions');
+
+    console.log('RESULTS: 6/6 Workbench generation service tests passed');
   } finally {
     global.fetch = originalFetch;
     delete global.DOMParser;
