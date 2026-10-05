@@ -78,6 +78,7 @@ import AiProductReviewTab from './nurturing/AiProductReviewTab';
 import ContactResearchTab from './nurturing/ContactResearchTab';
 import InstantOccasionWishTab from './nurturing/InstantOccasionWishTab';
 import ClientEmailPreview from './nurturing/ClientEmailPreview';
+import SnsTemplateSystemTab from './nurturing/SnsTemplateSystemTab';
 
 const API_BASE = '/api';
 const PRODUCTION_APP_URL = 'https://contact-data-extraction-structuring-agent.onrender.com';
@@ -404,6 +405,7 @@ SNS Square Multi-Agent Platform`,
 export default function DigitalNurturingView({ extractedLeads = [], onSwitchToExtraction }) {
   // Navigation: 'leads' (Client Directory) | 'dashboard' | 'sectors' | 'generator' | 'campaigns' | 'sales' | 'workflow'
   const [activeTab, setActiveTab] = useState('leads');
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Leads & data state
   const [contacts, setContacts] = useState([]);
@@ -1527,222 +1529,357 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
     return true;
   });
 
+  const SECTION_METADATA = {
+    dashboard: { section: 'Overview', title: 'Executive Overview & Relationship Telemetry', badge: 'Real-time' },
+    leads: { section: 'Contacts', title: 'Audience Directory & Enterprise Consent Governance', badge: `${optedInCount} Opted-In` },
+    campaigns: { section: 'Campaigns', title: 'Campaign Management & Cadences', badge: `${campaigns.length} Active` },
+    create_campaign: { section: 'Campaigns', title: 'Campaign Builder & Dispatch Wizard', badge: `Step ${wizardStep} of 4` },
+    generator: { section: 'Campaigns', title: 'AI Multi-Channel Campaign Generator', badge: 'AI Powered' },
+    templates: { section: 'Templates', title: 'SNS Square Campaign Template System', badge: '5 Enterprise Templates' },
+    contact_research: { section: 'Research', title: 'Deep Account & Executive Intelligence', badge: 'Tavily Search' },
+    instant_wish: { section: 'Occasions', title: 'Festival & Occasion Greetings Generator', badge: 'Live Preview' },
+    engagement: { section: 'Analytics', title: 'Client Engagement & Response Telemetry', badge: 'Telemetric Sync' },
+    ai_test: { section: 'AI Quality', title: 'AI Test Environment & Sandbox Suite', badge: 'Zero-Email Sandbox' },
+    ai_review: { section: 'AI Quality', title: 'AI Copywriting Quality & Brand Review', badge: 'Evaluation Rubric' },
+    workflow: { section: 'Workflow', title: 'SNS Square Agent Workbench Architecture', badge: '13-Node Pipeline' }
+  };
+  const currentMeta = SECTION_METADATA[activeTab] || {
+    section: 'Digital Nurturing',
+    title: 'Digital Client Nurturing Agent',
+    badge: 'Production v2.4'
+  };
+
   return (
-    <div className="dn-root">
-      {/* ── Sub Navigation Bar ── */}
-      <div className="dn-subbar">
-        <div className="dn-subbar-left">
-          <div className="dn-subbar-tabs">
-            <button
-              className={`dn-subbar-tab ${activeTab === 'dashboard' ? 'active' : ''}`}
-              onClick={() => setActiveTab('dashboard')}
-            >
-              <LayoutDashboard size={14} /> Overview
-            </button>
-            <button
-              className={`dn-subbar-tab ${activeTab === 'leads' ? 'active' : ''}`}
-              onClick={() => setActiveTab('leads')}
-            >
-              <Users size={14} /> Contacts ({totalClients})
-            </button>
-            <button
-              className={`dn-subbar-tab ${(activeTab === 'campaigns' || activeTab === 'create_campaign' || activeTab === 'generator') ? 'active' : ''}`}
-              onClick={() => setActiveTab('campaigns')}
-            >
-              <Calendar size={14} /> Campaigns ({campaigns.length})
-            </button>
-            <button
-              className={`dn-subbar-tab ${activeTab === 'templates' ? 'active' : ''}`}
-              onClick={() => setActiveTab('templates')}
-            >
-              <Layers size={14} /> Templates
-            </button>
-            <button
-              className={`dn-subbar-tab ${activeTab === 'contact_research' ? 'active' : ''}`}
-              onClick={() => setActiveTab('contact_research')}
-            >
-              <Search size={14} /> Research
-            </button>
-            <button
-              className={`dn-subbar-tab ${activeTab === 'instant_wish' ? 'active' : ''}`}
-              onClick={() => setActiveTab('instant_wish')}
-            >
-              <Gift size={14} /> Occasions
-            </button>
-            <button
-              className={`dn-subbar-tab ${activeTab === 'engagement' ? 'active' : ''}`}
-              onClick={() => setActiveTab('engagement')}
-            >
-              <Activity size={14} /> Analytics
-            </button>
-            <button
-              className={`dn-subbar-tab ${(activeTab === 'ai_test' || activeTab === 'ai_review') ? 'active' : ''}`}
-              onClick={() => setActiveTab('ai_test')}
-            >
-              <FlaskConical size={14} /> AI Quality
-            </button>
-            <button
-              className={`dn-subbar-tab ${activeTab === 'workflow' ? 'active' : ''}`}
-              onClick={() => setActiveTab('workflow')}
-            >
-              <Sliders size={14} /> Workflow
-            </button>
-          </div>
-        </div>
-
-        <div className="dn-subbar-right">
-          {/* Consent Notifications Button & Dropdown */}
-          <div className="dn-notif-container">
-            <button
-              className={`dn-btn dn-btn-secondary dn-btn-sm dn-notif-trigger-btn ${unreadNotifCount > 0 ? 'has-unread' : ''}`}
-              onClick={() => {
-                setIsNotifOpen(!isNotifOpen);
-                if (!isNotifOpen) setUnreadNotifCount(0);
-              }}
-              title="Consent & Opt-In / Opt-Out Notifications"
-            >
-              <Bell size={13} className={unreadNotifCount > 0 ? 'bell-ringing' : ''} />
-              <span>Consent Alerts</span>
-              {unreadNotifCount > 0 ? (
-                <span className="dn-notif-counter-badge">{unreadNotifCount}</span>
-              ) : (
-                <span className="dn-notif-counter-badge muted">{optNotifications.length}</span>
-              )}
-            </button>
-
-            {isNotifOpen && (
-              <div className="dn-notif-dropdown">
-                <div className="dn-notif-header">
-                  <div className="dn-notif-header-left">
-                    <div className="dn-notif-bell-icon-wrap">
-                      <Bell size={14} color="#2563eb" />
-                    </div>
-                    <div>
-                      <div className="dn-notif-title">Consent Notifications</div>
-                      <div className="dn-notif-subtitle">Tracking client opt-in & opt-out updates</div>
-                    </div>
-                  </div>
-                  <div className="dn-notif-header-right">
-                    <button
-                      className="dn-notif-action-btn"
-                      onClick={() => setUnreadNotifCount(0)}
-                      title="Mark all as read"
-                    >
-                      <CheckCheck size={12} /> Mark Read
-                    </button>
-                    <button
-                      className="dn-notif-close-btn"
-                      onClick={() => setIsNotifOpen(false)}
-                      title="Close notifications"
-                    >
-                      <X size={13} />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Filter Pills */}
-                <div className="dn-notif-filter-bar">
-                  <button
-                    className={`dn-notif-filter-pill ${notifFilter === 'all' ? 'active' : ''}`}
-                    onClick={() => setNotifFilter('all')}
-                  >
-                    All ({optNotifications.length})
-                  </button>
-                  <button
-                    className={`dn-notif-filter-pill opt-in ${notifFilter === 'opt_in' ? 'active' : ''}`}
-                    onClick={() => setNotifFilter('opt_in')}
-                  >
-                    Opted In ({optNotifications.filter(n => n.type === 'opt_in').length})
-                  </button>
-                  <button
-                    className={`dn-notif-filter-pill opt-out ${notifFilter === 'opt_out' ? 'active' : ''}`}
-                    onClick={() => setNotifFilter('opt_out')}
-                  >
-                    Opted Out ({optNotifications.filter(n => n.type === 'opt_out').length})
-                  </button>
-                </div>
-
-                {/* Notifications List */}
-                <div className="dn-notif-list">
-                  {filteredOptNotifications.length === 0 ? (
-                    <div className="dn-notif-empty">
-                      <Inbox size={26} color="#94a3b8" />
-                      <p>No notifications found for this filter.</p>
-                    </div>
-                  ) : (
-                    filteredOptNotifications.map((notif, idx) => (
-                      <div
-                        key={notif.id || idx}
-                        className={`dn-notif-item ${notif.type === 'opt_in' ? 'is-opt-in' : 'is-opt-out'}`}
-                        onClick={() => {
-                          const matched = contacts.find(c => c.id === notif.contactId || c.email === notif.email || c.name === notif.name);
-                          if (matched) {
-                            setSelectedLead(matched);
-                            setActiveTab('leads');
-                            setIsNotifOpen(false);
-                          }
-                        }}
-                      >
-                        <div className={`dn-notif-icon-circle ${notif.type === 'opt_in' ? 'green' : 'red'}`}>
-                          {notif.type === 'opt_in' ? <UserCheck size={14} /> : <UserX size={14} />}
-                        </div>
-                        <div className="dn-notif-content">
-                          <div className="dn-notif-row">
-                            <span className="dn-notif-name">{notif.name}</span>
-                            <span className={`dn-badge-sm ${notif.type === 'opt_in' ? 'badge-opt-in' : 'badge-opt-out'}`}>
-                              {notif.type === 'opt_in' ? 'OPTED IN' : 'OPTED OUT'}
-                            </span>
-                          </div>
-                          <div className="dn-notif-org">
-                            {notif.company} • <span className="dn-notif-email">{notif.email}</span>
-                          </div>
-                          <div className="dn-notif-detail">{notif.detail || notif.channel}</div>
-                          <div className="dn-notif-meta">
-                            <span className="dn-notif-source">{notif.channel || 'System Consent'}</span>
-                            <span className="dn-notif-dot">•</span>
-                            <span className="dn-notif-time">{notif.formattedTime || 'Recently'}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-
-                <div className="dn-notif-footer">
-                  <span>Audited compliance via Preference Engine</span>
-                  <button
-                    className="dn-btn-link dn-btn-xs"
-                    onClick={() => {
-                      setActiveTab('leads');
-                      setIsNotifOpen(false);
-                    }}
-                  >
-                    View Leads Directory →
-                  </button>
-                </div>
+    <div className={`dn-root dn-app-layout ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+      {/* ── Fixed / Collapsible Enterprise Left Sidebar ── */}
+      <aside className={`dn-sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+        <div className="dn-sidebar-header">
+          <div className="dn-sidebar-brand">
+            <div className="dn-sidebar-logo">SNS</div>
+            {!isSidebarCollapsed && (
+              <div className="dn-sidebar-brand-text">
+                <span className="dn-sidebar-brand-title">SNS SQUARE</span>
+                <span className="dn-sidebar-brand-sub">Client Nurturing Agent</span>
               </div>
             )}
           </div>
-
           <button
-            className="dn-btn dn-btn-secondary dn-btn-sm"
-            onClick={handleSyncSheets}
-            disabled={isSyncing}
+            type="button"
+            className="dn-sidebar-toggle-btn"
+            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            title={isSidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
           >
-            <RefreshCw size={13} className={isSyncing ? 'spin-icon' : ''} />
-            {isSyncing ? 'Syncing...' : 'Sync Sheet'}
-          </button>
-
-          <button
-            className="dn-btn dn-btn-primary dn-btn-sm"
-            onClick={() => handleOpenCreateCampaign('All Past Clients')}
-          >
-            <Plus size={13} /> Create Campaign
+            {isSidebarCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
           </button>
         </div>
-      </div>
 
-      <div className="dn-content">
+        <nav className="dn-sidebar-nav">
+          {!isSidebarCollapsed && (
+            <div className="dn-sidebar-section-label">Enterprise Modules</div>
+          )}
+
+          <button
+            type="button"
+            className={`dn-sidebar-item ${activeTab === 'dashboard' ? 'active' : ''}`}
+            onClick={() => setActiveTab('dashboard')}
+            title="Overview"
+          >
+            <div className="dn-sidebar-item-left">
+              <LayoutDashboard size={16} className="dn-sidebar-icon" />
+              {!isSidebarCollapsed && <span>Overview</span>}
+            </div>
+          </button>
+
+          <button
+            type="button"
+            className={`dn-sidebar-item ${activeTab === 'leads' ? 'active' : ''}`}
+            onClick={() => setActiveTab('leads')}
+            title={`Contacts (${totalClients})`}
+          >
+            <div className="dn-sidebar-item-left">
+              <Users size={16} className="dn-sidebar-icon" />
+              {!isSidebarCollapsed && <span>Contacts</span>}
+            </div>
+            {!isSidebarCollapsed && (
+              <span className="dn-sidebar-badge">{totalClients}</span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            className={`dn-sidebar-item ${(activeTab === 'campaigns' || activeTab === 'create_campaign' || activeTab === 'generator') ? 'active' : ''}`}
+            onClick={() => setActiveTab('campaigns')}
+            title={`Campaigns (${campaigns.length})`}
+          >
+            <div className="dn-sidebar-item-left">
+              <Calendar size={16} className="dn-sidebar-icon" />
+              {!isSidebarCollapsed && <span>Campaigns</span>}
+            </div>
+            {!isSidebarCollapsed && (
+              <span className="dn-sidebar-badge">{campaigns.length}</span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            className={`dn-sidebar-item ${activeTab === 'templates' ? 'active' : ''}`}
+            onClick={() => setActiveTab('templates')}
+            title="Templates (5 Brand-Governed Templates)"
+          >
+            <div className="dn-sidebar-item-left">
+              <Layers size={16} className="dn-sidebar-icon" />
+              {!isSidebarCollapsed && <span>Templates</span>}
+            </div>
+            {!isSidebarCollapsed && (
+              <span className="dn-sidebar-badge">5</span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            className={`dn-sidebar-item ${activeTab === 'contact_research' ? 'active' : ''}`}
+            onClick={() => setActiveTab('contact_research')}
+            title="Contact Research"
+          >
+            <div className="dn-sidebar-item-left">
+              <Search size={16} className="dn-sidebar-icon" />
+              {!isSidebarCollapsed && <span>Research</span>}
+            </div>
+          </button>
+
+          <button
+            type="button"
+            className={`dn-sidebar-item ${activeTab === 'instant_wish' ? 'active' : ''}`}
+            onClick={() => setActiveTab('instant_wish')}
+            title="Occasion & Festival Wishes"
+          >
+            <div className="dn-sidebar-item-left">
+              <Gift size={16} className="dn-sidebar-icon" />
+              {!isSidebarCollapsed && <span>Occasions</span>}
+            </div>
+          </button>
+
+          <button
+            type="button"
+            className={`dn-sidebar-item ${activeTab === 'engagement' ? 'active' : ''}`}
+            onClick={() => setActiveTab('engagement')}
+            title="Analytics & Telemetry"
+          >
+            <div className="dn-sidebar-item-left">
+              <Activity size={16} className="dn-sidebar-icon" />
+              {!isSidebarCollapsed && <span>Analytics</span>}
+            </div>
+          </button>
+
+          <button
+            type="button"
+            className={`dn-sidebar-item ${(activeTab === 'ai_test' || activeTab === 'ai_review') ? 'active' : ''}`}
+            onClick={() => setActiveTab('ai_test')}
+            title="AI Quality & Sandbox"
+          >
+            <div className="dn-sidebar-item-left">
+              <FlaskConical size={16} className="dn-sidebar-icon" />
+              {!isSidebarCollapsed && <span>AI Quality</span>}
+            </div>
+          </button>
+
+          <button
+            type="button"
+            className={`dn-sidebar-item ${activeTab === 'workflow' ? 'active' : ''}`}
+            onClick={() => setActiveTab('workflow')}
+            title="SNS Workbench Workflow"
+          >
+            <div className="dn-sidebar-item-left">
+              <Sliders size={16} className="dn-sidebar-icon" />
+              {!isSidebarCollapsed && <span>Workflow</span>}
+            </div>
+          </button>
+        </nav>
+
+        {!isSidebarCollapsed && (
+          <div className="dn-sidebar-footer">
+            <div className="dn-sidebar-status-card">
+              <div className="dn-sidebar-status-row">
+                <span className="dn-sidebar-status-dot" />
+                <span style={{ fontWeight: 600 }}>SNS Workbench Live</span>
+              </div>
+              <div className="dn-sidebar-status-sub">
+                Agentic Pipeline v2.4
+              </div>
+            </div>
+          </div>
+        )}
+      </aside>
+
+      {/* ── Main Workspace ── */}
+      <div className="dn-main-workspace">
+        {/* ── Top Header Bar ── */}
+        <header className="dn-topbar">
+          <div className="dn-topbar-left">
+            <div className="dn-topbar-breadcrumb">
+              <span>Digital Client Nurturing</span>
+              <ChevronRight size={12} color="#94a3b8" />
+              <span className="dn-topbar-breadcrumb-curr">{currentMeta.section}</span>
+            </div>
+            <div className="dn-topbar-title">
+              <span>{currentMeta.title}</span>
+              <span className="dn-topbar-tag">{currentMeta.badge}</span>
+            </div>
+          </div>
+
+          <div className="dn-topbar-right">
+            {/* Consent Notifications Button & Dropdown */}
+            <div className="dn-notif-container">
+              <button
+                className={`dn-btn dn-btn-secondary dn-btn-sm dn-notif-trigger-btn ${unreadNotifCount > 0 ? 'has-unread' : ''}`}
+                onClick={() => {
+                  setIsNotifOpen(!isNotifOpen);
+                  if (!isNotifOpen) setUnreadNotifCount(0);
+                }}
+                title="Consent & Opt-In / Opt-Out Notifications"
+              >
+                <Bell size={13} className={unreadNotifCount > 0 ? 'bell-ringing' : ''} />
+                <span>Consent Alerts</span>
+                {unreadNotifCount > 0 ? (
+                  <span className="dn-notif-counter-badge">{unreadNotifCount}</span>
+                ) : (
+                  <span className="dn-notif-counter-badge muted">{optNotifications.length}</span>
+                )}
+              </button>
+
+              {isNotifOpen && (
+                <div className="dn-notif-dropdown">
+                  <div className="dn-notif-header">
+                    <div className="dn-notif-header-left">
+                      <div className="dn-notif-bell-icon-wrap">
+                        <Bell size={14} color="#2563eb" />
+                      </div>
+                      <div>
+                        <div className="dn-notif-title">Consent Notifications</div>
+                        <div className="dn-notif-subtitle">Tracking client opt-in & opt-out updates</div>
+                      </div>
+                    </div>
+                    <div className="dn-notif-header-right">
+                      <button
+                        className="dn-notif-action-btn"
+                        onClick={() => setUnreadNotifCount(0)}
+                        title="Mark all as read"
+                      >
+                        <CheckCheck size={12} /> Mark Read
+                      </button>
+                      <button
+                        className="dn-notif-close-btn"
+                        onClick={() => setIsNotifOpen(false)}
+                        title="Close notifications"
+                      >
+                        <X size={13} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Filter Pills */}
+                  <div className="dn-notif-filter-bar">
+                    <button
+                      className={`dn-notif-filter-pill ${notifFilter === 'all' ? 'active' : ''}`}
+                      onClick={() => setNotifFilter('all')}
+                    >
+                      All ({optNotifications.length})
+                    </button>
+                    <button
+                      className={`dn-notif-filter-pill opt-in ${notifFilter === 'opt_in' ? 'active' : ''}`}
+                      onClick={() => setNotifFilter('opt_in')}
+                    >
+                      Opted In ({optNotifications.filter(n => n.type === 'opt_in').length})
+                    </button>
+                    <button
+                      className={`dn-notif-filter-pill opt-out ${notifFilter === 'opt_out' ? 'active' : ''}`}
+                      onClick={() => setNotifFilter('opt_out')}
+                    >
+                      Opted Out ({optNotifications.filter(n => n.type === 'opt_out').length})
+                    </button>
+                  </div>
+
+                  {/* Notifications List */}
+                  <div className="dn-notif-list">
+                    {filteredOptNotifications.length === 0 ? (
+                      <div className="dn-notif-empty">
+                        <Inbox size={26} color="#94a3b8" />
+                        <p>No notifications found for this filter.</p>
+                      </div>
+                    ) : (
+                      filteredOptNotifications.map((notif, idx) => (
+                        <div
+                          key={notif.id || idx}
+                          className={`dn-notif-item ${notif.type === 'opt_in' ? 'is-opt-in' : 'is-opt-out'}`}
+                          onClick={() => {
+                            const matched = contacts.find(c => c.id === notif.contactId || c.email === notif.email || c.name === notif.name);
+                            if (matched) {
+                              setSelectedLead(matched);
+                              setActiveTab('leads');
+                              setIsNotifOpen(false);
+                            }
+                          }}
+                        >
+                          <div className={`dn-notif-icon-circle ${notif.type === 'opt_in' ? 'green' : 'red'}`}>
+                            {notif.type === 'opt_in' ? <UserCheck size={14} /> : <UserX size={14} />}
+                          </div>
+                          <div className="dn-notif-content">
+                            <div className="dn-notif-row">
+                              <span className="dn-notif-name">{notif.name}</span>
+                              <span className={`dn-badge-sm ${notif.type === 'opt_in' ? 'badge-opt-in' : 'badge-opt-out'}`}>
+                                {notif.type === 'opt_in' ? 'OPTED IN' : 'OPTED OUT'}
+                              </span>
+                            </div>
+                            <div className="dn-notif-org">
+                              {notif.company} • <span className="dn-notif-email">{notif.email}</span>
+                            </div>
+                            <div className="dn-notif-detail">{notif.detail || notif.channel}</div>
+                            <div className="dn-notif-meta">
+                              <span className="dn-notif-source">{notif.channel || 'System Consent'}</span>
+                              <span className="dn-notif-dot">•</span>
+                              <span className="dn-notif-time">{notif.formattedTime || 'Recently'}</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  <div className="dn-notif-footer">
+                    <span>Audited compliance via Preference Engine</span>
+                    <button
+                      className="dn-btn-link dn-btn-xs"
+                      onClick={() => {
+                        setActiveTab('leads');
+                        setIsNotifOpen(false);
+                      }}
+                    >
+                      View Leads Directory →
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <button
+              className="dn-btn dn-btn-secondary dn-btn-sm"
+              onClick={handleSyncSheets}
+              disabled={isSyncing}
+            >
+              <RefreshCw size={13} className={isSyncing ? 'spin-icon' : ''} />
+              {isSyncing ? 'Syncing...' : 'Sync Sheet'}
+            </button>
+
+            <button
+              className="dn-btn dn-btn-primary dn-btn-sm"
+              onClick={() => handleOpenCreateCampaign('All Past Clients')}
+            >
+              <Plus size={13} /> Create Campaign
+            </button>
+          </div>
+        </header>
+
+        <div className="dn-content">
         {/* ── KPI Stats Cards ── */}
         <div className="dn-stats-row">
           <div className="dn-stat-card">
@@ -3931,184 +4068,31 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
         )}
 
         {/* ══════════════════════════════════════════════════════════════════
-            TAB 6: REUSABLE TEMPLATES
+            TAB 6: SNS SQUARE CAMPAIGN TEMPLATE SYSTEM
             ══════════════════════════════════════════════════════════════════ */}
         {activeTab === 'templates' && (
-          <div className="dn-panel" style={{ padding: 24 }}>
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a' }}>Templates</h3>
-                  <p style={{ fontSize: 13, color: '#64748b', marginTop: 2 }}>This makes the agent reusable.</p>
-                </div>
-                <button
-                  className="dn-btn dn-btn-primary dn-btn-sm"
-                  onClick={() => handleUseTemplate(selectedTemplateTab)}
-                >
-                  <Plus size={13} /> Use Template in Campaign Wizard
-                </button>
-              </div>
-            </div>
+          <SnsTemplateSystemTab
+            contacts={contacts}
+            apiBase={API_BASE}
+            showNotification={showNotification}
+            onUseTemplateInCampaign={(templateData) => {
+              if (templateData.campaignName) setWizardCampaignName(templateData.campaignName);
+              if (templateData.category === 'Newsletter') setWizardCampaignType('Newsletter');
+              else if (templateData.category === 'Occasion Wish') setWizardCampaignType('Festival / Occasion Wish');
+              else if (templateData.category === 'Promotion') setWizardCampaignType('Promotional / Strategic Update');
+              else setWizardCampaignType('Newsletter');
 
-            {/* Template Category Tabs */}
-            <div className="dn-template-tab-bar">
-              {['Newsletter', 'Welcome', 'Festival', 'Promotional'].map((cat) => (
-                <button
-                  key={cat}
-                  className={`dn-template-tab-btn ${selectedTemplateTab === cat ? 'active' : ''}`}
-                  onClick={() => setSelectedTemplateTab(cat)}
-                >
-                  {`${cat} Template`}
-                </button>
-              ))}
-            </div>
-
-            {(() => {
-              const tmpl = NURTURE_TEMPLATES[selectedTemplateTab];
-              if (!tmpl) return null;
-              const templateContact = contacts.find(c => c.id === templateSelectedContactId) || contacts[0];
-              const personalizedSubject = (tmpl.sample.subject || '')
-                .replace(/\[Client Name\]/g, templateContact?.name || 'Client')
-                .replace(/\[Company\]/g, templateContact?.company || 'Enterprise')
-                .replace(/\[Industry\]/g, templateContact?.sector || 'Technology')
-                .replace(/\[Festival Name\]/g, 'Diwali 2026');
-              const personalizedBody = (tmpl.sample.email_body || '')
-                .replace(/\[Client Name\]/g, templateContact?.name || 'Client')
-                .replace(/\[Company\]/g, templateContact?.company || 'Enterprise')
-                .replace(/\[Industry\]/g, templateContact?.sector || 'Technology')
-                .replace(/\[Festival Name\]/g, 'Diwali 2026');
-
-              return (
-                <div>
-                  {/* ── Client Picker in Templates Tab ── */}
-                  <div style={{ marginBottom: 16, background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: 12 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, flexWrap: 'wrap', gap: 6 }}>
-                      <span style={{ fontSize: 12.5, fontWeight: 700, color: '#1e293b' }}>
-                        Personalize Template Preview For: <strong style={{ color: '#2563eb' }}>{templateContact?.name}</strong> ({templateContact?.company})
-                      </span>
-                      <span style={{ fontSize: 11.5, color: '#64748b' }}>Click any client to see template rendered for them</span>
-                    </div>
-                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                      {contacts.map(c => {
-                        const isSelected = templateSelectedContactId === c.id;
-                        return (
-                          <button
-                            key={c.id}
-                            type="button"
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: 6,
-                              padding: '5px 12px',
-                              fontSize: 12,
-                              fontWeight: isSelected ? 700 : 500,
-                              background: isSelected ? '#2563eb' : '#ffffff',
-                              color: isSelected ? '#ffffff' : '#334155',
-                              border: isSelected ? '1px solid #1d4ed8' : '1px solid #cbd5e1',
-                              borderRadius: 6,
-                              cursor: 'pointer'
-                            }}
-                            onClick={() => setTemplateSelectedContactId(c.id)}
-                            title={`Select ${c.name} (${c.company})`}
-                          >
-                            <span>{c.name}</span>
-                            <span style={{ fontSize: 11, opacity: 0.85 }}>({c.company})</span>
-                            {isSelected && <Check size={12} color="#fff" />}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: 'minmax(340px, 420px) 1fr', gap: 24 }}>
-                    {/* Structure & Sections */}
-                    <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 8, padding: 20 }}>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>
-                        {tmpl.name}
-                      </div>
-                      <div style={{ fontSize: 12, color: '#64748b', marginBottom: 16 }}>
-                        {tmpl.description}
-                      </div>
-
-                      <div style={{ marginBottom: 16 }}>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: 6 }}>
-                          Subject Structure:
-                        </div>
-                        <div style={{ background: '#f8fafc', padding: '8px 12px', borderRadius: 6, fontSize: 12.5, fontWeight: 600, color: '#1e40af', border: '1px solid #e2e8f0' }}>
-                          {tmpl.subject_structure}
-                        </div>
-                      </div>
-
-                      <div>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: 8 }}>
-                          Template Sections:
-                        </div>
-                        {tmpl.sections.map((sec, idx) => (
-                          <div key={idx} className="dn-template-section-item">
-                            <span style={{ background: '#2563eb', color: '#fff', width: 20, height: 20, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
-                              {idx + 1}
-                            </span>
-                            <div>
-                              <div style={{ fontWeight: 700, color: '#0f172a' }}>{sec.name}</div>
-                              <div style={{ fontSize: 11.5, color: '#64748b' }}>{sec.description}</div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-
-                      <button
-                        className="dn-btn dn-btn-primary"
-                        style={{ width: '100%', marginTop: 20, justifyContent: 'center' }}
-                        onClick={() => handleInstantGenerateTemplate(selectedTemplateTab, templateContact?.id)}
-                        disabled={wizardIsGenerating}
-                      >
-                        <Sparkles size={14} /> ⚡ Generate for {templateContact?.name} & Preview
-                      </button>
-
-                      <button
-                        className="dn-btn dn-btn-secondary"
-                        style={{ width: '100%', marginTop: 8, justifyContent: 'center' }}
-                        onClick={() => handleUseTemplate(selectedTemplateTab, templateContact?.id)}
-                      >
-                        <Plus size={14} /> Customize in Campaign Wizard →
-                      </button>
-                    </div>
-
-                    {/* Rendered Live Email Preview */}
-                    <div>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: 8 }}>
-                        Rendered Email Preview (Personalized for {templateContact?.name})
-                      </div>
-                      <div className="dn-preview-box">
-                        <div className="dn-preview-header">
-                          <div className="dn-preview-row">
-                            <span className="dn-preview-label">SUBJECT:</span>
-                            <span className="dn-preview-value" style={{ color: '#1e40af' }}>{personalizedSubject}</span>
-                          </div>
-                          <div className="dn-preview-row">
-                            <span className="dn-preview-label">TARGET:</span>
-                            <span style={{ fontSize: 12, color: '#475569' }}>{templateContact?.name} ({templateContact?.company} • {templateContact?.sector})</span>
-                          </div>
-                        </div>
-
-                        <div className="dn-preview-body" style={{ whiteSpace: 'pre-wrap' }}>
-                          {personalizedBody}
-                        </div>
-
-                        <div className="dn-preview-footer">
-                          <div>
-                            <span style={{ color: '#2563eb', textDecoration: 'underline', marginRight: 12 }}>Unsubscribe</span>
-                            <span style={{ color: '#64748b' }}>Manage Preferences</span>
-                          </div>
-                          <span style={{ fontSize: 11, color: '#94a3b8' }}>SNS Square Multi-Agent Platform</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
-          </div>
+              if (templateData.html) {
+                setWizardGeneratedEmail({
+                  subject: templateData.subjectLine || templateData.defaultSubject || '',
+                  email_body: templateData.html
+                });
+              }
+              setWizardStep(3);
+              setActiveTab('create_campaign');
+              showNotification(`Loaded "${templateData.campaignName || templateData.name}" into Campaign Wizard.`);
+            }}
+          />
         )}
 
         {/* ══════════════════════════════════════════════════════════════════
@@ -4575,6 +4559,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
           />
         )}
       </div>
+    </div>
 
       {/* ── Lead Profile Modal ── */}
       {selectedLead && (

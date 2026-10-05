@@ -213,6 +213,8 @@ function cleanEmailBodyHtml(content) {
 function wrapInSnsSquareTemplate(contentBodyHtml, options = {}) {
   const {
     campaignType = 'newsletter',
+    title = null,
+    subtitle = null,
     imageUrl = null,
     recipientUnsubUrl = '#',
     recipientPrefUrl = '#',
@@ -222,65 +224,149 @@ function wrapInSnsSquareTemplate(contentBodyHtml, options = {}) {
   let bodyHtml = cleanEmailBodyHtml(contentBodyHtml);
 
   // Avoid double wrapping if container is already present
-  if (bodyHtml.includes('sns-email-container') || bodyHtml.includes('Embassy TechVillage')) {
+  if (bodyHtml.includes('sns-email-container') && bodyHtml.includes('Embassy TechVillage')) {
     return bodyHtml;
   }
 
   const normalizedType = String(campaignType).toLowerCase();
   const isFestival = normalizedType.includes('festival') || normalizedType.includes('wish');
+  const isNewsletter = normalizedType.includes('newsletter');
+  const isEvent = normalizedType.includes('event') || normalizedType.includes('webinar');
 
-  const headerAccent = isFestival ? '#a21caf' : '#2563eb';
-  const headerSubtitle = isFestival
+  const headerGradient = isFestival
+    ? 'linear-gradient(135deg, #701a75 0%, #a21caf 50%, #c026d3 100%)'
+    : isEvent
+      ? 'linear-gradient(135deg, #065f46 0%, #059669 50%, #10b981 100%)'
+      : 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 55%, #3b82f6 100%)';
+
+  const defaultTitle = isFestival
+    ? 'Warm Executive Festive Wishes'
+    : isEvent
+      ? 'Executive Leadership Briefing'
+      : 'Your Weekly GCC & AI Scoop';
+
+  const defaultSubtitle = isFestival
     ? 'Executive Festive Greetings & Partnerships'
-    : 'Enterprise Client Intelligence & Strategic Advisory';
+    : isEvent
+      ? 'Exclusive Roundtable & Strategy Forum'
+      : 'Core Perspective | Wednesday Edition';
+
+  const headerTitleText = title || defaultTitle;
+  const headerSubtitleText = subtitle || defaultSubtitle;
 
   const imageHtml = imageUrl ? `
     <div style="text-align: center; margin-bottom: 24px;">
       <img src="${imageUrl}" alt="Campaign Header" style="max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #e2e8f0; display: block; margin: 0 auto;" />
     </div>` : '';
 
+  // Promotional Banner (matching screenshot 5) - only for newsletters and promotional emails
+  const showPromoBanner = !isFestival && !bodyHtml.includes('Data & Agentic AI Services');
+  const promoBannerHtml = showPromoBanner ? `
+    <div style="background: linear-gradient(135deg, #090e17 0%, #0e1e3e 50%, #1e3a8a 100%); border-radius: 12px; padding: 26px 24px; color: #ffffff; margin: 32px 0 20px 0; border: 1px solid #1e293b;">
+      <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+          <td style="vertical-align: top; padding-right: 16px;">
+            <div style="font-size: 20px; font-weight: 800; color: #ffffff; line-height: 1.3; margin-bottom: 8px;">
+              Data & Agentic AI Services. Built for Execution.
+            </div>
+            <div style="font-size: 13.5px; color: #cbd5e1; line-height: 1.6; margin-bottom: 16px;">
+              Design, build, and operate production-grade data and Agentic AI systems that move workflows from insight to autonomous action.
+            </div>
+            <a href="https://www.snssquare.com/gcc-services" style="background-color: #0b0f19; color: #ffffff; border: 1px solid #3b82f6; text-decoration: none; padding: 9px 18px; border-radius: 6px; font-size: 12.5px; font-weight: 600; display: inline-block;">
+              Explore GCC Services &rarr;
+            </a>
+          </td>
+          <td align="right" style="vertical-align: middle; width: 140px;">
+            <div style="display: inline-block; background: rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 10px; border: 1px solid rgba(255, 255, 255, 0.15); text-align: left;">
+              <div style="font-size: 10px; font-weight: 700; color: #60a5fa; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">GCC PARTNER</div>
+              <div style="font-size: 11px; color: #e2e8f0; line-height: 1.35; font-weight: 500;">
+                Trusted Build & Operational Partner for GCCs in India
+              </div>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>` : '';
+
   return `
-<div class="sns-email-container" style="background-color: #f8fafc; padding: 24px 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-  <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 620px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
-    <!-- Standard SNS Header -->
+<div class="sns-email-container" style="background-color: #f1f5f9; padding: 24px 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 640px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+    <!-- SNS Square Branded Gradient Header (Reference: Screenshot 1) -->
     <tr>
-      <td style="padding: 24px 28px 20px 28px; background-color: #ffffff; border-bottom: 2px solid ${headerAccent};">
+      <td style="padding: 24px 28px; background: ${headerGradient}; border-bottom: 1px solid rgba(255,255,255,0.15);">
         <table border="0" cellpadding="0" cellspacing="0" width="100%">
           <tr>
-            <td>
-              <div style="font-size: 17px; font-weight: 800; letter-spacing: -0.02em; color: #0f172a;">
-                SNS SQUARE <span style="font-size: 11px; font-weight: 700; color: ${headerAccent}; text-transform: uppercase; margin-left: 6px; padding: 2px 6px; background-color: #f1f5f9; border-radius: 4px;">GCC & AI</span>
+            <td style="vertical-align: middle;">
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding-right: 12px; vertical-align: middle;">
+                    <!-- Multi-Color Square Logo Icon -->
+                    <div style="width: 38px; height: 38px; border: 3px solid #ef4444; border-top-color: #f59e0b; border-right-color: #10b981; border-bottom-color: #06b6d4; border-radius: 4px; display: inline-block; box-sizing: border-box; position: relative;">
+                      <div style="position: absolute; top: 3px; left: 3px; right: 3px; bottom: 3px; background: rgba(255,255,255,0.15); border-radius: 2px;"></div>
+                    </div>
+                  </td>
+                  <td style="vertical-align: middle;">
+                    <div style="font-size: 15px; font-weight: 900; letter-spacing: -0.02em; color: #ffffff; text-transform: uppercase;">
+                      SNS SQUARE
+                    </div>
+                    <div style="font-size: 9.5px; color: #dbeafe; letter-spacing: 0.04em; font-style: italic;">
+                      Redesigning Business
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+            <td align="right" style="vertical-align: middle;">
+              <div style="font-size: 19px; font-weight: 800; color: #ffffff; line-height: 1.25;">
+                ${headerTitleText}
               </div>
-              <div style="font-size: 12px; color: #64748b; margin-top: 3px;">
-                ${headerSubtitle}
+              <div style="font-size: 11.5px; color: #dbeafe; margin-top: 3px; font-weight: 500;">
+                ${headerSubtitleText}
               </div>
             </td>
           </tr>
         </table>
       </td>
     </tr>
-    <!-- Email Content Body -->
+    <!-- Main Email Body Content -->
     <tr>
-      <td style="padding: 28px 28px 24px 28px; color: #1e293b; font-size: 15px; line-height: 1.65;">
+      <td style="padding: 32px 32px 24px 32px; color: #1e293b; font-size: 15px; line-height: 1.65; background-color: #ffffff;">
         ${imageHtml}
         ${bodyHtml}
+        ${promoBannerHtml}
       </td>
     </tr>
-    <!-- Standard SNS Footer & Compliance -->
+    <!-- SNS Square Branded Dark Footer (Reference: Screenshot 5) -->
     <tr>
-      <td style="padding: 22px 28px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; line-height: 1.6; text-align: center;">
-        <div style="font-weight: 600; color: #334155; margin-bottom: 4px;">
-          SNS Square Enterprise Client Partnerships
+      <td style="padding: 28px 24px; background-color: #090e17; color: #94a3b8; font-size: 12px; line-height: 1.6; text-align: center; border-top: 1px solid #1e293b;">
+        <!-- Social Icons Row -->
+        <div style="margin-bottom: 16px;">
+          <a href="https://www.snssquare.com" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; background-color: #ffffff; color: #090e17; border-radius: 50%; text-decoration: none; font-weight: 700; margin: 0 4px; font-size: 12px;">&bull;</a>
+          <a href="https://linkedin.com" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; background-color: #ffffff; color: #090e17; border-radius: 50%; text-decoration: none; font-weight: 700; margin: 0 4px; font-size: 11px;">in</a>
+          <a href="https://youtube.com" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; background-color: #ffffff; color: #090e17; border-radius: 50%; text-decoration: none; font-weight: 700; margin: 0 4px; font-size: 11px;">yt</a>
+          <a href="https://instagram.com" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; background-color: #ffffff; color: #090e17; border-radius: 50%; text-decoration: none; font-weight: 700; margin: 0 4px; font-size: 11px;">ig</a>
         </div>
-        <div style="color: #94a3b8; font-size: 11px; margin-bottom: 12px;">
-          BLOCK-L, Embassy TechVillage, Outer Ring Road, Devarabisanahalli, Bellandur, Bengaluru, Karnataka 560103, India
+        <div style="color: #cbd5e1; font-size: 12.5px; margin-bottom: 6px;">
+          You have received this email as a registered user of SNS Square.
         </div>
-        <div>
-          <a href="${recipientUnsubUrl}" style="color: #2563eb; text-decoration: underline; margin-right: 12px;">Unsubscribe</a> &bull;
-          <a href="${recipientPrefUrl}" style="color: #64748b; text-decoration: underline; margin-left: 12px;">Manage Preferences</a>
+        <div style="margin-bottom: 18px;">
+          You can unsubscribe from these emails <a href="${recipientUnsubUrl}" style="color: #60a5fa; text-decoration: underline;">here</a>.
         </div>
-        <div style="font-size: 10.5px; color: #94a3b8; margin-top: 8px;">
-          &copy; 2026 SNS Square. All rights reserved. Confirmed opt-in recipient.
+        <!-- Centered Logo in Footer -->
+        <div style="margin-bottom: 14px;">
+          <div style="width: 32px; height: 32px; border: 2.5px solid #ef4444; border-top-color: #f59e0b; border-right-color: #10b981; border-bottom-color: #06b6d4; border-radius: 3px; display: inline-block; margin-bottom: 4px;"></div>
+          <div style="font-size: 13px; font-weight: 800; color: #ffffff; letter-spacing: -0.01em;">SNS SQUARE</div>
+          <div style="font-size: 8.5px; color: #94a3b8; font-style: italic;">Redesigning Business</div>
+        </div>
+        <!-- Office Location Address -->
+        <div style="color: #94a3b8; font-size: 11.5px; line-height: 1.5; max-width: 480px; margin: 0 auto 12px auto;">
+          <strong>BLOCK-L, Embassy TechVillage</strong><br/>
+          <a href="https://maps.google.com" style="color: #60a5fa; text-decoration: none;">
+            Outer Ring Road, Devarabisanahalli, Bellandur, Bengaluru, Karnataka 560103, India
+          </a>
+        </div>
+        <div style="font-size: 10.5px; color: #64748b; margin-top: 12px; border-top: 1px solid #1e293b; padding-top: 12px;">
+          &copy; 2026 SNS Square. All rights reserved. &bull; Enterprise Client Partnerships
         </div>
       </td>
     </tr>
