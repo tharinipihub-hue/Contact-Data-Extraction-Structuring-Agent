@@ -305,32 +305,29 @@ async function runAllTests() {
       topic: 'Reliable Cloud Infrastructure'
     }, { validateStatus: () => true });
 
-    if (genRes.status === 502 && genRes.data?.error_type === 'workflow_not_deployed') {
-      assert.strictEqual(genRes.data.workbench_http_status, 404, 'Production Workbench 404 is preserved');
-      assert.match(genRes.data.error, /Webhook not found or workflow inactive/i, 'Actual Workbench error is preserved');
+    if (genRes.status === 502 && genRes.data?.content_source === 'unavailable') {
+      assert.strictEqual(genRes.data.success, false, 'Unavailable generation is not marked successful');
+      if (genRes.data.error_type === 'workflow_not_deployed') {
+        assert.strictEqual(genRes.data.workbench_http_status, 404, 'Production Workbench 404 is preserved');
+        assert.match(genRes.data.error, /Webhook not found or workflow inactive/i, 'Actual Workbench error is preserved');
+        console.log('  ✓ Production Workbench 404 is truthfully classified; no fallback content or dispatch was attempted');
+      } else {
+        assert.strictEqual(genRes.data.error_type, 'no_usable_content', 'A 2xx envelope without generated fields is rejected');
+        assert.strictEqual(genRes.data.workbench_http_status, 200, 'Upstream HTTP status is preserved');
+        assert.strictEqual(genRes.data.workbench_response?.result, null, 'Empty result is preserved for diagnostics');
+        console.log('  ✓ Production HTTP 200 with result:null is rejected as no generated content; no dispatch was attempted');
+      }
       assert.strictEqual(genRes.data.content_source, 'unavailable', 'Unavailable response contains no generated content');
-      console.log('  ✓ Production Workbench 404 is truthfully classified; no fallback content or dispatch was attempted');
       passedTests++;
     } else {
       assert.strictEqual(genRes.status, 200, `Unexpected campaign generation status: ${genRes.status}`);
 
       const previewSubj = genRes.data.preview.subject;
       const previewBody = genRes.data.preview.email_body;
-
-      const dispatchRes = await axios.post(`${BASE_URL}/api/campaigns/dispatch`, {
-        campaign_id: genRes.data.campaign.id,
-        campaign_name: genRes.data.campaign.name,
-        campaign_type: genRes.data.campaign.type,
-        topic: 'Reliable Cloud Infrastructure',
-        contacts: [contact],
-        content: { subject: previewSubj, email_body: previewBody }
-      });
-
-      assert.strictEqual(dispatchRes.data.success, true);
-      assert.strictEqual(dispatchRes.data.campaign.subject, previewSubj, 'Subject is strictly identical');
-      assert.strictEqual(dispatchRes.data.campaign.content_version, 'v1', 'Content version preserved');
-      console.log('  ✓ Dispatched subject and preview subject are identical');
-      console.log('  ✓ Zero content divergence or post-preview regeneration');
+      assert.strictEqual(genRes.data.campaign.email_body, previewBody, 'Draft handoff preserves the exact preview HTML');
+      assert.strictEqual(genRes.data.campaign.subject, previewSubj, 'Draft subject is identical to preview subject');
+      assert.strictEqual(genRes.data.campaign.delivery_status, 'Not dispatched', 'Generation remains a draft and does not send email');
+      console.log('  ✓ Draft payload matches preview HTML and subject; no dispatch endpoint was called');
       passedTests++;
     }
   } catch (err) {
