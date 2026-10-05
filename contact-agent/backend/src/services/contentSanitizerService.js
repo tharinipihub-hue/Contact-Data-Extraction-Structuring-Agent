@@ -60,9 +60,27 @@ function sanitizeAndValidateSubject(rawSubject, options = {}) {
     subject = subject.replace(/\s*\|\s*SNS\s+Square\s+Weekly\s+GCC\s+&\s+AI\s+Scoop\b/gi, '').trim();
   }
 
+  // 1. Strip leading "Subject:" or "Title:" prefix
+  let cleaned = subject.replace(/^(?:Subject|Title)\s*[:—–-]\s*/i, '').trim();
+
+  // 2. If there's a prompt instruction pattern followed by colon or dash, extract the actual subject
+  for (const pat of PROMPT_INSTRUCTION_PATTERNS) {
+    if (pat.test(cleaned)) {
+      const parts = cleaned.split(/[:—–-]\s*/);
+      if (parts.length > 1) {
+        const candidate = parts.slice(1).join(':').trim();
+        if (candidate.length >= 5 && !detectPromptLeakInSubject(candidate)) {
+          cleaned = candidate;
+          break;
+        }
+      }
+    }
+  }
+
+  subject = cleaned;
   const hasLeak = detectPromptLeakInSubject(subject);
 
-  // If instruction leaked or subject is empty/invalid, rewrite cleanly
+  // If instruction still leaked or subject is empty/invalid, rewrite cleanly
   if (hasLeak || !subject || subject.length < 6) {
     if (isFestival) {
       const occName = occasion ? occasion.replace(/\s*\d{4}\b/, '').trim() : 'Festive';
@@ -118,8 +136,8 @@ function sanitizeAndPersonalizeGreeting(rawBody, recipient) {
 
   // Replace fake generic titles in greetings
   const fakeTitlePatterns = [
-    /(<p\b[^>]*>)?(?:Dear|Hi|Hello|Greetings)\s+(?:Leader|Executive|Enterprise\s+Partner|Client\s+Executive|Valued\s+Partner|Valued\s+Client|Valued\s+Customer|Client|Partner|Customer|User)(?:,|<\/p>|\s*<\/p>)/gi,
-    /(?:Dear|Hi|Hello|Greetings)\s+(?:Leader|Executive|Enterprise\s+Partner|Client\s+Executive|Valued\s+Partner|Valued\s+Client)(?:,|\b)/gi
+    /(<p\b[^>]*>)?(?:Dear|Hi|Hello|Greetings|Respected)\s+(?:Leader|Executive|Decision\s+Maker|Valued\s+Decision\s+Maker|Enterprise\s+Partner|Client\s+Executive|Corporate\s+Leader|Business\s+Leader|Valued\s+Partner|Valued\s+Client|Valued\s+Customer|Client|Partner|Customer|User)(?:,|<\/p>|\s*<\/p>)/gi,
+    /(?:Dear|Hi|Hello|Greetings|Respected)\s+(?:Leader|Executive|Decision\s+Maker|Valued\s+Decision\s+Maker|Enterprise\s+Partner|Client\s+Executive|Corporate\s+Leader|Business\s+Leader|Valued\s+Partner|Valued\s+Client)(?:,|\b)/gi
   ];
 
   for (const pattern of fakeTitlePatterns) {
@@ -140,6 +158,19 @@ function sanitizeAndPersonalizeGreeting(rawBody, recipient) {
 }
 
 /**
+ * Decode common HTML entities.
+ */
+function decodeHtmlEntities(str) {
+  if (!str || typeof str !== 'string') return '';
+  return str
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&');
+}
+
+/**
  * Formats raw plain text or HTML body into clean HTML paragraphs.
  * 
  * @param {string} content
@@ -148,6 +179,11 @@ function sanitizeAndPersonalizeGreeting(rawBody, recipient) {
 function cleanEmailBodyHtml(content) {
   let body = String(content || '').trim();
   if (!body) return '';
+
+  // Decode escaped HTML tags if present (e.g. &lt;p&gt; -> <p>)
+  if (/&lt;(?:p|div|br|strong|b|em|i|ul|ol|li|h[1-6]|a)\b/i.test(body)) {
+    body = decodeHtmlEntities(body);
+  }
 
   // If already rich HTML with tags, return with paragraph spacing normalized
   if (/<(?:p|div|table|h[1-6]|ul|ol)\b/i.test(body)) {

@@ -49,12 +49,10 @@ const SCORING_MODEL = {
  * Filter audience based on criteria.
  */
 function resolveAudienceContacts(options = {}) {
-  const {
-    audience_filter = 'all',
-    audience_value = '',
-    selected_contact_ids = [],
-    contacts_override = null
-  } = options;
+  const audience_filter = (options.audience_filter || options.audience_scope || 'all').toLowerCase();
+  const audience_value = String(options.audience_value || options.filter_value || '').trim();
+  const selected_contact_ids = options.selected_contact_ids || options.contact_ids || [];
+  const contacts_override = options.contacts_override || null;
 
   let allContacts = contacts_override || nurtureStore.getContacts();
 
@@ -64,15 +62,30 @@ function resolveAudienceContacts(options = {}) {
   }
 
   if (audience_filter === 'industry' && audience_value) {
-    return allContacts.filter(c => (c.sector || c.industry || '').toLowerCase() === audience_value.toLowerCase());
+    const val = audience_value.toLowerCase();
+    return allContacts.filter(c => {
+      const ind = (c.sector || c.industry || '').toLowerCase();
+      return ind.includes(val) || val.includes(ind);
+    });
   }
 
   if (audience_filter === 'region' && audience_value) {
     const val = audience_value.toLowerCase();
+    const occasionService = require('./occasionService');
     return allContacts.filter(c => {
+      const detected = occasionService.detectContactRegion(c).toLowerCase();
       const loc = [c.country, c.state, c.city, c.location].filter(Boolean).join(' ').toLowerCase();
-      return loc.includes(val);
+      return detected.includes(val) || val.includes(detected) || loc.includes(val);
     });
+  }
+
+  if (audience_filter === 'campaign' && audience_value) {
+    const campaigns = nurtureStore.getCampaigns();
+    const cmp = campaigns.find(c => c.id === audience_value || c.name === audience_value);
+    if (cmp && Array.isArray(cmp.contacts) && cmp.contacts.length > 0) {
+      const idSet = new Set(cmp.contacts.map(c => typeof c === 'string' ? c : c?.id));
+      return allContacts.filter(c => idSet.has(c.id));
+    }
   }
 
   if (audience_filter === 'segment' && audience_value) {
@@ -186,10 +199,21 @@ function evaluateContactRecord(contact, content, campaignType, occasion) {
     }
   }
 
+  const occasionService = require('./occasionService');
+  const detectedRegion = occasionService.detectContactRegion(contact);
+  let regionDisplay = contact.country || contact.location || 'Global';
+  if (detectedRegion.toLowerCase().includes('india')) {
+    regionDisplay = 'India';
+  } else if (detectedRegion.toLowerCase().includes('united states') || detectedRegion.toLowerCase().includes('us') || detectedRegion.toLowerCase().includes('america')) {
+    regionDisplay = 'USA';
+  }
+
   return {
     contact_id: contact.id,
     contact_name: contact.name || 'Unnamed',
     company: contact.company || 'Unspecified',
+    industry: contact.sector || contact.industry || 'Technology',
+    region: regionDisplay,
     email: contact.email || '',
     is_blocked: isBlocked,
     issues,
@@ -202,17 +226,15 @@ function evaluateContactRecord(contact, content, campaignType, occasion) {
  * Run Full Audience-Level AI Quality Test Suite
  */
 async function runAudienceAITest(options = {}) {
-  const {
-    audience_filter = 'all',
-    audience_value = '',
-    selected_contact_ids = [],
-    test_mode = 'quick',
-    sample_size = null,
-    campaign_type = 'newsletter',
-    campaign_name = '',
-    campaign_brief = '',
-    occasion = ''
-  } = options;
+  const audience_filter = options.audience_filter || options.audience_scope || 'all';
+  const audience_value = options.audience_value || options.filter_value || '';
+  const selected_contact_ids = options.selected_contact_ids || options.contact_ids || [];
+  const test_mode = options.test_mode || options.testing_mode || 'quick';
+  const sample_size = options.sample_size || null;
+  const campaign_type = options.campaign_type || 'newsletter';
+  const campaign_name = options.campaign_name || '';
+  const campaign_brief = options.campaign_brief || '';
+  const occasion = options.occasion || '';
 
   const testStartedAt = new Date().toISOString();
   const testId = `AI-AUDIT-${Date.now()}`;
@@ -354,6 +376,38 @@ async function runAudienceAITest(options = {}) {
       });
     });
   });
+
+  const diagnosticContacts = contactEvaluations.map(ce => {
+    const score = Math.max(0, 100 - (ce.issues.length * 25) - (ce.warnings.length * 10));
+    let status = 'Passed';
+    if (ce.is_blocked) status = 'Blocked';
+    else if (ce.issues.length > 0) status = 'Failed';
+    else if (ce.warnings.length > 0) status = 'Warning';
+
+    return {
+      contact_id: ce.contact_id,
+      name: ce.contact_name,
+      company: ce.company,
+      industry: ce.industry,
+      region: ce.region,
+      email: ce.email,
+      score,
+      status,
+      issues: ce.issues,
+      warnings: ce.warnings,
+      goods: ce.goods
+    };
+  });
+
+  const findingsGood = Array.from(new Set(contactEvaluations.flatMap(ce => ce.goods)));
+  if (evaluatedContent.content_source === 'workbench') {
+    findingsGood.unshift('Grounded synthesis via SNS Square Agent Workbench');
+  }
+  if (!subjectHadLeak) {
+    findingsGood.push('Zero prompt instruction leakage in subject line');
+  }
+  const findingsWarnings = Array.from(new Set(contactEvaluations.flatMap(ce => ce.warnings)));
+  const findingsFailures = Array.from(new Set(contactEvaluations.flatMap(ce => ce.issues)));
 
   // 6. Calculate Transparent Category Scores (Total 100)
   // Deductions based on sample findings
@@ -501,6 +555,8 @@ async function runAudienceAITest(options = {}) {
     },
     sample_size: testSample.length,
     total_audience: totalAudienceCount,
+    tested_contacts_count: testSample.length,
+    total_audience_count: totalAudienceCount,
     results_summary: {
       passed: passedCount,
       warnings: warnedCount,
@@ -522,6 +578,12 @@ async function runAudienceAITest(options = {}) {
     category_scores: categoryScores,
     test_results: testResultsArray,
     contact_issues: contactIssuesList.slice(0, 15),
+    diagnostic_contacts: diagnosticContacts,
+    findings: {
+      good: findingsGood,
+      warnings: findingsWarnings,
+      failures: findingsFailures
+    },
     actionable_recommendations: actionableRecommendations,
     all_recommendations: recommendationsStrings,
     recommendations: recommendationsStrings,

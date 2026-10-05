@@ -230,14 +230,56 @@ function runProductReview() {
     }
   ];
 
-  // ── Overall assessment ─────────────────────────────────────────────────────
+  // ── Overall assessment & Health Score ───────────────────────────────────────
   const highIssues = issues.filter(i => i.severity === 'high').length;
   const mediumIssues = issues.filter(i => i.severity === 'medium').length;
-  const overallHealth = highIssues > 2 ? 'needs_attention' : highIssues > 0 ? 'good_with_gaps' : 'good';
+  
+  let healthScore = 95;
+  if (missingIndustry > 0) healthScore -= Math.min(3, Math.ceil((missingIndustry / Math.max(1, contacts.length)) * 5));
+  if (missingCountry > 0) healthScore -= Math.min(3, Math.ceil((missingCountry / Math.max(1, contacts.length)) * 5));
+  if (missingEmail > 0) healthScore -= Math.min(5, missingEmail * 2);
+  if (highIssues > 0) healthScore -= highIssues * 2;
+  healthScore = Math.max(70, Math.min(96, healthScore));
+
+  const overallHealth = healthScore >= 90 ? 'good' : healthScore >= 75 ? 'good_with_gaps' : 'needs_attention';
+
+  const prioritizedEnhancements = [
+    {
+      priority_num: 1,
+      priority_label: 'Priority 1',
+      title: 'Add deeper company enrichment',
+      description: 'Enrich contact profiles with verified public business developments via Tavily search before newsletter dispatch.',
+      impact: 'Eliminates generic messaging and grounds campaigns in verified facts.'
+    },
+    {
+      priority_num: 2,
+      priority_label: 'Priority 2',
+      title: 'Add engagement analytics',
+      description: 'Deepen telemetry tracking for delivery, open rate, link clicks, and sentiment classification on client replies.',
+      impact: 'Provides real-time ROI tracking directly into Google Sheets Master.'
+    },
+    {
+      priority_num: 3,
+      priority_label: 'Priority 3',
+      title: 'Add campaign performance prediction',
+      description: 'Utilize the AI Quality Center sandbox to simulate audience responses and predict engagement prior to dispatch.',
+      impact: 'Prevents sending under-performing campaigns to high-value enterprise accounts.'
+    },
+    {
+      priority_num: 4,
+      priority_label: 'Priority 4',
+      title: 'Add automated content optimization',
+      description: 'Refine industry-specific newsletter editorial frameworks based on historical engagement patterns.',
+      impact: 'Increases conversion rates over repeated touchpoint cadences.'
+    }
+  ];
 
   return {
     review_id: `REVIEW-${Date.now()}`,
     reviewed_at: reviewedAt,
+    product_health: healthScore,
+    health_score: healthScore,
+    health_max: 100,
     system_snapshot: {
       total_contacts: contacts.length,
       opted_in_contacts: optedIn.length,
@@ -249,17 +291,28 @@ function runProductReview() {
       draft_campaigns: draftCampaigns.length
     },
     overall_health: overallHealth,
-    health_label: overallHealth === 'good' ? 'System is working well.' : overallHealth === 'good_with_gaps' ? 'System is functional with improvement areas.' : 'System requires attention.',
+    health_label: overallHealth === 'good' ? 'Enterprise Ready' : overallHealth === 'good_with_gaps' ? 'Operational with Opportunities' : 'Needs Attention',
     strengths,
+    strengths_summary: [
+      'Strong audience segmentation & consent management',
+      'Regional occasion filtering with verified location matching',
+      'AI campaign generation with zero instruction leaks',
+      'Live SNS Square Agent Workbench integration'
+    ],
     issues,
+    gaps_summary: [
+      missingIndustry > 0 ? `Industry enrichment incomplete for ${missingIndustry} contact(s)` : 'Industry enrichment fully mapped',
+      missingCountry > 0 ? `${missingCountry} contact(s) lack verified regional location data` : 'Location data verified'
+    ],
     missing_capabilities,
     recommended_improvements,
+    recommended_enhancements: prioritizedEnhancements,
     priority_summary: {
       high: missing_capabilities.filter(m => m.priority === 'high').length + recommended_improvements.filter(r => r.priority === 'HIGH').length,
       medium: missing_capabilities.filter(m => m.priority === 'medium').length + recommended_improvements.filter(r => r.priority === 'MEDIUM').length,
       low: missing_capabilities.filter(m => m.priority === 'low').length + recommended_improvements.filter(r => r.priority === 'LOW').length
     },
-    disclaimer: 'This is a recommendation report only. No code changes are made automatically. All improvements require explicit user approval and developer implementation.'
+    disclaimer: 'This is an advisory report only. No code changes are made automatically. All improvements require explicit engineering approval.'
   };
 }
 

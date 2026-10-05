@@ -13,8 +13,21 @@ import {
   ArrowRight,
   ShieldAlert,
   Info,
-  Layers
+  Layers,
+  TrendingUp,
+  BarChart2
 } from 'lucide-react';
+
+const COMMON_INDUSTRIES = [
+  'Technology & AI Software',
+  'Banking & Financial Services',
+  'Healthcare & Life Sciences',
+  'Manufacturing & Supply Chain',
+  'Retail & E-Commerce',
+  'Professional Consulting & Legal',
+  'Real Estate & Construction',
+  'Education & EdTech'
+];
 
 export default function ContactResearchTab({
   contacts = [],
@@ -22,13 +35,22 @@ export default function ContactResearchTab({
   showNotification,
   onUseInCampaign
 }) {
+  const [subTab, setSubTab] = useState('contact'); // 'contact' | 'industry'
+
+  // Contact research state
   const [selectedContactId, setSelectedContactId] = useState(contacts[0]?.id || '');
   const [isResearching, setIsResearching] = useState(false);
   const [researchData, setResearchData] = useState(null);
 
+  // Industry intelligence state
+  const [selectedIndustry, setSelectedIndustry] = useState('Technology & AI Software');
+  const [customIndustry, setCustomIndustry] = useState('');
+  const [isResearchingIndustry, setIsResearchingIndustry] = useState(false);
+  const [industryResearchData, setIndustryResearchData] = useState(null);
+
   const selectedContact = contacts.find(c => c.id === selectedContactId) || contacts[0] || null;
 
-  const handleResearch = async (contactToUse = null) => {
+  const handleResearchContact = async (contactToUse = null) => {
     const target = contactToUse || selectedContact;
     if (!target) {
       if (showNotification) showNotification('Please select a contact to research.', true);
@@ -50,7 +72,7 @@ export default function ContactResearchTab({
         }
       } else if (res.data?.blocked) {
         if (showNotification) {
-          showNotification(`Research blocked: ${res.data.reason}`, true);
+          showNotification(`Live research is currently unavailable: ${res.data.reason}`, true);
         }
       }
     } catch (err) {
@@ -62,192 +84,462 @@ export default function ContactResearchTab({
     }
   };
 
+  const handleResearchIndustry = async () => {
+    const target = customIndustry.trim() || selectedIndustry;
+    if (!target) {
+      if (showNotification) showNotification('Please select or specify an industry.', true);
+      return;
+    }
+    setIsResearchingIndustry(true);
+    setIndustryResearchData(null);
+    try {
+      const res = await axios.post(`${apiBase}/nurture/research-industry`, {
+        industry: target
+      }, { timeout: 40000 });
+
+      setIndustryResearchData(res.data);
+      if (res.data?.available) {
+        if (showNotification) {
+          showNotification(`Retrieved industry intelligence with ${res.data.findings?.length || 0} research area(s) for ${target}.`);
+        }
+      } else if (res.data?.blocked) {
+        if (showNotification) {
+          showNotification(`Live research is currently unavailable: ${res.data.reason}`, true);
+        }
+      }
+    } catch (err) {
+      if (showNotification) {
+        showNotification('Industry research error: ' + (err.response?.data?.error || err.message), true);
+      }
+    } finally {
+      setIsResearchingIndustry(false);
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      {/* ── Banner ── */}
-      <div className="dn-workflow-banner" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', border: '1px solid #334155' }}>
-        <div className="dn-workflow-banner-info">
-          <h3 style={{ color: '#ffffff' }}>
-            <Search size={20} color="#60a5fa" />
-            Contact & Company Intelligence Research (Verified Public Web Search)
-          </h3>
-          <p style={{ color: '#cbd5e1' }}>
-            Gathers verified public company developments, industry topics, and organizational focus via Tavily search. Grounded with source citations and confidence metrics — never fabricated.
-          </p>
-        </div>
+      {/* ── Sub Navigation Switcher ── */}
+      <div style={{ display: 'flex', gap: 8, background: '#f1f5f9', padding: 6, borderRadius: 10, width: 'fit-content' }}>
+        <button
+          onClick={() => setSubTab('contact')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '8px 16px',
+            borderRadius: 8,
+            border: 'none',
+            fontSize: 13,
+            fontWeight: subTab === 'contact' ? 700 : 500,
+            background: subTab === 'contact' ? '#ffffff' : 'transparent',
+            color: subTab === 'contact' ? '#1e293b' : '#64748b',
+            boxShadow: subTab === 'contact' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+            cursor: 'pointer',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <User size={15} color={subTab === 'contact' ? '#2563eb' : '#64748b'} />
+          Contact & Company Research
+        </button>
+
+        <button
+          onClick={() => setSubTab('industry')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '8px 16px',
+            borderRadius: 8,
+            border: 'none',
+            fontSize: 13,
+            fontWeight: subTab === 'industry' ? 700 : 500,
+            background: subTab === 'industry' ? '#ffffff' : 'transparent',
+            color: subTab === 'industry' ? '#1e293b' : '#64748b',
+            boxShadow: subTab === 'industry' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+            cursor: 'pointer',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <TrendingUp size={15} color={subTab === 'industry' ? '#2563eb' : '#64748b'} />
+          Industry Intelligence
+        </button>
       </div>
 
-      {/* ── Selection & Action Panel ── */}
-      <div className="dn-panel" style={{ padding: 20 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14 }}>
-          <div style={{ flex: 1, minWidth: 260 }}>
-            <label style={{ fontSize: 12, fontWeight: 600, color: '#334155', display: 'block', marginBottom: 6 }}>
-              Select Client Contact to Research
-            </label>
-            <select
-              className="dn-input"
-              value={selectedContactId}
-              onChange={(e) => {
-                setSelectedContactId(e.target.value);
-                setResearchData(null);
-              }}
-              disabled={isResearching}
-            >
-              {contacts.map(c => (
-                <option key={c.id} value={c.id}>
-                  {c.name} — {c.company} ({c.sector || c.industry || 'Technology'}) &bull; {c.opt_in ? 'Opted In' : 'Opted Out'}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-            <button
-              className="dn-btn dn-btn-primary"
-              onClick={() => handleResearch()}
-              disabled={isResearching || !selectedContact}
-              style={{ padding: '9px 20px', fontSize: 13 }}
-            >
-              {isResearching ? (
-                <>
-                  <RefreshCw size={14} className="spin-icon" /> Researching Public Web...
-                </>
-              ) : (
-                <>
-                  <Search size={14} /> AI Enrich Contact
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-
-        {selectedContact && (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginTop: 16, paddingTop: 14, borderTop: '1px solid #f1f5f9', fontSize: 12, color: '#475569' }}>
-            <div>
-              <span style={{ color: '#64748b' }}>Name:</span> <strong>{selectedContact.name}</strong>
-            </div>
-            <div>
-              <span style={{ color: '#64748b' }}>Company:</span> <strong>{selectedContact.company}</strong>
-            </div>
-            <div>
-              <span style={{ color: '#64748b' }}>Designation:</span> <strong>{selectedContact.designation}</strong>
-            </div>
-            <div>
-              <span style={{ color: '#64748b' }}>Sector:</span> <strong>{selectedContact.sector || selectedContact.industry || 'Technology'}</strong>
-            </div>
-            <div>
-              <span style={{ color: '#64748b' }}>Location:</span> <strong>{selectedContact.location || `${selectedContact.city || ''}, ${selectedContact.country || ''}`.trim() || 'India'}</strong>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* ── Research Results Display ── */}
-      {researchData && (
+      {/* ── TAB 1: CONTACT & COMPANY RESEARCH ── */}
+      {subTab === 'contact' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          {/* Blocked State Notice (when Tavily API key is not present) */}
-          {researchData.blocked && (
-            <div style={{ background: '#fffbeb', border: '1px solid #fef08a', borderRadius: 8, padding: 18 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <ShieldAlert size={18} color="#b45309" />
-                <span style={{ fontWeight: 700, fontSize: 14, color: '#92400e' }}>
-                  {researchData.reason}
-                </span>
+          {/* Banner */}
+          <div className="dn-workflow-banner" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', border: '1px solid #334155' }}>
+            <div className="dn-workflow-banner-info">
+              <h3 style={{ color: '#ffffff' }}>
+                <Search size={20} color="#60a5fa" />
+                Contact & Company Intelligence Research (Verified Public Web Search)
+              </h3>
+              <p style={{ color: '#cbd5e1' }}>
+                Gathers verified public company developments, industry topics, and organizational focus via Tavily search. Grounded with source citations and confidence metrics — never fabricated.
+              </p>
+            </div>
+          </div>
+
+          {/* Selection & Action Panel */}
+          <div className="dn-panel" style={{ padding: 20 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14 }}>
+              <div style={{ flex: 1, minWidth: 260 }}>
+                <label style={{ fontSize: 12, fontWeight: 600, color: '#334155', display: 'block', marginBottom: 6 }}>
+                  Select Client Contact to Research
+                </label>
+                <select
+                  className="dn-input"
+                  value={selectedContactId}
+                  onChange={(e) => {
+                    setSelectedContactId(e.target.value);
+                    setResearchData(null);
+                  }}
+                  disabled={isResearching}
+                >
+                  {contacts.map(c => (
+                    <option key={c.id} value={c.id}>
+                      {c.name} — {c.company} ({c.sector || c.industry || 'Technology'}) &bull; {c.opt_in ? 'Opted In' : 'Opted Out'}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <div style={{ fontSize: 12, color: '#78350f', lineHeight: 1.6, marginBottom: 12 }}>
-                {researchData.setup_instructions}
-              </div>
-              <div style={{ fontSize: 11.5, color: '#92400e', background: '#fef3c7', padding: '8px 12px', borderRadius: 6 }}>
-                <strong>Verified Integration Point:</strong> To enable real-time web research, configure <code>TAVILY_API_KEY</code> on your Render dashboard and local <code>.env</code> file. No application code changes required.
+
+              <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                <button
+                  className="dn-btn dn-btn-primary"
+                  onClick={() => handleResearchContact()}
+                  disabled={isResearching || !selectedContact}
+                  style={{ padding: '9px 20px', fontSize: 13 }}
+                >
+                  {isResearching ? (
+                    <>
+                      <RefreshCw size={14} className="spin-icon" /> Researching Public Web...
+                    </>
+                  ) : (
+                    <>
+                      <Search size={14} /> AI Enrich Contact
+                    </>
+                  )}
+                </button>
               </div>
             </div>
-          )}
 
-          {/* Successful Research Results */}
-          {researchData.available && (
-            <>
-              {/* Header with Apply Button */}
-              <div className="dn-panel" style={{ padding: 18, background: '#f0fdf4', border: '1px solid #bbf7d0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+            {selectedContact && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginTop: 16, paddingTop: 14, borderTop: '1px solid #f1f5f9', fontSize: 12, color: '#475569' }}>
                 <div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#166534', display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <CheckCircle2 size={16} color="#16a34a" /> Research Completed: {researchData.company || researchData.contact_name}
+                  <span style={{ color: '#64748b' }}>Name:</span> <strong>{selectedContact.name}</strong>
+                </div>
+                <div>
+                  <span style={{ color: '#64748b' }}>Company:</span> <strong>{selectedContact.company}</strong>
+                </div>
+                <div>
+                  <span style={{ color: '#64748b' }}>Designation:</span> <strong>{selectedContact.designation}</strong>
+                </div>
+                <div>
+                  <span style={{ color: '#64748b' }}>Sector:</span> <strong>{selectedContact.sector || selectedContact.industry || 'Technology'}</strong>
+                </div>
+                <div>
+                  <span style={{ color: '#64748b' }}>Location:</span> <strong>{selectedContact.location || `${selectedContact.city || ''}, ${selectedContact.country || ''}`.trim() || 'India'}</strong>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Research Results Display */}
+          {researchData && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              {/* Blocked State Notice (when Tavily API key is not present) */}
+              {researchData.blocked && (
+                <div style={{ background: '#fffbeb', border: '1px solid #fef08a', borderRadius: 8, padding: 18 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                    <ShieldAlert size={18} color="#b45309" />
+                    <span style={{ fontWeight: 700, fontSize: 14, color: '#92400e' }}>
+                      Live research is currently unavailable
+                    </span>
                   </div>
-                  <div style={{ fontSize: 11.5, color: '#15803d', marginTop: 2 }}>
-                    Retrieved at: {new Date(researchData.retrieved_at).toLocaleString()} &bull; Provider: {researchData.source}
+                  <div style={{ fontSize: 12.5, color: '#78350f', lineHeight: 1.6, marginBottom: 12 }}>
+                    {researchData.reason}
+                  </div>
+                  <div style={{ fontSize: 11.5, color: '#92400e', background: '#fef3c7', padding: '8px 12px', borderRadius: 6 }}>
+                    <strong>Integration Requirement:</strong> To enable real-time public web enrichment, configure <code>TAVILY_API_KEY</code> on your Render dashboard or in your local <code>.env</code> file. No synthetic or hallucinated results will be displayed without verified search connectivity.
                   </div>
                 </div>
+              )}
 
-                {onUseInCampaign && (
-                  <button
-                    className="dn-btn dn-btn-primary"
-                    onClick={() => onUseInCampaign(researchData, selectedContact)}
-                    style={{ background: '#16a34a', border: 'none' }}
-                  >
-                    <Sparkles size={13} /> Use in Campaign Generator
-                  </button>
-                )}
-              </div>
-
-              {/* Research Findings */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                {(researchData.findings || []).map((finding, idx) => (
-                  <div key={idx} className="dn-panel" style={{ padding: 18 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                      <div style={{ fontWeight: 700, fontSize: 14, color: '#0f172a' }}>
-                        {finding.category}
+              {/* Successful Research Results */}
+              {researchData.available && (
+                <>
+                  <div className="dn-panel" style={{ padding: 18, background: '#f0fdf4', border: '1px solid #bbf7d0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+                    <div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: '#166534', display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <CheckCircle2 size={16} color="#16a34a" /> Research Completed: {researchData.company || researchData.contact_name}
                       </div>
-                      <span
-                        className={`dn-badge ${finding.confidence === 'verified' ? 'dn-badge-green' : 'dn-badge-amber'}`}
-                        style={{ fontSize: 11 }}
-                      >
-                        {finding.confidence === 'verified' ? 'Verified Search' : 'Partial Match'}
-                      </span>
+                      <div style={{ fontSize: 11.5, color: '#15803d', marginTop: 2 }}>
+                        Retrieved at: {new Date(researchData.retrieved_at).toLocaleString()} &bull; Provider: {researchData.source}
+                      </div>
                     </div>
 
-                    {finding.answer && (
-                      <div style={{ background: '#f8fafc', padding: 12, borderRadius: 6, border: '1px solid #e2e8f0', fontSize: 12.5, color: '#1e293b', lineHeight: 1.6, marginBottom: 12 }}>
-                        {finding.answer}
-                      </div>
-                    )}
-
-                    {/* Sources List */}
-                    {finding.sources?.length > 0 && (
-                      <div>
-                        <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', marginBottom: 6 }}>
-                          VERIFIED SOURCES ({finding.sources.length})
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                          {finding.sources.map((src, sIdx) => (
-                            <div key={sIdx} style={{ fontSize: 11.5, padding: '8px 12px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-                              <div style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                <span style={{ fontWeight: 600, color: '#0f172a' }}>{src.title}</span>
-                                <div style={{ fontSize: 11, color: '#64748b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                  {src.snippet}
-                                </div>
-                              </div>
-                              <a
-                                href={src.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{ color: '#2563eb', display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none', fontSize: 11, flexShrink: 0 }}
-                              >
-                                View Source <ExternalLink size={11} />
-                              </a>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
+                    {onUseInCampaign && (
+                      <button
+                        className="dn-btn dn-btn-primary"
+                        onClick={() => onUseInCampaign(researchData, selectedContact)}
+                        style={{ background: '#16a34a', border: 'none' }}
+                      >
+                        <Sparkles size={13} /> Use in Campaign Generator
+                      </button>
                     )}
                   </div>
-                ))}
-              </div>
 
-              {/* Disclaimer */}
-              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: 12, fontSize: 11.5, color: '#64748b', display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Info size={14} color="#64748b" />
-                <span>{researchData.disclaimer}</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                    {(researchData.findings || []).map((finding, idx) => (
+                      <div key={idx} className="dn-panel" style={{ padding: 18 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                          <div style={{ fontWeight: 700, fontSize: 14, color: '#0f172a' }}>
+                            {finding.category}
+                          </div>
+                          <span
+                            className={`dn-badge ${finding.confidence === 'verified' ? 'dn-badge-green' : 'dn-badge-amber'}`}
+                            style={{ fontSize: 11 }}
+                          >
+                            {finding.confidence === 'verified' ? 'Verified Search' : 'Partial Match'}
+                          </span>
+                        </div>
+
+                        {finding.answer && (
+                          <div style={{ background: '#f8fafc', padding: 12, borderRadius: 6, border: '1px solid #e2e8f0', fontSize: 12.5, color: '#1e293b', lineHeight: 1.6, marginBottom: 12 }}>
+                            {finding.answer}
+                          </div>
+                        )}
+
+                        {finding.sources?.length > 0 && (
+                          <div>
+                            <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', marginBottom: 6 }}>
+                              VERIFIED SOURCES ({finding.sources.length})
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                              {finding.sources.map((src, sIdx) => (
+                                <div key={sIdx} style={{ fontSize: 11.5, padding: '8px 12px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+                                  <div style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    <span style={{ fontWeight: 600, color: '#0f172a' }}>{src.title}</span>
+                                    <div style={{ fontSize: 11, color: '#64748b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                      {src.snippet}
+                                    </div>
+                                  </div>
+                                  <a
+                                    href={src.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ color: '#2563eb', display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none', fontSize: 11, flexShrink: 0 }}
+                                  >
+                                    View Source <ExternalLink size={11} />
+                                  </a>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: 12, fontSize: 11.5, color: '#64748b', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Info size={14} color="#64748b" />
+                    <span>{researchData.disclaimer}</span>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── TAB 2: INDUSTRY INTELLIGENCE ── */}
+      {subTab === 'industry' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          {/* Banner */}
+          <div className="dn-workflow-banner" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', border: '1px solid #334155' }}>
+            <div className="dn-workflow-banner-info">
+              <h3 style={{ color: '#ffffff' }}>
+                <TrendingUp size={20} color="#60a5fa" />
+                Sector & Industry Intelligence (Macro Trends & Regulatory Signals)
+              </h3>
+              <p style={{ color: '#cbd5e1' }}>
+                Performs market-wide intelligence sweeps to surface verifiable industry shifts, AI adoption milestones, and compliance challenges. Fuels sector-specific newsletters and executive briefings.
+              </p>
+            </div>
+          </div>
+
+          {/* Industry Selection Panel */}
+          <div className="dn-panel" style={{ padding: 20 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+                <div style={{ flex: 1, minWidth: 260 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: '#334155', display: 'block', marginBottom: 6 }}>
+                    Select Target Industry / Sector
+                  </label>
+                  <select
+                    className="dn-input"
+                    value={selectedIndustry}
+                    onChange={(e) => {
+                      setSelectedIndustry(e.target.value);
+                      setCustomIndustry('');
+                      setIndustryResearchData(null);
+                    }}
+                    disabled={isResearchingIndustry}
+                  >
+                    {COMMON_INDUSTRIES.map((ind, idx) => (
+                      <option key={idx} value={ind}>{ind}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div style={{ flex: 1, minWidth: 260 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: '#334155', display: 'block', marginBottom: 6 }}>
+                    Or Specify Custom Niche / Vertical (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    className="dn-input"
+                    placeholder="e.g. Embedded FinTech, MedTech Robotics..."
+                    value={customIndustry}
+                    onChange={(e) => {
+                      setCustomIndustry(e.target.value);
+                      setIndustryResearchData(null);
+                    }}
+                    disabled={isResearchingIndustry}
+                  />
+                </div>
+
+                <div>
+                  <button
+                    className="dn-btn dn-btn-primary"
+                    onClick={handleResearchIndustry}
+                    disabled={isResearchingIndustry}
+                    style={{ padding: '9px 20px', fontSize: 13 }}
+                  >
+                    {isResearchingIndustry ? (
+                      <>
+                        <RefreshCw size={14} className="spin-icon" /> Analyzing Sector...
+                      </>
+                    ) : (
+                      <>
+                        <Search size={14} /> Gather Industry Intelligence
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
-            </>
+            </div>
+          </div>
+
+          {/* Industry Research Results Display */}
+          {industryResearchData && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              {industryResearchData.blocked && (
+                <div style={{ background: '#fffbeb', border: '1px solid #fef08a', borderRadius: 8, padding: 18 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                    <ShieldAlert size={18} color="#b45309" />
+                    <span style={{ fontWeight: 700, fontSize: 14, color: '#92400e' }}>
+                      Live research is currently unavailable
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 12.5, color: '#78350f', lineHeight: 1.6, marginBottom: 12 }}>
+                    {industryResearchData.reason}
+                  </div>
+                  <div style={{ fontSize: 11.5, color: '#92400e', background: '#fef3c7', padding: '8px 12px', borderRadius: 6 }}>
+                    <strong>Integration Requirement:</strong> Provide a valid <code>TAVILY_API_KEY</code> to enable live sector intelligence sweeps. No hallucinated trends or fabricated quotes will be supplied.
+                  </div>
+                </div>
+              )}
+
+              {industryResearchData.available && (
+                <>
+                  <div className="dn-panel" style={{ padding: 18, background: '#f0fdf4', border: '1px solid #bbf7d0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+                    <div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: '#166534', display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <CheckCircle2 size={16} color="#16a34a" /> Intelligence Loaded: {industryResearchData.industry}
+                      </div>
+                      <div style={{ fontSize: 11.5, color: '#15803d', marginTop: 2 }}>
+                        Retrieved at: {new Date(industryResearchData.retrieved_at).toLocaleString()} &bull; Provider: {industryResearchData.source}
+                      </div>
+                    </div>
+
+                    {onUseInCampaign && (
+                      <button
+                        className="dn-btn dn-btn-primary"
+                        onClick={() => {
+                          onUseInCampaign(
+                            { newsletter_context: industryResearchData.newsletter_context },
+                            { sector: industryResearchData.industry, company: industryResearchData.industry }
+                          );
+                        }}
+                        style={{ background: '#16a34a', border: 'none' }}
+                      >
+                        <Sparkles size={13} /> Use in Industry Newsletter
+                      </button>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                    {(industryResearchData.findings || []).map((finding, idx) => (
+                      <div key={idx} className="dn-panel" style={{ padding: 18 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                          <div style={{ fontWeight: 700, fontSize: 14, color: '#0f172a' }}>
+                            {finding.category}
+                          </div>
+                          <span
+                            className={`dn-badge ${finding.confidence === 'verified' ? 'dn-badge-green' : 'dn-badge-amber'}`}
+                            style={{ fontSize: 11 }}
+                          >
+                            {finding.confidence === 'verified' ? 'Verified Search' : 'Partial Match'}
+                          </span>
+                        </div>
+
+                        {finding.answer && (
+                          <div style={{ background: '#f8fafc', padding: 12, borderRadius: 6, border: '1px solid #e2e8f0', fontSize: 12.5, color: '#1e293b', lineHeight: 1.6, marginBottom: 12 }}>
+                            {finding.answer}
+                          </div>
+                        )}
+
+                        {finding.sources?.length > 0 && (
+                          <div>
+                            <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', marginBottom: 6 }}>
+                              VERIFIED SOURCES ({finding.sources.length})
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                              {finding.sources.map((src, sIdx) => (
+                                <div key={sIdx} style={{ fontSize: 11.5, padding: '8px 12px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+                                  <div style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    <span style={{ fontWeight: 600, color: '#0f172a' }}>{src.title}</span>
+                                    <div style={{ fontSize: 11, color: '#64748b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                      {src.snippet}
+                                    </div>
+                                  </div>
+                                  <a
+                                    href={src.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ color: '#2563eb', display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none', fontSize: 11, flexShrink: 0 }}
+                                  >
+                                    View Source <ExternalLink size={11} />
+                                  </a>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: 12, fontSize: 11.5, color: '#64748b', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Info size={14} color="#64748b" />
+                    <span>{industryResearchData.disclaimer}</span>
+                  </div>
+                </>
+              )}
+            </div>
           )}
         </div>
       )}

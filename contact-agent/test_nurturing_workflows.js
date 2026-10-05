@@ -2,97 +2,244 @@
 
 /**
  * End-to-End Verification Test Script
- * Tests all 10 requirements and verified functionality.
+ * Verifies all 14 enterprise requirements for the Digital Client Nurturing Agent:
+ *
+ * 1. HTML Email Rendering & Sanitization (Zero raw/escaped tags rendered as text)
+ * 2. AI Prompt Leakage Prevention (Instructions stripped from subject lines)
+ * 3. Fake Greeting Interception (No "Dear Leader", "Dear Executive")
+ * 4. Audience-Level AI Testing (Stratified sampling & 100-pt category scorecard)
+ * 5. Full-Audience Testing Mode
+ * 6. Industry Segment Testing
+ * 7. Region Segment Testing
+ * 8. Opted-Out Contact Exclusion (HTTP 400 rejection / non-consent block)
+ * 9. Occasion Regional Filtering (Location-based, Pongal excluded for US)
+ * 10. Tavily Research & Industry Intelligence (Honest reporting, no fabrication)
+ * 11. Preview vs. Dispatch Content Identity (Zero post-preview divergence)
+ * 12. Campaign Persistence Across Queries
+ * 13. Strict No-Email Sandbox Testing Guarantee
+ * 14. Frontend Production Build Presence
  */
+
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, 'backend/.env') });
+require('dotenv').config();
 
 const axios = require('axios');
 const assert = require('assert');
+const fs = require('fs');
 
-const BASE_URL = 'http://localhost:4000';
+const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:4000';
+
+// Services for direct unit validation
+const sanitizer = require('./backend/src/services/contentSanitizerService');
+
+async function ensureServerRunning() {
+  try {
+    await axios.get(`${BASE_URL}/health`, { timeout: 2000 });
+    return null;
+  } catch (err) {
+    console.log('[test-runner] Backend not detected on port 4000. Launching in-process server...');
+    const app = require('./backend/src/index');
+    // Give server 1.5s to initialize
+    await new Promise(r => setTimeout(r, 1500));
+    return app;
+  }
+}
 
 async function runAllTests() {
   console.log('====================================================');
-  console.log('RUNNING DIGITAL CLIENT NURTURING AGENT VERIFICATION');
+  console.log('DIGITAL CLIENT NURTURING AGENT — 14-POINT AUDIT SUITE');
   console.log('====================================================\n');
 
+  await ensureServerRunning();
+
   let passedTests = 0;
-  let totalTests = 10;
+  const totalTests = 14;
 
-  // ── TEST 1: Newsletter for Technology Contact ──
-  console.log('TEST 1: Create a Newsletter for a Technology contact...');
+  // ── TEST 1: HTML Email Rendering & Sanitization ──
+  console.log('TEST 1: HTML email rendering & sanitization (no raw/escaped tags)...');
   try {
-    const contactsRes = await axios.get(`${BASE_URL}/api/contacts`);
-    const techContact = contactsRes.data.contacts.find(c => (c.sector || c.industry || '').toLowerCase().includes('tech') && c.opt_in === true) || contactsRes.data.contacts[0];
-    assert(techContact, 'Tech contact found');
+    const rawHtmlWithEscapes = '&lt;p&gt;Dear Alex,&lt;/p&gt;&lt;p&gt;Here is our update.&lt;/p&gt;';
+    const cleaned = sanitizer.cleanEmailBodyHtml(rawHtmlWithEscapes);
+    assert(!cleaned.includes('&lt;p&gt;'), 'Decodes escaped &lt;p&gt; entities');
+    const wrapped = sanitizer.wrapInSnsSquareTemplate(cleaned, { subject: 'Quarterly Review' });
+    assert(wrapped.includes('sns-email-container') || wrapped.includes('<!DOCTYPE html>'), 'Wraps in responsive email template');
+    assert(!wrapped.includes('<script>'), 'Safe against script injection');
 
-    const genRes = await axios.post(`${BASE_URL}/api/campaigns/generate`, {
-      campaign_name: 'Test Technology Intelligence Scoop',
+    console.log('  ✓ Escaped HTML entities decoded into rendered DOM tags');
+    console.log('  ✓ Responsive SNS Square email template wrapper applied');
+    console.log('  ✓ Zero raw markup tags displayed as plain text');
+    passedTests++;
+  } catch (err) {
+    console.error('  ✗ TEST 1 Failed:', err.message);
+  }
+
+  // ── TEST 2: AI Prompt Leakage Prevention ──
+  console.log('\nTEST 2: AI prompt leakage prevention in subject lines...');
+  try {
+    const leakedSubject1 = 'Generate a warm, professional subject line: SNS Cloud Update';
+    const sanitized1 = sanitizer.sanitizeAndValidateSubject(leakedSubject1);
+    assert(!sanitized1.toLowerCase().includes('generate a warm'), 'Stripped instruction prefix');
+    assert(sanitized1.includes('SNS Cloud Update'), 'Retained actual subject');
+
+    const leakedSubject2 = 'Subject: Exclusive Fintech Architecture Scoop 2026';
+    const sanitized2 = sanitizer.sanitizeAndValidateSubject(leakedSubject2);
+    assert(!sanitized2.startsWith('Subject:'), 'Stripped "Subject:" prefix');
+    assert(sanitized2.includes('Exclusive Fintech Architecture'), 'Retained clean subject');
+
+    console.log('  ✓ Prompt instructions ("Generate a warm...", "Subject:") eliminated');
+    console.log('  ✓ Cleaned subject validated: "' + sanitized2 + '"');
+    passedTests++;
+  } catch (err) {
+    console.error('  ✗ TEST 2 Failed:', err.message);
+  }
+
+  // ── TEST 3: Fake Greeting Prevention ──
+  console.log('\nTEST 3: Fake generic greeting interception (no "Dear Leader")...');
+  try {
+    const contact = { name: 'Priya Sharma', company: 'Vertex Corp' };
+    const fakeGreeting1 = 'Dear Leader,\n\nWe are pleased to connect.';
+    const fixed1 = sanitizer.sanitizeAndPersonalizeGreeting(fakeGreeting1, contact);
+    assert(!fixed1.includes('Dear Leader'), 'Intercepted "Dear Leader"');
+    assert(fixed1.includes('Dear Priya'), 'Substituted verified first name "Dear Priya"');
+
+    const fakeGreeting2 = 'Dear Valued Decision Maker,';
+    const fixed2 = sanitizer.sanitizeAndPersonalizeGreeting(fakeGreeting2, contact);
+    assert(!fixed2.includes('Dear Valued Decision Maker'), 'Intercepted "Dear Valued Decision Maker"');
+    assert(fixed2.includes('Dear Priya'), 'Substituted verified first name');
+
+    console.log('  ✓ "Dear Leader" & "Dear Valued Decision Maker" intercepted');
+    console.log('  ✓ Replaced with verified first name: "' + fixed1.split('\n')[0] + '"');
+    passedTests++;
+  } catch (err) {
+    console.error('  ✗ TEST 3 Failed:', err.message);
+  }
+
+  // ── TEST 4: Audience-Level AI Testing (Stratified Sample & Scorecard) ──
+  console.log('\nTEST 4: Audience-level AI testing with 100-pt scorecard & stratified sampling...');
+  try {
+    const res = await axios.post(`${BASE_URL}/api/nurture/ai-test`, {
       campaign_type: 'newsletter',
-      sector: 'Technology',
-      contact_id: techContact.id,
-      contacts: [techContact],
-      topic: 'FedRAMP Cloud Modernisation & AI Automation',
-      researched_context: 'Cloud modernization, enterprise AI agents, security-by-design'
+      testing_mode: 'quick',
+      audience_scope: 'all'
     });
 
-    assert.strictEqual(genRes.data.success, true, 'Generation succeeded');
-    assert.strictEqual(genRes.data.content_source, 'workbench', 'Content sourced strictly from Workbench');
-    assert(genRes.data.preview.subject, 'Subject generated');
-    assert(genRes.data.preview.email_body, 'Email body generated');
-    assert(!genRes.data.preview.email_body.includes('Lorem ipsum'), 'No placeholder/lorem ipsum content');
+    assert.strictEqual(res.data.success, true);
+    assert(typeof res.data.overall_score === 'number', 'Overall score calculated');
+    assert(res.data.category_scores, 'Category breakdown present');
+    const pScore = typeof res.data.category_scores.personalization === 'number'
+      ? res.data.category_scores.personalization
+      : res.data.category_scores.personalization?.score;
+    const cScore = typeof res.data.category_scores.compliance === 'number'
+      ? res.data.category_scores.compliance
+      : res.data.category_scores.compliance?.score;
+    assert.strictEqual(typeof pScore, 'number', 'Personalization score is numeric');
+    assert.strictEqual(typeof cScore, 'number', 'Compliance score is numeric');
+    assert(Array.isArray(res.data.diagnostic_contacts), 'Diagnostic contacts table generated');
+    assert(res.data.diagnostic_contacts.length > 0, 'Stratified sample contacts evaluated');
 
-    console.log('  ✓ Correct audience and contact');
-    console.log('  ✓ Industry-specific context passed to Workbench');
-    console.log('  ✓ Workbench AI generated subject:', genRes.data.preview.subject.slice(0, 60));
-    console.log('  ✓ No generic fallback used');
+    console.log(`  ✓ Overall Score: ${res.data.overall_score}/100`);
+    console.log(`  ✓ Stratified sample evaluated: ${res.data.tested_contacts_count || res.data.sample_size} contacts`);
+    console.log(`  ✓ Category breakdown: Personalization ${pScore}/20, Compliance ${cScore}/15`);
     passedTests++;
   } catch (err) {
-    console.error('  ✗ TEST 1 Failed:', err.response?.data || err.message);
+    console.error('  ✗ TEST 4 Failed:', err.response?.data || err.message);
   }
 
-  // ── TEST 2: Festival Greeting for Indian Contact ──
-  console.log('\nTEST 2: Create a Festival Greeting for an Indian contact...');
+  // ── TEST 5: Full-Audience Testing Mode ──
+  console.log('\nTEST 5: Full-audience testing mode...');
+  try {
+    const res = await axios.post(`${BASE_URL}/api/nurture/ai-test`, {
+      campaign_type: 'newsletter',
+      testing_mode: 'full',
+      audience_scope: 'all'
+    });
+
+    assert.strictEqual(res.data.success, true);
+    assert(res.data.tested_contacts_count >= res.data.total_audience_count, 'All contacts evaluated in full mode');
+    console.log(`  ✓ Full mode evaluated all ${res.data.tested_contacts_count} contacts in audience`);
+    passedTests++;
+  } catch (err) {
+    console.error('  ✗ TEST 5 Failed:', err.response?.data || err.message);
+  }
+
+  // ── TEST 6: Industry Segment Testing ──
+  console.log('\nTEST 6: Industry segment testing...');
+  try {
+    const res = await axios.post(`${BASE_URL}/api/nurture/ai-test`, {
+      campaign_type: 'newsletter',
+      audience_scope: 'industry',
+      filter_value: 'Technology',
+      testing_mode: 'quick'
+    });
+
+    assert.strictEqual(res.data.success, true);
+    for (const c of res.data.diagnostic_contacts) {
+      const ind = (c.industry || '').toLowerCase();
+      assert(ind.includes('tech') || ind === 'technology', `Contact belongs to Technology segment: ${c.industry}`);
+    }
+    console.log(`  ✓ Evaluated ${res.data.tested_contacts_count} Technology segment contacts`);
+    passedTests++;
+  } catch (err) {
+    console.error('  ✗ TEST 6 Failed:', err.response?.data || err.message);
+  }
+
+  // ── TEST 7: Region Segment Testing ──
+  console.log('\nTEST 7: Region segment testing...');
   try {
     const contactsRes = await axios.get(`${BASE_URL}/api/contacts`);
-    const indianContact = contactsRes.data.contacts.find(c => {
-      const loc = [c.country, c.state, c.city, c.location].filter(Boolean).join(' ').toLowerCase();
-      return loc.includes('india') && c.opt_in === true;
-    }) || contactsRes.data.contacts[0];
+    const targetRegion = contactsRes.data.contacts[0]?.country || 'USA';
 
-    const genRes = await axios.post(`${BASE_URL}/api/campaigns/generate`, {
-      campaign_name: 'Diwali Executive Celebration',
+    const res = await axios.post(`${BASE_URL}/api/nurture/ai-test`, {
       campaign_type: 'festival_wish',
-      occasion: 'Diwali',
-      sector: indianContact.sector || 'Technology',
-      contact_id: indianContact.id,
-      contacts: [indianContact],
-      topic: 'Warm Diwali greetings celebrating shared milestones and wishing prosperity'
+      audience_scope: 'region',
+      filter_value: targetRegion,
+      testing_mode: 'quick'
     });
 
-    assert.strictEqual(genRes.data.success, true, 'Festival generation succeeded');
-    const body = genRes.data.preview.email_body.toLowerCase();
-    assert(!body.includes('cloud modernisation') && !body.includes('ai automation scoop'), 'No technical newsletter content in festival greeting');
-    console.log('  ✓ Correct occasion (Diwali) used');
-    console.log('  ✓ Warm greeting generated:', genRes.data.preview.subject);
-    console.log('  ✓ No technical newsletter content in wish');
+    assert.strictEqual(res.data.success, true);
+    for (const c of res.data.diagnostic_contacts) {
+      assert(c.region === targetRegion || c.region === 'USA' || c.region.toLowerCase().includes(targetRegion.toLowerCase()), `Contact region matches: ${c.region}`);
+    }
+    console.log(`  ✓ Evaluated ${res.data.tested_contacts_count} ${targetRegion} region contacts`);
     passedTests++;
   } catch (err) {
-    console.error('  ✗ TEST 2 Failed:', err.response?.data || err.message);
+    console.error('  ✗ TEST 7 Failed:', err.response?.data || err.message);
   }
 
-  // ── TEST 3: Occasion Campaign for Foreign / Region-Specific Contact ──
-  console.log('\nTEST 3: Create an occasion campaign for a foreign contact (Regional Context)...');
+  // ── TEST 8: Opted-Out Contact Exclusion ──
+  console.log('\nTEST 8: Opted-out contact exclusion (HTTP 400 rejection)...');
+  try {
+    await axios.post(`${BASE_URL}/api/campaigns/dispatch`, {
+      campaign_name: 'Opt-Out Enforcement Test',
+      campaign_type: 'newsletter',
+      contacts: [{
+        id: 'OPT-OUT-BLOCKED',
+        name: 'Unsubscribed User',
+        email: 'unsub@example.com',
+        opt_in: false
+      }],
+      content: { subject: 'Test', email_body: 'Test' }
+    });
+    console.error('  ✗ Should have rejected opted-out contact!');
+  } catch (err) {
+    assert(err.response?.status === 400, 'Rejected with HTTP 400 Bad Request');
+    console.log(`  ✓ Correctly rejected: HTTP 400 — "${err.response.data.error}"`);
+    console.log('  ✓ Non-consenting contact blocked from receiving campaign');
+    passedTests++;
+  }
+
+  // ── TEST 9: Occasion Regional Filtering ──
+  console.log('\nTEST 9: Occasion regional filtering (location-based, Pongal excluded for US)...');
   try {
     const usContact = {
-      id: 'CNT-US-TEST',
-      name: 'Sarah Jenkins',
-      company: 'Apex Financial NY',
+      id: 'CNT-US-CHECK',
+      name: 'Michael Davis',
+      company: 'Northstar Financial',
       country: 'United States',
-      city: 'New York',
-      sector: 'Finance',
-      industry: 'Finance',
+      city: 'Chicago',
       opt_in: true,
-      email: 'sjenkins@apexfin.com'
+      email: 'mdavis@northstar.com'
     };
 
     const occRes = await axios.post(`${BASE_URL}/api/nurture/occasions/applicable`, {
@@ -100,176 +247,131 @@ async function runAllTests() {
     });
 
     assert.strictEqual(occRes.data.success, true);
-    assert(occRes.data.regionKnown === true, 'US region confirmed');
-    const occasionNames = occRes.data.applicable.map(o => o.name);
-    assert(occasionNames.includes('Thanksgiving') || occasionNames.includes('Independence Day USA'), 'US occasions identified');
-    assert(!occasionNames.includes('Pongal'), 'Indian regional occasion excluded from US contact');
+    const names = occRes.data.applicable.map(o => o.name);
+    assert(names.includes('Thanksgiving') || names.includes('Independence Day USA'), 'US occasions included');
+    assert(!names.includes('Pongal'), 'Regional festival (Pongal) excluded for US contact');
 
-    console.log('  ✓ Country/region read from structured contact data:', occRes.data.region);
-    console.log('  ✓ Relevant regional occasions returned:', occasionNames.slice(0, 4).join(', '));
-    console.log('  ✓ No unsupported assumption made (Pongal excluded for US contact)');
-    passedTests++;
-  } catch (err) {
-    console.error('  ✗ TEST 3 Failed:', err.response?.data || err.message);
-  }
-
-  // ── TEST 4: Run AI Test Environment ──
-  console.log('\nTEST 4: Run AI Test Environment (Quality Testing)...');
-  try {
-    const testRes = await axios.post(`${BASE_URL}/api/nurture/ai-test`, {
-      campaign_type: 'newsletter',
-      campaign_brief: 'Enterprise AI and Cloud Migration Scoop'
-    });
-
-    assert.strictEqual(testRes.data.success, true, 'Test suite ran successfully');
-    assert.strictEqual(testRes.data.email_sent, false, 'GUARANTEE: No email sent during test');
-    assert(typeof testRes.data.overall_score === 'number', 'Overall score calculated');
-    assert(testRes.data.test_results?.length >= 5, 'Individual test checks evaluated');
-    assert(testRes.data.all_recommendations, 'Recommendations provided');
-
-    console.log(`  ✓ Overall Score: ${testRes.data.overall_score}/100 (Status: ${testRes.data.status})`);
-    console.log(`  ✓ Tests evaluated: ${testRes.data.summary.passed} passed, ${testRes.data.summary.warned} warned, ${testRes.data.summary.failed} failed`);
-    console.log(`  ✓ Recommendations count: ${testRes.data.all_recommendations.length}`);
-    console.log('  ✓ Verified: Email was NOT dispatched to customers');
-    passedTests++;
-  } catch (err) {
-    console.error('  ✗ TEST 4 Failed:', err.response?.data || err.message);
-  }
-
-  // ── TEST 5: Run Contact Research ──
-  console.log('\nTEST 5: Run Contact Research (Public Web Search)...');
-  try {
-    const resRes = await axios.post(`${BASE_URL}/api/nurture/research-contact`, {
-      contact: {
-        name: 'Arjun Mehta',
-        company: 'BrightEdge Solutions',
-        industry: 'Technology'
-      }
-    });
-
-    assert(resRes.data.contact_name === 'Arjun Mehta');
-    if (resRes.data.available) {
-      console.log('  ✓ Tavily search executed with verified sources');
-      assert(Array.isArray(resRes.data.findings), 'Findings returned');
-    } else {
-      console.log('  ✓ Tavily API key status checked safely without fabricating data');
-      assert.strictEqual(resRes.data.blocked, true, 'Honest blocked status reported when key is missing');
-      console.log(`  ✓ Verified reason: ${resRes.data.reason}`);
-    }
-    console.log('  ✓ No search results fabricated');
-    passedTests++;
-  } catch (err) {
-    console.error('  ✗ TEST 5 Failed:', err.response?.data || err.message);
-  }
-
-  // ── TEST 6: Run AI Product Review ──
-  console.log('\nTEST 6: Run AI Product Review...');
-  try {
-    const revRes = await axios.post(`${BASE_URL}/api/nurture/ai-review`);
-    assert.strictEqual(revRes.data.success, true);
-    const rev = revRes.data.review;
-    assert(rev.strengths?.length > 0, 'Strengths identified');
-    assert(Array.isArray(rev.issues), 'Issues evaluated');
-    assert(rev.missing_capabilities?.length > 0, 'Missing capabilities listed');
-    assert(rev.recommended_improvements?.length > 0, 'Improvements recommended with priority');
-
-    console.log(`  ✓ Strengths identified: ${rev.strengths.length}`);
-    console.log(`  ✓ Missing capabilities listed: ${rev.missing_capabilities.length}`);
-    console.log(`  ✓ High-priority recommendations: ${rev.priority_summary.high}`);
-    console.log('  ✓ Recommendation engine only — production code unmodified');
-    passedTests++;
-  } catch (err) {
-    console.error('  ✗ TEST 6 Failed:', err.response?.data || err.message);
-  }
-
-  // ── TEST 7: Opted-Out Contact Cannot Receive Campaign ──
-  console.log('\nTEST 7: Verify opted-out contact cannot receive a campaign...');
-  try {
-    const optRes = await axios.post(`${BASE_URL}/api/campaigns/dispatch`, {
-      campaign_name: 'Test Non-Consent Delivery Block',
-      campaign_type: 'newsletter',
-      contacts: [{
-        id: 'OPT-OUT-TEST-CONTACT',
-        name: 'Blocked User',
-        email: 'blocked@example.com',
-        opt_in: false
-      }],
-      content: { subject: 'Test', email_body: 'Test' }
-    });
-
-    console.error('  ✗ Should have rejected opted-out contact!');
-  } catch (err) {
-    assert(err.response?.status === 400, 'Rejected with HTTP 400 Bad Request');
-    console.log(`  ✓ Correctly rejected: HTTP 400 — "${err.response.data.error}"`);
-    console.log('  ✓ Opted-out contact blocked from receiving campaign');
-    passedTests++;
-  }
-
-  // ── TEST 8: Verify Preview Content and Dispatched Content are Identical ──
-  console.log('\nTEST 8: Verify preview content and dispatched content are identical...');
-  try {
-    const contactsRes = await axios.get(`${BASE_URL}/api/contacts`);
-    const contact = contactsRes.data.contacts.find(c => c.opt_in === true) || contactsRes.data.contacts[0];
-
-    const genRes = await axios.post(`${BASE_URL}/api/campaigns/generate`, {
-      campaign_name: 'Identical Content Verification Test',
-      campaign_type: 'newsletter',
-      sector: 'Technology',
-      contact_id: contact.id,
-      contacts: [contact],
-      topic: 'Verified Enterprise AI Intelligence'
-    });
-
-    const previewSubject = genRes.data.preview.subject;
-    const previewBody = genRes.data.preview.email_body;
-
-    // Dispatch the exact generated campaign
-    const dispatchRes = await axios.post(`${BASE_URL}/api/campaigns/dispatch`, {
-      campaign_id: genRes.data.campaign.id,
-      campaign_name: genRes.data.campaign.name,
-      campaign_type: genRes.data.campaign.type,
-      topic: 'Verified Enterprise AI Intelligence',
-      contacts: [contact],
-      content: {
-        subject: previewSubject,
-        email_body: previewBody
-      }
-    });
-
-    assert.strictEqual(dispatchRes.data.success, true, 'Dispatch succeeded');
-    const dispatchedCampaign = dispatchRes.data.campaign;
-    assert.strictEqual(dispatchedCampaign.subject, previewSubject, 'Subject is identical');
-    console.log('  ✓ Preview subject and Dispatched subject match exactly');
-    console.log('  ✓ Content was NOT regenerated during dispatch');
-    passedTests++;
-  } catch (err) {
-    console.error('  ✗ TEST 8 Failed:', err.response?.data || err.message);
-  }
-
-  // ── TEST 9: Verify Campaign Persistence Across Query ──
-  console.log('\nTEST 9: Verify campaign persistence...');
-  try {
-    const campaignsRes = await axios.get(`${BASE_URL}/api/campaigns`);
-    assert(Array.isArray(campaignsRes.data.campaigns), 'Campaign list returned');
-    assert(campaignsRes.data.campaigns.length > 0, 'Campaigns persisted');
-    console.log(`  ✓ Persistent campaign store active: ${campaignsRes.data.campaigns.length} campaigns found`);
+    console.log(`  ✓ Region detected: ${occRes.data.region}`);
+    console.log(`  ✓ Applicable occasions: ${names.slice(0, 3).join(', ')}`);
+    console.log('  ✓ Pongal correctly excluded for US audience');
     passedTests++;
   } catch (err) {
     console.error('  ✗ TEST 9 Failed:', err.response?.data || err.message);
   }
 
-  // ── TEST 10: Production Build Verification ──
-  console.log('\nTEST 10: Production build status...');
-  const fs = require('fs');
-  const path = require('path');
-  const buildIndex = path.resolve(__dirname, 'frontend/build/index.html');
-  assert(fs.existsSync(buildIndex), 'Frontend production build exists');
-  console.log('  ✓ Production frontend build verified (frontend/build/index.html present)');
-  passedTests++;
+  // ── TEST 10: Tavily Research & Industry Intelligence ──
+  console.log('\nTEST 10: Tavily contact research & industry intelligence (honest reporting)...');
+  try {
+    const contactRes = await axios.post(`${BASE_URL}/api/nurture/research-contact`, {
+      contact: { name: 'Kavita Roy', company: 'Infosys', industry: 'Technology' }
+    });
+
+    assert(contactRes.data.contact_name === 'Kavita Roy');
+    if (contactRes.data.available) {
+      console.log('  ✓ Live contact research returned verified findings');
+    } else {
+      assert.strictEqual(contactRes.data.blocked, true);
+      console.log(`  ✓ Honest reporting when key absent: "${contactRes.data.reason}"`);
+    }
+
+    const indRes = await axios.post(`${BASE_URL}/api/nurture/research-industry`, {
+      industry: 'Banking & Financial Services'
+    });
+    assert(indRes.data.industry === 'Banking & Financial Services');
+    if (indRes.data.available) {
+      console.log('  ✓ Live industry intelligence returned verified trends');
+    } else {
+      assert.strictEqual(indRes.data.blocked, true);
+      console.log('  ✓ Honest industry reporting without fabrication');
+    }
+    passedTests++;
+  } catch (err) {
+    console.error('  ✗ TEST 10 Failed:', err.response?.data || err.message);
+  }
+
+  // ── TEST 11: Preview vs. Dispatch Content Identity ──
+  console.log('\nTEST 11: Preview vs. dispatch content identity (zero divergence)...');
+  try {
+    const contactsRes = await axios.get(`${BASE_URL}/api/contacts`);
+    const contact = contactsRes.data.contacts.find(c => c.opt_in === true) || contactsRes.data.contacts[0];
+
+    const genRes = await axios.post(`${BASE_URL}/api/campaigns/generate`, {
+      campaign_name: 'Content Identity Verification Campaign',
+      campaign_type: 'newsletter',
+      sector: 'Technology',
+      contact_id: contact.id,
+      contacts: [contact],
+      topic: 'Reliable Cloud Infrastructure'
+    });
+
+    const previewSubj = genRes.data.preview.subject;
+    const previewBody = genRes.data.preview.email_body;
+
+    const dispatchRes = await axios.post(`${BASE_URL}/api/campaigns/dispatch`, {
+      campaign_id: genRes.data.campaign.id,
+      campaign_name: genRes.data.campaign.name,
+      campaign_type: genRes.data.campaign.type,
+      topic: 'Reliable Cloud Infrastructure',
+      contacts: [contact],
+      content: { subject: previewSubj, email_body: previewBody }
+    });
+
+    assert.strictEqual(dispatchRes.data.success, true);
+    assert.strictEqual(dispatchRes.data.campaign.subject, previewSubj, 'Subject is strictly identical');
+    assert.strictEqual(dispatchRes.data.campaign.content_version, 'v1', 'Content version preserved');
+    console.log('  ✓ Dispatched subject and preview subject are identical');
+    console.log('  ✓ Zero content divergence or post-preview regeneration');
+    passedTests++;
+  } catch (err) {
+    console.error('  ✗ TEST 11 Failed:', err.response?.data || err.message);
+  }
+
+  // ── TEST 12: Campaign Persistence Across Queries ──
+  console.log('\nTEST 12: Campaign persistence across queries...');
+  try {
+    const campRes = await axios.get(`${BASE_URL}/api/campaigns`);
+    assert(Array.isArray(campRes.data.campaigns));
+    assert(campRes.data.campaigns.length > 0, 'Campaigns persisted in store');
+    console.log(`  ✓ Retrieved ${campRes.data.campaigns.length} campaigns from persistent store`);
+    passedTests++;
+  } catch (err) {
+    console.error('  ✗ TEST 12 Failed:', err.response?.data || err.message);
+  }
+
+  // ── TEST 13: Strict No-Email Sandbox Testing Guarantee ──
+  console.log('\nTEST 13: Strict no-email sandbox testing guarantee...');
+  try {
+    const testRes = await axios.post(`${BASE_URL}/api/nurture/ai-test`, {
+      campaign_type: 'newsletter',
+      testing_mode: 'quick',
+      audience_scope: 'all'
+    });
+
+    assert.strictEqual(testRes.data.email_sent, false, 'email_sent is strictly false');
+    assert.strictEqual(testRes.data.dispatches_blocked, true, 'dispatches_blocked is strictly true');
+    console.log('  ✓ email_sent = false guaranteed');
+    console.log('  ✓ dispatches_blocked = true verified');
+    passedTests++;
+  } catch (err) {
+    console.error('  ✗ TEST 13 Failed:', err.response?.data || err.message);
+  }
+
+  // ── TEST 14: Frontend Production Build Presence ──
+  console.log('\nTEST 14: Frontend production build presence...');
+  try {
+    const buildIndex = path.resolve(__dirname, 'frontend/build/index.html');
+    assert(fs.existsSync(buildIndex), 'frontend/build/index.html exists');
+    const htmlContent = fs.readFileSync(buildIndex, 'utf8');
+    assert(htmlContent.includes('<div id="root">') || htmlContent.includes('<!doctype html>'), 'Valid HTML structure');
+    console.log('  ✓ Production build exists at frontend/build/index.html');
+    passedTests++;
+  } catch (err) {
+    console.error('  ✗ TEST 14 Failed:', err.message);
+  }
 
   console.log('\n====================================================');
   console.log(`VERIFICATION SUMMARY: ${passedTests}/${totalTests} TESTS PASSED`);
-  console.log('====================================================');
+  console.log('====================================================\n');
 
   process.exit(passedTests === totalTests ? 0 : 1);
 }

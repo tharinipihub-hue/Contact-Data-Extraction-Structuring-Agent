@@ -35,10 +35,25 @@ export default function ClientEmailPreview({
   // Normalize body content
   let rawBody = String(bodyHtml || '').trim();
 
-  // If content is plain text without HTML tags, wrap paragraphs for clean display
+  // If content has escaped HTML entities like &lt;p&gt; or &lt;div&gt;, decode them first
+  // so that tags are interpreted as actual HTML elements rather than displayed as literal text
+  if (/&lt;\/?[a-z][\s\S]*?&gt;/i.test(rawBody)) {
+    if (typeof document !== 'undefined') {
+      const txt = document.createElement('textarea');
+      txt.innerHTML = rawBody;
+      rawBody = txt.value;
+    }
+  }
+
+  // If content is plain text or markdown without structural HTML tags, format into clean paragraphs
   let cleanHtmlToSanitize = rawBody;
-  if (!/<(?:p|div|table|h[1-6]|ul|ol)\b/i.test(cleanHtmlToSanitize)) {
+  if (!/<(?:p|div|table|h[1-6]|ul|ol|tr|td|body)\b/i.test(cleanHtmlToSanitize)) {
     cleanHtmlToSanitize = cleanHtmlToSanitize
+      .replace(/^### (.*$)/gim, '<h3 style="color:#0f172a;font-size:16px;margin:16px 0 8px 0;font-weight:700;">$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2 style="color:#0f172a;font-size:18px;margin:18px 0 10px 0;font-weight:700;">$1</h2>')
+      .replace(/^# (.*$)/gim, '<h1 style="color:#0f172a;font-size:20px;margin:20px 0 12px 0;font-weight:800;">$1</h1>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color:#2563eb;text-decoration:underline;">$1</a>')
       .split(/\n\n+/)
       .map(p => `<p style="margin: 0 0 16px 0; line-height: 1.65; color: #334155; font-size: 15px;">${p.replace(/\n/g, '<br/>')}</p>`)
       .join('');

@@ -196,8 +196,89 @@ async function researchContact(contact) {
   };
 }
 
+/**
+ * Research broader industry trends and regulatory intelligence using Tavily.
+ *
+ * @param {string} industryName
+ * @returns {Promise<Object>}
+ */
+async function researchIndustry(industryName) {
+  if (!industryName) throw new Error('Industry name is required for research.');
+  if (!isTavilyAvailable()) {
+    return {
+      available: false,
+      blocked: true,
+      reason: 'BLOCKED — TAVILY_API_KEY is not configured. Add TAVILY_API_KEY=tvly-... to environment variables.',
+      setup_instructions: 'Add TAVILY_API_KEY=tvly-... to your backend environment variables (and Render dashboard). Get a free API key at https://tavily.com',
+      industry: industryName
+    };
+  }
+
+  const retrievedAt = new Date().toISOString();
+  const findings = [];
+  const errors = [];
+
+  // Search 1: Industry Trends & AI Transformation
+  try {
+    const result = await tavilySearch(`${industryName} industry trends AI technology automation 2025 2026`, { maxResults: 4 });
+    if (result.results.length > 0 || result.answer) {
+      findings.push({
+        category: 'Trends & Technology Adoption',
+        query: result.query,
+        answer: result.answer,
+        sources: result.results.map(r => ({ title: r.title, url: r.url, snippet: r.content, score: r.score })),
+        retrieved_at: retrievedAt,
+        confidence: result.results.length > 0 ? 'verified' : 'partial'
+      });
+    }
+  } catch (err) {
+    errors.push({ category: 'Trends & Technology Adoption', error: err.message });
+  }
+
+  // Search 2: Challenges & Regulatory Landscape
+  try {
+    const result = await tavilySearch(`${industryName} enterprise market challenges regulatory compliance priorities 2025 2026`, { maxResults: 4 });
+    if (result.results.length > 0 || result.answer) {
+      findings.push({
+        category: 'Market Priorities & Challenges',
+        query: result.query,
+        answer: result.answer,
+        sources: result.results.map(r => ({ title: r.title, url: r.url, snippet: r.content, score: r.score })),
+        retrieved_at: retrievedAt,
+        confidence: result.results.length > 0 ? 'verified' : 'partial'
+      });
+    }
+  } catch (err) {
+    errors.push({ category: 'Market Priorities & Challenges', error: err.message });
+  }
+
+  const trendsFinding = findings.find(f => f.category.includes('Trends'));
+  const challengesFinding = findings.find(f => f.category.includes('Priorities'));
+
+  const newsletter_context = [
+    trendsFinding?.answer ? `Industry Trends: ${trendsFinding.answer}` : null,
+    challengesFinding?.answer ? `Strategic Priorities: ${challengesFinding.answer}` : null
+  ].filter(Boolean).join('\n\n');
+
+  return {
+    available: true,
+    industry: industryName,
+    findings,
+    errors,
+    newsletter_context,
+    research_summary: findings.length > 0
+      ? `Found ${findings.length} intelligence area(s) for ${industryName}. Ready to incorporate into industry newsletters.`
+      : `No live search results found for ${industryName}.`,
+    retrieved_at: retrievedAt,
+    source: 'Tavily Web Search API',
+    disclaimer: 'Results are compiled from public industry resources and web search. Verify strategic metrics before client dispatch.'
+  };
+}
+
 module.exports = {
   isTavilyAvailable,
   researchContact,
+  researchIndustry,
   tavilySearch
 };
+

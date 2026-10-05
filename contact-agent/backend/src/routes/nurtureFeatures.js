@@ -157,6 +157,31 @@ router.post('/research-contact', async (req, res) => {
   }
 });
 
+router.post('/research-industry', async (req, res) => {
+  try {
+    const { industry } = req.body;
+    if (!industry || typeof industry !== 'string' || !industry.trim()) {
+      return res.status(400).json({ success: false, error: 'Industry name is required.' });
+    }
+    const targetIndustry = industry.trim();
+    if (!contactResearchService.isTavilyAvailable()) {
+      return res.json({
+        success: false,
+        available: false,
+        blocked: true,
+        reason: 'BLOCKED — TAVILY_API_KEY is not configured.',
+        setup_instructions: 'Add TAVILY_API_KEY=tvly-... to your backend environment variables (and Render dashboard). Get a free API key at https://tavily.com',
+        industry: targetIndustry
+      });
+    }
+    const result = await contactResearchService.researchIndustry(targetIndustry);
+    return res.json({ success: true, ...result });
+  } catch (err) {
+    console.error('[Research Industry Error]:', err.message);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // ── 4. Occasions Calendar ──────────────────────────────────────────────────────
 
 // Get all occasions
