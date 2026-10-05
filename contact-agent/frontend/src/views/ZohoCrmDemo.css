@@ -17,6 +17,13 @@
   line-height: 1.4;
 }
 
+.zoho-root.zoho-root-nurturing,
+.zoho-root:has(.dn-root) {
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
 /* ---------- View Switcher Top Bar (Demo Banner) ---------- */
 .zoho-demo-banner {
   background: #0f172a;

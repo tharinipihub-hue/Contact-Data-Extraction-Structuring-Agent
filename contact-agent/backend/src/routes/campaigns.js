@@ -462,14 +462,16 @@ router.post('/generate', async (req, res) => {
     ].join(' ');
   } else if (normalizedCampaignType === 'newsletter') {
     campaignGuidance = [
-      'CAMPAIGN TYPE: Official SNS Square Weekly GCC & AI Scoop Newsletter.',
-      'Subject line format: "[Primary Article Headline] | SNS Square Weekly GCC & AI Scoop".',
-      'Format the newsletter with:',
-      '(1) An executive greeting & macro editorial opening paragraph exploring enterprise transformation and AI resilience;',
-      '(2) 3 to 4 distinct curated perspectives/articles, each featuring a bold headline (<p><strong>Headline: Subtitle</strong></p>), a 2-3 sentence analytical briefing paragraph, and an actionable link (<p><a href="https://www.snssquare.com/insights" style="color: #2563eb; text-decoration: underline; font-weight: 500;">[Action Text] &rarr;</a></p>);',
-      '(3) An editorial synthesis ("Every transformation initiative ultimately depends on four foundations:") followed by <ul><li> key pillars;',
-      '(4) The official SNS Square sign-off: Warm regards, The Team at SNS Square, Enterprise Client Partnerships;',
-      '(5) Official office address in footer: BLOCK-L, Embassy TechVillage, Outer Ring Road, Devarabisanahalli, Bellandur, Bengaluru, Karnataka 560103, India; and &copy; 2026 SNS Square. All rights reserved.'
+      'EDITORIAL GUIDELINES FOR OFFICIAL SNS SQUARE NEWSLETTER:',
+      'Maintain an authoritative, sophisticated executive tone representing SNS Square enterprise partnerships.',
+      'Establish a cohesive editorial theme connecting the opening analysis with all article perspectives.',
+      'Structure and quality requirements:',
+      '(1) Theme & Headline: Establish a clear, compelling macro headline and a cohesive business transformation theme.',
+      '(2) Executive Opening: Provide a concise executive-style macro introduction (2-3 sentences) exploring enterprise transformation, GCC execution, and AI resilience.',
+      '(3) Curated Analytical Perspectives: Provide 2 to 3 distinct perspectives/articles. Each must feature a strong bold headline (<p><strong>Headline: Insight Subtitle</strong></p>), followed by 2-3 sentences of meaningful, balanced business analysis demonstrating logical progression, and an appropriate, concise call-to-action link (<p><a href="https://www.snssquare.com/insights" style="color: #2563eb; text-decoration: underline; font-weight: 500;">[Action Text] &rarr;</a></p>).',
+      '(4) Strategic Synthesis: An editorial synthesis ("Every transformation initiative ultimately depends on four foundations:") followed by <ul><li> structured key pillars with consistent terminology.',
+      '(5) Official Sign-off: Warm regards, The Team at SNS Square, Enterprise Client Partnerships.',
+      '(6) Standards: Content must feel like one unified editorial publication. Avoid raw markup leakage, disconnected sentences, generic filler, repetitive headings, keyword stuffing, or awkward CTAs. Do NOT invent unsupported factual claims, fake statistics, or imaginary partner companies.'
     ].join(' ');
   }
 
@@ -498,8 +500,9 @@ router.post('/generate', async (req, res) => {
     action: 'generate_preview',
     campaign_name: campaign_name || `${activeSector} Campaign: ${brief.slice(0, 40)}`,
     campaign_type: campaign_type || 'newsletter',
-    developer_input: developerInput,
-    campaign_brief: developerInput,
+    developer_input: campaignGuidance ? `${developerInput}\n\n${campaignGuidance}` : developerInput,
+    campaign_brief: campaignGuidance ? `${developerInput}\n\n${campaignGuidance}` : developerInput,
+    campaign_guidance: campaignGuidance,
     ...(occasion ? { occasion, ...occasionPayloadData } : {}),
     sector: activeSector,
     industry: activeSector,
@@ -531,7 +534,7 @@ router.post('/generate', async (req, res) => {
     campaign_type_rules: isFestivalCampaign
       ? 'FESTIVAL/OCCASION WISH RULES: Write a warm, professional, concise occasion greeting. Do NOT generate a newsletter. Do NOT include product promotions or technical content. Keep under 150 words. Be culturally respectful.'
       : isNewsletterCampaign
-        ? `NEWSLETTER RULES: Generate an industry-specific newsletter for the ${activeSector} sector. Include 3-4 curated perspectives with bold headlines and action links. Ground content in verified industry topics.`
+        ? `NEWSLETTER RULES: Generate an industry-specific newsletter for the ${activeSector} sector. Include 2-3 curated perspectives with bold headlines and action links. Ground content in verified industry topics with logical progression.`
         : ''
   };
 
