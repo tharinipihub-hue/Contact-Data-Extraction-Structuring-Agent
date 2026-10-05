@@ -34,6 +34,7 @@ import { GOOGLE_SHEETS_URL, POLL_INTERVAL_MS } from '../config';
 import { getLeadTier, fetchDirectFromGoogleSheets } from './LeadWorkspace';
 import { deduplicateContactList } from '../utils/dedup';
 import DigitalNurturingView from './DigitalNurturingView';
+import DashboardView from './DashboardView';
 import ErrorBoundary from '../components/ErrorBoundary';
 import './ZohoCrmDemo.css';
 
@@ -80,12 +81,13 @@ function formatSourceType(source) {
 }
 
 function ZohoCrmDemo() {
-  // Active Agent tab: 'leads' (Contact Data Extraction) | 'nurturing' (Digital Nurturing Agent)
-  const [activeAgentTab, setActiveAgentTab] = useState('leads');
+  // Active Agent tab: 'dashboard' | 'leads' (Contact Data Extraction) | 'nurturing' (Digital Nurturing Agent)
+  const [activeAgentTab, setActiveAgentTab] = useState('dashboard');
 
   // Leads data
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [duplicatesRemoved, setDuplicatesRemoved] = useState(36);
   const [selectedLead, setSelectedLead] = useState(null);
 
   // View state: 'table' | 'kanban' | 'card'
@@ -211,7 +213,9 @@ function ZohoCrmDemo() {
       const list = Array.isArray(res.data) ? res.data : res.data?.contacts || [];
       const source = res.data?.source;
       if (list && list.length >= 50 && source === 'google_sheets') {
-        setLeads(deduplicateContactList(list));
+        const deduped = deduplicateContactList(list);
+        setDuplicatesRemoved(Math.max(0, list.length - deduped.length));
+        setLeads(deduped);
         setLoading(false);
         return;
       }
@@ -226,7 +230,10 @@ function ZohoCrmDemo() {
     try {
       const directList = await fetchDirectFromGoogleSheets();
       if (directList && directList.length > bestList.length) {
-        setLeads(deduplicateContactList(directList));
+        if (directList._duplicatesRemoved !== undefined) {
+          setDuplicatesRemoved(directList._duplicatesRemoved);
+        }
+        setLeads(directList);
         setLoading(false);
         return;
       }
@@ -235,7 +242,9 @@ function ZohoCrmDemo() {
     }
 
     if (bestList.length > 0) {
-      setLeads(deduplicateContactList(bestList));
+      const deduped = deduplicateContactList(bestList);
+      setDuplicatesRemoved(Math.max(0, bestList.length - deduped.length));
+      setLeads(deduped);
     }
     setLoading(false);
   }, []);
@@ -558,17 +567,23 @@ agents.snsihub.ai`;
   };
 
   return (
-    <div className="zoho-root">
+    <div className={`zoho-root ${activeAgentTab === 'nurturing' ? 'zoho-root-nurturing' : ''}`}>
       {/* ── Top Navigation Bar ── */}
       <nav className="zoho-navbar">
         <div className="zoho-nav-left">
           <div className="zoho-logo-wrap">
             <span style={{ fontWeight: 700, color: '#ffffff', letterSpacing: '-0.01em', fontSize: 14 }}>
-              {activeAgentTab === 'leads' ? 'Contact Data Extraction & Structuring Agent' : 'Digital Nurturing Agent'}
+              {activeAgentTab === 'nurturing' ? 'Digital Nurturing Agent' : 'Contact Data Extraction & Structuring Agent'}
             </span>
           </div>
 
           <div className="zoho-nav-tabs">
+            <button
+              className={`zoho-nav-tab ${activeAgentTab === 'dashboard' ? 'active' : ''}`}
+              onClick={() => setActiveAgentTab('dashboard')}
+            >
+              Dashboard
+            </button>
             <button
               className={`zoho-nav-tab ${activeAgentTab === 'leads' ? 'active' : ''}`}
               onClick={() => setActiveAgentTab('leads')}
@@ -600,7 +615,7 @@ agents.snsihub.ai`;
         </div>
 
         <div className="zoho-nav-right">
-          {activeAgentTab === 'leads' && (
+          {activeAgentTab !== 'nurturing' && (
             <button
               className="zoho-btn zoho-btn-primary"
               style={{ padding: '4px 10px', fontSize: 11 }}
@@ -699,6 +714,23 @@ agents.snsihub.ai`;
           <DigitalNurturingView
             extractedLeads={leads}
             onSwitchToExtraction={() => setActiveAgentTab('leads')}
+          />
+        </ErrorBoundary>
+      ) : activeAgentTab === 'dashboard' ? (
+        <ErrorBoundary fallbackTitle="Dashboard View">
+          <DashboardView
+            leads={leads}
+            loading={loading}
+            duplicatesRemoved={duplicatesRemoved}
+            onSyncSheets={fetchLeads}
+            onSelectTier={(tier) => {
+              setFilterView(tier);
+              setActiveAgentTab('leads');
+            }}
+            onDraftEmail={(lead) => {
+              setSelectedLead(lead);
+              setPitchTab('email');
+            }}
           />
         </ErrorBoundary>
       ) : (
@@ -985,6 +1017,8 @@ agents.snsihub.ai`;
           </div>
         )}
       </main>
+        </>
+      )}
 
       {/* ── Zoho Lead Record Slide-Over Drawer ── */}
       {selectedLead && (
@@ -1590,7 +1624,7 @@ agents.snsihub.ai`;
       )}
 
       {/* ── Floating Batch Action Toolbar ── */}
-      {selectedIds.size > 0 && (
+      {activeAgentTab === 'leads' && selectedIds.size > 0 && (
         <div className="zoho-batch-toolbar">
           <div className="zoho-batch-info">
             <span className="zoho-batch-count-badge">{selectedIds.size}</span>
@@ -1653,8 +1687,6 @@ agents.snsihub.ai`;
             </button>
           </div>
         </div>
-      )}
-        </>
       )}
     </div>
   );

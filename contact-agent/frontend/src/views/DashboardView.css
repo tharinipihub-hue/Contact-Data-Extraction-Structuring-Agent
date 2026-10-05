@@ -1,0 +1,1034 @@
+/* ==========================================================================
+   DASHBOARD VIEW STYLESHEET
+   Professional CRM-style styling matching Zoho CRM standards:
+   - Clean white cards, 1px light borders (#e2e8f0), 6px border-radius
+   - Dark navy top bar accents, Blue accent (#2563eb)
+   - Color coding: Hot = Red (#dc2626), Warm = Amber (#f59e0b), Cold = Blue (#2563eb)
+   - 12-column responsive grid with full-width stack under 900px
+   ========================================================================== */
+
+.dash-container {
+  padding: 20px 24px 48px;
+  background-color: #f8fafc;
+  min-height: calc(100vh - 48px);
+  box-sizing: border-box;
+}
+
+/* ---------- 12-Column Layout Grid ---------- */
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.dash-col-12 {
+  grid-column: span 12;
+}
+
+.dash-col-7 {
+  grid-column: span 7;
+}
+
+.dash-col-6 {
+  grid-column: span 6;
+}
+
+.dash-col-5 {
+  grid-column: span 5;
+}
+
+.dash-col-4 {
+  grid-column: span 4;
+}
+
+.dash-col-3 {
+  grid-column: span 3;
+}
+
+/* ---------- Section 1: Header Row ---------- */
+.dash-header-row {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.dash-header-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dash-header-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.dash-header-badge {
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.dash-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.dash-period-selector {
+  display: inline-flex;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.dash-period-btn {
+  background: transparent;
+  border: none;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #475569;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dash-period-btn:hover {
+  color: #0f172a;
+}
+
+.dash-period-btn.active {
+  background: #ffffff;
+  color: #2563eb;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.dash-sync-btn {
+  background: #2563eb;
+  color: #ffffff;
+  border: 1px solid #1d4ed8;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2);
+}
+
+.dash-sync-btn:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.dash-sync-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ---------- Section 2: KPI Cards (5) ---------- */
+.dash-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+
+.dash-kpi-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dash-kpi-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.06);
+}
+
+.dash-kpi-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.dash-kpi-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dash-kpi-icon-wrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dash-kpi-icon-blue {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.dash-kpi-icon-red {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.dash-kpi-icon-amber {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.dash-kpi-icon-green {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.dash-kpi-icon-purple {
+  background: #faf5ff;
+  color: #7c3aed;
+}
+
+.dash-kpi-value-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.dash-kpi-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.dash-kpi-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.dash-kpi-badge-red {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.dash-kpi-badge-blue {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.dash-kpi-subtext {
+  margin-top: 6px;
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* ---------- Common Card Styles ---------- */
+.dash-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dash-card-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dash-card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dash-card-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.dash-card-subtitle {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.dash-card-body {
+  padding: 18px;
+  flex: 1;
+}
+
+/* ---------- Section 3: Donut Chart ---------- */
+.dash-donut-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dash-donut-chart-wrap {
+  position: relative;
+  width: 170px;
+  height: 170px;
+  flex-shrink: 0;
+}
+
+.dash-donut-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.dash-donut-segment {
+  fill: transparent;
+  stroke-width: 22;
+  transition: stroke-width 0.2s ease, opacity 0.2s ease;
+  cursor: pointer;
+}
+
+.dash-donut-segment:hover {
+  stroke-width: 26;
+  opacity: 0.9;
+}
+
+.dash-donut-segment-hot {
+  stroke: #dc2626;
+}
+
+.dash-donut-segment-warm {
+  stroke: #f59e0b;
+}
+
+.dash-donut-segment-cold {
+  stroke: #2563eb;
+}
+
+.dash-donut-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.dash-donut-center-num {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1;
+}
+
+.dash-donut-center-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 3px;
+}
+
+.dash-donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.dash-donut-legend-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dash-donut-legend-item:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateX(2px);
+}
+
+.dash-donut-legend-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dash-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dash-legend-dot-hot {
+  background-color: #dc2626;
+}
+
+.dash-legend-dot-warm {
+  background-color: #f59e0b;
+}
+
+.dash-legend-dot-cold {
+  background-color: #2563eb;
+}
+
+.dash-legend-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.dash-legend-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.dash-legend-count {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.dash-legend-pct {
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* ---------- Section 4: Leads Imported Per Week Chart ---------- */
+.dash-line-chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 190px;
+}
+
+.dash-line-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.dash-grid-line {
+  stroke: #f1f5f9;
+  stroke-width: 1;
+  stroke-dasharray: 4, 4;
+}
+
+.dash-axis-text {
+  font-size: 10px;
+  fill: #64748b;
+  font-family: inherit;
+}
+
+.dash-chart-point {
+  fill: #ffffff;
+  stroke: #2563eb;
+  stroke-width: 2.5;
+  transition: r 0.15s ease, stroke-width 0.15s ease;
+  cursor: pointer;
+}
+
+.dash-chart-point:hover {
+  r: 6;
+  stroke-width: 3.5;
+}
+
+.dash-point-label {
+  font-size: 10px;
+  font-weight: 700;
+  fill: #1e293b;
+  font-family: inherit;
+}
+
+/* ---------- Section 5: Pipeline Funnel ---------- */
+.dash-funnel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dash-funnel-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dash-funnel-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.dash-funnel-name {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.dash-funnel-numbers {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dash-funnel-count {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.dash-funnel-pct {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.dash-funnel-track {
+  width: 100%;
+  height: 12px;
+  background: #f1f5f9;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.dash-funnel-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.4s ease;
+}
+
+/* ---------- Section 6 & 7: Horizontal Bar Charts (Source & Sector) ---------- */
+.dash-bar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.dash-bar-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dash-bar-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.dash-bar-label-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 65%;
+}
+
+.dash-bar-val-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.dash-bar-count {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.dash-bar-pct {
+  color: #64748b;
+}
+
+.dash-bar-track {
+  width: 100%;
+  height: 8px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dash-bar-fill {
+  height: 100%;
+  background: #2563eb;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.dash-bar-fill-source {
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+}
+
+.dash-bar-fill-sector {
+  background: linear-gradient(90deg, #6366f1, #4f46e5);
+}
+
+/* ---------- Section 8: Top Hot Leads Table ---------- */
+.dash-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.dash-leads-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 12px;
+}
+
+.dash-leads-table th {
+  background: #f8fafc;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 10px 14px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.dash-leads-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #1e293b;
+  vertical-align: middle;
+}
+
+.dash-leads-table tr:hover td {
+  background: #f8fafc;
+}
+
+.dash-lead-person {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dash-lead-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e0e7ff;
+  color: #3730a3;
+  font-weight: 700;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dash-lead-name {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.dash-lead-title {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.dash-lead-company-name {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.dash-lead-company-sub {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.dash-badge-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.dash-badge-status {
+  display: inline-block;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.dash-btn-draft {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+
+.dash-btn-draft:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+/* ---------- Section 9: Data Quality (Progress Bars) ---------- */
+.dash-quality-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dash-quality-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.dash-quality-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.dash-quality-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.dash-quality-values {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.dash-quality-count {
+  color: #64748b;
+}
+
+.dash-quality-pct {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.dash-quality-track {
+  width: 100%;
+  height: 8px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dash-quality-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.dash-quality-fill-high {
+  background: #16a34a;
+}
+
+.dash-quality-fill-med {
+  background: #2563eb;
+}
+
+.dash-quality-fill-low {
+  background: #d97706;
+}
+
+/* ---------- Section 10: Recent Activity Feed ---------- */
+.dash-activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dash-activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
+}
+
+.dash-activity-icon-wrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.dash-activity-content {
+  flex: 1;
+}
+
+.dash-activity-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.dash-activity-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.dash-activity-time {
+  font-size: 10px;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+}
+
+.dash-activity-desc {
+  font-size: 11px;
+  color: #475569;
+  margin-top: 2px;
+  line-height: 1.35;
+}
+
+/* ---------- Section 11: Nurturing Handoff Card ---------- */
+.dash-nurturing-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dash-nurturing-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dash-nurturing-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.dash-nurturing-label {
+  font-weight: 600;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dash-nurturing-val {
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 12px;
+}
+
+.dash-nurturing-track {
+  width: 100%;
+  height: 8px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dash-nurturing-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+  transition: width 0.4s ease;
+}
+
+/* ---------- Loading Skeletons ---------- */
+.dash-skeleton {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: dashShimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes dashShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.dash-skeleton-title {
+  height: 16px;
+  width: 40%;
+  margin-bottom: 12px;
+}
+
+.dash-skeleton-val {
+  height: 28px;
+  width: 60%;
+  margin-bottom: 6px;
+}
+
+.dash-skeleton-sub {
+  height: 12px;
+  width: 80%;
+}
+
+.dash-skeleton-chart {
+  height: 160px;
+  width: 100%;
+}
+
+/* ---------- Empty State ---------- */
+.dash-empty-state {
+  grid-column: span 12;
+  background: #ffffff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 48px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.dash-empty-icon {
+  margin-bottom: 12px;
+  color: #94a3b8;
+}
+
+.dash-empty-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 6px 0;
+}
+
+.dash-empty-desc {
+  font-size: 13px;
+  color: #64748b;
+  max-width: 440px;
+  margin: 0 0 18px 0;
+}
+
+/* ---------- Responsive Breakpoint (< 900px) ---------- */
+@media (max-width: 900px) {
+  .dash-container {
+    padding: 14px;
+  }
+
+  .dash-kpi-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dash-kpi-card:last-child {
+    grid-column: span 2;
+  }
+
+  .dash-col-12,
+  .dash-col-7,
+  .dash-col-6,
+  .dash-col-5,
+  .dash-col-4,
+  .dash-col-3 {
+    grid-column: span 12 !important;
+  }
+
+  .dash-donut-container {
+    flex-direction: column;
+  }
+
+  .dash-donut-chart-wrap {
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 540px) {
+  .dash-kpi-row {
+    grid-template-columns: 1fr;
+  }
+
+  .dash-kpi-card:last-child {
+    grid-column: span 1;
+  }
+
+  .dash-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dash-header-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

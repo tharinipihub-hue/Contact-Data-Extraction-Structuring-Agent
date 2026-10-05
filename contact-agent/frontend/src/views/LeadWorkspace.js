@@ -180,7 +180,10 @@ export async function fetchDirectFromGoogleSheets() {
       });
     }
 
-    return deduplicateContactList(list);
+    const deduped = deduplicateContactList(list);
+    deduped._rawCount = list.length;
+    deduped._duplicatesRemoved = Math.max(0, list.length - deduped.length);
+    return deduped;
   } catch (err) {
     console.warn('[LeadWorkspace] Direct Google Sheets fetch error:', err.message);
     return [];
