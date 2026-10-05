@@ -657,11 +657,7 @@ export default function SnsTemplateSystemTab({
                 {/* Miniature Visual Mockup Header */}
                 <div
                   style={{
-                    background: template.category === 'Occasion'
-                      ? 'linear-gradient(135deg, #701a75 0%, #a21caf 100%)'
-                      : template.category === 'Event'
-                        ? 'linear-gradient(135deg, #065f46 0%, #059669 100%)'
-                        : 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
+                    background: '#064EE3',
                     padding: '16px 20px',
                     color: '#ffffff'
                   }}

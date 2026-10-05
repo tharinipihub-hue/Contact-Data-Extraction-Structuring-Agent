@@ -1121,10 +1121,44 @@
   font-size: 13px;
   line-height: 1.65;
   color: #334155;
-  white-space: pre-wrap;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background: #ffffff;
   min-height: 240px;
+}
+
+.dn-preview-body:not(:has(.dn-rendered-email-frame)):not(:has(.sns-email-container)) {
+  white-space: pre-wrap;
+}
+
+.dn-preview-body:has(.dn-rendered-email-frame),
+.dn-preview-body:has(.sns-email-container) {
+  padding: 0;
+  white-space: normal;
+}
+
+.dn-rendered-email-frame {
+  white-space: normal !important;
+  width: 100%;
+  display: block;
+}
+
+.dn-rendered-email-frame * {
+  white-space: normal;
+}
+
+.dn-rendered-email-frame pre {
+  white-space: pre-wrap;
+}
+
+.dn-rendered-email-frame table {
+  border-collapse: collapse;
+  white-space: normal !important;
+}
+
+.dn-rendered-email-frame tr,
+.dn-rendered-email-frame td,
+.dn-rendered-email-frame th {
+  white-space: normal !important;
 }
 
 .dn-email-content p {

@@ -193,14 +193,14 @@ function EmailBodyPreview({ content }) {
         'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li',
         'a', 'table', 'tbody', 'tr', 'td', 'th', 'thead', 'div', 'span', 'img', 'hr', 'blockquote'
       ],
-      ALLOWED_ATTR: ['href', 'target', 'rel', 'style', 'class', 'src', 'alt', 'width', 'height', 'align', 'border', 'cellpadding', 'cellspacing', 'title'],
+      ALLOWED_ATTR: ['href', 'target', 'rel', 'style', 'class', 'src', 'alt', 'width', 'height', 'align', 'border', 'cellpadding', 'cellspacing', 'title', 'bgcolor', 'valign'],
       ADD_ATTR: ['target']
     });
     return (
       <div
         className="dn-rendered-email-frame"
         dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
-        style={{ fontSize: 14, lineHeight: 1.65, color: '#1e293b' }}
+        style={{ fontSize: 14, lineHeight: 1.65, color: '#1e293b', whiteSpace: 'normal', width: '100%' }}
       />
     );
   }
@@ -3992,27 +3992,29 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                       )}
                     </div>
 
-                    <div className="dn-preview-footer">
-                      <div>
-                        <a
-                          href={previewPersonalized.unsubUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ color: '#2563eb', textDecoration: 'underline', marginRight: 12 }}
-                        >
-                          Unsubscribe ({activePreviewContact.name})
-                        </a>
-                        <a
-                          href={previewPersonalized.prefUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ color: '#64748b', textDecoration: 'none' }}
-                        >
-                          Manage Preferences
-                        </a>
+                    {!String(previewPersonalized.body || '').includes('sns-email-container') && (
+                      <div className="dn-preview-footer">
+                        <div>
+                          <a
+                            href={previewPersonalized.unsubUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: '#2563eb', textDecoration: 'underline', marginRight: 12 }}
+                          >
+                            Unsubscribe ({activePreviewContact.name})
+                          </a>
+                          <a
+                            href={previewPersonalized.prefUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: '#64748b', textDecoration: 'none' }}
+                          >
+                            Manage Preferences
+                          </a>
+                        </div>
+                        <span style={{ fontSize: 11, color: '#94a3b8' }}>Preview prepared for SNS Square Agent Workbench</span>
                       </div>
-                      <span style={{ fontSize: 11, color: '#94a3b8' }}>Preview prepared for SNS Square Agent Workbench</span>
-                    </div>
+                    )}
                   </div>
 
                   {wizardChannels.whatsapp && (
