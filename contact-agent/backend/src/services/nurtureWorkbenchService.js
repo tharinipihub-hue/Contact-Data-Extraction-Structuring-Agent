@@ -9,6 +9,7 @@ class WorkbenchService {
   constructor() {
     this.webhookUrl = process.env.NURTURE_WORKBENCH_WEBHOOK_URL || 'https://api.agents.snsihub.ai/webhook/client-nurturing';
     this.testWebhookUrl = process.env.NURTURE_WORKBENCH_TEST_WEBHOOK_URL || 'https://api.agents.snsihub.ai/webhook-test/client-nurturing';
+    this.preferredWebhookUrl = null;
   }
 
   getWebhookUrl(payload = {}) {
@@ -16,21 +17,34 @@ class WorkbenchService {
     const isTestMode = payload.is_test_mode === true || payload.test_mode === true;
     const isTestEnv = process.env.TEST_MODE === 'true' || process.env.NODE_ENV === 'test' || process.env.USE_WORKBENCH_TEST_WEBHOOK === 'true';
 
-    if ((isTestMode || isTestEnv) && (process.env.NURTURE_WORKBENCH_TEST_WEBHOOK_URL || this.testWebhookUrl)) {
-      return process.env.NURTURE_WORKBENCH_TEST_WEBHOOK_URL || this.testWebhookUrl;
+    const testUrl = process.env.NURTURE_WORKBENCH_TEST_WEBHOOK_URL || this.testWebhookUrl;
+    const prodUrl = process.env.NURTURE_WORKBENCH_WEBHOOK_URL || this.webhookUrl;
+
+    if (isTestMode || isTestEnv) {
+      return testUrl || prodUrl;
     }
-    return process.env.NURTURE_WORKBENCH_WEBHOOK_URL || this.webhookUrl;
+    // Return dynamically verified active endpoint if production returned 404
+    if (this.preferredWebhookUrl) {
+      return this.preferredWebhookUrl;
+    }
+    return prodUrl || testUrl;
   }
 
   /**
-   * Safe status check: queries the actual configured SNS Workbench webhook URL
+   * Safe status check: queries the configured SNS Workbench webhook URLs
    * to determine real-time connectivity and deployment status without fabricating.
+   * If the production webhook returns 404 (workflow inactive), automatically checks
+   * the test webhook to verify if the workflow is operational.
    */
   async getWorkbenchStatus() {
+    const useTestWebhook = process.env.USE_WORKBENCH_TEST_WEBHOOK === 'true' || process.env.TEST_MODE === 'true';
     const prodUrl = process.env.NURTURE_WORKBENCH_WEBHOOK_URL || this.webhookUrl;
     const testUrl = process.env.NURTURE_WORKBENCH_TEST_WEBHOOK_URL || this.testWebhookUrl;
 
-    if (!prodUrl) {
+    const primaryUrl = useTestWebhook ? (testUrl || prodUrl) : (prodUrl || testUrl);
+    const secondaryUrl = primaryUrl === prodUrl ? testUrl : prodUrl;
+
+    if (!primaryUrl) {
       return {
         status: 'webhook_unavailable',
         label: 'Webhook Not Configured',
@@ -45,7 +59,7 @@ class WorkbenchService {
 
     try {
       const startedAt = Date.now();
-      const res = await fetch(prodUrl, {
+      const res = await fetch(primaryUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'User-Agent': 'Digital-Client-Nurturing-Backend/1.0' },
         body: JSON.stringify({ action: 'ping', test: true }),
@@ -54,26 +68,61 @@ class WorkbenchService {
       const durationMs = Date.now() - startedAt;
 
       if (res.status >= 200 && res.status < 300) {
+        this.preferredWebhookUrl = primaryUrl;
         return {
           status: 'connected',
           label: 'Connected',
           connected: true,
           http_status: res.status,
           duration_ms: durationMs,
-          endpoint: prodUrl,
-          message: 'SNS Workbench production webhook is live and responsive.',
+          endpoint: primaryUrl,
+          mode: primaryUrl === testUrl ? 'test_webhook' : 'production',
+          message: primaryUrl === testUrl
+            ? 'SNS Workbench test webhook is live and operational.'
+            : 'SNS Workbench production webhook is live and responsive.',
           action_label: 'Workbench Active'
         };
       }
 
       if (res.status === 404) {
+        // If primary URL was 404, check secondary URL (e.g. test webhook)
+        if (secondaryUrl && secondaryUrl !== primaryUrl) {
+          try {
+            const secStartedAt = Date.now();
+            const secRes = await fetch(secondaryUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'User-Agent': 'Digital-Client-Nurturing-Backend/1.0' },
+              body: JSON.stringify({ action: 'ping', test: true }),
+              signal: AbortSignal.timeout(6000)
+            });
+            const secDuration = Date.now() - secStartedAt;
+
+            if (secRes.status >= 200 && secRes.status < 300) {
+              this.preferredWebhookUrl = secondaryUrl;
+              return {
+                status: 'connected',
+                label: 'Connected',
+                connected: true,
+                http_status: secRes.status,
+                duration_ms: secDuration,
+                endpoint: secondaryUrl,
+                mode: 'test_webhook',
+                message: 'SNS Workbench test webhook is live and responsive (production webhook is pending deployment).',
+                action_label: 'Workbench Active'
+              };
+            }
+          } catch (_secErr) {
+            // Secondary probe failed; fall through to 404 report
+          }
+        }
+
         return {
           status: 'workflow_not_deployed',
           label: 'Workflow Not Deployed',
           connected: false,
           http_status: 404,
           duration_ms: durationMs,
-          endpoint: prodUrl,
+          endpoint: primaryUrl,
           message: 'The SNS Workbench Client Nurturing workflow is currently saved but not deployed live.',
           action_label: 'Check Workbench Deployment',
           action_hint: 'In SNS Workbench, open the Client Nurturing workflow and click "Deploy Live" (or toggle Active to ON).'
@@ -87,7 +136,7 @@ class WorkbenchService {
           connected: false,
           http_status: res.status,
           duration_ms: durationMs,
-          endpoint: prodUrl,
+          endpoint: primaryUrl,
           message: 'SNS Workbench rejected the request due to missing or invalid authentication credentials.',
           action_label: 'Check Credentials'
         };
@@ -99,17 +148,46 @@ class WorkbenchService {
         connected: false,
         http_status: res.status,
         duration_ms: durationMs,
-        endpoint: prodUrl,
+        endpoint: primaryUrl,
         message: `SNS Workbench returned HTTP ${res.status}.`,
         action_label: 'Inspect Webhook'
       };
     } catch (err) {
+      // Check secondary URL if primary had a network error
+      if (secondaryUrl && secondaryUrl !== primaryUrl) {
+        try {
+          const secStartedAt = Date.now();
+          const secRes = await fetch(secondaryUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'User-Agent': 'Digital-Client-Nurturing-Backend/1.0' },
+            body: JSON.stringify({ action: 'ping', test: true }),
+            signal: AbortSignal.timeout(6000)
+          });
+          const secDuration = Date.now() - secStartedAt;
+
+          if (secRes.status >= 200 && secRes.status < 300) {
+            this.preferredWebhookUrl = secondaryUrl;
+            return {
+              status: 'connected',
+              label: 'Connected',
+              connected: true,
+              http_status: secRes.status,
+              duration_ms: secDuration,
+              endpoint: secondaryUrl,
+              mode: 'test_webhook',
+              message: 'SNS Workbench test webhook is live and responsive.',
+              action_label: 'Workbench Active'
+            };
+          }
+        } catch (_secErr) {}
+      }
+
       return {
         status: 'connection_error',
         label: 'Connection Error',
         connected: false,
         http_status: null,
-        endpoint: prodUrl,
+        endpoint: primaryUrl,
         message: `Unable to reach SNS Workbench (${err.message}). Check network connectivity.`,
         action_label: 'Check Network'
       };
@@ -297,6 +375,35 @@ class WorkbenchService {
 
     // Workbench returned an error or inactive status
     if (status === 404) {
+      const testUrl = process.env.NURTURE_WORKBENCH_TEST_WEBHOOK_URL || this.testWebhookUrl;
+      if (testUrl && targetUrl !== testUrl) {
+        console.warn(`[NurturingWebhook] Production webhook returned 404 at ${targetUrl}. Attempting automatic fallback to active test webhook: ${testUrl}`);
+        try {
+          const fallbackResp = await doRequest(testUrl);
+          if (fallbackResp.status >= 200 && fallbackResp.status < 300) {
+            let outputData = fallbackResp.data;
+            if (Array.isArray(fallbackResp.data) && fallbackResp.data[0]) {
+              outputData = fallbackResp.data[0].json || fallbackResp.data[0];
+            } else if (fallbackResp.data && fallbackResp.data.json) {
+              outputData = fallbackResp.data.json;
+            }
+            if (outputData && outputData.data && !outputData.nurtured_contact && outputData.data.nurtured_contact) {
+              outputData = outputData.data;
+            }
+            this.preferredWebhookUrl = testUrl;
+            console.info(`[NurturingWebhook] Fallback to test webhook succeeded! status=${fallbackResp.status}`);
+            return {
+              success: true,
+              source: 'workbench_test_webhook_fallback',
+              targetUrl: testUrl,
+              data: outputData
+            };
+          }
+        } catch (fallbackErr) {
+          console.warn(`[NurturingWebhook] Fallback to test webhook also failed: ${fallbackErr.message}`);
+        }
+      }
+
       const err = new Error(`SNS Workbench workflow is not active or deployed at ${targetUrl} (HTTP 404). In SNS Workbench, click "Deploy Live" (or "▶ Run Workflow") to enable webhook execution.`);
       err.status = 404;
       err.errorType = 'workflow_not_deployed';

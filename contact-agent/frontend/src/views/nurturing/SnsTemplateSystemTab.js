@@ -29,6 +29,7 @@ import {
   Bookmark
 } from 'lucide-react';
 import ClientEmailPreview from './ClientEmailPreview';
+import { buildSnsTemplateEmailHtml, interpolateTemplateVars } from './templateEmailBuilder';
 
 // Preset High Quality Tech & Enterprise Imagery matching the visual reference
 const IMAGE_PRESETS = [
@@ -305,6 +306,12 @@ export default function SnsTemplateSystemTab({
   const [isSending, setIsSending] = useState(false);
   const [sendSuccessModal, setSendSuccessModal] = useState(null);
 
+  // Workbench AI Synthesis Assist State
+  const [aiTopic, setAiTopic] = useState('');
+  const [isAiGenerating, setIsAiGenerating] = useState(false);
+  const [aiError, setAiError] = useState(null);
+  const [aiSuccess, setAiSuccess] = useState(null);
+
   const previewContact = useMemo(() => {
     return contacts.find(c => c.id === previewContactId) || contacts[0] || {
       name: 'Priya Sharma',
@@ -336,95 +343,100 @@ export default function SnsTemplateSystemTab({
     setFoundations(JSON.parse(JSON.stringify(template.foundations || [])));
     setClosingText(template.closingText || '');
     setPromoBanner(JSON.parse(JSON.stringify(template.promoBanner || {})));
+    setAiTopic(template.heroHeadline || template.name);
+    setAiError(null);
+    setAiSuccess(null);
     setWizardStep(stepToOpen);
   };
 
-  // Compile final HTML email
+  // Synthesize content via SNS Workbench AI without replacing brand visual structure
+  const handleGenerateWithWorkbench = async () => {
+    if (!activeTemplate) return;
+    setIsAiGenerating(true);
+    setAiError(null);
+    setAiSuccess(null);
+
+    const topicToUse = aiTopic.trim() || heroHeadline || activeTemplate.name;
+
+    try {
+      const payload = {
+        campaign_type: activeTemplate.category.toLowerCase().replace(/\s+/g, '_'),
+        campaign_name: campaignName || `${activeTemplate.name} AI Synthesis`,
+        topic: topicToUse,
+        developer_input: topicToUse,
+        brief: topicToUse,
+        contact_id: previewContact.id,
+        contacts: [previewContact],
+        sector: previewContact.sector || previewContact.industry || 'Technology'
+      };
+
+      const res = await axios.post(`${apiBase}/campaigns/generate`, payload, { timeout: 35000 });
+      if (res.data?.success && res.data?.preview) {
+        const preview = res.data.preview;
+        if (preview.subject) {
+          setSubjectLine(preview.subject);
+        }
+        if (preview.body_text_only || preview.email_body) {
+          const rawText = preview.body_text_only || preview.email_body;
+          const plainText = rawText.replace(/<[^>]+>/g, '').trim();
+          setHeroBody(plainText.slice(0, 1000));
+        }
+        setAiSuccess(`Synthesized editorial copy for "${topicToUse}" via SNS Workbench.`);
+        if (showNotification) {
+          showNotification(`Synthesized content via SNS Workbench.`);
+        }
+      }
+    } catch (err) {
+      const errData = err.response?.data;
+      const errMsg = errData?.error || err.message;
+      setAiError({
+        message: errMsg,
+        actionLabel: errData?.action_label,
+        actionHint: errData?.action_hint,
+        errorType: errData?.error_type
+      });
+      if (showNotification) {
+        showNotification(`Workbench generation: ${errMsg}`, true);
+      }
+    } finally {
+      setIsAiGenerating(false);
+    }
+  };
+
+  // Compile final canonical HTML email using buildSnsTemplateEmailHtml
   const compiledEmailHtml = useMemo(() => {
     if (!activeTemplate) return '';
 
-    const firstName = previewContact.name ? previewContact.name.split(' ')[0] : 'Colleague';
-    const company = previewContact.company || 'Enterprise';
-    const industry = previewContact.sector || previewContact.industry || 'Technology';
-
-    const greetingHtml = greetingType === 'editorial'
-      ? `<p style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 16px 0;">Hello Readers,</p>`
-      : `<p style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 16px 0;">Dear ${firstName},</p>`;
-
-    // Interpolate variables
-    const interpolate = (str) => {
-      if (!str) return '';
-      return str
-        .replace(/\{\{first_name\}\}/gi, firstName)
-        .replace(/\{\{company\}\}/gi, company)
-        .replace(/\{\{industry\}\}/gi, industry)
-        .replace(/\{\{client_name\}\}/gi, previewContact.name || 'Valued Client');
-    };
-
-    const heroParagraphs = interpolate(heroBody)
-      .split('\n\n')
-      .map(p => p.trim())
-      .filter(Boolean)
-      .map(p => `<p style="font-size: 14.5px; line-height: 1.65; color: #334155; margin: 0 0 14px 0;">${p.replace(/\n/g, '<br/>')}</p>`)
-      .join('\n');
-
-    const heroSectionHtml = `
-      <div style="margin-bottom: 24px;">
-        ${greetingHtml}
-        ${heroHeadline ? `<h2 style="font-size: 17px; font-weight: 700; color: #0f172a; margin: 0 0 12px 0;">${interpolate(heroHeadline)}</h2>` : ''}
-        ${heroParagraphs}
-        <div style="display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 13.5px; font-weight: 600; color: #1e293b;">
-          <div style="width: 14px; height: 14px; border: 2px solid #ef4444; border-top-color: #f59e0b; border-right-color: #10b981; border-bottom-color: #06b6d4; border-radius: 2px; display: inline-block;"></div>
-          <span>The SNS Square Team</span>
-        </div>
-      </div>
-    `;
-
-    // Blocks
-    const blocksHtml = blocks.map((b, idx) => `
-      <div style="margin: 28px 0; padding-top: ${idx > 0 ? '24px' : '0'}; border-top: ${idx > 0 ? '1px solid #e2e8f0' : 'none'};">
-        ${b.image ? `
-          <div style="margin-bottom: 16px;">
-            <img src="${b.image}" alt="${b.headline}" style="width: 100%; max-width: 580px; height: auto; border-radius: 8px; display: block; border: 1px solid #e2e8f0;" />
-          </div>` : ''}
-        <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 12px 0; line-height: 1.35;">
-          ${interpolate(b.headline)}
-        </h3>
-        <p style="font-size: 14.5px; line-height: 1.65; color: #334155; margin: 0 0 16px 0;">
-          ${interpolate(b.body)}
-        </p>
-        ${b.ctaText ? `
-          <div style="margin-top: 12px;">
-            <a href="${b.ctaUrl || '#'}" style="background-color: #0b0f19; color: #ffffff; text-decoration: none; padding: 10px 18px; border-radius: 6px; font-size: 13px; font-weight: 600; display: inline-block;">
-              ${interpolate(b.ctaText)} &rarr;
-            </a>
-          </div>` : ''}
-      </div>
-    `).join('\n');
-
-    // Foundations / Synthesis
-    const foundationsHtml = foundations && foundations.length > 0 ? `
-      <div style="margin: 32px 0 20px 0; padding: 20px; background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
-        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-          <div style="width: 14px; height: 14px; border: 2px solid #ef4444; border-top-color: #f59e0b; border-right-color: #10b981; border-bottom-color: #06b6d4; border-radius: 2px; display: inline-block;"></div>
-          <strong style="font-size: 14.5px; color: #0f172a;">${interpolate(foundationsTitle)}</strong>
-        </div>
-        <ul style="margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.65; color: #334155;">
-          ${foundations.map(f => `<li style="margin-bottom: 6px;">${interpolate(f)}</li>`).join('\n')}
-        </ul>
-        ${closingText ? `
-          <p style="font-size: 14px; line-height: 1.65; color: #475569; margin: 14px 0 0 0;">
-            ${interpolate(closingText).replace(/\n/g, '<br/>')}
-          </p>` : ''}
-      </div>
-    ` : '';
-
-    return `
-      ${heroSectionHtml}
-      ${blocksHtml}
-      ${foundationsHtml}
-    `.trim();
-  }, [activeTemplate, previewContact, greetingType, heroHeadline, heroBody, blocks, foundationsTitle, foundations, closingText]);
+    return buildSnsTemplateEmailHtml({
+      template: activeTemplate,
+      customization: {
+        headerTitle,
+        headerSubtitle,
+        greetingType,
+        heroHeadline,
+        heroBody,
+        blocks,
+        foundationsTitle,
+        foundations,
+        closingText,
+        promoBanner
+      },
+      recipient: previewContact
+    });
+  }, [
+    activeTemplate,
+    headerTitle,
+    headerSubtitle,
+    greetingType,
+    heroHeadline,
+    heroBody,
+    blocks,
+    foundationsTitle,
+    foundations,
+    closingText,
+    promoBanner,
+    previewContact
+  ]);
 
   // Target audience resolved list
   const targetAudienceContacts = useMemo(() => {
@@ -708,6 +720,75 @@ export default function SnsTemplateSystemTab({
                 </div>
               </div>
 
+              {/* Optional Workbench AI Content Synthesis Card */}
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Sparkles size={16} color="#2563eb" />
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>
+                      Synthesize Editorial Copy via SNS Workbench AI
+                    </span>
+                    <span style={{ fontSize: 10.5, background: '#eff6ff', color: '#1d4ed8', padding: '2px 8px', borderRadius: 10, fontWeight: 600 }}>
+                      Live LLM Integration
+                    </span>
+                  </div>
+                  <span style={{ fontSize: 11.5, color: '#64748b' }}>
+                    Preserves SNS brand layout, multi-color square logo, and enterprise footer
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <input
+                    type="text"
+                    className="dn-input"
+                    placeholder="Enter editorial focus or topic (e.g., Sovereign AI, GCC Expansion, Cloud Modernization)"
+                    value={aiTopic}
+                    onChange={(e) => setAiTopic(e.target.value)}
+                    style={{ flex: 1, minWidth: 260 }}
+                  />
+                  <button
+                    className="dn-btn dn-btn-primary"
+                    onClick={handleGenerateWithWorkbench}
+                    disabled={isAiGenerating}
+                    style={{ display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}
+                  >
+                    {isAiGenerating ? (
+                      <>
+                        <RefreshCw size={13} className="spin-icon" /> Synthesizing via Workbench...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles size={13} /> Synthesize Content
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* AI Status / Error Notice */}
+                {aiError && (
+                  <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 6, padding: '10px 14px', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                    <AlertTriangle size={15} color="#dc2626" style={{ marginTop: 2, flexShrink: 0 }} />
+                    <div style={{ fontSize: 12, color: '#991b1b', lineHeight: 1.45 }}>
+                      <strong>Workbench Generation Notice:</strong> {aiError.message}
+                      {aiError.actionHint && (
+                        <div style={{ marginTop: 4, color: '#7f1d1d', fontSize: 11.5 }}>
+                          <em>Guidance: {aiError.actionHint}</em>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {aiSuccess && (
+                  <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 6, padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <CheckCircle2 size={14} color="#16a34a" />
+                    <span style={{ fontSize: 12, color: '#166534', fontWeight: 500 }}>
+                      {aiSuccess}
+                    </span>
+                  </div>
+                )}
+              </div>
+
               {/* Form Fields Grid */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
                 <div>
@@ -981,10 +1062,10 @@ export default function SnsTemplateSystemTab({
 
               {/* Official Client Email Preview Frame */}
               <ClientEmailPreview
-                subject={subjectLine
-                  .replace(/\{\{first_name\}\}/gi, previewContact.name ? previewContact.name.split(' ')[0] : 'Colleague')
-                  .replace(/\{\{company\}\}/gi, previewContact.company || 'Enterprise')}
+                subject={interpolateTemplateVars(subjectLine, previewContact)}
+                bodyHtml={compiledEmailHtml}
                 emailBody={compiledEmailHtml}
+                recipient={previewContact}
                 contact={previewContact}
                 campaignName={campaignName}
                 campaignType={activeTemplate.category}
@@ -1164,7 +1245,14 @@ export default function SnsTemplateSystemTab({
                   {onUseTemplateInCampaign && (
                     <button
                       className="dn-btn dn-btn-secondary"
-                      onClick={() => onUseTemplateInCampaign(activeTemplate, compiledEmailHtml, subjectLine)}
+                      onClick={() => onUseTemplateInCampaign({
+                        ...activeTemplate,
+                        campaignName,
+                        category: activeTemplate.category,
+                        subjectLine: interpolateTemplateVars(subjectLine, previewContact),
+                        defaultSubject: activeTemplate.defaultSubject,
+                        html: compiledEmailHtml
+                      })}
                       disabled={isSending}
                     >
                       Use in Standard Campaign Wizard

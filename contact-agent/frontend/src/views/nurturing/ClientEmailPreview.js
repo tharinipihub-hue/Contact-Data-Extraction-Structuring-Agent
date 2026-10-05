@@ -8,35 +8,46 @@ import {
   Code,
   Eye,
   CheckCircle2,
-  ExternalLink
+  ExternalLink,
+  AlertTriangle,
+  Copy,
+  Check
 } from 'lucide-react';
 
 /**
  * Enterprise Client-Facing Email Preview Component
  * 
  * Guarantees:
- *  1. Raw HTML tags (like <p>, <div>, <a>) are NEVER displayed as literal text to the user.
- *  2. HTML is securely sanitized using DOMPurify before rendering.
- *  3. Visually resembles a real corporate email client (Gmail / Outlook).
- *  4. Provides an optional "View HTML Source" toggle for administrative/developer inspection.
+ *  1. Accepts either bodyHtml or emailBody, recipient or contact, contentVersion or version.
+ *  2. HTML is securely sanitized using DOMPurify with rich email table, image, and style support.
+ *  3. Visually resembles a real corporate email client (Gmail / Outlook Standard).
+ *  4. Provides an interactive "View HTML" source viewer with Copy to Clipboard.
+ *  5. Empty content protection: displays a diagnostic card if the content is empty, never a silent blank box.
  */
 export default function ClientEmailPreview({
   subject = '',
   bodyHtml = '',
+  emailBody = '',
   recipient = null,
+  contact = null,
   senderName = 'SNS Square Enterprise Client Partnerships',
   senderEmail = 'nurture@snssquare.com',
   dateString = 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
   contentVersion = 'v1',
-  allowRawView = true
+  version = '',
+  allowRawView = true,
+  campaignName = '',
+  campaignType = ''
 }) {
   const [showRawHtml, setShowRawHtml] = useState(false);
+  const [copiedHtml, setCopiedHtml] = useState(false);
 
-  // Normalize body content
-  let rawBody = String(bodyHtml || '').trim();
+  // Normalize inputs across both property naming conventions
+  const effectiveRecipient = recipient || contact || null;
+  const effectiveVersion = version || contentVersion || 'v1';
+  let rawBody = String(bodyHtml || emailBody || '').trim();
 
   // If content has escaped HTML entities like &lt;p&gt; or &lt;div&gt;, decode them first
-  // so that tags are interpreted as actual HTML elements rather than displayed as literal text
   if (/&lt;\/?[a-z][\s\S]*?&gt;/i.test(rawBody)) {
     if (typeof document !== 'undefined') {
       const txt = document.createElement('textarea');
@@ -47,7 +58,7 @@ export default function ClientEmailPreview({
 
   // If content is plain text or markdown without structural HTML tags, format into clean paragraphs
   let cleanHtmlToSanitize = rawBody;
-  if (!/<(?:p|div|table|h[1-6]|ul|ol|tr|td|body)\b/i.test(cleanHtmlToSanitize)) {
+  if (cleanHtmlToSanitize && !/<(?:p|div|table|h[1-6]|ul|ol|tr|td|body)\b/i.test(cleanHtmlToSanitize)) {
     cleanHtmlToSanitize = cleanHtmlToSanitize
       .replace(/^### (.*$)/gim, '<h3 style="color:#0f172a;font-size:16px;margin:16px 0 8px 0;font-weight:700;">$1</h3>')
       .replace(/^## (.*$)/gim, '<h2 style="color:#0f172a;font-size:18px;margin:18px 0 10px 0;font-weight:700;">$1</h2>')
@@ -59,20 +70,40 @@ export default function ClientEmailPreview({
       .join('');
   }
 
-  // Sanitize HTML strictly with DOMPurify
+  // Sanitize HTML strictly with DOMPurify while preserving email table layout, styles, and imagery
   const sanitizedHtml = DOMPurify.sanitize(cleanHtmlToSanitize, {
     ALLOWED_TAGS: [
       'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'strike',
       'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li',
-      'a', 'table', 'tbody', 'tr', 'td', 'th', 'thead', 'div', 'span', 'img', 'hr', 'blockquote'
+      'a', 'table', 'tbody', 'thead', 'tr', 'td', 'th', 'div', 'span',
+      'img', 'hr', 'blockquote', 'style'
     ],
-    ALLOWED_ATTR: ['href', 'target', 'rel', 'style', 'class', 'src', 'alt', 'width', 'height', 'align', 'border', 'cellpadding', 'cellspacing', 'title'],
+    ALLOWED_ATTR: [
+      'href', 'target', 'rel', 'style', 'class', 'src', 'alt',
+      'width', 'height', 'align', 'valign', 'border', 'cellpadding',
+      'cellspacing', 'title', 'bgcolor', 'colspan', 'rowspan'
+    ],
     ADD_ATTR: ['target']
   });
 
-  const recipientName = recipient?.name || (recipient?.first_name ? `${recipient.first_name} ${recipient.last_name || ''}`.trim() : 'Valued Client');
-  const recipientEmail = recipient?.email || 'client@organization.com';
-  const recipientCompany = recipient?.company || '';
+  const recipientName = effectiveRecipient?.name || (effectiveRecipient?.first_name ? `${effectiveRecipient.first_name} ${effectiveRecipient.last_name || ''}`.trim() : 'Valued Client');
+  const recipientEmail = effectiveRecipient?.email || 'client@organization.com';
+  const recipientCompany = effectiveRecipient?.company || '';
+  const recipientSector = effectiveRecipient?.sector || effectiveRecipient?.industry || '';
+
+  const handleCopyHtml = async () => {
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        await navigator.clipboard.writeText(cleanHtmlToSanitize);
+        setCopiedHtml(true);
+        setTimeout(() => setCopiedHtml(false), 2500);
+      }
+    } catch (_err) {
+      console.warn('Could not copy HTML to clipboard');
+    }
+  };
+
+  const isBodyEmpty = !sanitizedHtml || sanitizedHtml.trim() === '';
 
   return (
     <div style={{
@@ -112,16 +143,16 @@ export default function ClientEmailPreview({
               color: '#2563eb',
               border: '1px solid #bfdbfe'
             }}>
-              Version {contentVersion}
+              Version {effectiveVersion}
             </span>
 
-            {allowRawView && (
+            {allowRawView && !isBodyEmpty && (
               <button
                 type="button"
                 className="dn-btn dn-btn-secondary dn-btn-sm"
                 onClick={() => setShowRawHtml(!showRawHtml)}
-                style={{ fontSize: 11, padding: '4px 8px', height: 'auto' }}
-                title="Toggle raw HTML source for technical inspection"
+                style={{ fontSize: 11, padding: '4px 8px', height: 'auto', display: 'flex', alignItems: 'center', gap: 4 }}
+                title="Toggle final HTML source view"
               >
                 {showRawHtml ? <><Eye size={12} /> Rendered View</> : <><Code size={12} /> View HTML</>}
               </button>
@@ -145,7 +176,7 @@ export default function ClientEmailPreview({
           </div>
           <div>
             <span style={{ color: '#64748b' }}>To:</span> <strong>{recipientName}</strong>{' '}
-            {recipientCompany && <span style={{ color: '#64748b' }}>({recipientCompany})</span>}{' '}
+            {recipientCompany && <span style={{ color: '#64748b' }}>({recipientCompany}{recipientSector ? ` • ${recipientSector}` : ''})</span>}{' '}
             <span style={{ color: '#94a3b8' }}>&lt;{recipientEmail}&gt;</span>
           </div>
         </div>
@@ -164,24 +195,57 @@ export default function ClientEmailPreview({
       </div>
 
       {/* ── Email Body Content ── */}
-      <div style={{ padding: '24px 20px', backgroundColor: '#ffffff', minHeight: 280 }}>
-        {showRawHtml ? (
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <Code size={13} color="#2563eb" /> Underlying HTML Content (Dispatched verbatim):
+      <div style={{ padding: '24px 20px', backgroundColor: '#f8fafc', minHeight: 320 }}>
+        {isBodyEmpty ? (
+          <div style={{
+            padding: '48px 24px',
+            textAlign: 'center',
+            backgroundColor: '#fffbeb',
+            border: '1px dashed #fde68a',
+            borderRadius: 8,
+            color: '#92400e',
+            maxWidth: 580,
+            margin: '0 auto'
+          }}>
+            <AlertTriangle size={32} color="#d97706" style={{ margin: '0 auto 10px auto', display: 'block' }} />
+            <div style={{ fontWeight: 700, fontSize: 15 }}>
+              Unable to Render Email Preview
+            </div>
+            <div style={{ fontSize: 13, color: '#b45309', marginTop: 6, lineHeight: 1.5 }}>
+              The final campaign content is currently empty. Please return to the <strong>Customize</strong> tab to verify headlines, body copy, or generate content via SNS Workbench.
+            </div>
+            <div style={{ marginTop: 14, fontSize: 11.5, color: '#78350f', background: '#fef3c7', padding: '8px 12px', borderRadius: 6, display: 'inline-block' }}>
+              Diagnostic check: Template selected: {campaignName || 'Yes'} &bull; Recipient: {recipientName} &bull; HTML payload: Empty
+            </div>
+          </div>
+        ) : showRawHtml ? (
+          <div style={{ maxWidth: 800, margin: '0 auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#334155', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Code size={14} color="#2563eb" /> Final Dispatched HTML Source Code:
+              </div>
+              <button
+                type="button"
+                onClick={handleCopyHtml}
+                className="dn-btn dn-btn-secondary dn-btn-xs"
+                style={{ display: 'flex', alignItems: 'center', gap: 4 }}
+              >
+                {copiedHtml ? <><Check size={12} color="#16a34a" /> Copied!</> : <><Copy size={12} /> Copy HTML</>}
+              </button>
             </div>
             <pre style={{
-              backgroundColor: '#f8fafc',
-              border: '1px solid #e2e8f0',
-              borderRadius: 6,
-              padding: 14,
+              backgroundColor: '#090e17',
+              border: '1px solid #1e293b',
+              borderRadius: 8,
+              padding: 16,
               fontSize: 11.5,
-              color: '#334155',
-              maxHeight: 400,
+              color: '#38bdf8',
+              maxHeight: 520,
               overflowY: 'auto',
               whiteSpace: 'pre-wrap',
               wordBreak: 'break-all',
-              fontFamily: 'SFMono-Regular, Menlo, Monaco, Consolas, monospace'
+              fontFamily: 'SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+              lineHeight: 1.5
             }}>
               {cleanHtmlToSanitize}
             </pre>
@@ -191,9 +255,9 @@ export default function ClientEmailPreview({
             className="dn-rendered-email-frame"
             dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
             style={{
-              fontSize: 15,
-              lineHeight: 1.65,
-              color: '#1e293b'
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center'
             }}
           />
         )}

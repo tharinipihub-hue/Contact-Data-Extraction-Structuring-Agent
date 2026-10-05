@@ -4279,17 +4279,26 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
             onUseTemplateInCampaign={(templateData) => {
               if (templateData.campaignName) setWizardCampaignName(templateData.campaignName);
               if (templateData.category === 'Newsletter') setWizardCampaignType('Newsletter');
-              else if (templateData.category === 'Occasion Wish') setWizardCampaignType('Festival / Occasion Wish');
-              else if (templateData.category === 'Promotion') setWizardCampaignType('Promotional / Strategic Update');
+              else if (templateData.category === 'Occasion' || templateData.category === 'Occasion Wish') setWizardCampaignType('Festival / Occasion Wish');
+              else if (templateData.category === 'Campaign' || templateData.category === 'Promotion') setWizardCampaignType('Promotional / Strategic Update');
               else setWizardCampaignType('Newsletter');
 
-              if (templateData.html) {
-                setWizardGeneratedEmail({
-                  subject: templateData.subjectLine || templateData.defaultSubject || '',
-                  email_body: templateData.html
+              const finalSubject = templateData.subjectLine || templateData.defaultSubject || '';
+              const finalBody = templateData.html || '';
+
+              if (finalBody) {
+                setWizardGeneratedContent({
+                  subject: finalSubject,
+                  email_body: finalBody,
+                  content_source: 'sns_template_system',
+                  content_version: 'v1'
                 });
+                setWizardEditedSubject(finalSubject);
+                setWizardEditedBody(finalBody);
+                setWizardStep(5);
+              } else {
+                setWizardStep(3);
               }
-              setWizardStep(3);
               setActiveTab('create_campaign');
               showNotification(`Loaded "${templateData.campaignName || templateData.name}" into Campaign Wizard.`);
             }}
