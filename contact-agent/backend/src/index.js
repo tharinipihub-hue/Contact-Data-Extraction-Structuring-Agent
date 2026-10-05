@@ -21,6 +21,7 @@ const filesRoutes = require('./routes/files');
 const campaignsRoutes = require('./routes/campaigns');
 const salesRoutes = require('./routes/sales');
 const nurtureWebhookRoutes = require('./routes/nurtureWebhook');
+const nurtureFeaturesRoutes = require('./routes/nurtureFeatures');
 const nurtureStore = require('./services/nurtureStore');
 const { renderPreferencePage } = require('./views/preferencesView');
 
@@ -105,6 +106,7 @@ app.use('/api/contacts', nurtureContactsRoutes);
 app.use('/api/campaigns', campaignsRoutes);
 app.use('/api/sales', salesRoutes);
 app.use('/api/webhook', nurtureWebhookRoutes);
+app.use('/api/nurture', nurtureFeaturesRoutes);
 app.all(['/preferences', '/preferences/*', '/unsubscribe', '/unsubscribe/*', '/api/unsubscribe', '/api/preferences'], (req, res) => {
   const rawKey = req.query.id || req.query.contact_id || req.query.email || req.query.contactId || req.body?.id || req.body?.contact_id || req.body?.email;
   const key = rawKey ? String(rawKey).trim() : '';

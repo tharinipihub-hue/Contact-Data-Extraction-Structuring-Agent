@@ -56,9 +56,27 @@ import {
   CheckCheck,
   Inbox,
   ShieldAlert,
-  XCircle
+  XCircle,
+  FlaskConical,
+  BookOpen,
+  Cpu,
+  Gift,
+  Star,
+  Award,
+  Zap,
+  MapPin,
+  ClipboardList,
+  Lightbulb,
+  ThumbsUp,
+  ThumbsDown,
+  Settings,
+  Info
 } from 'lucide-react';
 import './DigitalNurturingView.css';
+import AiTestEnvironmentTab from './nurturing/AiTestEnvironmentTab';
+import AiProductReviewTab from './nurturing/AiProductReviewTab';
+import ContactResearchTab from './nurturing/ContactResearchTab';
+import InstantOccasionWishTab from './nurturing/InstantOccasionWishTab';
 
 const API_BASE = '/api';
 const PRODUCTION_APP_URL = 'https://contact-data-extraction-structuring-agent.onrender.com';
@@ -408,6 +426,10 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
   const [editingDraftId, setEditingDraftId] = useState(null);
   const [wizardSelectedContactId, setWizardSelectedContactId] = useState('');
   const [wizardPreviewContactId, setWizardPreviewContactId] = useState('');
+  const [wizardResearchedContext, setWizardResearchedContext] = useState('');
+  const [wizardNewsletterContext, setWizardNewsletterContext] = useState('');
+  const [isLoadingIndustryContext, setIsLoadingIndustryContext] = useState(false);
+  const [researchTargetContactId, setResearchTargetContactId] = useState('');
 
   // Templates Tab State
   const [selectedTemplateTab, setSelectedTemplateTab] = useState('Newsletter');
@@ -1045,7 +1067,9 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
           developer_input: effectiveBrief,
           occasion: wizardOccasion || effectiveBrief,
           target_audience: wizardAudienceType === 'Specific Client' ? `${primaryContact.name} (${primaryContact.company})` : wizardAudienceType,
-          channel: wizardChannels.email ? 'Email' : 'WhatsApp'
+          channel: wizardChannels.email ? 'Email' : 'WhatsApp',
+          researched_context: wizardResearchedContext || undefined,
+          newsletter_context: wizardNewsletterContext || undefined
         }, { timeout: 60000 });
 
         if (res.data?.success === true && res.data?.content_source === 'workbench' && res.data?.preview && (res.data.preview.email_body || res.data.preview.subject)) {
@@ -1527,6 +1551,30 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
               onClick={() => setActiveTab('workflow')}
             >
               <Sliders size={14} /> SNS Workbench Flow
+            </button>
+            <button
+              className={`dn-subbar-tab ${activeTab === 'ai_test' ? 'active' : ''}`}
+              onClick={() => setActiveTab('ai_test')}
+            >
+              <FlaskConical size={14} /> AI Test Environment
+            </button>
+            <button
+              className={`dn-subbar-tab ${activeTab === 'ai_review' ? 'active' : ''}`}
+              onClick={() => setActiveTab('ai_review')}
+            >
+              <Cpu size={14} /> AI Product Review
+            </button>
+            <button
+              className={`dn-subbar-tab ${activeTab === 'contact_research' ? 'active' : ''}`}
+              onClick={() => setActiveTab('contact_research')}
+            >
+              <Search size={14} /> Research Contact
+            </button>
+            <button
+              className={`dn-subbar-tab ${activeTab === 'instant_wish' ? 'active' : ''}`}
+              onClick={() => setActiveTab('instant_wish')}
+            >
+              <Gift size={14} /> Instant Occasion Wish
             </button>
           </div>
         </div>
@@ -2049,6 +2097,17 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                                 title={!isOptedIn ? 'Client opted out' : 'Generate tailored sector newsletter'}
                               >
                                 <Sparkles size={12} /> Newsletter
+                              </button>
+
+                              <button
+                                className="dn-btn dn-btn-secondary dn-btn-sm"
+                                onClick={() => {
+                                  setSelectedContactId(c.id);
+                                  setActiveTab('contact_research');
+                                }}
+                                title="Research Company & Industry Context"
+                              >
+                                <Search size={12} /> Research
                               </button>
 
                               <button
@@ -2845,6 +2904,93 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                       </button>
                     </div>
                   </div>
+
+                  {/* Industry-Specific Research & Intelligence (Requirement 5) */}
+                  {wizardCampaignType === 'Newsletter' && (
+                    <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, padding: '12px 14px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, flexWrap: 'wrap', gap: 6 }}>
+                        <span style={{ fontSize: 12.5, fontWeight: 700, color: '#1e40af', display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <Search size={14} color="#2563eb" /> Industry-Specific Intelligence ({wizardSelectedIndustry || 'Technology'})
+                        </span>
+                        <button
+                          type="button"
+                          className="dn-btn dn-btn-secondary dn-btn-sm"
+                          disabled={isLoadingIndustryContext}
+                          onClick={async () => {
+                            setIsLoadingIndustryContext(true);
+                            try {
+                              const sector = wizardSelectedIndustry || 'Technology';
+                              const res = await axios.post(`${API_BASE}/nurture/industry-context`, {
+                                industry: sector
+                              }, { timeout: 25000 });
+                              if (res.data?.success && res.data.context) {
+                                const insightsText = (res.data.context.insights || []).slice(0, 3).map((ins, i) => `Perspective ${i + 1}: ${ins.title} — ${ins.snippet}`).join('\n\n');
+                                const structuredBrief = `Generate an industry-specific executive newsletter for ${sector} enterprise leaders. Focus on verified industry trends:\n\n${insightsText}\n\nStructure:\n- Headline\n- 2-3 actionable insights\n- Why it matters to ${sector}\n- Strategic conclusion & CTA`;
+                                setWizardBrief(structuredBrief);
+                                setWizardResearchedContext(insightsText);
+                                setWizardNewsletterContext(insightsText);
+                                setWizardBriefError(false);
+                                showNotification(`Loaded verified ${sector} industry insights into brief.`);
+                              } else {
+                                const sectorPrompts = {
+                                  Technology: 'FedRAMP Cloud Modernisation, Intelligent Mobility & Supply Chain Automation, Accelerating Enterprise Services Through AI, and Workforce Transformation.',
+                                  Finance: 'Financial Automation, Algorithmic Risk Assessment, Regulatory Compliance Intelligence, and Secure Cloud Infrastructure for FinTech.',
+                                  Healthcare: 'Digital Health Acceleration, Clinical Workflow Automation, Secure Patient Data Governance, and Enterprise Telehealth Intelligence.',
+                                  Education: 'Adaptive Digital Learning Foundations, AI Automation for Academic Operations, Institutional Data Governance, and Next-Gen Campus Technology.'
+                                };
+                                const prompt = sectorPrompts[sector] || sectorPrompts['Technology'];
+                                const defaultIndustryBrief = `Synthesize an industry-specific executive briefing for ${sector} enterprise leaders focusing on: ${prompt}. Include relevant headline, 2-3 insights, why it matters to ${sector}, conclusion, and CTA.`;
+                                setWizardBrief(defaultIndustryBrief);
+                                setWizardBriefError(false);
+                                showNotification(`Populated structured ${sector} industry newsletter framework.`);
+                              }
+                            } catch (e) {
+                              showNotification('Could not load industry research: ' + e.message, true);
+                            } finally {
+                              setIsLoadingIndustryContext(false);
+                            }
+                          }}
+                          style={{ fontSize: 11.5, padding: '4px 10px', height: 'auto', background: '#ffffff' }}
+                        >
+                          <RefreshCw size={12} className={isLoadingIndustryContext ? 'spin-icon' : ''} />
+                          {isLoadingIndustryContext ? 'Fetching Research...' : 'Enrich with Verified Industry Research'}
+                        </button>
+                      </div>
+                      <div style={{ fontSize: 11.5, color: '#3b82f6', lineHeight: 1.5 }}>
+                        Ensures the newsletter is tailored to the recipient's industry ({wizardSelectedIndustry || 'Technology'}) with verified insights, headline, strategic conclusion, and CTA.
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Occasion / Festival Selector (Requirement 2) */}
+                  {wizardCampaignType === 'Festival / Occasion Wish' && (
+                    <div style={{ background: '#fdf4ff', border: '1px solid #f0abfc', borderRadius: 8, padding: '12px 14px' }}>
+                      <label style={{ fontSize: 12.5, fontWeight: 700, color: '#86198f', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                        <Gift size={14} color="#a21caf" /> Regional / Cultural Occasion
+                      </label>
+                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
+                        {['Diwali 2026', 'Pongal', 'Ayudha Pooja', 'Christmas', 'New Year 2027', 'Independence Day'].map(occ => (
+                          <button
+                            key={occ}
+                            type="button"
+                            className={`dn-btn dn-btn-sm ${wizardOccasion === occ ? 'dn-btn-primary' : 'dn-btn-secondary'}`}
+                            onClick={() => {
+                              setWizardOccasion(occ);
+                              setWizardCampaignName(`${occ} Executive Celebration`);
+                              setWizardBrief(`Warm ${occ} greetings celebrating shared milestones and wishing prosperity. Warm, concise, and respectful. No technical newsletter content.`);
+                              setWizardBriefError(false);
+                            }}
+                            style={{ fontSize: 11.5, padding: '4px 10px', height: 'auto' }}
+                          >
+                            {occ}
+                          </button>
+                        ))}
+                      </div>
+                      <div style={{ fontSize: 11, color: '#a21caf' }}>
+                        Wishes are kept warm, professional, respectful, and concise (no product promotion or technical newsletters).
+                      </div>
+                    </div>
+                  )}
 
                   {/* Campaign Brief (Required) */}
                   <div className="dn-form-group">
@@ -4336,6 +4482,69 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
             </div>
           </div>
         )}
+
+        {/* ══════════════════════════════════════════════════════════════════
+            TAB 8: AI TEST ENVIRONMENT
+            ══════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'ai_test' && (
+          <AiTestEnvironmentTab
+            contacts={contacts}
+            apiBase={API_BASE}
+            showNotification={showNotification}
+          />
+        )}
+
+        {/* ══════════════════════════════════════════════════════════════════
+            TAB 9: AI PRODUCT REVIEW
+            ══════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'ai_review' && (
+          <AiProductReviewTab
+            apiBase={API_BASE}
+            showNotification={showNotification}
+          />
+        )}
+
+        {/* ══════════════════════════════════════════════════════════════════
+            TAB 10: CONTACT INTELLIGENCE & RESEARCH
+            ══════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'contact_research' && (
+          <ContactResearchTab
+            contacts={contacts}
+            apiBase={API_BASE}
+            showNotification={showNotification}
+            onUseInCampaign={(researchData, targetContact) => {
+              if (targetContact) {
+                setWizardSelectedContactId(targetContact.id);
+                setWizardSelectedCompany(targetContact.company || '');
+                setWizardSelectedIndustry(targetContact.sector || targetContact.industry || '');
+              }
+              if (researchData?.newsletter_context) {
+                setWizardBrief(prev => (prev ? `${prev}\n\n${researchData.newsletter_context}` : researchData.newsletter_context));
+                setWizardResearchedContext(researchData.newsletter_context);
+                setWizardNewsletterContext(researchData.newsletter_context);
+              }
+              setWizardCampaignType('Newsletter');
+              setWizardStep(3);
+              setActiveTab('create_campaign');
+              showNotification(`Applied research context for ${targetContact?.name || 'contact'} to Campaign Wizard.`);
+            }}
+          />
+        )}
+
+        {/* ══════════════════════════════════════════════════════════════════
+            TAB 11: INSTANT OCCASION WISHES
+            ══════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'instant_wish' && (
+          <InstantOccasionWishTab
+            contacts={contacts}
+            apiBase={API_BASE}
+            showNotification={showNotification}
+            onCampaignDispatched={() => {
+              loadData();
+              setActiveTab('campaigns');
+            }}
+          />
+        )}
       </div>
 
       {/* ── Lead Profile Modal ── */}
@@ -4404,6 +4613,17 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                 onClick={() => setSelectedLead(null)}
               >
                 Close
+              </button>
+              <button
+                className="dn-btn dn-btn-secondary"
+                onClick={() => {
+                  const target = selectedLead;
+                  setSelectedLead(null);
+                  setSelectedContactId(target.id);
+                  setActiveTab('contact_research');
+                }}
+              >
+                <Search size={13} /> Research Contact
               </button>
               <button
                 className="dn-btn dn-btn-primary"

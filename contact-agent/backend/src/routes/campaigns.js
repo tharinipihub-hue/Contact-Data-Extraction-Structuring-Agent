@@ -394,13 +394,28 @@ router.post('/generate', async (req, res) => {
   const unsubUrl = `${unsubBase}/unsubscribe?id=${targetId}`;
   const prefUrl = `${unsubBase}/preferences?id=${targetId}`;
 
+  // Build occasion payload for festival/wish campaigns
+  const occasionService = require('../services/occasionService');
+  const occasionPayloadData = occasion
+    ? occasionService.buildOccasionPayload(occasion, activeContact)
+    : {};
+
+  // Include researched_context and newsletter_context if provided
+  const researchedContext = String(req.body.researched_context || '').trim();
+  const newsletterContext = String(req.body.newsletter_context || '').trim();
+
+  // Build campaign-type specific guidance for Workbench
+  const normalizedType = String(campaign_type || 'newsletter').toLowerCase().replace(/[\s/]/g, '_');
+  const isFestivalCampaign = normalizedType.includes('festival') || normalizedType.includes('wish');
+  const isNewsletterCampaign = normalizedType.includes('newsletter');
+
   const payload = {
     action: 'generate_preview',
     campaign_name: campaign_name || `${activeSector} Campaign: ${brief.slice(0, 40)}`,
     campaign_type: campaign_type || 'newsletter',
     developer_input: developerInput,
     campaign_brief: developerInput,
-    ...(occasion ? { occasion } : {}),
+    ...(occasion ? { occasion, ...occasionPayloadData } : {}),
     sector: activeSector,
     industry: activeSector,
     company: activeContact.company || 'Enterprise Partner',
@@ -410,6 +425,12 @@ router.post('/generate', async (req, res) => {
     name: activeContact.name,
     email: activeContact.email,
     to_email: activeContact.email,
+    // Regional context — only from confirmed contact fields
+    country: activeContact.country || '',
+    state: activeContact.state || '',
+    city: activeContact.city || '',
+    location: activeContact.location || '',
+    recipient_region: occasionPayloadData.recipient_region || activeContact.country || activeContact.location || '',
     target_segment: target_audience || `${activeSector} Sector Clients`,
     channel: channel || 'email',
     from_email: process.env.NURTURE_SENDER_EMAIL || '',
@@ -417,7 +438,16 @@ router.post('/generate', async (req, res) => {
     contacts: recipientContacts,
     active_contact: activeContact,
     unsubscribe_url: unsubUrl,
-    preferences_url: prefUrl
+    preferences_url: prefUrl,
+    // Research/enrichment context — passed only when available
+    ...(researchedContext ? { researched_context: researchedContext } : {}),
+    ...(newsletterContext ? { newsletter_context: newsletterContext } : {}),
+    // Campaign type rules for Workbench
+    campaign_type_rules: isFestivalCampaign
+      ? 'FESTIVAL/OCCASION WISH RULES: Write a warm, professional, concise occasion greeting. Do NOT generate a newsletter. Do NOT include product promotions or technical content. Keep under 150 words. Be culturally respectful.'
+      : isNewsletterCampaign
+        ? `NEWSLETTER RULES: Generate an industry-specific newsletter for the ${activeSector} sector. Include 3-4 curated perspectives with bold headlines and action links. Ground content in verified industry topics.`
+        : ''
   };
 
   try {
@@ -947,3 +977,4 @@ router.put('/:id', (req, res) => {
 });
 
 module.exports = router;
+module.exports.extractWorkbenchAiContent = extractWorkbenchAiContent;

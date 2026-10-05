@@ -13,6 +13,8 @@ services:
         sync: false
       - key: OCR_SPACE_API_KEY
         sync: false
+      - key: TAVILY_API_KEY
+        sync: false
       - key: PUBLIC_APP_URL
         value: https://contact-data-extraction-structuring-agent.onrender.com
     disk:
