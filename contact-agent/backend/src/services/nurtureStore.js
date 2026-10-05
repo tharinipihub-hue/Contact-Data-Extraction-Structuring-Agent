@@ -56,6 +56,27 @@ const INITIAL_CONTACTS = [];
 
 const INITIAL_CAMPAIGNS = [];
 
+function safeWriteJsonSync(filePath, data) {
+  const dir = path.dirname(filePath);
+  fs.mkdirSync(dir, { recursive: true });
+  const content = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+  const tempPath = path.join(dir, `.${path.basename(filePath)}.${Date.now()}.${Math.random().toString(36).slice(2)}.tmp`);
+  try {
+    fs.writeFileSync(tempPath, content, 'utf8');
+    try {
+      fs.renameSync(tempPath, filePath);
+    } catch (renameErr) {
+      // Fallback for cross-device or filesystem link errors (e.g. Docker/Render volume mounts EXDEV)
+      fs.copyFileSync(tempPath, filePath);
+      try { fs.unlinkSync(tempPath); } catch (_) {}
+    }
+  } catch (err) {
+    try { if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath); } catch (_) {}
+    // Direct write fallback as last resort
+    fs.writeFileSync(filePath, content, 'utf8');
+  }
+}
+
 class NurtureStore {
   loadOptOverrides() {
     try {
@@ -69,8 +90,7 @@ class NurtureStore {
 
   saveOptOverrides() {
     try {
-      fs.mkdirSync(NURTURE_DATA_DIR, { recursive: true });
-      fs.writeFileSync(OPT_OVERRIDES_FILE, JSON.stringify(this.optOverrides, null, 2), 'utf8');
+      safeWriteJsonSync(OPT_OVERRIDES_FILE, this.optOverrides);
     } catch (e) {}
   }
 
@@ -89,10 +109,7 @@ class NurtureStore {
   }
 
   saveCampaigns() {
-    fs.mkdirSync(NURTURE_DATA_DIR, { recursive: true });
-    const temporaryFile = `${CAMPAIGNS_FILE}.tmp`;
-    fs.writeFileSync(temporaryFile, JSON.stringify(this.campaigns, null, 2), 'utf8');
-    fs.renameSync(temporaryFile, CAMPAIGNS_FILE);
+    safeWriteJsonSync(CAMPAIGNS_FILE, this.campaigns);
   }
 
   loadSalesHandoffs() {
@@ -101,8 +118,7 @@ class NurtureStore {
 
   saveSalesHandoffs() {
     try {
-      fs.mkdirSync(NURTURE_DATA_DIR, { recursive: true });
-      fs.writeFileSync(SALES_FILE, JSON.stringify(this.salesHandoffs, null, 2), 'utf8');
+      safeWriteJsonSync(SALES_FILE, this.salesHandoffs);
     } catch (e) {}
   }
 
@@ -111,10 +127,7 @@ class NurtureStore {
   }
 
   saveAuditLogs() {
-    fs.mkdirSync(NURTURE_DATA_DIR, { recursive: true });
-    const temporaryFile = `${AUDIT_LOGS_FILE}.tmp`;
-    fs.writeFileSync(temporaryFile, JSON.stringify(this.auditLogs, null, 2), 'utf8');
-    fs.renameSync(temporaryFile, AUDIT_LOGS_FILE);
+    safeWriteJsonSync(AUDIT_LOGS_FILE, this.auditLogs);
   }
 
   constructor() {
@@ -211,15 +224,12 @@ class NurtureStore {
     const contact = this.contacts.find(c => c.id === id);
     if (!contact) return null;
     updater(contact);
-    try { fs.mkdirSync(NURTURE_DATA_DIR, { recursive: true }); fs.writeFileSync(CONTACTS_FILE, JSON.stringify(this.contacts, null, 2)); } catch (_) {}
+    try { safeWriteJsonSync(CONTACTS_FILE, this.contacts); } catch (_) {}
     return contact;
   }
 
   saveContacts() {
-    fs.mkdirSync(NURTURE_DATA_DIR, { recursive: true });
-    const temporaryFile = `${CONTACTS_FILE}.tmp`;
-    fs.writeFileSync(temporaryFile, JSON.stringify(this.contacts, null, 2));
-    fs.renameSync(temporaryFile, CONTACTS_FILE);
+    safeWriteJsonSync(CONTACTS_FILE, this.contacts);
   }
 
   getContacts() {
@@ -246,7 +256,7 @@ class NurtureStore {
     if (this.optEvents.length > 50) {
       this.optEvents = this.optEvents.slice(0, 50);
     }
-    try { fs.mkdirSync(NURTURE_DATA_DIR, { recursive: true }); fs.writeFileSync(path.join(NURTURE_DATA_DIR, 'opt_events.json'), JSON.stringify(this.optEvents, null, 2)); } catch (_) {}
+    try { safeWriteJsonSync(path.join(NURTURE_DATA_DIR, 'opt_events.json'), this.optEvents); } catch (_) {}
   }
 
   toggleContactOptIn(id, explicitOptIn, extraInfo = {}) {
@@ -339,7 +349,7 @@ class NurtureStore {
       if (contact.id) this.optOverrides[contact.id] = contact.opt_in;
       if (contact.name) this.optOverrides[contact.name] = contact.opt_in;
       this.saveOptOverrides();
-      try { fs.mkdirSync(NURTURE_DATA_DIR, { recursive: true }); fs.writeFileSync(CONTACTS_FILE, JSON.stringify(this.contacts, null, 2)); } catch (_) {}
+      try { safeWriteJsonSync(CONTACTS_FILE, this.contacts); } catch (_) {}
       return contact;
     }
     return null;
@@ -462,7 +472,19 @@ class NurtureStore {
   }
 
   deleteCampaign(id) {
-    const idx = this.campaigns.findIndex(c => c.id === id);
+    if (!id) return null;
+    const rawId = String(id).trim();
+    let decodedId = rawId;
+    try {
+      decodedId = decodeURIComponent(rawId).trim();
+    } catch (_) {}
+
+    const idx = this.campaigns.findIndex(c => {
+      const cid = String(c?.id || '').trim();
+      const ccid = String(c?.campaign_id || '').trim();
+      return cid === rawId || cid === decodedId || ccid === rawId || ccid === decodedId;
+    });
+
     if (idx !== -1) {
       const [removed] = this.campaigns.splice(idx, 1);
       try {
@@ -474,10 +496,18 @@ class NurtureStore {
 
       // Clean up client engagements in contacts without deleting contacts
       let contactsModified = false;
+      const removedName = typeof removed.name === 'string' ? removed.name.trim().toLowerCase() : '';
+      const removedId = typeof removed.id === 'string' ? removed.id.trim() : (typeof removed.campaign_id === 'string' ? removed.campaign_id.trim() : '');
+
       this.contacts.forEach(contact => {
         if (Array.isArray(contact.client_engagements)) {
           const prevLen = contact.client_engagements.length;
-          contact.client_engagements = contact.client_engagements.filter(e => e.campaign_name !== removed.name);
+          contact.client_engagements = contact.client_engagements.filter(e => {
+            if (!e) return false;
+            if (e.campaign_id && removedId && String(e.campaign_id).trim() === removedId) return false;
+            if (removedName && typeof e.campaign_name === 'string' && e.campaign_name.trim().toLowerCase() === removedName) return false;
+            return true;
+          });
           if (contact.client_engagements.length !== prevLen) contactsModified = true;
         }
       });
@@ -488,8 +518,8 @@ class NurtureStore {
       try {
         this.addAuditLog({
           event_type: 'Campaign Deleted',
-          contact_name: removed.name || 'Campaign',
-          details: `Campaign "${removed.name}" (${removed.id}) deleted.`,
+          contact_name: (typeof removed.name === 'string' ? removed.name : 'Campaign'),
+          details: `Campaign "${removed.name || removed.id}" (${removed.id || removed.campaign_id}) deleted.`,
           status: 'Deleted'
         });
       } catch (_) {}

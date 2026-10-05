@@ -422,19 +422,33 @@ export default function SnsTemplateSystemTab({
         return;
       }
       {
+        if (preview.campaignName) setCampaignName(preview.campaignName);
         if (preview.subjectLine) setSubjectLine(preview.subjectLine);
+        if (preview.headerTitle) setHeaderTitle(preview.headerTitle);
+        if (preview.headerSubtitle) setHeaderSubtitle(preview.headerSubtitle);
+        if (preview.greetingType) setGreetingType(preview.greetingType);
         if (preview.heroHeadline) setHeroHeadline(preview.heroHeadline);
         if (preview.heroBody) setHeroBody(preview.heroBody);
-        if (preview.articles) setBlocks(current => preview.articles.map((article, index) => ({
-          ...(current[index] || {}),
-          headline: article.headline || current[index]?.headline || '',
-          body: article.body || current[index]?.body || '',
-          image: article.image || current[index]?.image || '',
-          ctaText: article.ctaText || current[index]?.ctaText || '',
-          ctaUrl: article.ctaUrl || current[index]?.ctaUrl || '',
-          id: current[index]?.id || `workbench-${index + 1}`
-        })));
-        if (preview.synthesisPoints) setFoundations(preview.synthesisPoints);
+        if (preview.articles && preview.articles.length > 0) {
+          setBlocks(current => preview.articles.map((article, index) => ({
+            ...(current[index] || {}),
+            headline: article.headline || current[index]?.headline || '',
+            body: article.body || current[index]?.body || '',
+            image: article.image || current[index]?.image || '',
+            ctaText: article.ctaText || current[index]?.ctaText || '',
+            ctaUrl: article.ctaUrl || current[index]?.ctaUrl || '',
+            id: current[index]?.id || `workbench-${index + 1}`
+          })));
+        }
+        if (preview.foundationsTitle) setFoundationsTitle(preview.foundationsTitle);
+        if (preview.synthesisPoints && preview.synthesisPoints.length > 0) setFoundations(preview.synthesisPoints);
+        if (preview.closingText) setClosingText(preview.closingText);
+        if (preview.promoBanner && Object.keys(preview.promoBanner).length > 0) {
+          setPromoBanner(current => ({
+            ...current,
+            ...preview.promoBanner
+          }));
+        }
         setWorkbenchResponseStatus(res.data?.workbench_http_status || 'success');
         setAiSuccess(`Synthesized editorial copy for "${topicToUse}" via SNS Workbench.`);
         if (showNotification) {

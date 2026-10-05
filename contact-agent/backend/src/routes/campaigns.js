@@ -31,10 +31,22 @@ router.get('/audit-logs', (req, res) => {
 // Delete a campaign
 router.delete('/:id', (req, res) => {
   try {
-    const deleted = nurtureStore.deleteCampaign(req.params.id);
+    const rawId = req.params.id;
+    if (!rawId || !String(rawId).trim()) {
+      return res.status(400).json({ success: false, error: 'Campaign ID is required for deletion.' });
+    }
+    const cleanId = String(rawId).trim();
+    const deleted = nurtureStore.deleteCampaign(cleanId);
     if (!deleted) return res.status(404).json({ success: false, error: 'Campaign not found' });
-    res.json({ success: true, message: 'Campaign deleted successfully', campaign: deleted, campaigns: nurtureStore.getCampaigns(), stats: nurtureStore.getStats() });
+    res.json({
+      success: true,
+      message: 'Campaign deleted successfully',
+      campaign: deleted,
+      campaigns: nurtureStore.getCampaigns(),
+      stats: nurtureStore.getStats()
+    });
   } catch (err) {
+    console.error(`[Campaigns DELETE /:id Error]:`, err.message);
     res.status(500).json({ success: false, error: `Could not delete campaign: ${err.message}` });
   }
 });
@@ -225,6 +237,52 @@ function personalizeContentForRecipient(rawBody, rawSubject, recipient, allConta
   return { body, subject, recipientUnsubUrl, recipientPrefUrl };
 }
 
+function normalizeExtractedFields(src, defaultSummary = 'Generated via SNS Workbench') {
+  if (!src || typeof src !== 'object') return null;
+  const subject = typeof src.subject === 'string' ? src.subject.trim() : '';
+  let email_body = typeof src.email_body === 'string' ? src.email_body.trim() : '';
+
+  const heroHeadline = src.hero_headline || src.heroHeadline || src.hero?.headline || '';
+  const heroBody = src.hero_body || src.heroBody || src.hero?.body || (Array.isArray(src.hero?.paragraphs) ? src.hero.paragraphs.join('\n\n') : '');
+  const rawBlocks = src.content_blocks || src.blocks || src.articles;
+
+  if (!email_body && (heroHeadline || (Array.isArray(rawBlocks) && rawBlocks.length))) {
+    const heroPart = heroHeadline ? `<h2>${heroHeadline}</h2>\n<p>${heroBody}</p>` : '';
+    const blocksPart = (Array.isArray(rawBlocks) ? rawBlocks : []).map(b => `<p><strong>Headline: ${b.headline || b.title || ''}</strong></p>\n<p>${b.body || b.paragraph || ''}</p>${(b.cta_label || b.ctaText || b.cta_text) ? `\n<p><a href="${b.cta_url || b.ctaUrl || 'https://www.snssquare.com/insights'}">${b.cta_label || b.ctaText || b.cta_text} &rarr;</a></p>` : ''}`).join('\n\n');
+    email_body = [heroPart, blocksPart].filter(Boolean).join('\n\n');
+  }
+
+  if (!subject && !email_body) return null;
+
+  const result = {
+    subject,
+    email_body,
+    personalization_summary: src.personalization_summary || defaultSummary
+  };
+
+  if (src.campaign_name || src.campaignName) result.campaign_name = src.campaign_name || src.campaignName;
+  const headerTitle = src.header_title || src.headerTitle || src.header?.title;
+  if (headerTitle) result.header_title = headerTitle;
+  const headerSubtitle = src.header_subtitle || src.headerSubtitle || src.header?.subtitle;
+  if (headerSubtitle) result.header_subtitle = headerSubtitle;
+  if (heroHeadline) result.hero_headline = heroHeadline;
+  if (heroBody) result.hero_body = heroBody;
+  if (Array.isArray(src.hero?.paragraphs)) result.hero_paragraphs = src.hero.paragraphs;
+  if (Array.isArray(rawBlocks)) result.content_blocks = rawBlocks;
+  const foundationsTitle = src.foundations_title || src.foundationsTitle;
+  if (foundationsTitle) result.foundations_title = foundationsTitle;
+  const foundations = src.foundations || src.synthesis_points || src.synthesisPoints;
+  if (Array.isArray(foundations)) result.foundations = foundations;
+  const closingText = src.closing_text || src.closingText;
+  if (closingText) result.closing_text = closingText;
+  const greetingType = src.greeting_type || src.greetingType;
+  if (greetingType) result.greeting_type = greetingType;
+  const promoBanner = src.promo_banner || src.promoBanner;
+  if (promoBanner && typeof promoBanner === 'object') result.promo_banner = promoBanner;
+
+  return result;
+}
+
 function extractWorkbenchAiContent(data) {
   if (!data) return null;
 
@@ -244,7 +302,7 @@ function extractWorkbenchAiContent(data) {
       value.forEach(item => queue.push(item?.json || item));
       continue;
     }
-    ['output', 'items', 'json', 'body', 'data', 'result', 'content', 'nurtured_contact', 'workbench_content', 'preview'].forEach(key => {
+    ['output', 'items', 'json', 'body', 'data', 'result', 'content', 'nurtured_contact', 'workbench_content', 'preview', 'structured_content'].forEach(key => {
       const nested = value[key];
       if (nested && typeof nested === 'object') queue.push(nested);
     });
@@ -281,26 +339,16 @@ function extractWorkbenchAiContent(data) {
 
     try {
       const parsed = JSON.parse(cleaned);
-      if (parsed && (parsed.subject || parsed.email_body)) {
-        return {
-          subject: (parsed.subject || '').trim(),
-          email_body: (parsed.email_body || '').trim(),
-          personalization_summary: parsed.personalization_summary || 'Generated via SNS Workbench Groq AI'
-        };
-      }
+      const normalized = normalizeExtractedFields(parsed, 'Generated via SNS Workbench Groq AI');
+      if (normalized) return normalized;
     } catch (e) {
       // Try regex search for embedded JSON
       const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         try {
           const parsed = JSON.parse(jsonMatch[0]);
-          if (parsed && (parsed.subject || parsed.email_body)) {
-            return {
-              subject: (parsed.subject || '').trim(),
-              email_body: (parsed.email_body || '').trim(),
-              personalization_summary: parsed.personalization_summary || 'Generated via SNS Workbench Groq AI'
-            };
-          }
+          const normalized = normalizeExtractedFields(parsed, 'Generated via SNS Workbench Groq AI');
+          if (normalized) return normalized;
         } catch (err) {}
       }
     }
@@ -311,11 +359,11 @@ function extractWorkbenchAiContent(data) {
       const subj = subjectMatch[1].trim();
       const body = groqRaw.replace(/^(?:Subject|Title):\s*.+$/im, '').trim();
       if (body) {
-        return {
+        return normalizeExtractedFields({
           subject: subj,
           email_body: body,
           personalization_summary: 'Generated via SNS Workbench Groq AI'
-        };
+        });
       }
     }
   }
@@ -323,15 +371,8 @@ function extractWorkbenchAiContent(data) {
   // 2. Check direct / structured fields in Workbench response
   for (const src of payloads) {
     if (src && typeof src === 'object' && src.success !== false && src.status !== 'error' && !src.error) {
-      const subject = src.subject;
-      const email_body = src.email_body;
-      if (subject && email_body && typeof subject === 'string' && typeof email_body === 'string' && subject.trim() && email_body.trim()) {
-        return {
-          subject: subject.trim(),
-          email_body: email_body.trim(),
-          personalization_summary: src.personalization_summary || 'Generated via SNS Workbench workflow'
-        };
-      }
+      const normalized = normalizeExtractedFields(src, 'Generated via SNS Workbench workflow');
+      if (normalized) return normalized;
     }
   }
 
@@ -529,6 +570,21 @@ router.post('/generate', async (req, res) => {
         company: 'SNS Square'
       });
 
+      const structuredContent = {
+        campaign_name: extracted.campaign_name,
+        subject: cleanSubject,
+        header_title: extracted.header_title,
+        header_subtitle: extracted.header_subtitle,
+        hero_headline: extracted.hero_headline,
+        hero_body: extracted.hero_body,
+        content_blocks: extracted.content_blocks,
+        foundations_title: extracted.foundations_title,
+        foundations: extracted.foundations,
+        closing_text: extracted.closing_text,
+        greeting_type: extracted.greeting_type,
+        promo_banner: extracted.promo_banner
+      };
+
       const previewData = {
         ...((result.data?.nurtured_contact || result.data?.result || result.data) || {}),
         subject: cleanSubject,
@@ -539,7 +595,8 @@ router.post('/generate', async (req, res) => {
         personalization_summary: extracted.personalization_summary || 'Generated via SNS Workbench',
         content_source: 'workbench',
         workbench_http_status: result.httpStatus,
-        workbench_content: extracted
+        workbench_content: extracted,
+        structured_content: structuredContent
       };
 
       const generatedCampaign = {
@@ -585,6 +642,7 @@ router.post('/generate', async (req, res) => {
         content_source: 'workbench',
         targetUrl: result.targetUrl,
         preview: previewData,
+        structured_content: structuredContent,
         campaign: generatedCampaign,
         campaign_data: result.data,
         workbench_http_status: result.httpStatus

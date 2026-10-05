@@ -81,6 +81,72 @@ async function run() {
     assert.strictEqual(normalizeWorkbenchTemplateContent({ error: 'Webhook not found or workflow inactive' }), null);
     console.log('  ✓ Actual response content is mapped into existing fields; missing promotional content stays absent');
 
+    // Test structured JSON response extraction and full editorial field population
+    const structuredFixture = {
+      choices: [{
+        message: {
+          content: JSON.stringify({
+            subject: 'AI & Cloud Infrastructure 2026 | Weekly Scoop',
+            campaign_name: 'SNS Square Cloud Newsletter',
+            header_title: 'Your Weekly GCC & AI Scoop',
+            header_subtitle: 'Enterprise Edition',
+            greeting_type: 'editorial',
+            hero_headline: 'Accelerating Autonomous Enterprise Infrastructure',
+            hero_body: 'Autonomous platforms are transforming delivery velocity.',
+            content_blocks: [
+              {
+                headline: 'FedRAMP Sovereign Cloud Foundation',
+                paragraph: 'Multi-region architectures provide compliance guarantees.',
+                image_url: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31',
+                cta_label: 'Explore FedRAMP Blueprints',
+                cta_url: 'https://www.snssquare.com/insights'
+              }
+            ],
+            foundations_title: 'Key Foundations for Enterprise Scale:',
+            foundations: [
+              'Zero-trust security mesh architecture',
+              'Deterministic multi-agent execution'
+            ],
+            closing_text: 'Built for enterprise execution by SNS Square.'
+          })
+        }
+      }]
+    };
+
+    const structuredExtracted = extractWorkbenchAiContent(structuredFixture);
+    assert(structuredExtracted, 'Structured Groq output must be extracted');
+    assert.strictEqual(structuredExtracted.subject, 'AI & Cloud Infrastructure 2026 | Weekly Scoop');
+    assert.strictEqual(structuredExtracted.header_title, 'Your Weekly GCC & AI Scoop');
+    assert.strictEqual(structuredExtracted.hero_headline, 'Accelerating Autonomous Enterprise Infrastructure');
+    assert.strictEqual(structuredExtracted.content_blocks.length, 1);
+    assert.strictEqual(structuredExtracted.foundations.length, 2);
+
+    const structuredNormalized = normalizeWorkbenchTemplateContent({
+      structured_content: structuredExtracted,
+      preview: {
+        subject: structuredExtracted.subject,
+        body_text_only: structuredExtracted.email_body
+      }
+    });
+    assert.strictEqual(structuredNormalized.subjectLine, 'AI & Cloud Infrastructure 2026 | Weekly Scoop');
+    assert.strictEqual(structuredNormalized.headerTitle, 'Your Weekly GCC & AI Scoop');
+    assert.strictEqual(structuredNormalized.headerSubtitle, 'Enterprise Edition');
+    assert.strictEqual(structuredNormalized.greetingType, 'editorial');
+    assert.strictEqual(structuredNormalized.heroHeadline, 'Accelerating Autonomous Enterprise Infrastructure');
+    assert.strictEqual(structuredNormalized.heroBody, 'Autonomous platforms are transforming delivery velocity.');
+    assert.strictEqual(structuredNormalized.articles.length, 1);
+    assert.strictEqual(structuredNormalized.articles[0].headline, 'FedRAMP Sovereign Cloud Foundation');
+    assert.strictEqual(structuredNormalized.articles[0].body, 'Multi-region architectures provide compliance guarantees.');
+    assert.strictEqual(structuredNormalized.articles[0].ctaText, 'Explore FedRAMP Blueprints');
+    assert.strictEqual(structuredNormalized.articles[0].ctaUrl, 'https://www.snssquare.com/insights');
+    assert.strictEqual(structuredNormalized.foundationsTitle, 'Key Foundations for Enterprise Scale:');
+    assert.deepStrictEqual(structuredNormalized.synthesisPoints, [
+      'Zero-trust security mesh architecture',
+      'Deterministic multi-agent execution'
+    ]);
+    assert.strictEqual(structuredNormalized.closingText, 'Built for enterprise execution by SNS Square.');
+    console.log('  ✓ Structured Workbench JSON populates complete editorial form fields without hallucination');
+
     const approvedHtml = '<table><tr><td>Dear {{first_name}}, {{company}} — {{industry}} / {{client_name}}</td></tr></table>';
     const personalized = personalizeContentForRecipient(approvedHtml, 'Update for {{company}}', {
       id: 'contact-1', name: 'Arjun Mehta', company: 'Example & Co', sector: 'Technology'

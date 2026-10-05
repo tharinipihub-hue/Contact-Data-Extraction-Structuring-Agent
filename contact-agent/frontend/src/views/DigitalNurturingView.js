@@ -1352,13 +1352,21 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
   };
 
   const handleDeleteCampaign = async (campaign) => {
-    if (!window.confirm(`Delete campaign "${campaign.name}"? This will permanently remove its campaign history.`)) return;
-    setDeletingCampaignId(campaign.id);
+    if (!campaign) return;
+    const campaignId = campaign.id || campaign.campaign_id;
+    if (!campaignId) {
+      showNotification('Cannot delete campaign: Missing campaign ID.', true);
+      return;
+    }
+    const campaignName = campaign.name || 'Selected Campaign';
+    if (!window.confirm(`Delete campaign "${campaignName}"? This will permanently remove its campaign history.`)) return;
+    setDeletingCampaignId(campaignId);
     try {
-      const response = await axios.delete(`${API_BASE}/campaigns/${encodeURIComponent(campaign.id)}`, { timeout: 10000 });
+      const response = await axios.delete(`${API_BASE}/campaigns/${encodeURIComponent(campaignId)}`, { timeout: 10000 });
       if (!response.data?.success) throw new Error(response.data?.error || 'The backend did not confirm deletion.');
+      setCampaigns(prev => prev.filter(c => c.id !== campaignId && c.campaign_id !== campaignId));
       await loadData();
-      showNotification(`Campaign "${campaign.name}" deleted.`);
+      showNotification(`Campaign "${campaignName}" deleted.`);
     } catch (err) {
       showNotification(`Could not delete campaign: ${err.response?.data?.error || err.message}`, true);
     } finally {
