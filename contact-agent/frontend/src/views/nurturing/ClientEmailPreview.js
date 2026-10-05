@@ -18,7 +18,7 @@ import {
  * Enterprise Client-Facing Email Preview Component
  * 
  * Guarantees:
- *  1. Accepts either bodyHtml or emailBody, recipient or contact, contentVersion or version.
+ *  1. Accepts the canonical bodyHtml/recipient/contentVersion contract.
  *  2. HTML is securely sanitized using DOMPurify with rich email table, image, and style support.
  *  3. Visually resembles a real corporate email client (Gmail / Outlook Standard).
  *  4. Provides an interactive "View HTML" source viewer with Copy to Clipboard.
@@ -27,14 +27,11 @@ import {
 export default function ClientEmailPreview({
   subject = '',
   bodyHtml = '',
-  emailBody = '',
   recipient = null,
-  contact = null,
   senderName = 'SNS Square Enterprise Client Partnerships',
   senderEmail = 'nurture@snssquare.com',
   dateString = 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
   contentVersion = 'v1',
-  version = '',
   allowRawView = true,
   campaignName = '',
   campaignType = ''
@@ -42,10 +39,9 @@ export default function ClientEmailPreview({
   const [showRawHtml, setShowRawHtml] = useState(false);
   const [copiedHtml, setCopiedHtml] = useState(false);
 
-  // Normalize inputs across both property naming conventions
-  const effectiveRecipient = recipient || contact || null;
-  const effectiveVersion = version || contentVersion || 'v1';
-  let rawBody = String(bodyHtml || emailBody || '').trim();
+  const effectiveRecipient = recipient || null;
+  const effectiveVersion = contentVersion || 'v1';
+  let rawBody = typeof bodyHtml === 'string' ? bodyHtml.trim() : '';
 
   // If content has escaped HTML entities like &lt;p&gt; or &lt;div&gt;, decode them first
   if (/&lt;\/?[a-z][\s\S]*?&gt;/i.test(rawBody)) {
@@ -83,8 +79,10 @@ export default function ClientEmailPreview({
       'width', 'height', 'align', 'valign', 'border', 'cellpadding',
       'cellspacing', 'title', 'bgcolor', 'colspan', 'rowspan'
     ],
-    ADD_ATTR: ['target']
+    ADD_ATTR: ['target'],
+    FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'form']
   });
+  const finalHtml = sanitizedHtml;
 
   const recipientName = effectiveRecipient?.name || (effectiveRecipient?.first_name ? `${effectiveRecipient.first_name} ${effectiveRecipient.last_name || ''}`.trim() : 'Valued Client');
   const recipientEmail = effectiveRecipient?.email || 'client@organization.com';
@@ -94,7 +92,7 @@ export default function ClientEmailPreview({
   const handleCopyHtml = async () => {
     try {
       if (typeof navigator !== 'undefined' && navigator.clipboard) {
-        await navigator.clipboard.writeText(cleanHtmlToSanitize);
+        await navigator.clipboard.writeText(rawBody);
         setCopiedHtml(true);
         setTimeout(() => setCopiedHtml(false), 2500);
       }
@@ -103,7 +101,7 @@ export default function ClientEmailPreview({
     }
   };
 
-  const isBodyEmpty = !sanitizedHtml || sanitizedHtml.trim() === '';
+  const isBodyEmpty = !finalHtml || finalHtml.trim() === '';
 
   return (
     <div style={{
@@ -209,13 +207,13 @@ export default function ClientEmailPreview({
           }}>
             <AlertTriangle size={32} color="#d97706" style={{ margin: '0 auto 10px auto', display: 'block' }} />
             <div style={{ fontWeight: 700, fontSize: 15 }}>
-              Unable to Render Email Preview
+              Unable to render email preview
             </div>
             <div style={{ fontSize: 13, color: '#b45309', marginTop: 6, lineHeight: 1.5 }}>
               The final campaign content is currently empty. Please return to the <strong>Customize</strong> tab to verify headlines, body copy, or generate content via SNS Workbench.
             </div>
             <div style={{ marginTop: 14, fontSize: 11.5, color: '#78350f', background: '#fef3c7', padding: '8px 12px', borderRadius: 6, display: 'inline-block' }}>
-              Diagnostic check: Template selected: {campaignName || 'Yes'} &bull; Recipient: {recipientName} &bull; HTML payload: Empty
+              {campaignName ? `Campaign: ${campaignName} • ` : ''}Content version: {effectiveVersion} • HTML payload is empty after sanitization
             </div>
           </div>
         ) : showRawHtml ? (
@@ -247,13 +245,13 @@ export default function ClientEmailPreview({
               fontFamily: 'SFMono-Regular, Menlo, Monaco, Consolas, monospace',
               lineHeight: 1.5
             }}>
-              {cleanHtmlToSanitize}
+              {rawBody}
             </pre>
           </div>
         ) : (
           <div
             className="dn-rendered-email-frame"
-            dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
+            dangerouslySetInnerHTML={{ __html: finalHtml }}
             style={{
               width: '100%',
               display: 'flex',

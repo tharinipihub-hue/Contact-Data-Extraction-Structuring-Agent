@@ -242,6 +242,11 @@ function runTemplateTests() {
       assert(typeof html === 'string', `${tmpl.name} output must be string`);
       assert(html.length > 500, `${tmpl.name} HTML length ${html.length} must exceed 500 chars`);
       assert(!html.includes('{{company}}'), `${tmpl.name} should interpolate {{company}}`);
+      assert(html.includes('<table'), `${tmpl.name} should use email table layout`);
+      assert(html.includes('SNS SQUARE'), `${tmpl.name} should contain SNS Square branding`);
+      assert(html.includes('https://contact-data-extraction-structuring-agent.onrender.com/sns-square-logo.png'), `${tmpl.name} should reference the supplied SNS Square logo`);
+      assert(html.includes('unsubscribe'), `${tmpl.name} should contain compliance guidance`);
+      assert(html.includes('#064EE3'), `${tmpl.name} should use the confirmed SNS header color`);
     }
     console.log('  ✓ All 5 templates generate complete HTML exceeding 500 characters');
     console.log('  ✓ Zero unrendered placeholder tags in generated markup');
@@ -257,36 +262,29 @@ function runTemplateTests() {
       template: TEMPLATES[0],
       recipient: MOCK_CONTACTS[0]
     });
-    // Check 4-color logo borders
-    assert(html.includes('border-top-color: #f59e0b') || html.includes('#f59e0b'), 'Logo gold border');
-    assert(html.includes('border-right-color: #10b981') || html.includes('#10b981'), 'Logo green border');
-    assert(html.includes('border-bottom-color: #06b6d4') || html.includes('#06b6d4'), 'Logo cyan border');
+    assert(html.includes('bgcolor="#064EE3"'), 'Brand header color');
     assert(html.includes('SNS SQUARE'), 'Brand wordmark SNS SQUARE');
-    assert(html.includes('Embassy TechVillage'), 'Embassy TechVillage Bengaluru address present');
-    assert(html.includes('&copy; 2026 SNS Square'), 'Copyright notice present');
-    console.log('  ✓ Multi-color SNS Square logo embedded');
-    console.log('  ✓ Official Embassy TechVillage Bengaluru office address present');
-    console.log('  ✓ 2026 Copyright and enterprise footer verified');
+    assert(html.includes('unsubscribe'), 'Compliance/unsubscribe information present');
+    console.log('  ✓ SNS Square wordmark and confirmed brand header embedded');
+    console.log('  ✓ Compliance footer and unsubscribe guidance verified');
     passed++;
   } catch (err) {
     console.error('  ✗ TEST 3 Failed:', err.message);
   }
 
-  // 4. Category-Specific Gradients
-  console.log('\nTEST 4: Category-specific headers applied accurately...');
+  // 4. Shared SNS Square blue header
+  console.log('\nTEST 4: All categories use the confirmed SNS Square header color...');
   try {
     const newsletterHtml = buildSnsTemplateEmailHtml({ template: TEMPLATES[0], recipient: MOCK_CONTACTS[0] });
-    assert(newsletterHtml.includes('#1e3a8a') || newsletterHtml.includes('#2563eb'), 'Newsletter blue gradient');
+    assert(newsletterHtml.includes('bgcolor="#064EE3"'), 'Newsletter confirmed blue header');
 
     const festivalHtml = buildSnsTemplateEmailHtml({ template: TEMPLATES[1], recipient: MOCK_CONTACTS[0] });
-    assert(festivalHtml.includes('#701a75') || festivalHtml.includes('#a21caf'), 'Festival purple/fuchsia gradient');
+    assert(festivalHtml.includes('bgcolor="#064EE3"'), 'Occasion confirmed blue header');
 
     const eventHtml = buildSnsTemplateEmailHtml({ template: TEMPLATES[3], recipient: MOCK_CONTACTS[0] });
-    assert(eventHtml.includes('#065f46') || eventHtml.includes('#059669'), 'Event emerald gradient');
+    assert(eventHtml.includes('bgcolor="#064EE3"'), 'Event confirmed blue header');
 
-    console.log('  ✓ Newsletter header rendered in executive deep navy/blue');
-    console.log('  ✓ Festival greeting rendered in celebratory royal purple');
-    console.log('  ✓ Event invitation rendered in executive emerald/teal');
+    console.log('  ✓ All five category structures share the #064EE3 brand header');
     passed++;
   } catch (err) {
     console.error('  ✗ TEST 4 Failed:', err.message);
@@ -301,7 +299,7 @@ function runTemplateTests() {
     });
     assert(html.includes('FedRAMP Cloud Modernisation'), 'Article headline present');
     assert(html.includes('Build secure digital foundations'), 'CTA text present');
-    assert(html.includes('Data & Agentic AI Services. Built for Execution.'), 'Promotional headline present');
+    assert(html.includes('Data &amp; Agentic AI Services. Built for Execution.'), 'Promotional headline present');
     assert(html.includes('GCC PARTNER') || html.includes('Trusted Build and Operational Partner'), 'GCC Partner badge present');
     console.log('  ✓ Curated editorial article blocks with actionable CTA buttons rendered');
     console.log('  ✓ Strategic foundations synthesis section verified');
@@ -318,7 +316,8 @@ function runTemplateTests() {
       template: TEMPLATES[0],
       recipient: MOCK_CONTACTS[0]
     });
-    const sanitized = purify.sanitize(rawHtml, {
+    const hostileHtml = rawHtml.replace('</table>', '<script>alert(1)</script><img src="x" onerror="alert(1)"></table>');
+    const sanitized = purify.sanitize(hostileHtml, {
       ALLOWED_TAGS: [
         'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'strike',
         'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li',
@@ -336,7 +335,9 @@ function runTemplateTests() {
     assert(sanitized.includes('<table'), 'Table structure preserved');
     assert(sanitized.includes('<img'), 'Images preserved');
     assert(sanitized.includes('SNS SQUARE'), 'Branding preserved');
-    console.log('  ✓ DOMPurify preserves 640px table, gradient styles, and Unsplash images');
+    assert(!/<script|onerror\s*=/i.test(sanitized), 'Executable markup and event handlers removed');
+    assert(sanitized.includes('bgcolor="#064EE3"'), 'Confirmed brand header color preserved');
+    console.log('  ✓ DOMPurify preserves 640px table, inline styles, and template images');
     console.log('  ✓ Zero raw markup leakage or blank output after sanitization');
     passed++;
   } catch (err) {

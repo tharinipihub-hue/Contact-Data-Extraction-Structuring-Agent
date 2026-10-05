@@ -268,6 +268,38 @@ const SNS_TEMPLATES_CATALOG = [
   }
 ];
 
+// Workbench output can be wrapped in response/result/data/output objects. Extract
+// only explicitly returned fields; template defaults remain responsible for gaps.
+function normalizeWorkbenchTemplateContent(input) {
+  const queue = [input];
+  const visited = new Set();
+  let result = {};
+  while (queue.length) {
+    const value = queue.shift();
+    if (!value || typeof value !== 'object' || visited.has(value)) continue;
+    visited.add(value);
+    const candidate = value.preview && typeof value.preview === 'object' ? value.preview : value;
+    const pickText = (...keys) => keys.map(key => candidate[key]).find(v => typeof v === 'string' && v.trim());
+    result = {
+      ...result,
+      subjectLine: result.subjectLine || pickText('subjectLine', 'subject_line', 'subject'),
+      heroHeadline: result.heroHeadline || pickText('heroHeadline', 'hero_headline', 'headline', 'title'),
+      heroBody: result.heroBody || pickText('heroBody', 'hero_body', 'introduction', 'intro', 'body_text_only', 'email_body', 'body'),
+      articles: result.articles || (Array.isArray(candidate.articles) ? candidate.articles.map(a => ({
+        headline: a.headline || a.title || '', body: a.summary || a.body || a.description || '',
+        ctaText: a.ctaText || a.cta_label || '', ctaUrl: a.ctaUrl || a.cta_url || ''
+      })).filter(a => a.headline || a.body) : null),
+      synthesisPoints: result.synthesisPoints || (Array.isArray(candidate.synthesisPoints || candidate.synthesis_points || candidate.key_takeaways)
+        ? (candidate.synthesisPoints || candidate.synthesis_points || candidate.key_takeaways).filter(v => typeof v === 'string') : null),
+      promotionalBanner: result.promotionalBanner || candidate.promotionalBanner || candidate.promotional_banner || null,
+      responseStatus: result.responseStatus || (candidate.status ? String(candidate.status) : 'success')
+    };
+    ['data', 'result', 'output', 'response', 'content'].forEach(key => { if (candidate[key]) queue.push(candidate[key]); });
+    if (candidate.preview && typeof candidate.preview === 'object') queue.push(candidate.preview);
+  }
+  return result;
+}
+
 export default function SnsTemplateSystemTab({
   contacts = [],
   apiBase = '/api',
@@ -311,6 +343,7 @@ export default function SnsTemplateSystemTab({
   const [isAiGenerating, setIsAiGenerating] = useState(false);
   const [aiError, setAiError] = useState(null);
   const [aiSuccess, setAiSuccess] = useState(null);
+  const [workbenchResponseStatus, setWorkbenchResponseStatus] = useState('not_requested');
 
   const previewContact = useMemo(() => {
     return contacts.find(c => c.id === previewContactId) || contacts[0] || {
@@ -346,7 +379,7 @@ export default function SnsTemplateSystemTab({
     setAiTopic(template.heroHeadline || template.name);
     setAiError(null);
     setAiSuccess(null);
-    setWizardStep(stepToOpen);
+    setWizardStep(stepToOpen === 2 ? 1 : stepToOpen);
   };
 
   // Synthesize content via SNS Workbench AI without replacing brand visual structure
@@ -371,16 +404,31 @@ export default function SnsTemplateSystemTab({
       };
 
       const res = await axios.post(`${apiBase}/campaigns/generate`, payload, { timeout: 35000 });
+      if (!res.data?.success || !res.data?.preview || res.data?.content_source !== 'workbench') {
+        const failure = res.data || {};
+        setWorkbenchResponseStatus(failure.status || failure.error_type || 'no_usable_content');
+        setAiError({
+          message: failure.message || failure.error || 'SNS Workbench returned no generated campaign content.',
+          actionLabel: failure.action_label,
+          actionHint: failure.action_hint,
+          errorType: failure.error_type || 'generation_failed'
+        });
+        return;
+      }
       if (res.data?.success && res.data?.preview) {
-        const preview = res.data.preview;
-        if (preview.subject) {
-          setSubjectLine(preview.subject);
+        const preview = normalizeWorkbenchTemplateContent(res.data.preview);
+        if (preview.subjectLine) setSubjectLine(preview.subjectLine);
+        if (preview.heroHeadline) setHeroHeadline(preview.heroHeadline);
+        if (preview.heroBody) {
+          const plainBody = preview.heroBody.replace(/<\/?(?:p|div|br|strong|em|h[1-6]|ul|ol|li)[^>]*>/gi, '\n').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+          setHeroBody(plainBody);
         }
-        if (preview.body_text_only || preview.email_body) {
-          const rawText = preview.body_text_only || preview.email_body;
-          const plainText = rawText.replace(/<[^>]+>/g, '').trim();
-          setHeroBody(plainText.slice(0, 1000));
-        }
+        if (preview.articles) setBlocks(current => preview.articles.map((article, index) => ({
+          ...(current[index] || {}), ...article, id: current[index]?.id || `workbench-${index + 1}`
+        })));
+        if (preview.synthesisPoints) setFoundations(current => preview.synthesisPoints.length ? preview.synthesisPoints : current);
+        if (preview.promotionalBanner) setPromoBanner(current => ({ ...current, ...preview.promotionalBanner }));
+        if (preview.responseStatus) setWorkbenchResponseStatus(preview.responseStatus);
         setAiSuccess(`Synthesized editorial copy for "${topicToUse}" via SNS Workbench.`);
         if (showNotification) {
           showNotification(`Synthesized content via SNS Workbench.`);
@@ -406,22 +454,14 @@ export default function SnsTemplateSystemTab({
   // Compile final canonical HTML email using buildSnsTemplateEmailHtml
   const compiledEmailHtml = useMemo(() => {
     if (!activeTemplate) return '';
-
+    const customization = {
+      headerTitle, headerSubtitle, greetingType, heroHeadline, heroBody,
+      blocks, foundationsTitle, foundations, closingText, promoBanner
+    };
     return buildSnsTemplateEmailHtml({
       template: activeTemplate,
-      customization: {
-        headerTitle,
-        headerSubtitle,
-        greetingType,
-        heroHeadline,
-        heroBody,
-        blocks,
-        foundationsTitle,
-        foundations,
-        closingText,
-        promoBanner
-      },
-      recipient: previewContact
+      customization,
+      recipient: null
     });
   }, [
     activeTemplate,
@@ -434,9 +474,17 @@ export default function SnsTemplateSystemTab({
     foundationsTitle,
     foundations,
     closingText,
-    promoBanner,
-    previewContact
+    promoBanner
   ]);
+  const previewEmailHtml = useMemo(() => {
+    if (!activeTemplate) return '';
+    return buildSnsTemplateEmailHtml({
+      template: activeTemplate,
+      customization: { headerTitle, headerSubtitle, greetingType, heroHeadline, heroBody, blocks, foundationsTitle, foundations, closingText, promoBanner },
+      recipient: previewContact
+    });
+  }, [activeTemplate, headerTitle, headerSubtitle, greetingType, heroHeadline, heroBody, blocks, foundationsTitle, foundations, closingText, promoBanner, previewContact]);
+  const subjectForPreview = interpolateTemplateVars(subjectLine, previewContact);
 
   // Target audience resolved list
   const targetAudienceContacts = useMemo(() => {
@@ -1063,14 +1111,11 @@ export default function SnsTemplateSystemTab({
               {/* Official Client Email Preview Frame */}
               <ClientEmailPreview
                 subject={interpolateTemplateVars(subjectLine, previewContact)}
-                bodyHtml={compiledEmailHtml}
-                emailBody={compiledEmailHtml}
+                bodyHtml={previewEmailHtml}
                 recipient={previewContact}
-                contact={previewContact}
                 campaignName={campaignName}
                 campaignType={activeTemplate.category}
-                version="v1"
-                isEditing={false}
+                contentVersion="v1"
               />
             </div>
           )}
@@ -1231,6 +1276,17 @@ export default function SnsTemplateSystemTab({
                 <strong>Zero Content Divergence Guarantee:</strong> The content dispatched to clients will strictly mirror the preview rendered in Step 2. No second AI generation will occur upon clicking dispatch.
               </div>
 
+              <div>
+                <h5 style={{ margin: '0 0 8px', color: '#0f172a' }}>Approved email content — v1</h5>
+                <ClientEmailPreview
+                  subject={interpolateTemplateVars(subjectLine, previewContact)}
+                  bodyHtml={previewEmailHtml}
+                  recipient={previewContact}
+                  campaignName={campaignName}
+                  contentVersion="v1"
+                />
+              </div>
+
               {/* Action Buttons */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #f1f5f9', paddingTop: 16 }}>
                 <button
@@ -1246,12 +1302,14 @@ export default function SnsTemplateSystemTab({
                     <button
                       className="dn-btn dn-btn-secondary"
                       onClick={() => onUseTemplateInCampaign({
-                        ...activeTemplate,
-                        campaignName,
+                        templateId: activeTemplate.id,
+                        templateName: activeTemplate.name,
                         category: activeTemplate.category,
-                        subjectLine: interpolateTemplateVars(subjectLine, previewContact),
-                        defaultSubject: activeTemplate.defaultSubject,
-                        html: compiledEmailHtml
+                        campaignName,
+                        subjectLine: subjectForPreview,
+        content: { customization: { headerTitle, headerSubtitle, greetingType, heroHeadline, heroBody, blocks, foundationsTitle, foundations, closingText, promoBanner } },
+                        html: compiledEmailHtml,
+                        contentVersion: 'v1'
                       })}
                       disabled={isSending}
                     >

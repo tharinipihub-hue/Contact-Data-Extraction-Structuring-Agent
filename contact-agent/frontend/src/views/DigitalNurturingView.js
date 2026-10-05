@@ -1222,7 +1222,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
     setWizardIsDispatching(true);
     try {
       const activeSubject = wizardIsEditing ? wizardEditedSubject : (wizardGeneratedContent.subject || '');
-      const activeBody = wizardIsEditing ? wizardEditedBody : (wizardGeneratedContent.email_body || '');
+      const activeBody = wizardGeneratedContent.campaign_html || (wizardIsEditing ? wizardEditedBody : (wizardGeneratedContent.email_body || ''));
 
       let dispatchRes = null;
       try {
@@ -3957,7 +3957,15 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                         </div>
                       )}
 
-                      {wizardIsEditing ? (
+                      {wizardGeneratedContent?.content_source === 'sns_template_system' ? (
+                        <ClientEmailPreview
+                          subject={previewPersonalized.subject}
+                          bodyHtml={previewPersonalized.body}
+                          recipient={activePreviewContact}
+                          contentVersion={wizardGeneratedContent.content_version || 'v1'}
+                          campaignName={wizardCampaignName}
+                        />
+                      ) : wizardIsEditing ? (
                         <div>
                           <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', marginBottom: 6 }}>
                             Customize or refine the generated email body:
@@ -4290,8 +4298,10 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                 setWizardGeneratedContent({
                   subject: finalSubject,
                   email_body: finalBody,
+                  campaign_html: finalBody,
+                  template: { id: templateData.templateId, name: templateData.templateName, category: templateData.category },
                   content_source: 'sns_template_system',
-                  content_version: 'v1'
+                  content_version: templateData.contentVersion || 'v1'
                 });
                 setWizardEditedSubject(finalSubject);
                 setWizardEditedBody(finalBody);
