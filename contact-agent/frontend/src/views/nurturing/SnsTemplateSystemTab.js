@@ -29,7 +29,9 @@ import {
   Bookmark
 } from 'lucide-react';
 import ClientEmailPreview from './ClientEmailPreview';
-import { buildSnsTemplateEmailHtml, interpolateTemplateVars } from './templateEmailBuilder';
+import { buildSnsTemplateEmailHtml, interpolateEmailHtmlVars, interpolateTemplateVars } from './templateEmailBuilder';
+import { normalizeWorkbenchTemplateContent } from './workbenchTemplateContent';
+import './SnsTemplateSystemTab.css';
 
 // Preset High Quality Tech & Enterprise Imagery matching the visual reference
 const IMAGE_PRESETS = [
@@ -268,38 +270,6 @@ const SNS_TEMPLATES_CATALOG = [
   }
 ];
 
-// Workbench output can be wrapped in response/result/data/output objects. Extract
-// only explicitly returned fields; template defaults remain responsible for gaps.
-function normalizeWorkbenchTemplateContent(input) {
-  const queue = [input];
-  const visited = new Set();
-  let result = {};
-  while (queue.length) {
-    const value = queue.shift();
-    if (!value || typeof value !== 'object' || visited.has(value)) continue;
-    visited.add(value);
-    const candidate = value.preview && typeof value.preview === 'object' ? value.preview : value;
-    const pickText = (...keys) => keys.map(key => candidate[key]).find(v => typeof v === 'string' && v.trim());
-    result = {
-      ...result,
-      subjectLine: result.subjectLine || pickText('subjectLine', 'subject_line', 'subject'),
-      heroHeadline: result.heroHeadline || pickText('heroHeadline', 'hero_headline', 'headline', 'title'),
-      heroBody: result.heroBody || pickText('heroBody', 'hero_body', 'introduction', 'intro', 'body_text_only', 'email_body', 'body'),
-      articles: result.articles || (Array.isArray(candidate.articles) ? candidate.articles.map(a => ({
-        headline: a.headline || a.title || '', body: a.summary || a.body || a.description || '',
-        ctaText: a.ctaText || a.cta_label || '', ctaUrl: a.ctaUrl || a.cta_url || ''
-      })).filter(a => a.headline || a.body) : null),
-      synthesisPoints: result.synthesisPoints || (Array.isArray(candidate.synthesisPoints || candidate.synthesis_points || candidate.key_takeaways)
-        ? (candidate.synthesisPoints || candidate.synthesis_points || candidate.key_takeaways).filter(v => typeof v === 'string') : null),
-      promotionalBanner: result.promotionalBanner || candidate.promotionalBanner || candidate.promotional_banner || null,
-      responseStatus: result.responseStatus || (candidate.status ? String(candidate.status) : 'success')
-    };
-    ['data', 'result', 'output', 'response', 'content'].forEach(key => { if (candidate[key]) queue.push(candidate[key]); });
-    if (candidate.preview && typeof candidate.preview === 'object') queue.push(candidate.preview);
-  }
-  return result;
-}
-
 export default function SnsTemplateSystemTab({
   contacts = [],
   apiBase = '/api',
@@ -331,7 +301,7 @@ export default function SnsTemplateSystemTab({
   });
 
   // Preview & Audience State
-  const [previewContactId, setPreviewContactId] = useState(contacts[0]?.id || '');
+  const [previewContactId, setPreviewContactId] = useState(contacts.find(contact => contact.opt_in === true)?.id || '');
   const [audienceScope, setAudienceScope] = useState('all'); // 'all' | 'segment' | 'industry' | 'region' | 'selected'
   const [audienceFilterValue, setAudienceFilterValue] = useState('');
   const [selectedContactIds, setSelectedContactIds] = useState(contacts.filter(c => c.opt_in).map(c => c.id));
@@ -344,15 +314,11 @@ export default function SnsTemplateSystemTab({
   const [aiError, setAiError] = useState(null);
   const [aiSuccess, setAiSuccess] = useState(null);
   const [workbenchResponseStatus, setWorkbenchResponseStatus] = useState('not_requested');
+  const [customizeError, setCustomizeError] = useState('');
+  const [isCheckingWorkbench, setIsCheckingWorkbench] = useState(false);
 
   const previewContact = useMemo(() => {
-    return contacts.find(c => c.id === previewContactId) || contacts[0] || {
-      name: 'Priya Sharma',
-      company: 'Vertex Corp',
-      sector: 'Technology',
-      email: 'psharma@vertexcorp.com',
-      opt_in: true
-    };
+    return contacts.find(c => c.id === previewContactId && c.opt_in === true) || contacts.find(c => c.opt_in === true) || null;
   }, [contacts, previewContactId]);
 
   // Filtered Templates
@@ -379,17 +345,64 @@ export default function SnsTemplateSystemTab({
     setAiTopic(template.heroHeadline || template.name);
     setAiError(null);
     setAiSuccess(null);
+    setCustomizeError('');
     setWizardStep(stepToOpen === 2 ? 1 : stepToOpen);
+  };
+
+  const validateCustomize = () => {
+    if (!campaignName.trim()) return 'Campaign name is required.';
+    if (!subjectLine.trim()) return 'Email subject line is required.';
+    const validOptionalUrl = (value, protocols) => {
+      if (!String(value || '').trim()) return true;
+      try {
+        const parsed = new URL(value);
+        return protocols.includes(parsed.protocol) && (parsed.protocol === 'mailto:' || Boolean(parsed.hostname));
+      } catch (_error) { return false; }
+    };
+    if (blocks.some(block => !validOptionalUrl(block.image, ['https:']) || !validOptionalUrl(block.ctaUrl, ['https:', 'http:', 'mailto:'])) ||
+      !validOptionalUrl(promoBanner.ctaUrl, ['https:', 'http:', 'mailto:'])) {
+      return 'Use a valid HTTPS image URL and a valid HTTP, HTTPS, or mailto CTA URL, or leave optional URL fields empty.';
+    }
+    return '';
+  };
+
+  const proceedToPreview = () => {
+    const issue = validateCustomize();
+    setCustomizeError(issue);
+    if (!issue) setWizardStep(2);
+  };
+
+  const checkWorkbenchDeployment = async () => {
+    setIsCheckingWorkbench(true);
+    try {
+      const status = await axios.get(`${apiBase.replace(/\/$/, '')}/nurture/workbench-status`, { timeout: 10000 });
+      const detail = status.data?.mode === 'test_webhook'
+        ? 'The TEST webhook responded. Template generation still uses the production webhook.'
+        : status.data?.message || 'Deployment status refreshed.';
+      setAiError(current => ({ ...current, message: `${current?.message || 'Production generation is unavailable.'} ${detail}` }));
+    } catch (error) {
+      setAiError(current => ({ ...current, message: `${current?.message || 'Production generation is unavailable.'} Deployment status check failed: ${error.response?.data?.message || error.message}` }));
+    } finally {
+      setIsCheckingWorkbench(false);
+    }
   };
 
   // Synthesize content via SNS Workbench AI without replacing brand visual structure
   const handleGenerateWithWorkbench = async () => {
     if (!activeTemplate) return;
+    if (!aiTopic.trim()) {
+      setAiError({ message: 'Enter a campaign focus or topic before requesting SNS Workbench synthesis.', errorType: 'validation_error' });
+      return;
+    }
+    if (!previewContact || previewContact.opt_in !== true) {
+      setAiError({ message: 'Select an opted-in preview recipient before requesting SNS Workbench synthesis.', errorType: 'validation_error' });
+      return;
+    }
     setIsAiGenerating(true);
     setAiError(null);
     setAiSuccess(null);
 
-    const topicToUse = aiTopic.trim() || heroHeadline || activeTemplate.name;
+    const topicToUse = aiTopic.trim();
 
     try {
       const payload = {
@@ -404,31 +417,24 @@ export default function SnsTemplateSystemTab({
       };
 
       const res = await axios.post(`${apiBase}/campaigns/generate`, payload, { timeout: 35000 });
-      if (!res.data?.success || !res.data?.preview || res.data?.content_source !== 'workbench') {
-        const failure = res.data || {};
-        setWorkbenchResponseStatus(failure.status || failure.error_type || 'no_usable_content');
-        setAiError({
-          message: failure.message || failure.error || 'SNS Workbench returned no generated campaign content.',
-          actionLabel: failure.action_label,
-          actionHint: failure.action_hint,
-          errorType: failure.error_type || 'generation_failed'
-        });
+      if (!res.data?.success || res.data?.content_source !== 'workbench') {
+        throw { response: { status: res.status, data: res.data } };
+      }
+      const preview = normalizeWorkbenchTemplateContent(res.data);
+      if (!preview || !Object.values(preview).some(value => value && (typeof value !== 'object' || Object.keys(value).length))) {
+        setWorkbenchResponseStatus('no_usable_content');
+        setAiError({ message: 'Workbench responded, but no usable campaign content was returned.', errorType: 'no_usable_content', httpStatus: res.data?.workbench_http_status, response: res.data?.workbench_response });
         return;
       }
-      if (res.data?.success && res.data?.preview) {
-        const preview = normalizeWorkbenchTemplateContent(res.data.preview);
+      {
         if (preview.subjectLine) setSubjectLine(preview.subjectLine);
         if (preview.heroHeadline) setHeroHeadline(preview.heroHeadline);
-        if (preview.heroBody) {
-          const plainBody = preview.heroBody.replace(/<\/?(?:p|div|br|strong|em|h[1-6]|ul|ol|li)[^>]*>/gi, '\n').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-          setHeroBody(plainBody);
-        }
+        if (preview.heroBody) setHeroBody(preview.heroBody);
         if (preview.articles) setBlocks(current => preview.articles.map((article, index) => ({
           ...(current[index] || {}), ...article, id: current[index]?.id || `workbench-${index + 1}`
         })));
-        if (preview.synthesisPoints) setFoundations(current => preview.synthesisPoints.length ? preview.synthesisPoints : current);
-        if (preview.promotionalBanner) setPromoBanner(current => ({ ...current, ...preview.promotionalBanner }));
-        if (preview.responseStatus) setWorkbenchResponseStatus(preview.responseStatus);
+        if (preview.synthesisPoints) setFoundations(preview.synthesisPoints);
+        setWorkbenchResponseStatus(res.data?.workbench_http_status || 'success');
         setAiSuccess(`Synthesized editorial copy for "${topicToUse}" via SNS Workbench.`);
         if (showNotification) {
           showNotification(`Synthesized content via SNS Workbench.`);
@@ -437,11 +443,24 @@ export default function SnsTemplateSystemTab({
     } catch (err) {
       const errData = err.response?.data;
       const errMsg = errData?.error || err.message;
+      const workbenchStatus = errData?.workbench_http_status;
+      setWorkbenchResponseStatus(workbenchStatus || errData?.error_type || 'generation_failed');
       setAiError({
-        message: errMsg,
+        message: workbenchStatus === 404 || errData?.error_type === 'workflow_not_deployed'
+          ? `Workbench generation unavailable. The SNS Workbench Client Nurturing workflow is not active/deployed. Workbench response: ${errMsg}`
+          : workbenchStatus === 401 || workbenchStatus === 403 || errData?.error_type === 'auth_error'
+            ? 'SNS Workbench authentication/configuration error. Check the production webhook credentials.'
+            : errData?.error_type === 'timeout' || errData?.error_type === 'network_error'
+              ? `SNS Workbench connection/timeout error: ${errMsg}`
+              : errData?.error_type === 'no_usable_content'
+                ? 'Workbench responded, but no usable campaign content was returned.'
+                : errData?.message || errMsg,
         actionLabel: errData?.action_label,
         actionHint: errData?.action_hint,
-        errorType: errData?.error_type
+        errorType: errData?.error_type,
+        httpStatus: workbenchStatus || err.response?.status,
+        response: errData?.workbench_response,
+        development: process.env.NODE_ENV !== 'production'
       });
       if (showNotification) {
         showNotification(`Workbench generation: ${errMsg}`, true);
@@ -477,14 +496,8 @@ export default function SnsTemplateSystemTab({
     promoBanner
   ]);
   const previewEmailHtml = useMemo(() => {
-    if (!activeTemplate) return '';
-    return buildSnsTemplateEmailHtml({
-      template: activeTemplate,
-      customization: { headerTitle, headerSubtitle, greetingType, heroHeadline, heroBody, blocks, foundationsTitle, foundations, closingText, promoBanner },
-      recipient: previewContact
-    });
-  }, [activeTemplate, headerTitle, headerSubtitle, greetingType, heroHeadline, heroBody, blocks, foundationsTitle, foundations, closingText, promoBanner, previewContact]);
-  const subjectForPreview = interpolateTemplateVars(subjectLine, previewContact);
+    return interpolateEmailHtmlVars(compiledEmailHtml, previewContact);
+  }, [compiledEmailHtml, previewContact]);
 
   // Target audience resolved list
   const targetAudienceContacts = useMemo(() => {
@@ -516,11 +529,6 @@ export default function SnsTemplateSystemTab({
     setIsSending(true);
     try {
       const campaignId = `CMP-TMPL-${Date.now()}`;
-      const interpolatedSubject = subjectLine
-        .replace(/\{\{first_name\}\}/gi, previewContact.name ? previewContact.name.split(' ')[0] : 'Colleague')
-        .replace(/\{\{company\}\}/gi, previewContact.company || 'Enterprise')
-        .replace(/\{\{industry\}\}/gi, previewContact.sector || 'Technology');
-
       const payload = {
         campaign_id: campaignId,
         campaign_name: campaignName || `${activeTemplate.name} Dispatch`,
@@ -528,7 +536,7 @@ export default function SnsTemplateSystemTab({
         topic: headerTitle || activeTemplate.name,
         contacts: targetAudienceContacts,
         content: {
-          subject: interpolatedSubject,
+          subject: subjectLine,
           email_body: compiledEmailHtml,
           content_version: 'v1'
         }
@@ -539,7 +547,7 @@ export default function SnsTemplateSystemTab({
         setSendSuccessModal({
           campaign: res.data.campaign || payload,
           count: targetAudienceContacts.length,
-          subject: interpolatedSubject
+          subject: interpolateTemplateVars(subjectLine, previewContact)
         });
         if (showNotification) {
           showNotification(`Dispatched ${activeTemplate.name} to ${targetAudienceContacts.length} verified client(s).`);
@@ -554,7 +562,7 @@ export default function SnsTemplateSystemTab({
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <div className="sns-template-system">
       {/* ── Top Header / Intro Banner ── */}
       <div className="dn-workflow-banner" style={{ background: 'linear-gradient(135deg, #090e17 0%, #1e293b 60%, #1e3a8a 100%)', border: '1px solid #334155' }}>
         <div className="dn-workflow-banner-info">
@@ -606,7 +614,7 @@ export default function SnsTemplateSystemTab({
           </div>
 
           {/* Templates Grid Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 20 }}>
+          <div className="sns-template-catalog-grid">
             {filteredTemplates.map((template) => (
               <div
                 key={template.id}
@@ -697,7 +705,7 @@ export default function SnsTemplateSystemTab({
 
       {/* ── Mode 2: Interactive Template Customizer & Dispatch Flow ── */}
       {activeTemplate && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div className="sns-template-wizard" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* Flow Stepper Bar */}
           <div className="dn-panel" style={{ padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -723,7 +731,18 @@ export default function SnsTemplateSystemTab({
               ].map(({ step, label, icon: StepIcon }) => (
                 <button
                   key={step}
-                  onClick={() => setWizardStep(step)}
+          onClick={() => {
+            if (step > 1) {
+              const issue = validateCustomize();
+              setCustomizeError(issue);
+              if (issue) return;
+            }
+            if (step === 4 && targetAudienceContacts.length === 0) {
+              setCustomizeError('Choose at least one opted-in recipient in the Audience step before reviewing.');
+              return;
+            }
+            setWizardStep(step);
+          }}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -777,7 +796,7 @@ export default function SnsTemplateSystemTab({
                       Synthesize Editorial Copy via SNS Workbench AI
                     </span>
                     <span style={{ fontSize: 10.5, background: '#eff6ff', color: '#1d4ed8', padding: '2px 8px', borderRadius: 10, fontWeight: 600 }}>
-                      Live LLM Integration
+                      Production Webhook
                     </span>
                   </div>
                   <span style={{ fontSize: 11.5, color: '#64748b' }}>
@@ -788,7 +807,7 @@ export default function SnsTemplateSystemTab({
                 <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
                   <input
                     type="text"
-                    className="dn-input"
+                    className="dn-input sns-template-control"
                     placeholder="Enter editorial focus or topic (e.g., Sovereign AI, GCC Expansion, Cloud Modernization)"
                     value={aiTopic}
                     onChange={(e) => setAiTopic(e.target.value)}
@@ -817,11 +836,23 @@ export default function SnsTemplateSystemTab({
                   <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 6, padding: '10px 14px', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                     <AlertTriangle size={15} color="#dc2626" style={{ marginTop: 2, flexShrink: 0 }} />
                     <div style={{ fontSize: 12, color: '#991b1b', lineHeight: 1.45 }}>
-                      <strong>Workbench Generation Notice:</strong> {aiError.message}
+                      <strong>{aiError.errorType === 'workflow_not_deployed' ? 'Workbench generation unavailable' : 'Workbench Generation Notice'}:</strong> {aiError.message}
                       {aiError.actionHint && (
                         <div style={{ marginTop: 4, color: '#7f1d1d', fontSize: 11.5 }}>
                           <em>Guidance: {aiError.actionHint}</em>
                         </div>
+                      )}
+                      {aiError.errorType === 'workflow_not_deployed' && (
+                        <button type="button" className="dn-btn dn-btn-secondary dn-btn-xs" onClick={checkWorkbenchDeployment} disabled={isCheckingWorkbench} style={{ marginTop: 8 }}>
+                          {isCheckingWorkbench ? 'Checking deployment...' : (aiError.actionLabel || 'Check Workbench Deployment')}
+                        </button>
+                      )}
+                      {aiError.development && (
+                        <details style={{ marginTop: 8 }}>
+                          <summary>Development diagnostics</summary>
+                          <div>Template: {activeTemplate?.name || 'none'}; usable generated content received: no; Workbench HTTP status: {aiError.httpStatus || workbenchResponseStatus}</div>
+                          {aiError.response && <pre style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', maxHeight: 180, overflow: 'auto' }}>{JSON.stringify(aiError.response, null, 2)}</pre>}
+                        </details>
                       )}
                     </div>
                   </div>
@@ -838,50 +869,52 @@ export default function SnsTemplateSystemTab({
               </div>
 
               {/* Form Fields Grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
-                <div>
+              <div className="sns-template-form-grid">
+                <div className="sns-template-field">
                   <label style={{ fontSize: 12, fontWeight: 600, color: '#334155', display: 'block', marginBottom: 5 }}>
                     Campaign Name
                   </label>
                   <input
                     type="text"
-                    className="dn-input"
+                    className="dn-input sns-template-control"
+                    required
                     value={campaignName}
                     onChange={(e) => setCampaignName(e.target.value)}
                   />
                 </div>
 
-                <div>
+                <div className="sns-template-field">
                   <label style={{ fontSize: 12, fontWeight: 600, color: '#334155', display: 'block', marginBottom: 5 }}>
                     Email Subject Line
                   </label>
                   <input
                     type="text"
-                    className="dn-input"
+                    className="dn-input sns-template-control"
+                    required
                     value={subjectLine}
                     onChange={(e) => setSubjectLine(e.target.value)}
                   />
                 </div>
 
-                <div>
+                <div className="sns-template-field">
                   <label style={{ fontSize: 12, fontWeight: 600, color: '#334155', display: 'block', marginBottom: 5 }}>
                     Header Title (Banner)
                   </label>
                   <input
                     type="text"
-                    className="dn-input"
+                    className="dn-input sns-template-control"
                     value={headerTitle}
                     onChange={(e) => setHeaderTitle(e.target.value)}
                   />
                 </div>
 
-                <div>
+                <div className="sns-template-field">
                   <label style={{ fontSize: 12, fontWeight: 600, color: '#334155', display: 'block', marginBottom: 5 }}>
                     Header Subtitle / Edition
                   </label>
                   <input
                     type="text"
-                    className="dn-input"
+                    className="dn-input sns-template-control"
                     value={headerSubtitle}
                     onChange={(e) => setHeaderSubtitle(e.target.value)}
                   />
@@ -920,7 +953,7 @@ export default function SnsTemplateSystemTab({
                   </label>
                   <input
                     type="text"
-                    className="dn-input"
+                    className="dn-input sns-template-control"
                     value={heroHeadline}
                     onChange={(e) => setHeroHeadline(e.target.value)}
                   />
@@ -931,7 +964,7 @@ export default function SnsTemplateSystemTab({
                     Opening Editorial Paragraph(s)
                   </label>
                   <textarea
-                    className="dn-input"
+                    className="dn-input sns-template-control"
                     rows={4}
                     value={heroBody}
                     onChange={(e) => setHeroBody(e.target.value)}
@@ -953,11 +986,11 @@ export default function SnsTemplateSystemTab({
                         ...blocks,
                         {
                           id: `b-${Date.now()}`,
-                          headline: 'New Topic Analysis Headline',
-                          image: IMAGE_PRESETS[0].url,
-                          body: 'Add your analytical briefing text here.',
-                          ctaText: 'Read Full Perspective',
-                          ctaUrl: 'https://www.snssquare.com'
+                          headline: '',
+                          image: '',
+                          body: '',
+                          ctaText: '',
+                          ctaUrl: ''
                         }
                       ]);
                     }}
@@ -967,7 +1000,7 @@ export default function SnsTemplateSystemTab({
                 </div>
 
                 {blocks.map((block, bIdx) => (
-                  <div key={block.id || bIdx} style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 8, padding: 18, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div key={block.id || bIdx} className="sns-template-block-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 8, padding: 18, display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: 13, fontWeight: 700, color: '#2563eb' }}>Block {bIdx + 1}</span>
                       {blocks.length > 1 && (
@@ -980,12 +1013,12 @@ export default function SnsTemplateSystemTab({
                       )}
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12 }}>
-                      <div>
+                    <div className="sns-template-block-fields-grid">
+                      <div className="sns-template-field">
                         <label style={{ fontSize: 11.5, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>Headline</label>
                         <input
                           type="text"
-                          className="dn-input"
+                          className="dn-input sns-template-control"
                           value={block.headline}
                           onChange={(e) => {
                             const newBlocks = [...blocks];
@@ -995,11 +1028,11 @@ export default function SnsTemplateSystemTab({
                         />
                       </div>
 
-                      <div>
+                      <div className="sns-template-field">
                         <label style={{ fontSize: 11.5, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>Header Image URL</label>
                         <input
                           type="text"
-                          className="dn-input"
+                          className="dn-input sns-template-control"
                           value={block.image}
                           onChange={(e) => {
                             const newBlocks = [...blocks];
@@ -1013,7 +1046,7 @@ export default function SnsTemplateSystemTab({
                     <div>
                       <label style={{ fontSize: 11.5, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>Analytical Paragraph</label>
                       <textarea
-                        className="dn-input"
+                        className="dn-input sns-template-control"
                         rows={3}
                         value={block.body}
                         onChange={(e) => {
@@ -1024,12 +1057,12 @@ export default function SnsTemplateSystemTab({
                       />
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                      <div>
+                    <div className="sns-template-block-cta-grid">
+                      <div className="sns-template-field">
                         <label style={{ fontSize: 11.5, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>CTA Button Label</label>
                         <input
                           type="text"
-                          className="dn-input"
+                          className="dn-input sns-template-control"
                           value={block.ctaText}
                           onChange={(e) => {
                             const newBlocks = [...blocks];
@@ -1038,11 +1071,11 @@ export default function SnsTemplateSystemTab({
                           }}
                         />
                       </div>
-                      <div>
+                      <div className="sns-template-field">
                         <label style={{ fontSize: 11.5, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>CTA Target URL</label>
                         <input
                           type="text"
-                          className="dn-input"
+                          className="dn-input sns-template-control"
                           value={block.ctaUrl}
                           onChange={(e) => {
                             const newBlocks = [...blocks];
@@ -1060,12 +1093,13 @@ export default function SnsTemplateSystemTab({
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, borderTop: '1px solid #f1f5f9', paddingTop: 14 }}>
                 <button
                   className="dn-btn dn-btn-primary"
-                  onClick={() => setWizardStep(2)}
+                  onClick={proceedToPreview}
                   style={{ display: 'flex', alignItems: 'center', gap: 6 }}
                 >
                   Proceed to Live Preview <ChevronRight size={14} />
                 </button>
               </div>
+              {customizeError && <p className="sns-template-validation-error" role="alert">{customizeError}</p>}
             </div>
           )}
 
@@ -1079,12 +1113,12 @@ export default function SnsTemplateSystemTab({
                     Render Preview As Client:
                   </span>
                   <select
-                    className="dn-input"
+                    className="dn-input sns-template-control"
                     style={{ width: 'auto', minWidth: 220 }}
                     value={previewContactId}
                     onChange={(e) => setPreviewContactId(e.target.value)}
                   >
-                    {contacts.map(c => (
+                    {contacts.filter(c => c.opt_in === true).map(c => (
                       <option key={c.id} value={c.id}>
                         {c.name} — {c.company} ({c.sector || 'Technology'}) {c.opt_in ? '✓' : '(Opted Out)'}
                       </option>
@@ -1172,7 +1206,7 @@ export default function SnsTemplateSystemTab({
                     Select Industry Filter
                   </label>
                   <select
-                    className="dn-input"
+                    className="dn-input sns-template-control"
                     value={audienceFilterValue}
                     onChange={(e) => setAudienceFilterValue(e.target.value)}
                   >
@@ -1191,7 +1225,7 @@ export default function SnsTemplateSystemTab({
                     Select Region Filter
                   </label>
                   <select
-                    className="dn-input"
+                    className="dn-input sns-template-control"
                     value={audienceFilterValue}
                     onChange={(e) => setAudienceFilterValue(e.target.value)}
                   >
@@ -1306,7 +1340,7 @@ export default function SnsTemplateSystemTab({
                         templateName: activeTemplate.name,
                         category: activeTemplate.category,
                         campaignName,
-                        subjectLine: subjectForPreview,
+                        subjectLine,
         content: { customization: { headerTitle, headerSubtitle, greetingType, heroHeadline, heroBody, blocks, foundationsTitle, foundations, closingText, promoBanner } },
                         html: compiledEmailHtml,
                         contentVersion: 'v1'

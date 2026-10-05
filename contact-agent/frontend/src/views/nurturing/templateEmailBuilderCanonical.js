@@ -30,6 +30,19 @@ function interpolateTemplateVars(text, recipient = null) {
     .replace(/\{\{client_name\}\}/gi, clientName);
 }
 
+function interpolateEmailHtmlVars(html, recipient = null) {
+  const escapeHtml = value => String(value || '').replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[ch]));
+  const values = {
+    first_name: recipient?.name ? recipient.name.split(' ')[0] : (recipient?.first_name || 'Colleague'),
+    company: recipient?.company || 'Enterprise',
+    industry: recipient?.sector || recipient?.industry || 'Technology',
+    client_name: recipient?.name || (recipient?.first_name ? `${recipient.first_name} ${recipient.last_name || ''}`.trim() : 'Valued Client')
+  };
+  return String(html || '').replace(/\{\{(first_name|company|industry|client_name)\}\}/gi, (_match, key) => escapeHtml(values[key.toLowerCase()]));
+}
+
 function buildSnsTemplateEmailHtml({
   template = null,
   customization = {},
@@ -42,9 +55,11 @@ function buildSnsTemplateEmailHtml({
   const templateId = (t.id || c.templateId || '').toLowerCase();
 
   // 1. Resolve placeholders
-  const interpolate = (str) => interpolateTemplateVars(str, recipient);
+  // The recipient-free compilation is the approved source. Keep its
+  // personalization tokens intact; preview/dispatch apply recipient values later.
+  const interpolate = (str) => recipient ? interpolateTemplateVars(str, recipient) : String(str || '');
   const escapeHtml = (value) => String(value || '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
-  const firstName = recipient?.name ? recipient.name.split(' ')[0] : (recipient?.first_name || 'Colleague');
+  const firstName = recipient?.name ? recipient.name.split(' ')[0] : (recipient?.first_name || (recipient ? 'Colleague' : '{{first_name}}'));
 
   // 2. Resolve Header & Colors
   const isFestival = category.includes('occasion') || templateId.includes('festival') || templateId.includes('greeting');
@@ -57,8 +72,8 @@ function buildSnsTemplateEmailHtml({
 
   const rawHeaderTitle = c.headerTitle || t.headerTitle || 'Your Weekly GCC & AI Scoop';
   const rawHeaderSubtitle = c.headerSubtitle || t.headerSubtitle || 'Core Perspective | Wednesday Edition';
-  const headerTitle = interpolate(rawHeaderTitle);
-  const headerSubtitle = interpolate(rawHeaderSubtitle);
+  const headerTitle = escapeHtml(interpolate(rawHeaderTitle));
+  const headerSubtitle = escapeHtml(interpolate(rawHeaderSubtitle));
 
   // 3. Greeting & Hero Section
   const greetingType = c.greetingType || t.greetingType || (isFestival || isCampaign || isEvent || isClientUpdate ? 'personal' : 'editorial');
@@ -80,7 +95,7 @@ function buildSnsTemplateEmailHtml({
     const body = escapeHtml(interpolate(b.body || ''));
     const image = /^https:\/\//i.test(b.image || '') ? escapeHtml(b.image) : '';
     const ctaText = escapeHtml(interpolate(b.ctaText || ''));
-    const ctaUrl = /^https:\/\//i.test(b.ctaUrl || '') ? escapeHtml(b.ctaUrl) : '';
+    const ctaUrl = /^(?:https?:\/\/|mailto:)[^\s"'<>]+$/i.test(b.ctaUrl || '') ? escapeHtml(b.ctaUrl) : '';
 
     return `
       <div style="margin: 28px 0; padding-top: ${idx > 0 ? '24px' : '0'}; border-top: ${idx > 0 ? '1px solid #e2e8f0' : 'none'};">
@@ -126,7 +141,7 @@ function buildSnsTemplateEmailHtml({
   const promoBody = escapeHtml(interpolate(promo?.body || ''));
   const promoBadge = escapeHtml(interpolate(promo?.partnerBadge || ''));
   const promoCtaText = escapeHtml(interpolate(promo?.ctaText || ''));
-  const promoCtaUrl = /^https:\/\//i.test(promo?.ctaUrl || '') ? escapeHtml(promo.ctaUrl) : '';
+  const promoCtaUrl = /^(?:https?:\/\/|mailto:)[^\s"'<>]+$/i.test(promo?.ctaUrl || '') ? escapeHtml(promo.ctaUrl) : '';
 
   const promoBannerHtml = promoHeadline ? `
     <div style="background-color: #0e1e3e; border-radius: 12px; padding: 24px; color: #ffffff; margin: 30px 0 16px 0; border: 1px solid #1e293b;">
@@ -231,4 +246,4 @@ function buildSnsTemplateEmailResult(options) {
   };
 }
 
-export { interpolateTemplateVars, buildSnsTemplateEmailHtml, buildSnsTemplateEmailResult };
+export { interpolateTemplateVars, interpolateEmailHtmlVars, buildSnsTemplateEmailHtml, buildSnsTemplateEmailResult };

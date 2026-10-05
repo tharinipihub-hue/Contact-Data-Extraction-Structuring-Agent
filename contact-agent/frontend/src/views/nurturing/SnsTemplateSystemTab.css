@@ -1,0 +1,102 @@
+.sns-template-system,
+.sns-template-system * {
+  box-sizing: border-box;
+}
+
+.sns-template-system {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.sns-template-wizard,
+.sns-template-system .dn-panel {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.sns-template-catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: 20px;
+  width: 100%;
+  min-width: 0;
+}
+
+.sns-template-form-grid,
+.sns-template-block-fields-grid,
+.sns-template-block-cta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+}
+
+.sns-template-block-fields-grid,
+.sns-template-block-cta-grid {
+  gap: 12px;
+}
+
+.sns-template-field {
+  min-width: 0;
+  width: 100%;
+}
+
+.sns-template-system .sns-template-control {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 9px 11px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #0f172a;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.sns-template-system textarea.sns-template-control {
+  min-height: 112px;
+  resize: vertical;
+  white-space: pre-wrap;
+}
+
+.sns-template-block-card {
+  min-width: 0;
+  width: 100%;
+}
+
+.sns-template-validation-error {
+  margin: 0;
+  color: #b91c1c;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .sns-template-form-grid,
+  .sns-template-block-fields-grid,
+  .sns-template-block-cta-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sns-template-form-grid > *,
+  .sns-template-block-fields-grid > *,
+  .sns-template-block-cta-grid > * {
+    grid-column: 1 / -1;
+    min-width: 0;
+  }
+
+  .sns-template-system .dn-panel {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}

@@ -179,6 +179,23 @@ function personalizeContentForRecipient(rawBody, rawSubject, recipient, allConta
   body = sanitizeAndPersonalizeGreeting(body, recipient);
   subject = sanitizeAndValidateSubject(subject, { company: recipientCompany, name: recipientFullName });
 
+  // Resolve approved template tokens per recipient just before dispatch.
+  const escapeHtml = value => String(value || '').replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[ch]));
+  const templateValues = {
+    first_name: recipientFirstName || 'Colleague',
+    company: recipientCompany,
+    industry: recipient.sector || recipient.industry || 'Technology',
+    client_name: recipientFullName || 'Valued Client'
+  };
+  const interpolateTemplateTokens = (value, htmlSafe = true) => String(value || '').replace(
+    /\{\{(first_name|company|industry|client_name)\}\}/gi,
+    (_match, key) => htmlSafe ? escapeHtml(templateValues[key.toLowerCase()]) : templateValues[key.toLowerCase()]
+  );
+  body = interpolateTemplateTokens(body);
+  subject = interpolateTemplateTokens(subject, false);
+
   // 2. Iterate all known contacts to replace any other names and companies
   for (const c of allContacts) {
     if (c.id === recipient.id) continue;
@@ -211,20 +228,39 @@ function personalizeContentForRecipient(rawBody, rawSubject, recipient, allConta
 function extractWorkbenchAiContent(data) {
   if (!data) return null;
 
+  // Workbench may wrap executions as output/items/json/body/data/result/content.
+  // Traverse those envelope nodes, but accept generated content only when the
+  // response itself contains the application's established subject/email_body
+  // contract. An echoed request body is never treated as generated content.
+  const payloads = [];
+  const queue = [data];
+  const visited = new Set();
+  while (queue.length) {
+    const value = queue.shift();
+    if (!value || typeof value !== 'object' || visited.has(value)) continue;
+    visited.add(value);
+    payloads.push(value);
+    if (Array.isArray(value)) {
+      value.forEach(item => queue.push(item?.json || item));
+      continue;
+    }
+    ['output', 'items', 'json', 'body', 'data', 'result', 'content', 'nurtured_contact'].forEach(key => {
+      const nested = value[key];
+      if (nested && typeof nested === 'object') queue.push(nested);
+    });
+  }
+
   // 1. Check for Groq / LLM model output nested inside content.parts or text
   // Workbench Groq node output typically formats as:
   // data.result.content.parts[0].text or data.content.parts[0].text
   let groqRaw = null;
-  const candidates = [
-    data.result?.content?.parts?.[0]?.text,
-    data.content?.parts?.[0]?.text,
-    data.result?.text,
-    data.text,
-    data.result?.choices?.[0]?.message?.content,
-    data.choices?.[0]?.message?.content,
-    data.result?.output,
-    data.output
-  ];
+  const candidates = payloads.flatMap(value => [
+    value.content?.parts?.[0]?.text,
+    value.text,
+    typeof value.body === 'string' ? value.body : null,
+    value.choices?.[0]?.message?.content,
+    typeof value.output === 'string' ? value.output : null
+  ]);
 
   for (const candidate of candidates) {
     if (typeof candidate === 'string' && candidate.trim()) {
@@ -285,14 +321,7 @@ function extractWorkbenchAiContent(data) {
   }
 
   // 2. Check direct / structured fields in Workbench response
-  const fieldSources = [
-    data.nurtured_contact,
-    data.result?.nurtured_contact,
-    data.result,
-    data
-  ];
-
-  for (const src of fieldSources) {
+  for (const src of payloads) {
     if (src && typeof src === 'object') {
       const subject = src.subject;
       const email_body = src.email_body;
@@ -304,15 +333,6 @@ function extractWorkbenchAiContent(data) {
         };
       }
     }
-  }
-
-  if (process.env.TEST_MODE === 'true' && data?.mode === 'trigger-test' && data?.output?.items?.[0]?.json?.body) {
-    const b = data.output.items[0].json.body;
-    return {
-      subject: `Executive Update: ${b.company || 'Enterprise'} & ${b.sector || 'Technology'} Industry Briefing`,
-      email_body: `<p>Dear ${b.first_name || 'Partner'},</p><p>We are writing to share an executive update tailored specifically for leadership at ${b.company || 'Enterprise'}:</p><p>KEY ANNOUNCEMENT & BRIEFING:<br/>${b.developer_input || 'Reliable Cloud Infrastructure'}</p><p>STRATEGIC IMPACT FOR ${String(b.sector || 'Technology').toUpperCase()} LEADERSHIP:<br/>In the context of ${b.company || 'Enterprise'} operations, these updates provide scalable microservice orchestration, resilient system observability, and reduced computational overhead.</p><p>Please let us know if you would like to arrange a formal briefing with our advisory team to review these capabilities in detail.</p><p>Sincerely,<br/>Client Relations Team</p>`,
-      personalization_summary: 'Verified in test mode via SNS Workbench trigger-test node'
-    };
   }
 
   return null;
@@ -476,7 +496,7 @@ router.post('/generate', async (req, res) => {
 
   try {
     // Strictly trigger SNS Workbench workflow
-    const result = await workbenchService.triggerNurturingWorkflow(payload);
+    const result = await workbenchService.triggerNurturingProductionWorkflow(payload);
     
     // Robustly extract Workbench Groq AI or workflow output
     const extracted = extractWorkbenchAiContent(result.data);
@@ -516,7 +536,9 @@ router.post('/generate', async (req, res) => {
         body_text_only: cleanBody,
         content_version: previous?.content_version || 'v1',
         personalization_summary: extracted.personalization_summary || 'Generated via SNS Workbench',
-        content_source: 'workbench'
+        content_source: 'workbench',
+        workbench_http_status: result.httpStatus,
+        workbench_content: extracted
       };
 
       const generatedCampaign = {
@@ -563,16 +585,29 @@ router.post('/generate', async (req, res) => {
         targetUrl: result.targetUrl,
         preview: previewData,
         campaign: generatedCampaign,
-        campaign_data: result.data
+        campaign_data: result.data,
+        workbench_http_status: result.httpStatus
       });
     }
 
-    return res.status(502).json({ success: false, source: 'workbench_error', content_source: 'unavailable', error: 'Workbench returned no usable campaign content.', requires_workbench: true });
+    return res.status(502).json({
+      success: false,
+      source: 'workbench_error',
+      content_source: 'unavailable',
+      error_type: 'no_usable_content',
+      error: 'Workbench responded, but no usable campaign content was returned.',
+      message: 'Workbench responded, but no usable campaign content was returned.',
+      workbench_http_status: result.httpStatus,
+      workbench_response: process.env.NODE_ENV === 'production' ? undefined : result.data,
+      requires_workbench: true
+    });
   } catch (err) {
     console.error('[Campaigns /generate Error]:', err.message);
     const is404 = err.status === 404 || err.errorType === 'workflow_not_deployed' || String(err.message || '').includes('404');
     const isAuth = err.status === 401 || err.status === 403 || err.errorType === 'auth_error';
     const isNetwork = err.errorType === 'network_error';
+    const isTimeout = err.errorType === 'timeout';
+    const isConfiguration = err.errorType === 'configuration_error';
 
     const errorType = is404
       ? 'workflow_not_deployed'
@@ -580,6 +615,10 @@ router.post('/generate', async (req, res) => {
       ? 'auth_error'
       : isNetwork
       ? 'network_error'
+      : isTimeout
+      ? 'timeout'
+      : isConfiguration
+      ? 'configuration_error'
       : 'generation_failed';
 
     const userMessage = is404
@@ -588,6 +627,10 @@ router.post('/generate', async (req, res) => {
       ? 'SNS Workbench authentication required or credentials rejected.'
       : isNetwork
       ? 'Unable to connect to SNS Workbench. Check your internet connection.'
+      : isTimeout
+      ? 'SNS Workbench did not respond before the generation request timed out.'
+      : isConfiguration
+      ? 'SNS Workbench production endpoint configuration is invalid.'
       : (err.message || 'SNS Workbench encountered an error during generation.');
 
     return res.status(502).json({
@@ -597,6 +640,8 @@ router.post('/generate', async (req, res) => {
       error_type: errorType,
       error: err.message,
       message: userMessage,
+      workbench_http_status: err.status || null,
+      workbench_response: process.env.NODE_ENV === 'production' ? undefined : (err.responseData || null),
       action_label: is404 ? 'Check Workbench Deployment' : 'Retry Generation',
       action_hint: is404 ? 'In SNS Workbench, open the Client Nurturing workflow and click "Deploy Live".' : undefined,
       requires_workbench: true
@@ -1059,3 +1104,4 @@ router.put('/:id', (req, res) => {
 
 module.exports = router;
 module.exports.extractWorkbenchAiContent = extractWorkbenchAiContent;
+module.exports.personalizeContentForRecipient = personalizeContentForRecipient;

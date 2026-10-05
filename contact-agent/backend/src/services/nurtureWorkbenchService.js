@@ -286,6 +286,81 @@ class WorkbenchService {
   }
 
   /**
+   * Campaign template generation is production-only. This deliberately bypasses
+   * preferredWebhookUrl and all test-mode switches so a 404 can never fall back
+   * to webhook-test and be mistaken for production generated content.
+   */
+  async triggerNurturingProductionWorkflow(payload) {
+    const targetUrl = process.env.NURTURE_WORKBENCH_WEBHOOK_URL || this.webhookUrl;
+    let parsedTarget;
+    try {
+      parsedTarget = new URL(targetUrl);
+    } catch (_err) {
+      const error = new Error('The configured SNS Workbench production URL is invalid.');
+      error.status = 503;
+      error.errorType = 'configuration_error';
+      throw error;
+    }
+
+    if (parsedTarget.protocol !== 'https:' || parsedTarget.hostname !== 'api.agents.snsihub.ai' || parsedTarget.pathname !== '/webhook/client-nurturing') {
+      const error = new Error('The configured SNS Workbench production URL must be https://api.agents.snsihub.ai/webhook/client-nurturing.');
+      error.status = 503;
+      error.errorType = 'configuration_error';
+      throw error;
+    }
+
+    let response;
+    try {
+      response = await fetch(targetUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'Digital-Client-Nurturing-Backend/1.0'
+        },
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(35000)
+      });
+    } catch (cause) {
+      const timedOut = cause?.name === 'TimeoutError' || cause?.name === 'AbortError';
+      const error = new Error(timedOut
+        ? 'SNS Workbench production request timed out.'
+        : `Unable to reach SNS Workbench production webhook (${cause.message}).`);
+      error.status = 502;
+      error.errorType = timedOut ? 'timeout' : 'network_error';
+      error.targetUrl = targetUrl;
+      throw error;
+    }
+
+    const responseText = await response.text();
+    let responseData;
+    try { responseData = JSON.parse(responseText); }
+    catch (_err) { responseData = responseText ? { text: responseText.slice(0, 2000) } : null; }
+
+    console.info(`[NurturingWebhook] POST ${parsedTarget.host}${parsedTarget.pathname} status=${response.status} mode=production`);
+    if (response.status >= 200 && response.status < 300) {
+      let outputData = responseData;
+      if (Array.isArray(outputData) && outputData[0]) outputData = outputData[0].json || outputData[0];
+      else if (outputData?.json) outputData = outputData.json;
+      if (outputData?.data && !outputData.nurtured_contact && outputData.data.nurtured_contact) outputData = outputData.data;
+      return { success: true, source: 'workbench_production_webhook', targetUrl, httpStatus: response.status, data: outputData };
+    }
+
+    const error = new Error(typeof responseData?.error === 'string'
+      ? responseData.error
+      : `SNS Workbench production webhook returned HTTP ${response.status}.`);
+    error.status = response.status;
+    error.errorType = response.status === 404
+      ? 'workflow_not_deployed'
+      : [401, 403].includes(response.status)
+        ? 'auth_error'
+        : 'generation_failed';
+    error.actionLabel = response.status === 404 ? 'Check Workbench Deployment' : 'Retry Generation';
+    error.targetUrl = targetUrl;
+    error.responseData = responseData;
+    throw error;
+  }
+
+  /**
    * Dispatches nurturing campaign payload directly to the SNS Workbench Webhook.
    * Strictly dependent on SNS Workbench workflow nodes for LLM synthesis,
    * intent classification, Google Sheets syncing, and sales handoff.

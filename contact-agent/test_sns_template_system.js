@@ -14,6 +14,8 @@
  */
 
 const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
 const DOMPurify = require('dompurify');
 const { JSDOM } = require('jsdom');
 
@@ -25,6 +27,7 @@ const purify = DOMPurify(window);
 const {
   buildSnsTemplateEmailHtml,
   interpolateTemplateVars,
+  interpolateEmailHtmlVars,
   buildSnsTemplateEmailResult
 } = require('./backend/src/services/templateEmailBuilderNode');
 
@@ -214,7 +217,7 @@ function runTemplateTests() {
   console.log('========================================================\n');
 
   let passed = 0;
-  const total = 7;
+  const total = 9;
 
   // 1. Variable Interpolation
   console.log('TEST 1: Variable interpolation for personalization tags...');
@@ -360,6 +363,37 @@ function runTemplateTests() {
     passed++;
   } catch (err) {
     console.error('  ✗ TEST 7 Failed:', err.message);
+  }
+
+  // 8. Stable canonical HTML plus recipient-only interpolation
+  console.log('\nTEST 8: Canonical source remains stable when preview recipient changes...');
+  try {
+    const options = { template: TEMPLATES[0], customization: { greetingType: 'personal' } };
+    const baseHtml = buildSnsTemplateEmailHtml({ ...options, recipient: null });
+    const firstPreview = interpolateEmailHtmlVars(baseHtml, MOCK_CONTACTS[0]);
+    const secondPreview = interpolateEmailHtmlVars(baseHtml, MOCK_CONTACTS[1]);
+    assert(baseHtml.includes('{{first_name}}'), 'Approved base HTML preserves personalization tokens');
+    assert(firstPreview.includes('Dear Priya,') && secondPreview.includes('Dear David,'), 'Preview recipient controls greeting');
+    assert(!firstPreview.includes('David') && !secondPreview.includes('Priya'), 'Recipient switching changes only recipient values');
+    assert.strictEqual(firstPreview, buildSnsTemplateEmailHtml({ ...options, recipient: MOCK_CONTACTS[0] }));
+    assert.strictEqual(secondPreview, buildSnsTemplateEmailHtml({ ...options, recipient: MOCK_CONTACTS[1] }));
+    console.log('  ✓ Recipient switching interpolates a stable approved source');
+    passed++;
+  } catch (err) {
+    console.error('  ✗ TEST 8 Failed:', err.message);
+  }
+
+  // 9. Supplied brand asset exists in the frontend public directory
+  console.log('\nTEST 9: Supplied SNS Square logo asset is present...');
+  try {
+    const logoPath = path.resolve(__dirname, 'frontend/public/sns-square-logo.png');
+    assert(fs.existsSync(logoPath), 'Supplied SNS Square logo asset exists');
+    const html = buildSnsTemplateEmailHtml({ template: TEMPLATES[0], recipient: MOCK_CONTACTS[0] });
+    assert(html.includes('https://contact-data-extraction-structuring-agent.onrender.com/sns-square-logo.png'), 'Canonical email references the supplied public logo');
+    console.log('  ✓ Canonical email uses the supplied SNS Square logo asset');
+    passed++;
+  } catch (err) {
+    console.error('  ✗ TEST 9 Failed:', err.message);
   }
 
   console.log('\n========================================================');
