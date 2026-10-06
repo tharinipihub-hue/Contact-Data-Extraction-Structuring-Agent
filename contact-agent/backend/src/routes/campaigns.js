@@ -546,6 +546,19 @@ router.post('/generate', async (req, res) => {
       `SIGN-OFF: Must be signed off exclusively by SNS Square ("Warm regards,\\nThe SNS Square Team").\n` +
       `RESTRICTIONS: Strictly NO sales pitch, NO commercial promotion, NO technical jargon, and NEVER sign off as the recipient company.\n` +
       `ADDITIONAL CONTEXT: ${brief}`;
+  } else if (campaignTypeKey === 'newsletter') {
+    developerInput = `PUBLICATION: SNS Square Weekly GCC & AI Scoop.\n` +
+      `SENDER: SNS Square Enterprise Client Partnerships.\n` +
+      `RECIPIENT: ${activeContact.name} at ${activeContact.company || 'their enterprise'}.\n` +
+      `TOPIC / BRIEF: ${brief}\n` +
+      `EDITORIAL STRUCTURE REQUIREMENTS:\n` +
+      `- hero_headline: Compelling, executive-grade editorial theme title.\n` +
+      `- hero_body: 2 to 3 substantive, in-depth analytical paragraphs exploring macro strategic transformation, industry paradigm shifts, and operational execution (at least 120-180 words total).\n` +
+      `- content_blocks: Exactly 2 to 3 distinct, high-impact editorial perspectives or practical focus areas. Each block MUST include: "headline" (bold thematic insight title), "body" (thorough 3-4 sentence analytical summary), and "cta_label" ("Explore Insights →").\n` +
+      `- foundations_title: "Key strategic pillars powering this transformation:"\n` +
+      `- foundations: Exactly 4 substantive, executive takeaways or architectural principles.\n` +
+      `- closing_text: "Together, these capabilities form the foundation of resilient, intelligent organisations that are ready to adapt, compete, and grow in an AI-driven world.\\n\\nWarm regards,\\nThe SNS Square Team"\n` +
+      `- SIGN-OFF: Strictly from "The SNS Square Team". NEVER sign off as ${activeContact.company || 'the recipient company'}.`;
   }
 
   const unsubBase = getUnsubscribeBaseUrl(req);
