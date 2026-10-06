@@ -4281,10 +4281,22 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
             showNotification={showNotification}
             onUseTemplateInCampaign={(templateData) => {
               if (templateData.campaignName) setWizardCampaignName(templateData.campaignName);
-              if (templateData.category === 'Newsletter') setWizardCampaignType('Newsletter');
-              else if (templateData.category === 'Occasion' || templateData.category === 'Occasion Wish') setWizardCampaignType('Festival / Occasion Wish');
-              else if (templateData.category === 'Campaign' || templateData.category === 'Promotion') setWizardCampaignType('Promotional / Strategic Update');
-              else setWizardCampaignType('Newsletter');
+              const wizardType = templateData.campaignType ? campaignTypeLabel(templateData.campaignType) : '';
+              if (wizardType) {
+                setWizardCampaignType(wizardType);
+              } else if (templateData.category === 'Newsletter') {
+                setWizardCampaignType('Newsletter');
+              } else if (templateData.category === 'Occasion' || templateData.category === 'Occasion Wish') {
+                setWizardCampaignType('Festival / Occasion Wish');
+              } else if (templateData.category === 'Campaign' || templateData.category === 'Promotion') {
+                setWizardCampaignType('Promotional / Strategic Update');
+              } else if (templateData.category === 'Event') {
+                setWizardCampaignType('Event Invitation');
+              } else if (templateData.category === 'Client Update') {
+                setWizardCampaignType('Promotional / Strategic Update');
+              } else {
+                setWizardCampaignType('Newsletter');
+              }
 
               const finalSubject = templateData.subjectLine || templateData.defaultSubject || '';
               const finalBody = templateData.html || '';

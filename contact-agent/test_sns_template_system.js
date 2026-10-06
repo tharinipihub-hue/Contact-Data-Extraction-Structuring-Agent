@@ -30,6 +30,10 @@ const {
   interpolateEmailHtmlVars,
   buildSnsTemplateEmailResult
 } = require('./backend/src/services/templateEmailBuilderNode');
+const {
+  normalizeCampaignType,
+  isSupportedCampaignType
+} = require('./backend/src/services/campaignTypeRegistry');
 
 const MOCK_CONTACTS = [
   {
@@ -55,6 +59,7 @@ const TEMPLATES = [
     id: 'editorial_newsletter',
     name: 'SNS Editorial Newsletter',
     category: 'Newsletter',
+    campaignType: 'newsletter',
     headerTitle: 'Your Weekly GCC & AI Scoop',
     headerSubtitle: 'Core Perspective | Wednesday Edition',
     defaultSubject: 'Enterprise AI & Cloud Transformation | SNS Square Weekly GCC & AI Scoop',
@@ -89,6 +94,7 @@ const TEMPLATES = [
     id: 'festival_greeting',
     name: 'SNS Festival & Seasonal Greeting',
     category: 'Occasion',
+    campaignType: 'festival_wish',
     headerTitle: 'Warm Executive Festive Wishes',
     headerSubtitle: 'Celebrating Shared Milestones & Prosperity',
     defaultSubject: 'Warm Festive Wishes to {{company}} from SNS Square',
@@ -120,6 +126,7 @@ const TEMPLATES = [
     id: 'promotional_campaign',
     name: 'SNS Enterprise Promotional Campaign',
     category: 'Campaign',
+    campaignType: 'promotional',
     headerTitle: 'Enterprise Agentic AI & Data Capabilities',
     headerSubtitle: 'Strategic Advisory & Production Execution',
     defaultSubject: 'Data & Agentic AI Capabilities for {{company}}',
@@ -151,6 +158,7 @@ const TEMPLATES = [
     id: 'event_invitation',
     name: 'SNS Executive Event & Webinar Invitation',
     category: 'Event',
+    campaignType: 'event_invitation',
     headerTitle: 'Executive Leadership Roundtable',
     headerSubtitle: 'Exclusive CXO & Engineering Leadership Forum',
     defaultSubject: 'Invitation: Enterprise Agentic AI Roundtable 2026 for {{company}}',
@@ -182,6 +190,7 @@ const TEMPLATES = [
     id: 'client_update',
     name: 'SNS Strategic Client & Partnership Update',
     category: 'Client Update',
+    campaignType: 'promotional',
     headerTitle: 'Executive Client Briefing & Roadmap',
     headerSubtitle: 'SNS Square Strategic Partnership Services',
     defaultSubject: 'Partnership Milestone & Platform Update for {{company}}',
@@ -217,7 +226,7 @@ function runTemplateTests() {
   console.log('========================================================\n');
 
   let passed = 0;
-  const total = 13;
+  const total = 14;
 
   // 1. Variable Interpolation
   console.log('TEST 1: Variable interpolation for personalization tags...');
@@ -508,6 +517,26 @@ function runTemplateTests() {
     passed++;
   } catch (err) {
     console.error('  ✗ TEST 11 Failed:', err.message);
+  }
+
+  // 14. Canonical Campaign Type Mapping for All Templates
+  console.log('TEST 14: Canonical campaign type mapping across all templates and categories...');
+  try {
+    for (const t of TEMPLATES) {
+      assert(t.campaignType, `Template ${t.id} must have campaignType`);
+      assert(isSupportedCampaignType(t.campaignType), `Template ${t.id} campaignType ${t.campaignType} must be supported`);
+      assert(isSupportedCampaignType(t.category), `Template ${t.id} category ${t.category} must resolve to a supported campaign type`);
+      assert(isSupportedCampaignType(t.id), `Template id ${t.id} must resolve to a supported campaign type`);
+    }
+    // Specifically test that 'campaign', 'client_update', and 'occasion' resolve canonically
+    assert.strictEqual(normalizeCampaignType('campaign'), 'promotional');
+    assert.strictEqual(normalizeCampaignType('client_update'), 'promotional');
+    assert.strictEqual(normalizeCampaignType('occasion'), 'festival_wish');
+    console.log('  ✓ All 5 templates map to supported canonical campaign types');
+    console.log('  ✓ Template categories ("Campaign", "Client Update", "Occasion") normalize canonically');
+    passed++;
+  } catch (err) {
+    console.error('  ✗ TEST 14 Failed:', err.message);
   }
 
   console.log('\n========================================================');

@@ -31,6 +31,7 @@ import {
 import ClientEmailPreview from './ClientEmailPreview';
 import { buildSnsTemplateEmailHtml, interpolateEmailHtmlVars, interpolateTemplateVars } from './templateEmailBuilder';
 import { normalizeWorkbenchTemplateContent, cleanCtaText, scrubPromptDirectiveText } from './workbenchTemplateContent';
+import { normalizeCampaignType } from '../../campaignTypes';
 import './SnsTemplateSystemTab.css';
 
 // Preset High Quality Tech & Enterprise Imagery matching the visual reference
@@ -68,6 +69,7 @@ const SNS_TEMPLATES_CATALOG = [
     id: 'editorial_newsletter',
     name: 'SNS Editorial Newsletter',
     category: 'Newsletter',
+    campaignType: 'newsletter',
     tag: 'Official Framework',
     purpose: 'Weekly industry/GCC/AI newsletter with multi-perspective editorial analysis, curated article cards, and GCC execution banner.',
     headerTitle: 'Your Weekly GCC & AI Scoop',
@@ -114,6 +116,7 @@ const SNS_TEMPLATES_CATALOG = [
     id: 'festival_greeting',
     name: 'SNS Festival & Seasonal Greeting',
     category: 'Occasion',
+    campaignType: 'festival_wish',
     tag: 'Cultural Intelligence',
     purpose: 'Culturally respectful, warm seasonal greetings focused on the occasion and heartfelt wishes.',
     headerTitle: 'Warm Festive Wishes',
@@ -141,6 +144,7 @@ const SNS_TEMPLATES_CATALOG = [
     id: 'promotional_campaign',
     name: 'SNS Enterprise Promotional Campaign',
     category: 'Campaign',
+    campaignType: 'promotional',
     tag: 'Executive Solutions',
     purpose: 'Enterprise AI, Cloud & Data Capability showcase with executive positioning and direct client engagement call-to-action.',
     headerTitle: 'Enterprise Agentic AI & Data Capabilities',
@@ -187,6 +191,7 @@ const SNS_TEMPLATES_CATALOG = [
     id: 'event_invitation',
     name: 'SNS Executive Event & Webinar Invitation',
     category: 'Event',
+    campaignType: 'event_invitation',
     tag: 'Executive Roundtables',
     purpose: 'Exclusive invitations for leadership roundtables, AI innovation symposiums, and CXO technical briefings.',
     headerTitle: 'Executive Leadership Roundtable',
@@ -225,6 +230,7 @@ const SNS_TEMPLATES_CATALOG = [
     id: 'client_update',
     name: 'SNS Strategic Client & Partnership Update',
     category: 'Client Update',
+    campaignType: 'promotional',
     tag: 'Client Advisory',
     purpose: 'Periodic partnership milestone reviews, SLA performance updates, and technology roadmap alignment.',
     headerTitle: 'Executive Client Briefing & Roadmap',
@@ -389,7 +395,7 @@ export default function SnsTemplateSystemTab({
 
     try {
       const payload = {
-        campaign_type: activeTemplate.category.toLowerCase().replace(/\s+/g, '_'),
+        campaign_type: activeTemplate.campaignType || normalizeCampaignType(activeTemplate.category) || 'promotional',
         campaign_name: campaignName || `${activeTemplate.name} AI Synthesis`,
         topic: topicToUse,
         developer_input: topicToUse,
@@ -541,7 +547,7 @@ export default function SnsTemplateSystemTab({
       const payload = {
         campaign_id: campaignId,
         campaign_name: campaignName || `${activeTemplate.name} Dispatch`,
-        campaign_type: activeTemplate.category.toLowerCase().replace(/\s+/g, '_'),
+        campaign_type: activeTemplate.campaignType || normalizeCampaignType(activeTemplate.category) || 'promotional',
         topic: headerTitle || activeTemplate.name,
         contacts: targetAudienceContacts,
         content: {
@@ -1428,6 +1434,7 @@ export default function SnsTemplateSystemTab({
                         templateId: activeTemplate.id,
                         templateName: activeTemplate.name,
                         category: activeTemplate.category,
+                        campaignType: activeTemplate.campaignType || normalizeCampaignType(activeTemplate.category) || 'promotional',
                         campaignName,
                         subjectLine,
                         defaultSubject: activeTemplate.defaultSubject,

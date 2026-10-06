@@ -87,6 +87,16 @@ export const CAMPAIGN_TYPE_ALIASES = {
   'announcements': 'announcement',
   'announce': 'announcement',
 
+  // Template catalog and natural category aliases
+  'campaign': 'promotional',
+  'client_update': 'promotional',
+  'promotional_campaign': 'promotional',
+  'occasion': 'festival_wish',
+  'seasonal_greeting': 'festival_wish',
+  'festival_greeting': 'festival_wish',
+  'editorial_newsletter': 'newsletter',
+  'update': 'promotional',
+
   // Legacy application values, mapped explicitly.
   'welcome': 'promotional',
   'welcome_message': 'promotional',
