@@ -326,7 +326,7 @@ const NURTURE_TEMPLATES = {
     ],
     sample: {
       campaign_name: 'SNS Square Weekly GCC & AI Scoop',
-      brief: 'Synthesize the latest edition of the SNS Square Weekly GCC & AI Scoop exploring four perspectives: (1) FedRAMP Cloud Modernisation & Secure Digital Foundations; (2) Intelligent Mobility & Supply Chain Automation; (3) Accelerating Enterprise & Government Services through AI; (4) The Hidden Workforce Costs of AI and Change Management.',
+      brief: 'Executive briefing on AI automation, GCC expansion, and enterprise transformation.',
       subject: 'Accelerating Enterprise Services Through AI Automation | SNS Square Weekly GCC & AI Scoop',
       email_body: `Dear [Client Name],
 
@@ -3950,31 +3950,29 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                         </div>
                       )}
 
-                      {wizardGeneratedContent?.content_source === 'sns_template_system' ? (
-                        <ClientEmailPreview
-                          subject={previewPersonalized.subject}
-                          bodyHtml={previewPersonalized.body}
-                          recipient={activePreviewContact}
-                          contentVersion={wizardGeneratedContent.content_version || 'v1'}
-                          campaignName={wizardCampaignName}
-                        />
-                      ) : wizardIsEditing ? (
-                        <div>
-                          <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', marginBottom: 6 }}>
-                            Customize or refine the generated email body:
+                      {wizardIsEditing && (
+                        <div style={{ marginBottom: 16, background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: 14 }}>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: '#334155', marginBottom: 6 }}>
+                            Customize or refine the email message (plain text):
                           </div>
                           <textarea
                             className="dn-form-textarea"
-                            rows={14}
-                            value={wizardEditedBody}
+                            rows={6}
+                            value={wizardEditedBody ? wizardEditedBody.replace(/<[^>]+>/g, ' ').replace(/\s{2,}/g, '\n\n').trim() : ''}
                             onChange={(e) => setWizardEditedBody(e.target.value)}
-                            placeholder="Write or edit the email content..."
+                            placeholder="Type plain text message to update the email content..."
                             style={{ width: '100%', fontSize: 13, lineHeight: 1.6, padding: '10px 12px' }}
                           />
                         </div>
-                      ) : (
-                        <EmailBodyPreview content={previewPersonalized.body} />
                       )}
+
+                      <ClientEmailPreview
+                        subject={previewPersonalized.subject}
+                        bodyHtml={previewPersonalized.body}
+                        recipient={activePreviewContact}
+                        contentVersion={wizardGeneratedContent?.content_version || 'v1'}
+                        campaignName={wizardCampaignName}
+                      />
                     </div>
 
                     {!String(previewPersonalized.body || '').includes('sns-email-container') && (

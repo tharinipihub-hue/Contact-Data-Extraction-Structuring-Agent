@@ -1489,17 +1489,17 @@ export default function SnsTemplateSystemTab({
                 <CheckCircle2 size={28} />
               </div>
               <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: '#0f172a' }}>
-                Campaign Successfully Dispatched
+                Campaign Dispatch Confirmed
               </h3>
               <p style={{ margin: '6px 0 0 0', fontSize: 13, color: '#64748b' }}>
-                {activeTemplate?.name} has been processed and queued for delivery.
+                {activeTemplate?.name} dispatched via SNS Agent Workbench.
               </p>
             </div>
 
             <div style={{ background: '#f8fafc', padding: 14, borderRadius: 8, fontSize: 12.5, color: '#334155', marginBottom: 20 }}>
               <div><strong>Recipients:</strong> {sendSuccessModal.count} client(s)</div>
               <div style={{ marginTop: 4 }}><strong>Subject:</strong> {sendSuccessModal.subject}</div>
-              <div style={{ marginTop: 4 }}><strong>Content Version:</strong> v1 (Verified match)</div>
+              <div style={{ marginTop: 4 }}><strong>Delivery Status:</strong> Verified SMTP dispatch</div>
             </div>
 
             <button
