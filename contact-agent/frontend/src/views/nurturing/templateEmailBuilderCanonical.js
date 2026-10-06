@@ -218,17 +218,17 @@ function buildSnsTemplateEmailHtml({
   <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 640px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
     <!-- Gradient Brand Header -->
     <tr>
-      <td bgcolor="${headerColor}" style="padding: 24px 28px; background-color: ${headerColor}; border-bottom: 1px solid #064EE3;">
+      <td bgcolor="${headerColor}" style="padding: 24px 48px 24px 28px; background-color: ${headerColor}; border-bottom: 1px solid #064EE3;">
         <table border="0" cellpadding="0" cellspacing="0" width="100%">
           <tr>
             <td style="vertical-align: middle;">
               <img src="${snsSquareLogoUrl}" alt="SNS Square — Redesigning Business" width="150" height="103" border="0" style="display: block; width: 150px; height: auto; max-width: 150px; background-color: #ffffff;" />
             </td>
-            <td align="right" style="vertical-align: middle;">
-              <div style="font-size: 18px; font-weight: 800; color: #ffffff; line-height: 1.25;">
+            <td align="right" style="vertical-align: middle; padding-right: 48px;">
+              <div style="font-size: 26px; font-weight: 600; color: #ffffff; line-height: 1.25;">
                 ${headerTitle}
               </div>
-              <div style="font-size: 11.5px; color: #dbeafe; margin-top: 3px; font-weight: 500;">
+              <div style="font-size: 16px; color: #dbeafe; margin-top: 4px; font-weight: 400;">
                 ${headerSubtitle}
               </div>
             </td>

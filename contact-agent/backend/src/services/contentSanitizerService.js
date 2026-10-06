@@ -445,8 +445,8 @@ function wrapInSnsSquareTemplate(contentBodyHtml, options = {}) {
   <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 640px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
     <!-- SNS Square Branded Confirmed Header -->
     <tr>
-      <td bgcolor="${headerColor}" style="padding: 20px 24px; background-color: ${headerColor}; border-bottom: 1px solid ${headerColor};">
-        <table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td style="vertical-align: middle;"><img src="${snsSquareLogoUrl}" alt="SNS Square — Redesigning Business" width="140" height="auto" border="0" style="display: block; width: 140px; height: auto; max-width: 140px; background-color: #ffffff; border-radius: 4px;" /></td><td align="right" style="vertical-align: middle;"><div style="font-size: 18px; font-weight: 800; color: #ffffff; line-height: 1.25;">${headerTitleText}</div><div style="font-size: 11.5px; color: #dbeafe; margin-top: 3px; font-weight: 500;">${headerSubtitleText}</div></td></tr></table>
+      <td bgcolor="${headerColor}" style="padding: 20px 48px 20px 24px; background-color: ${headerColor}; border-bottom: 1px solid ${headerColor};">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td style="vertical-align: middle;"><img src="${snsSquareLogoUrl}" alt="SNS Square — Redesigning Business" width="140" height="auto" border="0" style="display: block; width: 140px; height: auto; max-width: 140px; background-color: #ffffff; border-radius: 4px;" /></td><td align="right" style="vertical-align: middle; padding-right: 48px;"><div style="font-size: 26px; font-weight: 600; color: #ffffff; line-height: 1.25;">${headerTitleText}</div><div style="font-size: 16px; color: #dbeafe; margin-top: 4px; font-weight: 400;">${headerSubtitleText}</div></td></tr></table>
       </td>
     </tr>
     <!-- Main Email Body Content -->
