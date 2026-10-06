@@ -1,7 +1,7 @@
 {
   "_platform": "agentbuilder",
   "_version": 1,
-  "_exportedAt": "2026-10-05T11:15:32.306Z",
+  "_exportedAt": "2026-10-06T10:57:18.095Z",
   "_fingerprint": "YWN0aW9uOmNvZGUuZXhlY3V0ZXxhY3Rpb246Y29kZS5leGVjdXRlfGFjdGlvbjpj",
   "nodes": [
     {
@@ -571,12 +571,12 @@
         "isPrimaryTrigger": true
       },
       "type": "webhook",
-      "width": 220,
-      "height": 100,
       "position": {
         "x": 50,
         "y": 350
       },
+      "width": 220,
+      "height": 100,
       "selected": false,
       "dragging": false
     },
@@ -645,12 +645,12 @@
         "isPrimaryTrigger": false
       },
       "type": "action",
-      "width": 220,
-      "height": 94,
       "position": {
         "x": 450,
         "y": 350
       },
+      "width": 220,
+      "height": 94,
       "selected": false,
       "dragging": false
     },
@@ -800,12 +800,12 @@
         "isPrimaryTrigger": false
       },
       "type": "switch",
-      "width": 240,
-      "height": 269,
       "position": {
         "x": 850,
         "y": 350
       },
+      "width": 240,
+      "height": 269,
       "selected": false,
       "dragging": false
     },
@@ -1096,12 +1096,12 @@
         "isPrimaryTrigger": false
       },
       "type": "action",
-      "width": 220,
-      "height": 94,
       "position": {
         "x": 1250.6704433265204,
         "y": 350
       },
+      "width": 220,
+      "height": 94,
       "selected": false,
       "dragging": false
     },
@@ -1211,12 +1211,12 @@
         "isPrimaryTrigger": false
       },
       "type": "action",
-      "width": 220,
-      "height": 94,
       "position": {
         "x": 1678.4120020398368,
         "y": 320
       },
+      "width": 220,
+      "height": 94,
       "selected": false,
       "dragging": false
     },
@@ -1285,12 +1285,12 @@
         "isPrimaryTrigger": false
       },
       "type": "action",
-      "width": 220,
-      "height": 94,
       "position": {
         "x": 2080,
         "y": 320
       },
+      "width": 220,
+      "height": 94,
       "selected": false,
       "dragging": false
     },
@@ -1581,12 +1581,12 @@
         "isPrimaryTrigger": false
       },
       "type": "action",
-      "width": 220,
-      "height": 94,
       "position": {
         "x": 2424.4165466762656,
         "y": 348.4120020398368
       },
+      "width": 220,
+      "height": 94,
       "selected": false,
       "dragging": false
     },
@@ -1655,12 +1655,12 @@
         "isPrimaryTrigger": false
       },
       "type": "action",
-      "width": 220,
-      "height": 94,
       "position": {
         "x": 2707.2571120984067,
         "y": 360.40104627071776
       },
+      "width": 220,
+      "height": 94,
       "selected": false,
       "dragging": false
     },
@@ -1770,12 +1770,12 @@
         "isPrimaryTrigger": false
       },
       "type": "action",
-      "width": 220,
-      "height": 94,
       "position": {
         "x": 2996.9789179251625,
         "y": 363.0944768196495
       },
+      "width": 220,
+      "height": 94,
       "selected": false,
       "dragging": false
     },
@@ -1844,12 +1844,12 @@
         "isPrimaryTrigger": false
       },
       "type": "action",
-      "width": 220,
-      "height": 94,
       "position": {
         "x": 1487.390285043202,
         "y": 106.44106657631391
       },
+      "width": 220,
+      "height": 94,
       "selected": false,
       "dragging": false
     },
@@ -1918,18 +1918,14 @@
         "isPrimaryTrigger": false
       },
       "type": "action",
-      "width": 320,
-      "height": 220,
       "position": {
         "x": 1080,
         "y": 350
       },
+      "width": 320,
+      "height": 220,
       "selected": false,
-      "dragging": false,
-      "positionAbsolute": {
-        "x": 1080,
-        "y": 350
-      }
+      "dragging": false
     },
     {
       "id": "core_switch-nurture-generation-valid",
@@ -2047,155 +2043,171 @@
         "isPrimaryTrigger": false
       },
       "type": "switch",
-      "width": 300,
-      "height": 200,
       "position": {
         "x": 1850,
         "y": 350
       },
+      "width": 300,
+      "height": 200,
       "selected": false,
-      "dragging": false,
-      "positionAbsolute": {
-        "x": 1850,
-        "y": 350
-      }
+      "dragging": false
     }
   ],
   "edges": [
     {
       "id": "e1",
-      "data": {},
-      "type": "custom",
       "source": "webhook-trigger-client-nurturing",
-      "target": "code.execute-nurture-ingest"
+      "target": "code.execute-nurture-ingest",
+      "type": "custom",
+      "data": {},
+      "selected": false
     },
     {
       "id": "e2",
-      "data": {},
-      "type": "custom",
       "source": "code.execute-nurture-ingest",
-      "target": "core_switch-nurture-router"
+      "target": "core_switch-nurture-router",
+      "type": "custom",
+      "data": {},
+      "selected": false
     },
     {
       "id": "e3",
-      "data": {},
-      "type": "custom",
       "source": "core_switch-nurture-router",
       "target": "code.execute-campaign-prompt-builder",
-      "sourceHandle": "output-0"
+      "type": "custom",
+      "data": {},
+      "sourceHandle": "output-0",
+      "selected": false
     },
     {
       "id": "e4",
-      "data": {},
-      "type": "custom",
       "source": "core_switch-nurture-router",
       "target": "code.execute-campaign-prompt-builder",
-      "sourceHandle": "output-1"
+      "type": "custom",
+      "data": {},
+      "sourceHandle": "output-1",
+      "selected": false
     },
     {
       "id": "e5",
-      "data": {},
-      "type": "custom",
       "source": "core_switch-nurture-router",
       "target": "code.execute-campaign-prompt-builder",
-      "sourceHandle": "output-2"
+      "type": "custom",
+      "data": {},
+      "sourceHandle": "output-2",
+      "selected": false
     },
     {
       "id": "e6",
-      "data": {},
-      "type": "custom",
       "source": "core_switch-nurture-router",
       "target": "code.execute-campaign-prompt-builder",
-      "sourceHandle": "output-3"
+      "type": "custom",
+      "data": {},
+      "sourceHandle": "output-3",
+      "selected": false
     },
     {
       "id": "e11",
-      "data": {},
-      "type": "custom",
       "source": "smtp-nurture-dispatch",
-      "target": "code.execute-engagement-telemetry"
+      "target": "code.execute-engagement-telemetry",
+      "type": "custom",
+      "data": {},
+      "selected": false
     },
     {
       "id": "e19",
-      "data": {},
-      "type": "custom",
       "source": "code.execute-format-response",
       "target": "respond-to-webhook-nurture",
+      "type": "custom",
+      "data": {},
       "selected": false
     },
     {
       "id": "reactflow__edge-groq-nurture-personalizer-code.execute-1790678109627001",
-      "data": {},
-      "type": "custom",
       "source": "groq-nurture-personalizer",
-      "target": "code.execute-1790678109627001"
+      "target": "code.execute-1790678109627001",
+      "type": "custom",
+      "data": {},
+      "selected": false
     },
     {
       "id": "reactflow__edge-code.execute-1790678109627001-smtp-nurture-dispatch",
-      "data": {},
-      "type": "custom",
       "source": "code.execute-1790678109627001",
-      "target": "core_switch-nurture-generation-valid"
+      "target": "core_switch-nurture-generation-valid",
+      "type": "custom",
+      "data": {},
+      "selected": false
     },
     {
       "id": "reactflow__edge-groq-intent-classifier-code.execute-format-response",
-      "data": {},
-      "type": "custom",
       "source": "groq-intent-classifier",
-      "target": "code.execute-format-response"
+      "target": "code.execute-format-response",
+      "type": "custom",
+      "data": {},
+      "selected": false
     },
     {
       "id": "e-prompt-builder-to-generator",
-      "data": {},
-      "type": "custom",
       "source": "code.execute-campaign-prompt-builder",
-      "target": "groq-nurture-personalizer"
+      "target": "groq-nurture-personalizer",
+      "type": "custom",
+      "data": {},
+      "selected": false
     },
     {
       "id": "e-dispatch-gate-to-smtp",
-      "data": {},
-      "type": "custom",
       "source": "core_switch-nurture-generation-valid",
       "target": "smtp-nurture-dispatch",
-      "sourceHandle": "output-0"
+      "type": "custom",
+      "data": {},
+      "sourceHandle": "output-0",
+      "selected": false
     },
     {
       "id": "e-preview-to-response",
-      "data": {},
-      "type": "custom",
       "source": "core_switch-nurture-generation-valid",
       "target": "code.execute-format-response",
-      "sourceHandle": "output-1"
+      "type": "custom",
+      "data": {},
+      "sourceHandle": "output-1",
+      "selected": false
     },
     {
       "id": "e-router-output-4",
-      "data": {},
-      "type": "custom",
       "source": "core_switch-nurture-router",
       "target": "code.execute-campaign-prompt-builder",
-      "sourceHandle": "output-4"
+      "type": "custom",
+      "data": {},
+      "sourceHandle": "output-4",
+      "selected": false
     },
     {
       "id": "e-router-output-5",
-      "data": {},
-      "type": "custom",
       "source": "core_switch-nurture-router",
       "target": "code.execute-campaign-prompt-builder",
-      "sourceHandle": "output-5"
+      "type": "custom",
+      "data": {},
+      "sourceHandle": "output-5",
+      "selected": false
     },
     {
       "id": "e-router-output-6",
-      "data": {},
-      "type": "custom",
       "source": "core_switch-nurture-router",
       "target": "code.execute-campaign-prompt-builder",
-      "sourceHandle": "output-6"
+      "type": "custom",
+      "data": {},
+      "sourceHandle": "output-6",
+      "selected": false
     },
     {
+      "id": "edge-nurturing-17-code.execute-engagement-telemetry-code.execute-format-response",
       "source": "code.execute-engagement-telemetry",
-      "target": "code.execute-format-response"
+      "target": "code.execute-format-response",
+      "type": "custom",
+      "data": {},
+      "selected": false
     }
   ],
-  "_description": "Client Nurturing campaign generation: campaign-aware prompt, one content-generation LLM, strict structured validation, safe response; preview requests never dispatch email.",
+  "_description": "SNS Square Client Nurturing Production Workflow — Direct SMTP delivery and clean Groq AI campaign synthesis",
   "name": "SNS Square Digital Client Nurturing Agent (Live Production)"
 }
