@@ -397,7 +397,7 @@ export default function SnsTemplateSystemTab({
         ...(previewContact ? {
           contact_id: previewContact.id,
           contacts: [previewContact],
-          sector: previewContact.sector || previewContact.industry || 'Technology'
+          sector: previewContact.sector || previewContact.industry || ''
         } : {})
       };
 

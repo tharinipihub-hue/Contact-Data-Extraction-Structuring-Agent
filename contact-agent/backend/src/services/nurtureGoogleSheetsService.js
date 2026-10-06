@@ -50,7 +50,7 @@ function parseCsv(text) {
     const key = `${name.toLowerCase()}::${company.toLowerCase()}`;
     if (seen.has(key)) { duplicates++; continue; }
     seen.add(key);
-    const sector = o['Sector / Industry'] || o['Sector/Industry'] || o.Industry || o.Sector || 'Technology';
+    const sector = o['Sector / Industry'] || o['Sector/Industry'] || o.Industry || o.Sector || '';
     const optIn = parseConsent(o['Opt-In'] ?? o['Opt In'] ?? o.Consent);
     contacts.push({
       id: `CNT-${String(contacts.length + 1).padStart(3, '0')}`,
@@ -61,8 +61,8 @@ function parseCsv(text) {
       phone: o.Phone || '',
       sector,
       industry: sector,
-      client_type: o['Client Type'] || 'Past Client',
-      previous_interaction: o['Previous Interaction'] || 'Active enterprise partnership',
+      client_type: o['Client Type'] || '',
+      previous_interaction: o['Previous Interaction'] || '',
       status: optIn === false ? 'Opted Out' : (o.Status || 'Active'),
       opt_in: optIn !== undefined ? optIn : true,
       location: o.Location || [o.City, o.State, o.Country].filter(Boolean).join(', '),

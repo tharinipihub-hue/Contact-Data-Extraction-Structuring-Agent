@@ -349,6 +349,13 @@ router.post('/instant-wish', async (req, res) => {
 
     // 2. Sanitize greeting to prevent generic fake titles (Dear Leader, Dear Executive)
     let cleanBody = sanitizeAndPersonalizeGreeting(generatedContent.email_body, primaryContact);
+    // Occasion wishes are intentionally text-only. Workbench templates can return
+    // generic campaign hero imagery (for example, unrelated technology photos),
+    // so remove image elements and image-only wrappers before applying the brand shell.
+    cleanBody = cleanBody
+      .replace(/<img\b[^>]*>/gi, '')
+      .replace(/<(?:figure|picture)\b[^>]*>[\s\S]*?<\/(?:figure|picture)>/gi, '')
+      .replace(/<div\b[^>]*>\s*(?:&nbsp;|\s|<br\s*\/?>)*<\/div>/gi, '');
     cleanBody = cleanEmailBodyHtml(cleanBody);
 
     // 3. Wrap in official standardized SNS Square email template

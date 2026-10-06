@@ -137,16 +137,23 @@ class WorkbenchService {
       } catch (_) {}
     }
     if (!testContact) {
-      testContact = {
-        id: 'CNT-001',
-        name: 'Arjun Mehta',
-        company: 'BrightEdge Solutions',
-        designation: 'Marketing Manager',
-        email: 'thariniparthasarathy1804@gmail.com',
-        sector: 'Technology',
-        industry: 'Technology',
-        opt_in: true
-      };
+      // No real opted-in contact exists. Never invent one: a fabricated
+      // contact must not be sent to SNS Workbench and must not reach SMTP.
+      const error = new Error(
+        'No opted-in contact with a real email address is available to run the SNS Workbench connectivity test.'
+      );
+      error.status = 400;
+      error.errorType = 'no_test_recipient';
+      error.actionLabel = 'Import or Sync Contacts';
+      error.actionHint = 'Sync contacts from the Past Clients sheet or import contacts, then run the test again.';
+      throw error;
+    }
+
+    if (!String(testContact.email || '').trim()) {
+      const error = new Error('The selected test contact has no email address. A recipient email is required.');
+      error.status = 400;
+      error.errorType = 'missing_recipient_email';
+      throw error;
     }
 
     const payload = {
@@ -155,8 +162,8 @@ class WorkbenchService {
       campaign_type: 'newsletter',
       developer_input: 'Live connectivity and AI campaign generation test via SNS Workbench.',
       campaign_brief: 'Live connectivity and AI campaign generation test via SNS Workbench.',
-      sector: testContact.sector || testContact.industry || 'Technology',
-      target_segment: `${testContact.sector || 'Technology'} Sector Clients`,
+      sector: testContact.sector || testContact.industry || '',
+      target_segment: String(testContact.sector || testContact.industry || '').trim(),
       channel: 'email',
       contacts: [testContact],
       active_contact: testContact,

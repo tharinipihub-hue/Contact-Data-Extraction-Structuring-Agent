@@ -84,8 +84,9 @@ export default function ClientEmailPreview({
   });
   const finalHtml = sanitizedHtml;
 
-  const recipientName = effectiveRecipient?.name || (effectiveRecipient?.first_name ? `${effectiveRecipient.first_name} ${effectiveRecipient.last_name || ''}`.trim() : 'Valued Client');
-  const recipientEmail = effectiveRecipient?.email || 'client@organization.com';
+  // Show only real stored recipient data; never a fabricated name or address.
+  const recipientName = effectiveRecipient?.name || (effectiveRecipient?.first_name ? `${effectiveRecipient.first_name} ${effectiveRecipient.last_name || ''}`.trim() : '');
+  const recipientEmail = effectiveRecipient?.email || '';
   const recipientCompany = effectiveRecipient?.company || '';
   const recipientSector = effectiveRecipient?.sector || effectiveRecipient?.industry || '';
 

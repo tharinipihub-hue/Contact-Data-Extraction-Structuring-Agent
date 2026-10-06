@@ -226,9 +226,9 @@ function runTemplateTests() {
     const res = interpolateTemplateVars(raw, MOCK_CONTACTS[0]);
     assert.strictEqual(res, 'Hello Priya, welcome to Vertex Corp in Technology.');
     const fallback = interpolateTemplateVars('Hi {{first_name}} at {{company}}', null);
-    assert.strictEqual(fallback, 'Hi Colleague at Enterprise');
+    assert.strictEqual(fallback, 'Hi  at ');
     console.log('  ✓ Personalization tags dynamically substituted');
-    console.log('  ✓ Enterprise fallbacks applied when recipient data is missing');
+    console.log('  ✓ Omitted without fabrication when recipient data is missing');
     passed++;
   } catch (err) {
     console.error('  ✗ TEST 1 Failed:', err.message);

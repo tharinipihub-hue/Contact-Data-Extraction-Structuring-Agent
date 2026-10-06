@@ -14,6 +14,45 @@ const {
   sanitizeFoundationsList,
   scrubPromptDirectiveText
 } = require('../services/contentSanitizerService');
+const {
+  normalizeCampaignType,
+  isSupportedCampaignType
+} = require('../services/campaignTypeRegistry');
+
+/**
+ * Decide whether SNS Workbench actually confirmed an email delivery.
+ *
+ * DELIVERY HONESTY RULE
+ *   "Generation success" is NOT "delivery success".
+ *
+ *   A generation/preview response looks like
+ *     { success: true, status: "completed", content_source: "workbench", result: {...} }
+ *   and must NEVER be treated as a send.
+ *
+ *   Only an explicit delivery signal is accepted:
+ *     delivery_confirmed === true | email_sent === true | sent === true
+ *     delivery_status === "delivered" | status in ["sent","delivered"]
+ *
+ *   `success === true` alone is NOT sufficient, and status "completed" /
+ *   "success" are explicitly NOT accepted, because the workflow uses those for
+ *   generation outcomes that never reached the SMTP node.
+ *
+ * @param {object} resData SNS Workbench response envelope
+ * @returns {boolean} true only on an explicit delivery confirmation
+ */
+function isDeliveryConfirmedResponse(resData) {
+  if (!resData) return false;
+  const responses = [resData, resData.result, resData.data, resData.data && resData.data.result]
+    .filter(r => r && typeof r === 'object');
+  if (resData.success === false || responses.some(r => r.success === false)) return false;
+  return responses.some(response =>
+    response.delivery_confirmed === true ||
+    response.email_sent === true ||
+    response.sent === true ||
+    String(response.delivery_status || '').toLowerCase() === 'delivered' ||
+    ['sent', 'delivered'].includes(String(response.status || '').toLowerCase())
+  );
+}
 
 // Get all campaigns
 router.get('/', (req, res) => {
@@ -200,10 +239,10 @@ function personalizeContentForRecipient(rawBody, rawSubject, recipient, allConta
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[ch]));
   const templateValues = {
-    first_name: recipientFirstName || 'Colleague',
-    company: recipientCompany,
-    industry: recipient.sector || recipient.industry || 'Technology',
-    client_name: recipientFullName || 'Valued Client'
+    first_name: recipientFirstName || '',
+    company: recipientCompany || '',
+    industry: recipient.sector || recipient.industry || '',
+    client_name: recipientFullName || ''
   };
   const interpolateTemplateTokens = (value, htmlSafe = true) => String(value || '').replace(
     /\{\{(first_name|company|industry|client_name)\}\}/gi,
@@ -247,7 +286,11 @@ function normalizeExtractedFields(src, defaultSummary = 'Generated via SNS Workb
   let email_body = typeof src.email_body === 'string' ? src.email_body.trim() : '';
 
   const heroHeadline = src.hero_headline || src.heroHeadline || src.hero?.headline || '';
-  const heroBody = src.hero_body || src.heroBody || src.hero?.body || (Array.isArray(src.hero?.paragraphs) ? src.hero.paragraphs.join('\n\n') : '');
+  const rawHeroBody = src.hero_body || src.heroBody || src.hero?.body;
+  const heroBody = Array.isArray(rawHeroBody)
+    ? rawHeroBody.map(p => typeof p === 'string' ? p.trim() : '').filter(Boolean).join('\n\n')
+    : (typeof rawHeroBody === 'string' ? rawHeroBody : '') ||
+      (Array.isArray(src.hero?.paragraphs) ? src.hero.paragraphs.join('\n\n') : '');
   const rawBlocks = src.content_blocks || src.blocks || src.articles;
   const cleanedBlocks = Array.isArray(rawBlocks) ? rawBlocks.map(b => ({
     ...b,
@@ -465,52 +508,37 @@ router.post('/generate', async (req, res) => {
   }
 
   const activeContact = targetContact || recipientContacts[0];
-  const activeSector = sector || activeContact?.sector || activeContact?.industry || 'Technology';
 
-  const developerInput = brief;
-  const normalizedCampaignType = String(campaign_type || 'newsletter').toLowerCase();
-  let campaignGuidance = '';
-  if (normalizedCampaignType === 'welcome' || normalizedCampaignType === 'welcome message') {
-    campaignGuidance = [
-      'CAMPAIGN TYPE: Welcome and onboarding email for a new client.',
-      'Write a genuine, warm welcome to the recipient and their company. Briefly introduce SNS Square and give one practical next step for onboarding or getting started.',
-      'Use the supplied campaign brief as context for the welcome; do not turn it into a generic executive update, newsletter, announcement, or strategy briefing.',
-      'Do not use headings such as KEY ANNOUNCEMENT or STRATEGIC IMPACT. Keep the message concise and specific to the recipient.'
-    ].join(' ');
-  } else if (normalizedCampaignType === 'newsletter') {
-    campaignGuidance = [
-      'EDITORIAL GUIDELINES FOR OFFICIAL SNS SQUARE NEWSLETTER:',
-      'Maintain an authoritative, sophisticated executive tone representing SNS Square enterprise partnerships.',
-      'Establish a cohesive editorial theme connecting the opening analysis with all article perspectives.',
-      'Structure and quality requirements:',
-      '(1) Theme & Headline: Establish a clear, compelling macro headline and a cohesive business transformation theme.',
-      '(2) Executive Opening: Provide a concise executive-style macro introduction (2-3 sentences) exploring enterprise transformation, GCC execution, and AI resilience.',
-      '(3) Curated Analytical Perspectives: Provide 2 to 3 distinct perspectives/articles. Each must feature a strong bold headline (<p><strong>Headline: Insight Subtitle</strong></p>), followed by 2-3 sentences of meaningful, balanced business analysis demonstrating logical progression, and an appropriate, concise call-to-action link (<p><a href="https://www.snssquare.com/insights" style="color: #2563eb; text-decoration: underline; font-weight: 500;">Explore the Perspective &rarr;</a></p>). Never output bracketed placeholder tokens like "[Action Text]".',
-      '(4) Strategic Synthesis: An editorial synthesis ("Every transformation initiative ultimately depends on four foundations:") followed by <ul><li> with 3 to 4 distinct strategic pillars (e.g., Secure Cloud Architecture, Autonomous Operations, Continuous Governance, Workforce AI Enablement). Do NOT output prompt instructions or prompt numbering into the bullet text.',
-      '(5) Official Sign-off: Warm regards, The Team at SNS Square, Enterprise Client Partnerships.',
-      '(6) Quality Standard: Content must feel like one unified editorial publication. Never leak prompt guidelines, numbering labels, or internal instructions into the rendered copy.'
-    ].join(' ');
-  } else if (normalizedCampaignType.includes('festival') || normalizedCampaignType.includes('wish') || normalizedCampaignType.includes('occasion')) {
-    campaignGuidance = [
-      'CAMPAIGN TYPE: Personal occasion greeting.',
-      'Write a brief, sincere, culturally respectful greeting focused entirely on the named occasion. Offer warm wishes for happiness, peace, good health, and prosperity as appropriate.',
-      'Do not include business updates, company or product promotion, partnership language, milestones, achievements, technical content, calls to action, executive framing, or instruction headings.',
-      'Do not invent occasion-specific customs or religious claims. Use a simple greeting and a warm sign-off from SNS Square.'
-    ].join(' ');
-  } else if (normalizedCampaignType.includes('promotional') || normalizedCampaignType.includes('strategic')) {
-    campaignGuidance = [
-      'CAMPAIGN TYPE: Enterprise Capability & Strategic Partnership Update.',
-      'Highlight executive capabilities in data and Agentic AI systems with measurable enterprise value.',
-      'Do not use meta prompt headings like KEY ANNOUNCEMENT or STRATEGIC IMPACT. Present clear executive paragraphs with an actionable briefing and next steps.',
-      'Official Sign-off: Warm regards, The Team at SNS Square, Enterprise Client Partnerships.'
-    ].join(' ');
+  // Campaign type is normalized through the canonical registry so UI display
+  // labels ("Festival / Occasion Wish") are never sent to SNS Workbench
+  // verbatim. An unsupported type is rejected truthfully rather than being
+  // silently substituted with another campaign type.
+  const campaignTypeKey = normalizeCampaignType(campaign_type);
+  if (!isSupportedCampaignType(campaignTypeKey)) {
+    return res.status(400).json({
+      success: false,
+      error_type: 'unsupported_campaign_type',
+      error: campaign_type
+        ? `Campaign type "${campaign_type}" is not supported by the SNS Square Client Nurturing workflow.`
+        : 'A supported campaign type is required.',
+      supported_campaign_types: ['newsletter', 'festival_wish', 'promotional', 'follow_up', 'event_invitation', 'announcement'],
+      requires_workbench: false
+    });
   }
 
+  // Only real stored contact data is used. No sector is invented.
+  const activeSector = String(sector || activeContact?.sector || activeContact?.industry || '').trim();
+
+  const developerInput = brief;
 
   const unsubBase = getUnsubscribeBaseUrl(req);
   const targetId = activeContact.id;
   const unsubUrl = `${unsubBase}/unsubscribe?id=${targetId}`;
   const prefUrl = `${unsubBase}/preferences?id=${targetId}`;
+
+  // No sector is invented. When the contact and request carry no sector, the
+  // field is sent empty so the LLM cannot anchor on a fabricated industry.
+  const audienceLabel = String(target_audience || '').trim();
 
   // Build occasion payload for festival/wish campaigns
   const occasionService = require('../services/occasionService');
@@ -522,26 +550,22 @@ router.post('/generate', async (req, res) => {
   const researchedContext = String(req.body.researched_context || '').trim();
   const newsletterContext = String(req.body.newsletter_context || '').trim();
 
-  // Build campaign-type specific guidance for Workbench
-  const normalizedType = String(campaign_type || 'newsletter').toLowerCase().replace(/[\s/]/g, '_');
-  const isFestivalCampaign = normalizedType.includes('festival') || normalizedType.includes('wish');
-  const isNewsletterCampaign = normalizedType.includes('newsletter');
-
   const payload = {
     action: 'generate_preview',
     request_type: 'generate_preview',
-    campaign_name: campaign_name || `${activeSector} Campaign: ${brief.slice(0, 40)}`,
-    campaign_type: campaign_type || 'newsletter',
+    // Fall back to the user's own brief, never to an invented sector name.
+    campaign_name: String(campaign_name || '').trim() || brief.slice(0, 60),
+    // canonical registry key, never the UI display label
+    campaign_type: campaignTypeKey,
     developer_input: developerInput,
     campaign_brief: developerInput,
-    campaign_guidance: campaignGuidance,
     ...(occasion ? { occasion, ...occasionPayloadData } : {}),
     sector: activeSector,
     industry: activeSector,
-    company: activeContact.company || 'Enterprise Partner',
-    full_name: activeContact.name || 'Valued Partner',
-    first_name: (activeContact.name || '').split(' ')[0] || 'there',
-    designation: activeContact.designation || 'Executive Leader',
+    company: activeContact.company || '',
+    full_name: activeContact.name || '',
+    first_name: (activeContact.name || '').split(' ')[0] || '',
+    designation: activeContact.designation || '',
     name: activeContact.name,
     email: activeContact.email,
     to_email: activeContact.email,
@@ -551,7 +575,7 @@ router.post('/generate', async (req, res) => {
     city: activeContact.city || '',
     location: activeContact.location || '',
     recipient_region: occasionPayloadData.recipient_region || activeContact.country || activeContact.location || '',
-    target_segment: target_audience || `${activeSector} Sector Clients`,
+    target_segment: audienceLabel,
     channel: channel || 'email',
     from_email: process.env.NURTURE_SENDER_EMAIL || '',
     sender_email: process.env.NURTURE_SENDER_EMAIL || '',
@@ -562,12 +586,14 @@ router.post('/generate', async (req, res) => {
     // Research/enrichment context — passed only when available
     ...(researchedContext ? { researched_context: researchedContext } : {}),
     ...(newsletterContext ? { newsletter_context: newsletterContext } : {}),
-    // Campaign type rules for Workbench
-    campaign_type_rules: isFestivalCampaign
-      ? 'FESTIVAL/OCCASION WISH RULES: Write a warm, professional, concise occasion greeting. Do NOT generate a newsletter. Do NOT include product promotions or technical content. Keep under 150 words. Be culturally respectful.'
-      : isNewsletterCampaign
-        ? `NEWSLETTER RULES: Generate an industry-specific newsletter for the ${activeSector} sector. Include 2-3 curated perspectives with bold headlines and action links. Ground content in verified industry topics with logical progression.`
-        : ''
+    client_type: activeContact.client_type || '',
+    previous_interaction: activeContact.previous_interaction || '',
+    known_interests: activeContact.known_interests || activeContact.interests || [],
+    engagement_history: activeContact.engagement_history || activeContact.engagementHistory || [],
+    approved_campaign_metadata: req.body.approved_campaign_metadata && typeof req.body.approved_campaign_metadata === 'object'
+      ? req.body.approved_campaign_metadata
+      : {},
+    approved_urls: Array.isArray(req.body.approved_urls) ? req.body.approved_urls : []
   };
 
   try {
@@ -602,6 +628,8 @@ router.post('/generate', async (req, res) => {
       // 3. Wrap in official standardized SNS Square email template
       const fullTemplateHtml = wrapInSnsSquareTemplate(cleanBody, {
         campaignType: campaign_type,
+        title: extracted.header_title || cleanSubject || brief || 'Your Weekly GCC & AI Scoop',
+        subtitle: extracted.header_subtitle || (brief ? `Topic: ${brief.slice(0, 45)}` : 'Core Perspective | Wednesday Edition'),
         recipientUnsubUrl: unsubUrl,
         recipientPrefUrl: prefUrl,
         company: 'SNS Square'
@@ -640,14 +668,14 @@ router.post('/generate', async (req, res) => {
         ...(previous || {}),
         id: campaignId,
         content_version: previous?.content_version || 'v1',
-        name: campaign_name || `${activeSector} Campaign: ${brief.slice(0, 40)}`,
-        type: campaign_type || 'newsletter',
-        type_key: String(campaign_type || 'newsletter').toLowerCase().replace(/\s+/g, '_'),
+        name: String(campaign_name || '').trim() || brief.slice(0, 60),
+        type: campaignTypeKey,
+        type_key: campaignTypeKey,
         sector: activeSector,
         occasion: occasion || '',
         brief: developerInput,
-        audience: target_audience || `${activeSector} Sector Clients`,
-        target_audience: target_audience || `${activeSector} Sector Clients`,
+        audience: audienceLabel,
+        target_audience: audienceLabel,
         contact_ids: recipientContacts.map(contact => contact.id),
         recipient_contacts: recipientContacts.map(({ id, name, company, email }) => ({ id, name, company, email })),
         subject: previewData.subject,
@@ -796,12 +824,42 @@ router.post('/dispatch', async (req, res) => {
       return res.status(400).json({ success: false, error: 'No opted-in contacts are available for campaign delivery.' });
     }
 
-    const activeSector = sector || targetContact?.sector || targetContact?.industry || 'Technology';
+    // Same canonical registry used by /generate. Display labels are never sent.
+    const dispatchTypeKey = normalizeCampaignType(campaign_type);
+    if (!isSupportedCampaignType(dispatchTypeKey)) {
+      return res.status(400).json({
+        success: false,
+        error_type: 'unsupported_campaign_type',
+        error: campaign_type
+          ? `Campaign type "${campaign_type}" is not supported by the SNS Square Client Nurturing workflow.`
+          : 'A supported campaign type is required before dispatch.',
+        supported_campaign_types: ['newsletter', 'festival_wish', 'promotional', 'follow_up', 'event_invitation', 'announcement']
+      });
+    }
+
+    // BLOCK DISPATCH: every recipient must have a real email address.
+    const recipientsMissingEmail = targetAudienceContacts.filter(c => !String(c.email || '').trim());
+    if (recipientsMissingEmail.length > 0) {
+      return res.status(400).json({
+        success: false,
+        error_type: 'missing_recipient_email',
+        error: `${recipientsMissingEmail.length} selected recipient(s) have no email address. Add an email address or remove them from the audience before dispatching.`,
+        contacts_missing_email: recipientsMissingEmail.map(c => ({ id: c.id, name: c.name || '' }))
+      });
+    }
+
+    // Only real stored sector data. No industry is invented.
+    const activeSector = String(sector || targetContact?.sector || targetContact?.industry || '').trim();
+    const dispatchAudienceLabel = String(audience || '').trim();
     const finalDeveloperInput = developer_input || topic || occasion || '';
     const finalSubject = String(content?.subject || req.body.subject || '').trim();
     const finalBody = String(content?.email_body || req.body.email_body || content?.body || req.body.body || '').trim();
     if (!finalSubject || !finalBody) {
-      return res.status(400).json({ success: false, error: 'Campaign subject and content are required before dispatch.' });
+      return res.status(400).json({
+        success: false,
+        error_type: 'missing_campaign_content',
+        error: 'Campaign subject and content are required before dispatch.'
+      });
     }
 
     let finalImageUrl = image_url || content?.image_url || ''; 
@@ -821,19 +879,7 @@ router.post('/dispatch', async (req, res) => {
     const primaryFirstName = (primaryContact.name || '').split(' ')[0];
     const primaryFullName = primaryContact.name || '';
 
-    const isDeliveryConfirmed = (resData) => {
-      if (!resData) return false;
-      const responses = [resData, resData?.result, resData?.data, resData?.data?.result].filter(Boolean);
-      if (resData.success === false || responses.some(response => response.success === false)) return false;
-      return responses.some(response =>
-        response.delivery_confirmed === true ||
-        response.email_sent === true ||
-        response.sent === true ||
-        String(response.delivery_status || '').toLowerCase() === 'delivered' ||
-        ['sent', 'delivered', 'completed', 'success'].includes(String(response.status || '').toLowerCase()) ||
-        response.success === true
-      );
-    };
+    const isDeliveryConfirmed = (resData) => isDeliveryConfirmedResponse(resData);
 
     const allStoreContacts = nurtureStore.getContacts();
 
@@ -853,9 +899,21 @@ router.post('/dispatch', async (req, res) => {
   <a href="${recipientPrefUrl}" style="color: #64748b; text-decoration: underline; margin-left: 12px;">Manage Preferences</a>
 </div>`.trim();
 
+      // Ensure the email is formatted inside the complete SNS Square branded template
+      // (Header with dynamic title/subtitle, branded body, and complete compliant footer)
       let recipientBody = personalizedBody;
 
-      if (publicImageUrl && !recipientBody.includes('<img')) {
+      if (!recipientBody.includes('sns-email-container') || !recipientBody.includes('Embassy TechVillage')) {
+        recipientBody = wrapInSnsSquareTemplate(recipientBody, {
+          campaignType: dispatchTypeKey,
+          title: content?.header_title || personalizedSubject || campaign_name || 'Your Weekly GCC & AI Scoop',
+          subtitle: content?.header_subtitle || (finalDeveloperInput ? `Topic: ${String(finalDeveloperInput).slice(0, 45)}` : 'Core Perspective | Wednesday Edition'),
+          imageUrl: publicImageUrl || null,
+          recipientUnsubUrl,
+          recipientPrefUrl,
+          company: 'SNS Square'
+        });
+      } else if (publicImageUrl && !recipientBody.includes('<img')) {
         const formattedText = recipientBody.split('\n\n').map(p => `<p style="margin: 0 0 16px 0;">${p.replace(/\n/g, '<br/>')}</p>`).join('');
         recipientBody = `
 <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #1e293b; line-height: 1.6; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;">
@@ -867,13 +925,6 @@ router.post('/dispatch', async (req, res) => {
   </div>
   ${unsubscribeFooterHtml}
 </div>`.trim();
-      } else if (!recipientBody.includes('/unsubscribe')) {
-        if (recipientBody.includes('</div>')) {
-          const lastDivIdx = recipientBody.lastIndexOf('</div>');
-          recipientBody = recipientBody.slice(0, lastDivIdx) + unsubscribeFooterHtml + '</div>';
-        } else {
-          recipientBody = recipientBody + `\n\n---\nTo update your preferences or unsubscribe, visit: ${recipientUnsubUrl}`;
-        }
       }
 
       // Aggressively replace any localhost or non-production links
@@ -881,12 +932,12 @@ router.post('/dispatch', async (req, res) => {
 
       const recipientPayload = {
         action: 'approve_and_send',
-        campaign_name: campaign_name || `${recipient.sector || activeSector} Newsletter Dispatch`,
-        campaign_type: campaign_type || 'newsletter',
-        developer_input: `CAMPAIGN TOPIC: ${finalDeveloperInput}\n\nTARGET RECIPIENT: ${recipient.name} at ${recipient.company} (${recipient.sector || 'Technology'})\nUNSUBSCRIBE LINK: ${recipientUnsubUrl}\nPREFERENCES LINK: ${recipientPrefUrl}`,
+        campaign_name: campaign_name || (recipient.company ? `${recipient.company} Update` : 'Client Update'),
+        campaign_type: dispatchTypeKey,
+        developer_input: `CAMPAIGN TOPIC: ${finalDeveloperInput}\n\nTARGET RECIPIENT: ${recipient.name || ''} at ${recipient.company || ''}${recipient.sector || recipient.industry ? ` (${recipient.sector || recipient.industry})` : ''}\nUNSUBSCRIBE LINK: ${recipientUnsubUrl}\nPREFERENCES LINK: ${recipientPrefUrl}`,
         occasion: finalDeveloperInput,
         sector: recipient.sector || recipient.industry || activeSector,
-        target_segment: audience || `${activeSector} Clients`,
+        target_segment: dispatchAudienceLabel,
         channel: (channels && channels[0]) || 'email',
         from_email: process.env.NURTURE_SENDER_EMAIL || '',
         sender_email: process.env.NURTURE_SENDER_EMAIL || '',
@@ -981,7 +1032,7 @@ router.post('/dispatch', async (req, res) => {
       sector: activeSector,
       occasion: payload.occasion,
       audience: payload.target_segment,
-      target_audience: payload.target_segment || `${activeSector} Clients`,
+      target_audience: payload.target_segment,
       created_date: createdDateStr,
       sent_date: sentDateStr,
       recipients: workbenchMetrics.total_recipients,
@@ -1136,10 +1187,10 @@ router.post('/draft', (req, res) => {
     const now = new Date().toISOString();
     const newCampaign = {
       id: `CMP-${require('crypto').randomUUID()}`,
-      name: campaign_name || 'Draft Campaign',
-      type: campaign_type || 'Newsletter',
-      type_key: (campaign_type || 'newsletter').toLowerCase().replace(/\s+/g, '_'),
-      sector: sector || 'Technology',
+      name: String(campaign_name || '').trim() || 'Draft Campaign',
+      type: normalizeCampaignType(campaign_type) || 'newsletter',
+      type_key: normalizeCampaignType(campaign_type) || 'newsletter',
+      sector: String(sector || '').trim(),
       occasion: occasion || '',
       audience: audience || 'All Past Clients',
       target_audience: audience || 'All Past Clients',
@@ -1203,3 +1254,4 @@ router.put('/:id', (req, res) => {
 module.exports = router;
 module.exports.extractWorkbenchAiContent = extractWorkbenchAiContent;
 module.exports.personalizeContentForRecipient = personalizeContentForRecipient;
+module.exports.isDeliveryConfirmedResponse = isDeliveryConfirmedResponse;

@@ -93,9 +93,12 @@ function normalizeWorkbenchTemplateContent(apiResponse) {
   const structuredHeaderSubtitle = structuredSource?.header_subtitle || structuredSource?.headerSubtitle || structuredSource?.header?.subtitle;
   let structuredGreetingType = structuredSource?.greeting_type || structuredSource?.greetingType;
   const structuredHeroHeadline = structuredSource?.hero_headline || structuredSource?.heroHeadline || structuredSource?.hero?.headline;
-  const structuredHeroBody = structuredSource?.hero_body || structuredSource?.heroBody || structuredSource?.hero?.body ||
-    (Array.isArray(structuredSource?.hero_paragraphs) ? structuredSource.hero_paragraphs.join('\n\n') : '') ||
-    (Array.isArray(structuredSource?.hero?.paragraphs) ? structuredSource.hero.paragraphs.join('\n\n') : '');
+  const rawHeroBody = structuredSource?.hero_body || structuredSource?.heroBody || structuredSource?.hero?.body;
+  const structuredHeroBody = Array.isArray(rawHeroBody)
+    ? rawHeroBody.map(p => typeof p === 'string' ? p.trim() : '').filter(Boolean).join('\n\n')
+    : (typeof rawHeroBody === 'string' ? rawHeroBody : '') ||
+      (Array.isArray(structuredSource?.hero_paragraphs) ? structuredSource.hero_paragraphs.filter(Boolean).join('\n\n') : '') ||
+      (Array.isArray(structuredSource?.hero?.paragraphs) ? structuredSource.hero.paragraphs.filter(Boolean).join('\n\n') : '');
   const structuredBlocks = structuredSource?.content_blocks || structuredSource?.blocks || structuredSource?.articles;
   const structuredFoundationsTitle = structuredSource?.foundations_title || structuredSource?.foundationsTitle;
   const structuredFoundations = structuredSource?.foundations || structuredSource?.synthesis_points || structuredSource?.synthesisPoints;
@@ -103,7 +106,7 @@ function normalizeWorkbenchTemplateContent(apiResponse) {
   const structuredPromoBanner = structuredSource?.promo_banner || structuredSource?.promoBanner;
 
   let heroHeadline = structuredHeroHeadline || '';
-  const openingParagraphs = structuredHeroBody ? [structuredHeroBody] : [];
+  const openingParagraphs = structuredHeroBody ? structuredHeroBody.split(/\n{2,}/).map(s => s.trim()).filter(Boolean) : [];
   const blocksFromWorkbench = [];
   const synthesisPoints = Array.isArray(structuredFoundations) ? [...structuredFoundations] : [];
 

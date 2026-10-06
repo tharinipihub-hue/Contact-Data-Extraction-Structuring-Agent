@@ -18,10 +18,10 @@
 
 function interpolateTemplateVars(text, recipient = null) {
   if (!text) return '';
-  const firstName = recipient?.name ? recipient.name.split(' ')[0] : (recipient?.first_name || 'Colleague');
-  const company = recipient?.company || 'Enterprise';
-  const industry = recipient?.sector || recipient?.industry || 'Technology';
-  const clientName = recipient?.name || (recipient?.first_name ? `${recipient.first_name} ${recipient.last_name || ''}`.trim() : 'Valued Client');
+  const firstName = recipient?.name ? recipient.name.split(' ')[0] : (recipient?.first_name || '');
+  const company = recipient?.company || '';
+  const industry = recipient?.sector || recipient?.industry || '';
+  const clientName = recipient?.name || (recipient?.first_name ? `${recipient.first_name} ${recipient.last_name || ''}`.trim() : '');
 
   return String(text)
     .replace(/\{\{first_name\}\}/gi, firstName)
@@ -35,10 +35,10 @@ function interpolateEmailHtmlVars(html, recipient = null) {
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[ch]));
   const values = {
-    first_name: recipient?.name ? recipient.name.split(' ')[0] : (recipient?.first_name || 'Colleague'),
-    company: recipient?.company || 'Enterprise',
-    industry: recipient?.sector || recipient?.industry || 'Technology',
-    client_name: recipient?.name || (recipient?.first_name ? `${recipient.first_name} ${recipient.last_name || ''}`.trim() : 'Valued Client')
+    first_name: recipient?.name ? recipient.name.split(' ')[0] : (recipient?.first_name || ''),
+    company: recipient?.company || '',
+    industry: recipient?.sector || recipient?.industry || '',
+    client_name: recipient?.name || (recipient?.first_name ? `${recipient.first_name} ${recipient.last_name || ''}`.trim() : '')
   };
   return String(html || '').replace(/\{\{(first_name|company|industry|client_name)\}\}/gi, (_match, key) => escapeHtml(values[key.toLowerCase()]));
 }

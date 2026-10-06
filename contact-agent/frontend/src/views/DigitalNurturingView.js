@@ -79,6 +79,52 @@ import ContactResearchTab from './nurturing/ContactResearchTab';
 import InstantOccasionWishTab from './nurturing/InstantOccasionWishTab';
 import ClientEmailPreview from './nurturing/ClientEmailPreview';
 import SnsTemplateSystemTab from './nurturing/SnsTemplateSystemTab';
+import {
+  campaignTypeOptions,
+  normalizeCampaignType,
+  campaignTypeLabel
+} from '../campaignTypes';
+
+/**
+ * Campaign-type choices shown in the Campaign Wizard.
+ *
+ * Built entirely from the canonical registry (shared with the backend), so
+ * the UI can never offer a campaign type the SNS Workbench workflow does not
+ * support. The icon is presentation only.
+ */
+const CAMPAIGN_TYPE_ICONS = {
+  'newsletter': <Mail size={16} color="#2563eb" />,
+  'festival_wish': <Sparkles size={16} color="#d97706" />,
+  'promotional': <Layers size={16} color="#7c3aed" />,
+  'follow_up': <Send size={16} color="#0891b2" />,
+  'event_invitation': <Calendar size={16} color="#be123c" />,
+  'announcement': <Activity size={16} color="#0f766e" />
+};
+
+const CAMPAIGN_TYPE_OPTIONS = campaignTypeOptions().map((option) => ({
+  ...option,
+  icon: CAMPAIGN_TYPE_ICONS[option.key] || null
+}));
+
+/**
+ * Map a wizard label (or any legacy value) to the canonical workflow key.
+ * An unsupported value returns '' and the backend rejects the request with a
+ * truthful error rather than substituting another campaign type.
+ */
+const toWorkflowCampaignType = (value) => normalizeCampaignType(value);
+
+/**
+ * Default campaign names per type. These are UI placeholders only; they are
+ * never sent as generated content and never presented as Workbench output.
+ */
+const DEFAULT_CAMPAIGN_NAMES = {
+  'newsletter': 'Client Newsletter Briefing',
+  'festival_wish': 'Festival / Occasion Wishes',
+  'promotional': 'Strategic Product Update',
+  'follow_up': 'Client Follow-up Note',
+  'event_invitation': 'Event Invitation',
+  'announcement': 'Client Announcement'
+};
 
 const API_BASE = '/api';
 const PRODUCTION_APP_URL = 'https://contact-data-extraction-structuring-agent.onrender.com';
@@ -388,8 +434,6 @@ Warm wishes,\nThe Team at SNS Square`,
       email_body: `Dear [Client Name],
 
 We are excited to share major operational advancements in the SNS Square Multi-Agent Platform, including automated card extraction, sub-second data deduplication, and bi-directional CRM syncing.
-
-In recent enterprise deployments, organizations have reduced manual data handling by 84% while cutting lead-to-nurture response latency to under 5 seconds.
 
 Reply directly to this email if you would like an exclusive demonstration tailored for [Company].
 
@@ -720,7 +764,8 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
 
     setIsGenerating(true);
     setDeploymentAlert(null);
-    const sector = contact.sector || contact.industry || targetSector || 'Technology';
+    // Only real stored sector data. No industry is invented for the AI.
+    const sector = contact.sector || contact.industry || targetSector || '';
     const isWelcome = selectedContentType === 'welcome';
     const isFestival = selectedContentType === 'festival_wish';
     const isContent = selectedContentType === 'content' || selectedContentType === 'case_study';
@@ -750,7 +795,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
       try {
         const res = await axios.post(`${API_BASE}/campaigns/generate`, {
           campaign_name: campaignName,
-          campaign_type: selectedContentType,
+          campaign_type: toWorkflowCampaignType(selectedContentType),
           topic: topic,
           sector: sector,
           contact_id: contact.id,
@@ -1010,15 +1055,13 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
 
   const handleSelectWizardType = (type) => {
     setWizardCampaignType(type);
-    if (type === 'Newsletter') {
-      setWizardCampaignName('SNS Square Weekly GCC & AI Scoop');
-    } else if (type === 'Welcome Message') {
-      setWizardCampaignName('Executive Client Welcome Sequence 2026');
-    } else if (type === 'Festival / Occasion Wish') {
-      setWizardCampaignName('Diwali Executive Celebration 2026');
-      setWizardOccasion('Diwali 2026');
-    } else if (type === 'Promotional / Strategic Update') {
-      setWizardCampaignName('SNS Square Autonomous Agent Capabilities Update');
+    // Default names come from the registry, not from hard-coded campaign names.
+    const key = toWorkflowCampaignType(type);
+    if (DEFAULT_CAMPAIGN_NAMES[key]) {
+      setWizardCampaignName(DEFAULT_CAMPAIGN_NAMES[key]);
+    }
+    if (key === 'festival_wish') {
+      setWizardOccasion(wizardOccasion || '');
     }
   };
 
@@ -1141,10 +1184,8 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
       try {
         const res = await axios.post(`${API_BASE}/campaigns/generate`, {
           campaign_name: campaignName,
-          campaign_type: effectiveType === 'Welcome Message' ? 'welcome' :
-                         effectiveType === 'Festival / Occasion Wish' ? 'festival_wish' :
-                         effectiveType === 'Promotional / Strategic Update' ? 'promotional' : 'newsletter',
-          sector: primaryContact.sector || primaryContact.industry || 'Technology',
+          campaign_type: toWorkflowCampaignType(effectiveType),
+          sector: primaryContact.sector || primaryContact.industry || '',
           contact_id: primaryContact.id,
           contacts: recipients.map(contact => ({ id: contact.id })),
           topic: effectiveBrief,
@@ -1227,11 +1268,11 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
         dispatchRes = await axios.post(`${API_BASE}/campaigns/dispatch`, {
           campaign_id: wizardGeneratedContent.campaign_id,
           campaign_name: wizardCampaignName,
-          campaign_type: wizardCampaignType,
+          campaign_type: toWorkflowCampaignType(wizardCampaignType),
           topic: wizardBrief,
           occasion: wizardOccasion,
           audience: wizardAudienceType,
-          sector: targetContact?.sector || wizardSelectedIndustry || 'Technology',
+          sector: targetContact?.sector || wizardSelectedIndustry || '',
           contact_id: targetContact?.id || (recipients.length === 1 ? recipients[0]?.id : null),
           contacts: recipients,
           channels: [wizardChannels.email ? 'Email' : null, wizardChannels.whatsapp ? 'WhatsApp' : null].filter(Boolean),
@@ -2874,82 +2915,29 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                   <p style={{ fontSize: 13, color: '#64748b', marginTop: 2 }}>What do you want to send?</p>
                 </div>
 
+                {/* Rendered from the canonical campaign-type registry so the UI and
+                    the SNS Workbench workflow can never disagree about which
+                    campaign types exist. */}
                 <div className="dn-radio-grid">
-                  <div
-                    className={`dn-radio-card ${wizardCampaignType === 'Newsletter' ? 'selected' : ''}`}
-                    onClick={() => handleSelectWizardType('Newsletter')}
-                  >
-                    <div className="dn-radio-card-header">
-                      <div className="dn-radio-card-title">
-                        <Mail size={16} color="#2563eb" /> Newsletter
+                  {CAMPAIGN_TYPE_OPTIONS.map((option) => (
+                    <div
+                      key={option.key}
+                      className={`dn-radio-card ${wizardCampaignType === option.label ? 'selected' : ''}`}
+                      onClick={() => handleSelectWizardType(option.label)}
+                    >
+                      <div className="dn-radio-card-header">
+                        <div className="dn-radio-card-title">
+                          {option.icon} {option.label}
+                        </div>
+                        <input
+                          type="radio"
+                          checked={wizardCampaignType === option.label}
+                          onChange={() => handleSelectWizardType(option.label)}
+                        />
                       </div>
-                      <input
-                        type="radio"
-                        checked={wizardCampaignType === 'Newsletter'}
-                        onChange={() => handleSelectWizardType('Newsletter')}
-                      />
+                      <div className="dn-radio-card-desc">{option.description}</div>
                     </div>
-                    <div className="dn-radio-card-desc">
-                      Sector intelligence newsletters, operational benchmarks, and strategic industry analysis.
-                    </div>
-                  </div>
-
-                  <div
-                    className={`dn-radio-card ${wizardCampaignType === 'Welcome Message' ? 'selected' : ''}`}
-                    onClick={() => handleSelectWizardType('Welcome Message')}
-                  >
-                    <div className="dn-radio-card-header">
-                      <div className="dn-radio-card-title">
-                        <Sparkles size={16} color="#16a34a" /> Welcome Message
-                      </div>
-                      <input
-                        type="radio"
-                        checked={wizardCampaignType === 'Welcome Message'}
-                        onChange={() => handleSelectWizardType('Welcome Message')}
-                      />
-                    </div>
-                    <div className="dn-radio-card-desc">
-                      Executive onboarding sequence welcoming newly ingested client accounts to the partnership.
-                    </div>
-                  </div>
-
-                  <div
-                    className={`dn-radio-card ${wizardCampaignType === 'Festival / Occasion Wish' ? 'selected' : ''}`}
-                    onClick={() => handleSelectWizardType('Festival / Occasion Wish')}
-                  >
-                    <div className="dn-radio-card-header">
-                      <div className="dn-radio-card-title">
-                        <Sparkles size={16} color="#d97706" /> Festival Greeting / Corporate Milestone
-                      </div>
-                      <input
-                        type="radio"
-                        checked={wizardCampaignType === 'Festival / Occasion Wish'}
-                        onChange={() => handleSelectWizardType('Festival / Occasion Wish')}
-                      />
-                    </div>
-                    <div className="dn-radio-card-desc">
-                      Seasonal festival greetings (Diwali, New Year) or company milestones (Anniversary, Annual Day) thanking clients.
-                    </div>
-                  </div>
-
-                  <div
-                    className={`dn-radio-card ${wizardCampaignType === 'Promotional / Strategic Update' ? 'selected' : ''}`}
-                    onClick={() => handleSelectWizardType('Promotional / Strategic Update')}
-                  >
-                    <div className="dn-radio-card-header">
-                      <div className="dn-radio-card-title">
-                        <Layers size={16} color="#7c3aed" /> Promotional / Strategic Update
-                      </div>
-                      <input
-                        type="radio"
-                        checked={wizardCampaignType === 'Promotional / Strategic Update'}
-                        onChange={() => handleSelectWizardType('Promotional / Strategic Update')}
-                      />
-                    </div>
-                    <div className="dn-radio-card-desc">
-                      Product feature updates, autonomous agent capabilities, and enterprise customer success stories.
-                    </div>
-                  </div>
+                  ))}
                 </div>
 
                 {/* ── Step 1 Action Bar ── */}
@@ -3099,7 +3087,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                               </td>
                               <td>
                                 <span className="dn-badge dn-badge-gray">
-                                  {c.sector || c.industry || 'Technology'}
+                                  {c.sector || c.industry || 'not recorded'}
                                 </span>
                               </td>
                               <td>
@@ -3219,7 +3207,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                     <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, padding: '12px 14px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, flexWrap: 'wrap', gap: 6 }}>
                         <span style={{ fontSize: 12.5, fontWeight: 700, color: '#1e40af', display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <Search size={14} color="#2563eb" /> Industry-Specific Intelligence ({wizardSelectedIndustry || 'Technology'})
+                          <Search size={14} color="#2563eb" /> Industry-Specific Intelligence ({wizardSelectedIndustry || 'no industry selected'})
                         </span>
                         <button
                           type="button"
@@ -3228,7 +3216,11 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                           onClick={async () => {
                             setIsLoadingIndustryContext(true);
                             try {
-                              const sector = wizardSelectedIndustry || 'Technology';
+                              const sector = String(wizardSelectedIndustry || '').trim();
+                              if (!sector) {
+                                showNotification('Select an industry before loading verified industry insights.', true);
+                                return;
+                              }
                               const res = await axios.post(`${API_BASE}/nurture/industry-context`, {
                                 industry: sector
                               }, { timeout: 25000 });
@@ -3241,17 +3233,9 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                                 setWizardBriefError(false);
                                 showNotification(`Loaded verified ${sector} industry insights into brief.`);
                               } else {
-                                const sectorPrompts = {
-                                  Technology: 'FedRAMP Cloud Modernisation, Intelligent Mobility & Supply Chain Automation, Accelerating Enterprise Services Through AI, and Workforce Transformation.',
-                                  Finance: 'Financial Automation, Algorithmic Risk Assessment, Regulatory Compliance Intelligence, and Secure Cloud Infrastructure for FinTech.',
-                                  Healthcare: 'Digital Health Acceleration, Clinical Workflow Automation, Secure Patient Data Governance, and Enterprise Telehealth Intelligence.',
-                                  Education: 'Adaptive Digital Learning Foundations, AI Automation for Academic Operations, Institutional Data Governance, and Next-Gen Campus Technology.'
-                                };
-                                const prompt = sectorPrompts[sector] || sectorPrompts['Technology'];
-                                const defaultIndustryBrief = `Synthesize an industry-specific executive briefing for ${sector} enterprise leaders focusing on: ${prompt}. Include relevant headline, 2-3 insights, why it matters to ${sector}, conclusion, and CTA.`;
-                                setWizardBrief(defaultIndustryBrief);
-                                setWizardBriefError(false);
-                                showNotification(`Populated structured ${sector} industry newsletter framework.`);
+                                // No verified research was returned. Never substitute an
+                                // invented industry framework; the user supplies the brief.
+                                showNotification('No verified industry research was returned. Please describe the campaign in your own words instead.', true);
                               }
                             } catch (e) {
                               showNotification('Could not load industry research: ' + e.message, true);
@@ -3266,7 +3250,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                         </button>
                       </div>
                       <div style={{ fontSize: 11.5, color: '#3b82f6', lineHeight: 1.5 }}>
-                        Ensures the newsletter is tailored to the recipient's industry ({wizardSelectedIndustry || 'Technology'}) with verified insights, headline, strategic conclusion, and CTA.
+                        Ensures the newsletter is tailored to the recipient's industry ({wizardSelectedIndustry || 'no industry selected'}) with verified insights, headline, strategic conclusion, and CTA.
                       </div>
                     </div>
                   )}
@@ -3857,7 +3841,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                       <div className="dn-preview-row">
                         <span className="dn-preview-label">RECIPIENT:</span>
                         <span className="dn-preview-value" style={{ fontWeight: 600, color: '#0f172a' }}>
-                          {activePreviewContact.name} &lt;{activePreviewContact.email}&gt; — <span style={{ color: '#2563eb' }}>{activePreviewContact.company}</span> ({activePreviewContact.sector || activePreviewContact.industry || 'Technology'})
+                          {activePreviewContact.name} &lt;{activePreviewContact.email}&gt; — <span style={{ color: '#2563eb' }}>{activePreviewContact.company}</span> ({activePreviewContact.sector || activePreviewContact.industry || 'not recorded'})
                         </span>
                       </div>
                       <div className="dn-preview-row">
@@ -5014,7 +4998,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                           <td>{lead.company}</td>
                           <td>
                             <span className="dn-badge dn-badge-blue">
-                              {lead.sector || lead.industry || 'Technology'}
+                              {lead.sector || lead.industry || 'not recorded'}
                             </span>
                           </td>
                           <td>
