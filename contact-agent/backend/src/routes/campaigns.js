@@ -9,6 +9,7 @@ const {
   detectPromptLeakInSubject,
   sanitizeAndPersonalizeGreeting,
   cleanEmailBodyHtml,
+  cleanHeaderSubtitle,
   wrapInSnsSquareTemplate,
   cleanActionText,
   sanitizeFoundationsList,
@@ -529,7 +530,23 @@ router.post('/generate', async (req, res) => {
   // Only real stored contact data is used. No sector is invented.
   const activeSector = String(sector || activeContact?.sector || activeContact?.industry || '').trim();
 
-  const developerInput = brief;
+  let developerInput = brief;
+  const isFestivalCampaign = campaignTypeKey === 'festival_wish' || Boolean(occasion);
+  if (isFestivalCampaign) {
+    const occName = occasion || 'Diwali';
+    const isDiwali = /diwali/i.test(occName) || /diwali/i.test(brief);
+    const diwaliEnlightenment = isDiwali
+      ? `celebrating the sacred triumph of light over darkness, inner wisdom, radiant joy, peace, good health, and enduring prosperity for them, their loved ones, and their organization.`
+      : `wishing radiant joy, good health, peace, harmony, and lasting prosperity.`;
+
+    developerInput = `SENDER: SNS Square is wishing client ${activeContact.name} at ${activeContact.company || 'their organization'}.\n` +
+      `OCCASION: ${occName} Festival of Lights.\n` +
+      `EDITORIAL INSTRUCTION: Compose an enlightened, luminous, deeply sincere, and heartfelt festive greeting ${diwaliEnlightenment}\n` +
+      `HEADER SUBTITLE: An inspiring festive phrase such as "Festival of Lights, Joy & Prosperity" (NEVER "From ${activeContact.company || 'Company'}" or any "From ..." prefix).\n` +
+      `SIGN-OFF: Must be signed off exclusively by SNS Square ("Warm regards,\\nThe SNS Square Team").\n` +
+      `RESTRICTIONS: Strictly NO sales pitch, NO commercial promotion, NO technical jargon, and NEVER sign off as the recipient company.\n` +
+      `ADDITIONAL CONTEXT: ${brief}`;
+  }
 
   const unsubBase = getUnsubscribeBaseUrl(req);
   const targetId = activeContact.id;
@@ -563,6 +580,9 @@ router.post('/generate', async (req, res) => {
     sector: activeSector,
     industry: activeSector,
     company: activeContact.company || '',
+    recipient_company: activeContact.company || '',
+    sender_organization: 'SNS Square',
+    sender_name: 'The SNS Square Team',
     full_name: activeContact.name || '',
     first_name: (activeContact.name || '').split(' ')[0] || '',
     designation: activeContact.designation || '',
@@ -577,8 +597,8 @@ router.post('/generate', async (req, res) => {
     recipient_region: occasionPayloadData.recipient_region || activeContact.country || activeContact.location || '',
     target_segment: audienceLabel,
     channel: channel || 'email',
-    from_email: process.env.NURTURE_SENDER_EMAIL || '',
-    sender_email: process.env.NURTURE_SENDER_EMAIL || '',
+    from_email: process.env.NURTURE_SENDER_EMAIL || 'thariniparthasarathy1804@gmail.com',
+    sender_email: process.env.NURTURE_SENDER_EMAIL || 'thariniparthasarathy1804@gmail.com',
     contacts: recipientContacts,
     active_contact: activeContact,
     unsubscribe_url: unsubUrl,
@@ -625,21 +645,30 @@ router.post('/generate', async (req, res) => {
       cleanBody = cleanEmailBodyHtml(cleanBody);
       cleanBody = useConfiguredPreferenceLinks(cleanBody, unsubUrl, prefUrl);
 
+      // Clean header subtitle to guarantee no "From <Company>" or "From ..."
+      const cleanSubtitle = cleanHeaderSubtitle(extracted.header_subtitle, {
+        campaignType: campaign_type,
+        occasion,
+        company: activeContact.company
+      });
+
       // 3. Wrap in official standardized SNS Square email template
       const fullTemplateHtml = wrapInSnsSquareTemplate(cleanBody, {
         campaignType: campaign_type,
+        occasion,
         title: extracted.header_title || cleanSubject || brief || 'Your Weekly GCC & AI Scoop',
-        subtitle: extracted.header_subtitle || (brief ? `Topic: ${brief.slice(0, 45)}` : 'Core Perspective | Wednesday Edition'),
+        subtitle: cleanSubtitle,
         recipientUnsubUrl: unsubUrl,
         recipientPrefUrl: prefUrl,
-        company: 'SNS Square'
+        company: 'SNS Square',
+        recipientCompany: activeContact.company
       });
 
       const structuredContent = {
         campaign_name: extracted.campaign_name,
         subject: cleanSubject,
         header_title: extracted.header_title,
-        header_subtitle: extracted.header_subtitle,
+        header_subtitle: cleanSubtitle,
         hero_headline: extracted.hero_headline,
         hero_body: extracted.hero_body,
         content_blocks: extracted.content_blocks,
@@ -906,12 +935,18 @@ router.post('/dispatch', async (req, res) => {
       if (!recipientBody.includes('sns-email-container') || !recipientBody.includes('Embassy TechVillage')) {
         recipientBody = wrapInSnsSquareTemplate(recipientBody, {
           campaignType: dispatchTypeKey,
+          occasion: finalDeveloperInput,
           title: content?.header_title || personalizedSubject || campaign_name || 'Your Weekly GCC & AI Scoop',
-          subtitle: content?.header_subtitle || (finalDeveloperInput ? `Topic: ${String(finalDeveloperInput).slice(0, 45)}` : 'Core Perspective | Wednesday Edition'),
+          subtitle: cleanHeaderSubtitle(content?.header_subtitle, {
+            campaignType: dispatchTypeKey,
+            occasion: finalDeveloperInput,
+            company: recipient.company
+          }),
           imageUrl: publicImageUrl || null,
           recipientUnsubUrl,
           recipientPrefUrl,
-          company: 'SNS Square'
+          company: 'SNS Square',
+          recipientCompany: recipient.company
         });
       } else if (publicImageUrl && !recipientBody.includes('<img')) {
         const formattedText = recipientBody.split('\n\n').map(p => `<p style="margin: 0 0 16px 0;">${p.replace(/\n/g, '<br/>')}</p>`).join('');
@@ -934,13 +969,16 @@ router.post('/dispatch', async (req, res) => {
         action: 'approve_and_send',
         campaign_name: campaign_name || (recipient.company ? `${recipient.company} Update` : 'Client Update'),
         campaign_type: dispatchTypeKey,
+        send_allowed: true,
         developer_input: `CAMPAIGN TOPIC: ${finalDeveloperInput}\n\nTARGET RECIPIENT: ${recipient.name || ''} at ${recipient.company || ''}${recipient.sector || recipient.industry ? ` (${recipient.sector || recipient.industry})` : ''}\nUNSUBSCRIBE LINK: ${recipientUnsubUrl}\nPREFERENCES LINK: ${recipientPrefUrl}`,
         occasion: finalDeveloperInput,
         sector: recipient.sector || recipient.industry || activeSector,
         target_segment: dispatchAudienceLabel,
         channel: (channels && channels[0]) || 'email',
-        from_email: process.env.NURTURE_SENDER_EMAIL || '',
-        sender_email: process.env.NURTURE_SENDER_EMAIL || '',
+        from_email: process.env.NURTURE_SENDER_EMAIL || 'thariniparthasarathy1804@gmail.com',
+        sender_email: process.env.NURTURE_SENDER_EMAIL || 'thariniparthasarathy1804@gmail.com',
+        sender_organization: 'SNS Square',
+        sender_name: 'The SNS Square Team',
         contacts: [recipient],
         active_contact: recipient,
         to_email: recipient.email,
@@ -953,6 +991,11 @@ router.post('/dispatch', async (req, res) => {
         content: {
           ...content,
           subject: personalizedSubject,
+          header_subtitle: cleanHeaderSubtitle(content?.header_subtitle, {
+            campaignType: dispatchTypeKey,
+            occasion: finalDeveloperInput,
+            company: recipient.company
+          }),
           image_url: publicImageUrl || finalImageUrl,
           poster_url: publicImageUrl || finalImageUrl,
           attachments: publicImageUrl || finalImageUrl,
@@ -972,7 +1015,15 @@ router.post('/dispatch', async (req, res) => {
       try {
         const result = await workbenchService.triggerNurturingWorkflow(recipientPayload);
         const confirmed = isDeliveryConfirmed(result?.data);
-        return { recipient, success: confirmed, result, recipientBody, recipientPayload };
+        const deliveryError = result?.data?.error || result?.data?.send_blocked_reason || null;
+        return {
+          recipient,
+          success: confirmed,
+          result,
+          recipientBody,
+          recipientPayload,
+          error: confirmed ? null : deliveryError
+        };
       } catch (err) {
         console.error(`[Campaigns /dispatch] Failed to dispatch to ${recipient.email}:`, err.message);
         return { recipient, success: false, error: err.message };
@@ -983,12 +1034,14 @@ router.post('/dispatch', async (req, res) => {
     const successfulDispatches = dispatchResults.filter(r => r.success);
 
     if (successfulDispatches.length === 0) {
-      const firstError = dispatchResults.find(r => r.error)?.error || 'Workbench responded without confirming campaign delivery.';
+      const firstError = dispatchResults.find(r => r.error)?.error ||
+        dispatchResults.find(r => r.result?.data?.error)?.result?.data?.error ||
+        'SNS Workbench did not confirm campaign delivery.';
       return res.status(502).json({
         success: false,
         error: `Workbench delivery failed: ${firstError}`,
         requires_workbench: true,
-        dispatch_results: dispatchResults.map(r => ({ recipient: r.recipient?.email, success: r.success, error: r.error }))
+        dispatch_results: dispatchResults.map(r => ({ recipient: r.recipient?.email, success: r.success, error: r.error || r.result?.data?.error }))
       });
     }
 

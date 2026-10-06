@@ -49,10 +49,10 @@ const OCCASION_CALENDAR = [
     name: 'Diwali',
     date_pattern: 'variable-oct-nov',
     type: 'festival',
-    regions: ['india', 'in', 'indian', 'maharashtra', 'karnataka', 'tamil', 'telangana', 'gujarat', 'rajasthan', 'delhi', 'mumbai', 'bengaluru', 'bangalore', 'hyderabad', 'chennai', 'pune'],
-    description: 'Festival of Lights — typically Oct/Nov',
-    tone: 'warm, luminous, celebratory, prosperous',
-    avoid: 'product promotion, technical newsletter content'
+    regions: ['india', 'in', 'indian', 'maharashtra', 'karnataka', 'tamil', 'telangana', 'gujarat', 'rajasthan', 'delhi', 'mumbai', 'bengaluru', 'bangalore', 'hyderabad', 'chennai', 'pune', 'global'],
+    description: 'Festival of Lights — Enlightening, luminous celebration of light over darkness, wisdom, peace, and prosperity',
+    tone: 'enlightened, luminous, deeply heartfelt, warm, celebratory, prosperous',
+    avoid: 'product promotion, technical newsletter content, signing off as recipient company, or from-recipient headers'
   },
   {
     name: 'Pongal',

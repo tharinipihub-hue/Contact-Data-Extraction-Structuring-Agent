@@ -405,13 +405,16 @@ SNS Square Multi-Agent Platform`,
     sample: {
       campaign_name: 'Diwali Executive Celebration 2026',
       occasion: 'Diwali 2026',
-      brief: 'A brief, warm Diwali greeting wishing happiness, peace, good health, and prosperity.',
+      brief: 'An enlightened, luminous, and heartfelt Diwali wish celebrating the triumph of light over darkness, wisdom, peace, good health, and boundless prosperity.',
       subject: 'Warm Diwali Greetings & Prosperity Wishes from SNS Square',
       email_body: `Dear [Client Name],
 
-Wishing you and your loved ones a joyful and peaceful Diwali filled with light, happiness, good health, and prosperity.
+May the divine festival of lights illuminate your path with boundless wisdom, peace, radiant joy, and enduring prosperity.
 
-Warm wishes,\nThe Team at SNS Square`,
+As the sacred diyas glow with warmth and hope, we celebrate the triumph of light over darkness, wisdom over ignorance, and wish you, your family, and your team continued success, health, and fulfillment in all your endeavors.
+
+Warm regards,
+The SNS Square Team`,
       channel: 'Email + WhatsApp'
     }
   },
@@ -3337,7 +3340,7 @@ export default function DigitalNurturingView({ extractedLeads = [], onSwitchToEx
                         <span style={{ fontSize: 11.5, color: '#64748b', alignSelf: 'center', marginRight: 2 }}>Quick Presets:</span>
                         {[
                           { label: '🏆 Company Anniversary', val: 'Company Anniversary', brief: 'Celebrating our company anniversary milestone and thanking client leadership for their strategic partnership.' },
-                          { label: '🪔 Diwali 2026', val: 'Diwali 2026', brief: 'A brief, warm Diwali greeting wishing happiness, peace, good health, and prosperity.' },
+                          { label: '🪔 Diwali 2026', val: 'Diwali 2026', brief: 'An enlightened, luminous, and heartfelt Diwali greeting celebrating the triumph of light over darkness, wisdom, radiant joy, and boundless prosperity.' },
                           { label: '✨ New Year 2026', val: 'New Year 2026', brief: 'Warm New Year greetings and wishing growth and prosperity.' },
                           { label: '🚀 Platform Milestone', val: 'Platform Milestone', brief: 'Celebrating our next-generation autonomous AI milestone and thanking client partners.' }
                         ].map((preset) => (

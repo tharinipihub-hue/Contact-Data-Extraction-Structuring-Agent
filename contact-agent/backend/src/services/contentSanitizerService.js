@@ -278,6 +278,65 @@ function cleanEmailBodyHtml(content) {
 }
 
 /**
+ * Sanitizes and cleans the email header subtitle.
+ * Guarantees:
+ *  - Completely strips any "From <Company>", "From ...", "By ...", or recipient company name.
+ *  - Never attributes the sender subtitle to the recipient company.
+ *  - For Diwali / Festival wishes, ensures an enlightened, inspiring, luminous festival subtitle
+ *    such as "Festival of Lights, Joy & Prosperity" or "Illuminating Wisdom, Peace & Prosperity".
+ *  - For Newsletters, provides clean perspective subtitle (e.g., "Core Perspective | Wednesday Edition").
+ *
+ * @param {string} rawSubtitle
+ * @param {Object} options - { campaignType, occasion, company }
+ * @returns {string} - Clean, elegant header subtitle
+ */
+function cleanHeaderSubtitle(rawSubtitle, options = {}) {
+  let subtitle = String(rawSubtitle || '').trim();
+  const {
+    campaignType = 'newsletter',
+    occasion = '',
+    company = ''
+  } = options;
+
+  const normalizedType = String(campaignType || '').toLowerCase();
+  const isFestival = normalizedType.includes('festival') || normalizedType.includes('wish') || Boolean(occasion);
+  const isDiwali = /diwali/i.test(occasion) || /diwali/i.test(subtitle);
+
+  // If company is provided, strip any mention of "From <Company>" or "<Company>" in subtitle
+  if (company && company.length > 1) {
+    const escapedComp = company.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    subtitle = subtitle.replace(new RegExp(`^(?:From\\s+)?${escapedComp}\\b.*$`, 'i'), '').trim();
+    subtitle = subtitle.replace(new RegExp(`\\bFrom\\s+${escapedComp}\\b`, 'gi'), '').trim();
+    subtitle = subtitle.replace(new RegExp(`\\b${escapedComp}\\b`, 'gi'), '').trim();
+  }
+
+  // Strip generic "From ..." or "By ..." prefixes or full matches
+  subtitle = subtitle.replace(/^from\s+.*$/i, '').trim();
+  subtitle = subtitle.replace(/^from\b\s*:?\s*/i, '').trim();
+  subtitle = subtitle.replace(/^by\b\s*:?\s*/i, '').trim();
+
+  // If prompt leak detected in subtitle
+  if (detectPromptLeakInSubject(subtitle) || subtitle.length < 3) {
+    subtitle = '';
+  }
+
+  // Clean trailing or leading punctuation
+  subtitle = subtitle.replace(/^[-—–:,\s]+|[-—–:,\s]+$/g, '').trim();
+
+  // If subtitle was emptied or stripped, supply enlightened default
+  if (!subtitle) {
+    if (isFestival) {
+      return isDiwali
+        ? 'Festival of Lights, Joy & Prosperity'
+        : (occasion ? `Celebrating ${occasion} & Prosperity` : 'Wishing You Joy and Prosperity');
+    }
+    return 'Core Perspective | Wednesday Edition';
+  }
+
+  return subtitle;
+}
+
+/**
  * Standard SNS Square Email Wrapper
  * Wraps campaign body with official enterprise branding, header, footer,
  * and compliance unsubscribe & preference links.
@@ -289,15 +348,31 @@ function cleanEmailBodyHtml(content) {
 function wrapInSnsSquareTemplate(contentBodyHtml, options = {}) {
   const {
     campaignType = 'newsletter',
+    occasion = '',
     title = null,
     subtitle = null,
     imageUrl = null,
     recipientUnsubUrl = '#',
     recipientPrefUrl = '#',
-    company = 'SNS Square'
+    company = 'SNS Square',
+    recipientCompany = ''
   } = options;
 
   let bodyHtml = cleanEmailBodyHtml(contentBodyHtml);
+
+  // Scrub any accidental sign-off as the recipient's company
+  const targetRecipientCompany = recipientCompany || (company !== 'SNS Square' ? company : '');
+  if (targetRecipientCompany && targetRecipientCompany.length > 2) {
+    const escapedComp = targetRecipientCompany.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    bodyHtml = bodyHtml.replace(
+      new RegExp(`(?:warm|best|kind)?\\s*regards,?\\s*(?:the\\s+)?${escapedComp}(?:\\s+team)?`, 'gi'),
+      'Warm regards,<br/>The SNS Square Team'
+    );
+    bodyHtml = bodyHtml.replace(
+      new RegExp(`(?:from|sincerely,)\\s*(?:the\\s+)?${escapedComp}(?:\\s+team)?`, 'gi'),
+      'The SNS Square Team'
+    );
+  }
 
   // Avoid double wrapping if container is already present
   if (bodyHtml.includes('sns-email-container') && bodyHtml.includes('Embassy TechVillage')) {
@@ -305,27 +380,32 @@ function wrapInSnsSquareTemplate(contentBodyHtml, options = {}) {
   }
 
   const normalizedType = String(campaignType).toLowerCase();
-  const isFestival = normalizedType.includes('festival') || normalizedType.includes('wish');
+  const isFestival = normalizedType.includes('festival') || normalizedType.includes('wish') || Boolean(occasion);
   const isNewsletter = normalizedType.includes('newsletter');
   const isEvent = normalizedType.includes('event') || normalizedType.includes('webinar');
 
   const headerColor = '#064EE3';
   const snsSquareLogoUrl = 'https://contact-data-extraction-structuring-agent.onrender.com/sns-square-logo.png';
 
+  const isDiwali = /diwali/i.test(occasion) || /diwali/i.test(title || '') || /diwali/i.test(subtitle || '');
   const defaultTitle = isFestival
-    ? 'Warm Festive Wishes'
+    ? (isDiwali ? 'Warm Diwali Wishes' : 'Warm Festive Wishes')
     : isEvent
       ? 'Executive Leadership Briefing'
       : 'Your Weekly GCC & AI Scoop';
 
   const defaultSubtitle = isFestival
-    ? 'Wishing You Joy and Prosperity'
+    ? (isDiwali ? 'Festival of Lights, Joy & Prosperity' : 'Wishing You Joy and Prosperity')
     : isEvent
       ? 'Exclusive Roundtable & Strategy Forum'
       : 'Core Perspective | Wednesday Edition';
 
   const headerTitleText = title || defaultTitle;
-  const headerSubtitleText = subtitle || defaultSubtitle;
+  const headerSubtitleText = cleanHeaderSubtitle(subtitle, {
+    campaignType,
+    occasion,
+    company: targetRecipientCompany
+  }) || defaultSubtitle;
 
   const imageHtml = imageUrl ? `
     <div style="text-align: center; margin-bottom: 24px;">
@@ -418,6 +498,7 @@ module.exports = {
   sanitizeAndValidateSubject,
   sanitizeAndPersonalizeGreeting,
   cleanEmailBodyHtml,
+  cleanHeaderSubtitle,
   wrapInSnsSquareTemplate,
   cleanActionText,
   scrubPromptDirectiveText,

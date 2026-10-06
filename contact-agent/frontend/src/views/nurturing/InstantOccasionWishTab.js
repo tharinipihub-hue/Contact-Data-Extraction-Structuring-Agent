@@ -76,7 +76,7 @@ export default function InstantOccasionWishTab({
       } else {
         // Fallback default enterprise occasions
         setOccasions([
-          { name: 'Diwali', description: 'Festival of Lights', regions: ['india', 'south asia'], tone: 'Warm, respectful, prosperity-focused', avoid: 'Generic cut-and-paste or religious preaching' },
+          { name: 'Diwali', description: 'Festival of Lights — Enlightening, luminous celebration of wisdom & prosperity', regions: ['india', 'south asia', 'global'], tone: 'Enlightened, luminous, deeply heartfelt, prosperity-focused', avoid: 'Generic cut-and-paste, commercial sales pitches, or signing off as recipient company' },
           { name: 'Pongal / Makar Sankranti', description: 'Harvest Festival', regions: ['india', 'tamil nadu'], tone: 'Respectful, abundance & gratitude', avoid: 'Generic North-centric tropes' },
           { name: 'New Year', description: 'Global Calendar Turn', regions: ['global'], tone: 'Forward-looking, strategic ambition, partnership', avoid: 'Cliches, empty resolutions' },
           { name: 'Thanksgiving', description: 'Harvest & Gratitude', regions: ['united states', 'north america'], tone: 'Appreciation for collaboration, warmth', avoid: 'Presumptive intimacy' },

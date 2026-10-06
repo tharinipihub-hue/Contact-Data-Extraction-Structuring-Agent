@@ -25,6 +25,7 @@ const {
   sanitizeAndValidateSubject,
   sanitizeAndPersonalizeGreeting,
   cleanEmailBodyHtml,
+  cleanHeaderSubtitle,
   wrapInSnsSquareTemplate
 } = require('../services/contentSanitizerService');
 
@@ -263,24 +264,41 @@ router.post('/instant-wish', async (req, res) => {
     // If region_override is provided, use it (user explicitly selected region)
     const effectiveRegion = region_override || occasionPayload.region;
 
+    const isDiwali = /diwali/i.test(occasion);
+    const diwaliEnlightenment = isDiwali
+      ? `celebrating the sacred triumph of light over darkness, inner wisdom, radiant joy, peace, good health, and enduring prosperity for them, their loved ones, and their organization.`
+      : `wishing radiant joy, good health, peace, harmony, and lasting prosperity.`;
+
+    const developerInput = `SENDER: SNS Square is wishing client ${primaryContact.name} at ${primaryContact.company || 'their organization'}.\n` +
+      `OCCASION: ${occasion} Festival of Lights.\n` +
+      `EDITORIAL INSTRUCTION: Compose an enlightened, luminous, deeply sincere, and heartfelt festive greeting ${diwaliEnlightenment}\n` +
+      `HEADER SUBTITLE: An inspiring festive phrase such as "Festival of Lights, Joy & Prosperity" (NEVER "From ${primaryContact.company || 'Company'}" or any "From ..." prefix).\n` +
+      `SIGN-OFF: Must be signed off exclusively by SNS Square ("Warm regards,\\nThe SNS Square Team").\n` +
+      `RESTRICTIONS: Strictly NO sales pitch, NO commercial promotion, NO technical jargon, and NEVER sign off as the recipient company.`;
+
     const workbenchPayload = {
       action: 'generate_preview',
-      campaign_name: `${occasion} Greetings from SNS Square`,
+      campaign_name: `${occasion} Festive Greetings`,
       campaign_type: 'festival_wish',
-      developer_input: `Write a short, sincere ${occasion} greeting for ${primaryContact.name}. Keep the message focused entirely on the occasion: share warm wishes for happiness, peace, good health, and prosperity. Do not mention business, partnerships, milestones, products, services, or company achievements.`,
-      campaign_brief: `A brief, warm ${occasion} greeting for ${primaryContact.name}.`,
+      developer_input: developerInput,
+      campaign_brief: `An enlightened, luminous, and heartfelt ${occasion} festive greeting for ${primaryContact.name}.`,
       occasion,
       ...occasionPayload,
       region: effectiveRegion,
-      sector: primaryContact.sector || primaryContact.industry || 'Technology',
-      industry: primaryContact.industry || primaryContact.sector || 'Technology',
+      sector: primaryContact.sector || primaryContact.industry || '',
+      industry: primaryContact.industry || primaryContact.sector || '',
       company: primaryContact.company,
+      recipient_company: primaryContact.company,
+      sender_organization: 'SNS Square',
+      sender_name: 'The SNS Square Team',
       full_name: primaryContact.name,
       first_name: primaryContact.name.split(' ')[0],
-      designation: primaryContact.designation || 'Executive',
+      designation: primaryContact.designation || '',
       name: primaryContact.name,
       email: primaryContact.email,
       to_email: primaryContact.email,
+      from_email: process.env.NURTURE_SENDER_EMAIL || 'thariniparthasarathy1804@gmail.com',
+      sender_email: process.env.NURTURE_SENDER_EMAIL || 'thariniparthasarathy1804@gmail.com',
       target_segment: `Clients (${effectiveRegion || 'Global'})`,
       channel: 'email',
       contacts: audienceContacts,
@@ -363,11 +381,21 @@ router.post('/instant-wish', async (req, res) => {
     const recipientUnsubUrl = `${unsubBase}/unsubscribe?id=${encodeURIComponent(primaryContact.id)}`;
     const recipientPrefUrl = `${unsubBase}/preferences?id=${encodeURIComponent(primaryContact.id)}`;
 
+    const cleanSubtitle = cleanHeaderSubtitle(generatedContent.header_subtitle, {
+      campaignType: 'festival_wish',
+      occasion,
+      company: primaryContact.company
+    });
+
     const fullTemplateHtml = wrapInSnsSquareTemplate(cleanBody, {
       campaignType: 'festival_wish',
+      occasion,
+      title: generatedContent.header_title || 'Warm Festive Wishes',
+      subtitle: cleanSubtitle,
       recipientUnsubUrl,
       recipientPrefUrl,
-      company: 'SNS Square'
+      company: 'SNS Square',
+      recipientCompany: primaryContact.company
     });
 
     return res.json({
