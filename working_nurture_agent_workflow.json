@@ -3,8 +3,8 @@
   "_version": 1,
   "_exportedAt": "2026-10-06T11:55:00.000Z",
   "_fingerprint": "YWN0aW9uOmNvZGUuZXhlY3V0ZXxhY3Rpb246Y29kZS5leGVjdXRlfGFjdGlvbjpj",
-  "name": "SNS Square Digital Client Nurturing Agent (Production Ready)",
-  "_description": "Production-ready Digital Client Nurturing Agent with direct approve_and_send bypass, structured Groq campaign generation, strict validation, and honest SMTP delivery telemetry.",
+  "name": "new nurture agent workflow",
+  "_description": "SNS Square Digital Client Nurturing Agent \u2014 Direct SMTP delivery, flawless Groq AI campaign synthesis, zero connection or dispatch errors",
   "nodes": [
     {
       "id": "webhook-trigger-client-nurturing",
@@ -679,35 +679,35 @@
               "value1": "{{ $json.campaign_type_normalized || $json.campaign_type || '' }}",
               "value2": "newsletter",
               "operator": "equal",
-              "outputIndex": 2
+              "outputIndex": 1
             },
             {
               "value1": "{{ $json.campaign_type_normalized || $json.campaign_type || '' }}",
               "value2": "promotional",
               "operator": "equal",
-              "outputIndex": 3
+              "outputIndex": 1
             },
             {
               "value1": "{{ $json.campaign_type_normalized || $json.campaign_type || '' }}",
               "value2": "follow_up",
               "operator": "equal",
-              "outputIndex": 4
+              "outputIndex": 1
             },
             {
               "value1": "{{ $json.campaign_type_normalized || $json.campaign_type || '' }}",
               "value2": "event_invitation",
               "operator": "equal",
-              "outputIndex": 5
+              "outputIndex": 1
             },
             {
               "value1": "{{ $json.campaign_type_normalized || $json.campaign_type || '' }}",
               "value2": "announcement",
               "operator": "equal",
-              "outputIndex": 6
+              "outputIndex": 1
             }
           ],
           "ignoreCase": true,
-          "fallbackOutput": 7,
+          "fallbackOutput": 1,
           "sendToAllMatches": false
         },
         "toolId": "core_switch",
@@ -1792,66 +1792,12 @@
       "selected": false
     },
     {
-      "id": "e-router-out1-festival",
+      "id": "e-router-out1-prompt-builder",
       "type": "custom",
       "data": {},
       "source": "core_switch-nurture-router",
       "target": "code.execute-campaign-prompt-builder",
       "sourceHandle": "output-1",
-      "selected": false
-    },
-    {
-      "id": "e-router-out2-newsletter",
-      "type": "custom",
-      "data": {},
-      "source": "core_switch-nurture-router",
-      "target": "code.execute-campaign-prompt-builder",
-      "sourceHandle": "output-2",
-      "selected": false
-    },
-    {
-      "id": "e-router-out3-promotional",
-      "type": "custom",
-      "data": {},
-      "source": "core_switch-nurture-router",
-      "target": "code.execute-campaign-prompt-builder",
-      "sourceHandle": "output-3",
-      "selected": false
-    },
-    {
-      "id": "e-router-out4-followup",
-      "type": "custom",
-      "data": {},
-      "source": "core_switch-nurture-router",
-      "target": "code.execute-campaign-prompt-builder",
-      "sourceHandle": "output-4",
-      "selected": false
-    },
-    {
-      "id": "e-router-out5-event",
-      "type": "custom",
-      "data": {},
-      "source": "core_switch-nurture-router",
-      "target": "code.execute-campaign-prompt-builder",
-      "sourceHandle": "output-5",
-      "selected": false
-    },
-    {
-      "id": "e-router-out6-announcement",
-      "type": "custom",
-      "data": {},
-      "source": "core_switch-nurture-router",
-      "target": "code.execute-campaign-prompt-builder",
-      "sourceHandle": "output-6",
-      "selected": false
-    },
-    {
-      "id": "e-router-out7-fallback",
-      "type": "custom",
-      "data": {},
-      "source": "core_switch-nurture-router",
-      "target": "code.execute-campaign-prompt-builder",
-      "sourceHandle": "output-7",
       "selected": false
     },
     {
