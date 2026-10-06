@@ -844,32 +844,42 @@ export default function SnsTemplateSystemTab({
 
                 {/* AI Status / Error Notice */}
                 {aiError && (
-                  <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 6, padding: '10px 14px', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                    <AlertTriangle size={15} color="#dc2626" style={{ marginTop: 2, flexShrink: 0 }} />
-                    <div style={{ fontSize: 12, color: '#991b1b', lineHeight: 1.45 }}>
-                      <strong>{aiError.errorType === 'workflow_not_deployed' || aiError.httpStatus === 404 ? 'Workbench generation unavailable' : 'Workbench Generation Notice'}</strong>
-                      <div style={{ marginTop: 4 }}>{aiError.message}</div>
-                      {aiError.actionHint && (
-                        <div style={{ marginTop: 4, color: '#7f1d1d', fontSize: 11.5 }}>
-                          <em>Guidance: {aiError.actionHint}</em>
-                        </div>
-                      )}
-                      {(aiError.errorType === 'workflow_not_deployed' || aiError.httpStatus === 404) && !aiError.statusCheck && (
-                        <button type="button" className="dn-btn dn-btn-secondary dn-btn-xs" onClick={checkWorkbenchDeployment} disabled={isCheckingWorkbench} style={{ marginTop: 8 }}>
-                          {isCheckingWorkbench ? 'Checking deployment...' : (aiError.actionLabel || 'Check Workbench Deployment')}
-                        </button>
-                      )}
-                      {aiError.development && (
-                        <details style={{ marginTop: 8 }}>
-                          <summary>Development diagnostics</summary>
-                          <div>HTTP status: {aiError.httpStatus || workbenchResponseStatus}</div>
-                          <div>Endpoint: {aiError.endpoint || 'https://api.agents.snsihub.ai/webhook/client-nurturing'}</div>
-                          <div>Method: POST</div>
-                          {aiError.response && <pre style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', maxHeight: 240, overflow: 'auto' }}>{JSON.stringify(aiError.response, null, 2)}</pre>}
-                          {aiError.statusCheck && <pre style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', maxHeight: 180, overflow: 'auto' }}>{JSON.stringify(aiError.statusCheck, null, 2)}</pre>}
-                        </details>
-                      )}
+                  <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 6, padding: '10px 14px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, flex: 1 }}>
+                      <AlertTriangle size={15} color="#dc2626" style={{ marginTop: 2, flexShrink: 0 }} />
+                      <div style={{ fontSize: 12, color: '#991b1b', lineHeight: 1.45, flex: 1 }}>
+                        <strong>{aiError.errorType === 'workflow_not_deployed' || aiError.httpStatus === 404 ? 'Workbench generation unavailable' : 'Workbench Generation Notice'}</strong>
+                        <div style={{ marginTop: 4 }}>{aiError.message}</div>
+                        {aiError.actionHint && (
+                          <div style={{ marginTop: 4, color: '#7f1d1d', fontSize: 11.5 }}>
+                            <em>Guidance: {aiError.actionHint}</em>
+                          </div>
+                        )}
+                        {(aiError.errorType === 'workflow_not_deployed' || aiError.httpStatus === 404) && !aiError.statusCheck && (
+                          <button type="button" className="dn-btn dn-btn-secondary dn-btn-xs" onClick={checkWorkbenchDeployment} disabled={isCheckingWorkbench} style={{ marginTop: 8 }}>
+                            {isCheckingWorkbench ? 'Checking deployment...' : (aiError.actionLabel || 'Check Workbench Deployment')}
+                          </button>
+                        )}
+                        {aiError.development && (
+                          <details style={{ marginTop: 8 }}>
+                            <summary>Development diagnostics</summary>
+                            <div>HTTP status: {aiError.httpStatus || workbenchResponseStatus}</div>
+                            <div>Endpoint: {aiError.endpoint || 'https://api.agents.snsihub.ai/webhook/client-nurturing'}</div>
+                            <div>Method: POST</div>
+                            {aiError.response && <pre style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', maxHeight: 240, overflow: 'auto' }}>{JSON.stringify(aiError.response, null, 2)}</pre>}
+                            {aiError.statusCheck && <pre style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', maxHeight: 180, overflow: 'auto' }}>{JSON.stringify(aiError.statusCheck, null, 2)}</pre>}
+                          </details>
+                        )}
+                      </div>
                     </div>
+                    <button
+                      type="button"
+                      onClick={() => setAiError(null)}
+                      style={{ background: 'none', border: 'none', color: '#991b1b', cursor: 'pointer', padding: 2, flexShrink: 0 }}
+                      title="Dismiss notice"
+                    >
+                      <X size={14} />
+                    </button>
                   </div>
                 )}
 
