@@ -1110,12 +1110,12 @@
       "data": {
         "label": "Dispatch Newsletter / Content via SMTP",
         "inputs": {
-          "html": "{{ $node[\"code.execute-1790678109627001\"].json[\"email_body\"] || \"\" }}",
-          "text": "{{ $node[\"code.execute-1790678109627001\"].json[\"email_body\"] || \"\" }}",
-          "message": "{{ $node[\"code.execute-1790678109627001\"].json[\"email_body\"] || \"\" }}",
-          "subject": "{{ $node[\"code.execute-1790678109627001\"].json[\"subject\"] || \"\" }}",
-          "toEmail": "{{ ($node[\"code.execute-nurture-ingest\"].json[\"active_contact\"] || {}).email || \"\" }}",
-          "fromEmail": "{{ $node[\"code.execute-nurture-ingest\"].json[\"from_email\"] || $node[\"code.execute-nurture-ingest\"].json[\"sender_email\"] || \"\" }}",
+          "html": "{{ $json.email_body || ($node[\"code.execute-1790678109627001\"] && $node[\"code.execute-1790678109627001\"].json ? $node[\"code.execute-1790678109627001\"].json.email_body : \"\") }}",
+          "text": "{{ $json.email_body || ($node[\"code.execute-1790678109627001\"] && $node[\"code.execute-1790678109627001\"].json ? $node[\"code.execute-1790678109627001\"].json.email_body : \"\") }}",
+          "message": "{{ $json.email_body || ($node[\"code.execute-1790678109627001\"] && $node[\"code.execute-1790678109627001\"].json ? $node[\"code.execute-1790678109627001\"].json.email_body : \"\") }}",
+          "subject": "{{ $json.subject || ($node[\"code.execute-1790678109627001\"] && $node[\"code.execute-1790678109627001\"].json ? $node[\"code.execute-1790678109627001\"].json.subject : \"\") }}",
+          "toEmail": "{{ $json.to_email || $json.recipient_email || ($json.active_contact && $json.active_contact.email) || (($node[\"code.execute-nurture-ingest\"] && $node[\"code.execute-nurture-ingest\"].json && $node[\"code.execute-nurture-ingest\"].json.active_contact) ? $node[\"code.execute-nurture-ingest\"].json.active_contact.email : \"\") }}",
+          "fromEmail": "{{ $json.from_email || $json.sender_email || ($node[\"code.execute-nurture-ingest\"] && $node[\"code.execute-nurture-ingest\"].json ? ($node[\"code.execute-nurture-ingest\"].json.from_email || $node[\"code.execute-nurture-ingest\"].json.sender_email) : \"\") || \"\" }}",
           "ignoreSSL": false,
           "operation": "Send",
           "emailFormat": "html",
